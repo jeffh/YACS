@@ -29,9 +29,20 @@ class Semester(models.Model):
     year = models.IntegerField()
     month = models.IntegerField(help_text="The starting month of the semester")
     name = models.CharField(max_length=100, help_text="(eg - 'Spring 2011')")
+    ref = models.CharField(max_length=150, help_text="Used by parser function to reference.", unique=True)
+    date_updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = (
+            ('school', 'ref'),
+            ('school', 'year', 'month'),
+        )
 
     def __unicode__(self):
         return self.name
+
+    def __cmp__(self, other):
+        return cmp(self.year, other.year) or cmp(self.month, other.month)
 
 class Period(models.Model):
     """Represents a time period that sections are held for during the week.
@@ -140,7 +151,7 @@ class Course(models.Model):
     grade_type = models.CharField(max_length=150)
 
     class Meta:
-        unique_together = ('name', 'number', 'school')
+        unique_together = ('department', 'number', 'school')
     
     def conflicts_with(self, course):
         "Returns True if the provided course conflicts with this one on time periods."
