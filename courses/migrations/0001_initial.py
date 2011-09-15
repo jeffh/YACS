@@ -14,8 +14,7 @@ class Migration(SchemaMigration):
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50, db_index=True)),
             ('url', self.gf('django.db.models.fields.URLField')(max_length=200)),
-            ('scheduler_url', self.gf('django.db.models.fields.URLField')(max_length=200)),
-            ('parser_module', self.gf('django.db.models.fields.CharField')(max_length=300)),
+            ('parser_function', self.gf('django.db.models.fields.CharField')(max_length=300)),
         ))
         db.send_create_signal('courses', ['School'])
 
@@ -200,8 +199,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'School'},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'parser_module': ('django.db.models.fields.CharField', [], {'max_length': '300'}),
-            'scheduler_url': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
+            'parser_function': ('django.db.models.fields.CharField', [], {'max_length': '300'}),
             'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
             'url': ('django.db.models.fields.URLField', [], {'max_length': '200'})
         },

@@ -6,8 +6,8 @@ Replace this with more appropriate tests for your application.
 """
 
 from django.test import TestCase
-from timetable.scheduler.models import *
-from timetable.scheduler import utils
+from timetable.courses.models import *
+from timetable.courses import utils
 
 class CapitalizationTest(TestCase):
     def test_capitalization_for_all_lowercase(self):
