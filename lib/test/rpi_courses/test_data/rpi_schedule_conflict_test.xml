@@ -1,0 +1,100 @@
+
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE CourseDB PUBLIC "-//Rensselaer Upsilon Pi Epsilon//ROCS Course Database 1.0//EN" "http://upe.cs.rpi.edu/ROCS.dtd"> 
+<CourseDB timestamp="1290023154" semesternumber="201101" semesterdesc="Spring 2011"> 
+	
+	<COURSE name="BEGINNING PROG FOR ENG" dept="CSCI" num="1190" credmin="1" credmax="1" gradetype=""> 
+		<!--
+		<SECTION crn="75616" num="01" students="40" seats="40"> 
+			<PERIOD type="LEC" instructor="Staff" start="1600" end="1750" location="SAGE 4101"> 
+				<DAY>1</DAY> 
+			</PERIOD> 
+			<NOTE>COURSE TAUGHT 2ND HALF OF SEMESTER</NOTE> 
+		</SECTION> 
+		-->
+		<SECTION crn="75617" num="02" students="39" seats="40"> 
+			<PERIOD type="LEC" instructor="Staff" start="1600" end="1750" location="WALKER 5113"> 
+				<DAY>0</DAY> 
+			</PERIOD> 
+			<NOTE>COURSE TAUGHT SECOND HALF OF SEMESTER</NOTE> 
+		</SECTION> 
+		<SECTION crn="73351" num="03" students="31" seats="40"> 
+			<PERIOD type="LEC" instructor="Todd" start="1800" end="1950" location="WALKER 5113"> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<NOTE>COURSE TAUGHT FIRST HALF OF SEMESTER</NOTE> 
+		</SECTION> 
+		<SECTION crn="73352" num="04" students="39" seats="40"> 
+			<PERIOD type="LEC" instructor="Todd" start="1800" end="1950" location="WALKER 5113"> 
+				<DAY>0</DAY> 
+			</PERIOD> 
+			<NOTE>COURSE TAUGHT FIRST HALF OF SEMESTER</NOTE> 
+		</SECTION>
+		<!--
+		<SECTION crn="75618" num="05" students="40" seats="40"> 
+			<PERIOD type="LEC" instructor="Todd" start="1800" end="1950" location="WALKER 5113"> 
+				<DAY>2</DAY> 
+			</PERIOD> 
+			<NOTE>COURSE TAUGHT FIRST HALF OF SEMESTER</NOTE> 
+		</SECTION> 
+		-->
+	</COURSE>
+	
+	
+	<COURSE name="COMPUTER SCIENCE I" dept="CSCI" num="1100" credmin="4" credmax="4" gradetype=""> 
+		<SECTION crn="73567" num="01" students="17" seats="33"> 
+			<PERIOD type="LEC" instructor="Hardwick" start="0900" end="0950" location="DARRIN 308"> 
+				<DAY>0</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="LAB" instructor="Staff" start="1000" end="1150" location="SAGE 2715"> 
+				<DAY>0</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<!--
+		<SECTION crn="73568" num="02" students="9" seats="30"> 
+			<PERIOD type="LEC" instructor="Hardwick" start="0900" end="0950" location="DARRIN 308"> 
+				<DAY>0</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="LAB" instructor="Staff" start="1200" end="1350" location="SAGE 2112"> 
+				<DAY>0</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		-->
+		<SECTION crn="73569" num="04" students="19" seats="32"> 
+			<PERIOD type="LEC" instructor="Hardwick" start="0900" end="0950" location="DARRIN 308"> 
+				<DAY>0</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="LAB" instructor="Staff" start="1600" end="1750" location="LOW 3116"> 
+				<DAY>0</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<!--
+		<SECTION crn="73570" num="06" students="6" seats="33"> 
+			<PERIOD type="LEC" instructor="Hardwick" start="0900" end="0950" location="DARRIN 308"> 
+				<DAY>0</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="LAB" instructor="Staff" start="1000" end="1150" location="EATON 215"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="73571" num="07" students="18" seats="33"> 
+			<PERIOD type="LEC" instructor="Hardwick" start="0900" end="0950" location="DARRIN 308"> 
+				<DAY>0</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="LAB" instructor="Staff" start="1200" end="1350" location="EATON 215"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		-->
+	</COURSE>
+</CourseDB>

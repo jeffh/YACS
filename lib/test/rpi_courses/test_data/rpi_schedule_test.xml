@@ -1,0 +1,255 @@
+
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE CourseDB PUBLIC "-//Rensselaer Upsilon Pi Epsilon//ROCS Course Database 1.0//EN" "http://upe.cs.rpi.edu/ROCS.dtd"> 
+<CourseDB timestamp="1290023154" semesternumber="201101" semesterdesc="Spring 2011"> 
+	<CROSSLISTING seats="70"> 
+		<CRN>73485</CRN> 
+		<CRN>76296</CRN> 
+	</CROSSLISTING>
+	<COURSE name="GRAPH THEORY" dept="CSCI" num="4260" credmin="4" credmax="4" gradetype=""> 
+		<SECTION crn="73485" num="01" students="10" seats="40"> 
+			<PERIOD type="LEC" instructor="Goldberg" start="1400" end="1550" location=" "> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+			<NOTE>MEETS WITH MATH 4150</NOTE> 
+		</SECTION> 
+	</COURSE>
+	<COURSE name="GRAPH THEORY" dept="MATH" num="4150" credmin="4" credmax="4" gradetype=""> 
+		<SECTION crn="76296" num="01" students="29" seats="30"> 
+			<PERIOD type="LEC" instructor="Goldberg" start="1400" end="1550" location=" "> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+			<NOTE>MEETS WITH CSCI 4260</NOTE> 
+		</SECTION> 
+	</COURSE>
+	
+	<COURSE name="LEARNING" dept="PSYC" num="4450" credmin="4" credmax="4" gradetype=""> 
+		<SECTION crn="73216" num="01" students="61" seats="100"> 
+			<PERIOD type="LEC" instructor="Hubbell" start="1400" end="1550" location="RCKTTS 203"> 
+				<DAY>0</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+		</SECTION> 
+	</COURSE>
+	<COURSE name="INTRO TO PHILOSOPHY" dept="PHIL" num="1110" credmin="4" credmax="4" gradetype=""> 
+		<SECTION crn="74447" num="01" students="20" seats="35"> 
+			<PERIOD type="LEC" instructor="Fahey" start="1000" end="1150" location="CARNEG 206"> 
+				<DAY>0</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="73498" num="02" students="30" seats="35"> 
+			<PERIOD type="LEC" instructor="Carcasole" start="1000" end="1150" location="CARNEG 101"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+	</COURSE>
+	
+	<COURSE name="SOFTWARE DESIGN &amp; DOCUME" dept="CSCI" num="4440" credmin="4" credmax="4" gradetype=""> 
+		<SECTION crn="75741" num="01" students="19" seats="20"> 
+			<PERIOD type="LEC" instructor="Sturman" start="1600" end="1750" location="LALLY 102"> 
+				<DAY>0</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<NOTE>COMMUNICATION INTENSIVE</NOTE> 
+		</SECTION> 
+		<SECTION crn="73484" num="02" students="15" seats="20"> 
+			<PERIOD type="LEC" instructor="Sturman" start="1800" end="1950" location="LALLY 104"> 
+				<DAY>0</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<NOTE>COMMUNICATION INTENSIVE</NOTE> 
+		</SECTION> 
+		<SECTION crn="75742" num="03" students="10" seats="20"> 
+			<PERIOD type="LEC" instructor="Kuchera" start="1800" end="1950" location="LALLY 102"> 
+				<DAY>0</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<NOTE>COMMUNICATION INTENSIVE</NOTE> 
+		</SECTION> 
+	</COURSE>
+	
+	<COURSE name="MULTIVAR CALC &amp; MATRIX ALG" dept="MATH" num="2010" credmin="4" credmax="4" gradetype=""> 
+		<SECTION crn="73122" num="01" students="24" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1000" end="1050" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0800" end="0850" location="SAGE 2704"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="73110" num="02" students="16" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1000" end="1050" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0800" end="0850" location="LALLY 104"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="73195" num="03" students="11" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1000" end="1050" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0900" end="0950" location="JONSSN 3207"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="73196" num="04" students="20" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1000" end="1050" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0900" end="0950" location="LALLY 104"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="75810" num="05" students="17" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1200" end="1250" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0800" end="0850" location="WALKER 5113"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="75811" num="06" students="27" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1200" end="1250" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0900" end="0950" location="SAGE 2704"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="76142" num="07" students="19" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1200" end="1250" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0800" end="0850" location="SAGE 2112"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="76177" num="08" students="1" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1200" end="1250" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0900" end="0950" location="TROY 2018"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+	</COURSE> 
+	<COURSE name="MULTIVAR CALC &amp; MATRIX ALGEBRA" dept="MATH" num="2010" credmin="4" credmax="4" gradetype=""> 
+		<SECTION crn="73122" num="01" students="24" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1000" end="1050" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0800" end="0850" location="SAGE 2704"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="73110" num="02" students="16" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1000" end="1050" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0800" end="0850" location="LALLY 104"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="73195" num="03" students="10" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1000" end="1050" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0900" end="0950" location="JONSSN 3207"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="73196" num="04" students="10" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1000" end="1050" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0900" end="0950" location="LALLY 104"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="75810" num="05" students="5" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1200" end="1250" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0800" end="0850" location="WALKER 5113"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="75811" num="06" students="3" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1200" end="1250" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0900" end="0950" location="SAGE 2704"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="76142" num="07" students="7" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1200" end="1250" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0800" end="0850" location="SAGE 2112"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+		<SECTION crn="76177" num="08" students="26" seats="30"> 
+			<PERIOD type="LEC" instructor="Schmidt" start="1200" end="1250" location="DARRIN 324"> 
+				<DAY>0</DAY> 
+				<DAY>2</DAY> 
+				<DAY>3</DAY> 
+			</PERIOD> 
+			<PERIOD type="REC" instructor="Staff" start="0900" end="0950" location="TROY 2018"> 
+				<DAY>1</DAY> 
+				<DAY>4</DAY> 
+			</PERIOD> 
+		</SECTION> 
+	</COURSE>
+</CourseDB>
