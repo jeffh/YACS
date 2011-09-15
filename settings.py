@@ -1,10 +1,19 @@
 # Django settings for timetable project.
 import os
+import sys
+import djcelery
+from datetime import timedelta
+from celery.schedules import schedule
+
+# setup
 relative = lambda *x: os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
 
-import sys
 if relative('lib') not in sys.path:
     sys.path.append(relative('lib'))
+
+djcelery.setup_loader()
+
+# end setup
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -62,7 +71,7 @@ MEDIA_URL = '/uploads/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = relative('static')
+STATIC_ROOT = relative('static', 'cache')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -78,6 +87,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    relative('static', 'global')
 )
 
 # List of finder classes that know how to find static files in
@@ -122,12 +132,15 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
+    # django admin
     'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
+    # third-party apps
     'south',
     'django_extensions',
+    'djcelery',
+    'django_bcrypt',
+    # local apps
     'timetable.courses',
     'timetable.scheduler',
 )
@@ -155,3 +168,51 @@ LOGGING = {
     }
 }
 
+# ==== CELERY CONFIG ====
+
+# amqplib, pika, redis, beanstalk, sqlalchemy, django, mongodb, couchdb
+BROKER_BACKEND = 'redis'
+BROKER_HOST = "localhost"
+BROKER_PORT = 6379
+BROKER_VHOST = '0'
+#BROKER_USER = "django"
+#BROKER_PASSWORD = "django_development"
+#BROKER_VHOST = "django_vhost"
+
+# disables async results
+CELERY_IGNORE_RESULT = False
+# database, cache, mongodb, redis, tyrant, or amqp
+CELERY_RESULT_BACKEND = "redis"
+# configure redis backend
+CELERY_REDIS_HOST = BROKER_HOST
+CELERY_REDIS_PORT = BROKER_PORT
+CELERY_REDIS_DB = 0
+# when results are automatically deleted?
+CELERY_TASK_RESULT_EXPIRES = timedelta(days=7)
+
+#CELERY_IMPORTS = () # full module paths to tasks.py
+# Worker settings
+# If you're doing mostly I/O you can have more processes,
+# but if mostly spending CPU, try to keep it close to the
+# number of CPUs on your machine. If not set, the number of CPUs/cores
+# available will be used.
+CELERYD_CONCURRENCY = 1
+
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+
+# periodic schedules / cron jobs
+CELERYBEAT_SCHEDULE = {
+    # follows periodic intervals defined in feeds, so hitting this tasks as
+    # a lot won't actually hit each feed.
+    'source-checker': {
+        'task': 'source.tasks.update_sources',
+        'schedule': schedule(timedelta(minutes=1)),
+    },
+}
+
+# ==== Django BCrypt ====
+# The number of rounds determines the complexity of the bcrypt algorithm.
+# The work factor is 2**log_rounds, and the default is 12
+#
+# This setting can be changed at any time without invalidating previously-generated hashes.
+BCRYPT_LOG_ROUNDS = 12
