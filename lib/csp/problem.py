@@ -32,13 +32,16 @@ class Problem(object):
         self._constraints.append((func, variables))
         
     def iter_solutions(self):
+        "Returns a generator of solutions to the given constraints problem."
         self._solver_instance.set_conditions(dict(self._variables), list(self._constraints))
         return iter(self._solver_instance)
     
     def get_solutions(self):
+        "Returns a tuple of all the solutions to the given constraints problem."
         return tuple(self.iter_solutions())
     
     def get_all_possible_solutions(self):
+        "Returns all possible solutions (but may not be valid solutions according to the constraints)."
         self._solver_instance.set_conditions(dict(self._variables), list(self._constraints))
         return self._solver_instance.combinations()
         
