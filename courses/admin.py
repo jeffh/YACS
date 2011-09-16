@@ -1,11 +1,6 @@
 from django.contrib import admin
 from timetable.courses.models import *
 
-class SchoolAdmin(admin.ModelAdmin):
-    pass
-
-admin.site.register(School, SchoolAdmin)
-
 class DepartmentAdmin(admin.ModelAdmin):
     pass
 
@@ -26,10 +21,10 @@ class SectionAdmin(admin.ModelAdmin):
 
 admin.site.register(Section, SectionAdmin)
 
-class CrosslistingAdmin(admin.ModelAdmin):
+class SectionCrosslistingAdmin(admin.ModelAdmin):
     pass
 
-admin.site.register(Crosslisting, CrosslistingAdmin)
+admin.site.register(SectionCrosslisting, SectionCrosslistingAdmin)
 
 class CourseAdmin(admin.ModelAdmin):
     pass
