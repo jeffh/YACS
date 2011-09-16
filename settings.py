@@ -207,9 +207,9 @@ LOGGING = {
 }
 
 # ==== Courses App ====
-COLLEGE_NAME = 'Rensselaer'
-COLLEGE_SHORT_NAME = 'RPI'
-COLLEGE_PARSER = 'timetable.courses.bridge.import_rpi'
+COURSES_COLLEGE_NAME = 'Rensselaer'
+COURSES_COLLEGE_SHORT_NAME = 'RPI'
+COURSES_COLLEGE_PARSER = 'timetable.courses.bridge.import_rpi'
 
 # ==== CELERY CONFIG ====
 
