@@ -195,8 +195,8 @@ class Section(ReadOnly):
         
     @property
     def is_valid(self):
-        """Invalid sections have only notes."""
-        return type(self.num) in (int, long)
+        """Returns True if the given data for this section is valid."""
+        return type(self.num) in (int, long) and self.seats_total > 0
 
     @property
     def is_filled(self):
@@ -311,5 +311,5 @@ class Course(ReadOnly):
         sections = [Section.from_soup_tag(s) for s in tag.findAll('section')]
         return Course(
             tag['name'], tag['dept'], int(tag['num']), tag['credmin'],
-            tag['credmax'], tag['gradetype'], sections
+            tag['credmax'], tag['gradetype'], [s for s in sections if s.is_valid]
         )
