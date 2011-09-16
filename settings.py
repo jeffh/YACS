@@ -140,10 +140,18 @@ INSTALLED_APPS = (
     'django_extensions',
     'djcelery',
     'django_bcrypt',
+    'fixture_generator',
     # local apps
     'timetable.courses',
     'timetable.scheduler',
 )
+
+if DEBUG:
+    DJANGO_LOGGING = relative('logs', 'django.log')
+    #CELERYD_LOG_FILE = relative('logs', 'celery.log')
+else:
+    DJANGO_LOGGING = os.path.join('var', 'log', 'timetable', 'django.log')
+    CELERYD_LOG_FILE = os.path.join('var', 'log', 'timetable', 'celery.log')
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -152,21 +160,56 @@ INSTALLED_APPS = (
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
+    'formatters':{
+        'default': {
+            'format': '[%(asctime)s] %(levelname)s (%(module)s): %(message)s'
+        },
+    },
     'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'default',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': DJANGO_LOGGING,
+            'formatter': 'default',
+        },
         'mail_admins': {
             'level': 'ERROR',
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
+            'class': 'django.utils.log.AdminEmailHandler',
+        },
     },
     'loggers': {
+        'django': {
+            'handlers':['null'],
+            'propagate': True,
+            'level':'INFO',
+        },
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
         },
+        'timetable': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
     }
 }
+
+# ==== Courses App ====
+COLLEGE_NAME = 'Rensselaer'
+COLLEGE_SHORT_NAME = 'RPI'
+COLLEGE_PARSER = 'timetable.courses.bridge.import_rpi'
 
 # ==== CELERY CONFIG ====
 
@@ -204,10 +247,10 @@ CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 CELERYBEAT_SCHEDULE = {
     # follows periodic intervals defined in feeds, so hitting this tasks as
     # a lot won't actually hit each feed.
-    'source-checker': {
-        'task': 'source.tasks.update_sources',
-        'schedule': schedule(timedelta(minutes=1)),
-    },
+    #'source-checker': {
+    #    'task': 'source.tasks.update_sources',
+    #    'schedule': schedule(timedelta(minutes=1)),
+    #},
 }
 
 # ==== Django BCrypt ====
