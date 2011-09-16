@@ -66,6 +66,11 @@ class CourseCatalog(object):
         keys = [k for k in keys if k.lower().find(partial) != -1]
         courses = [self.courses[k] for k in keys]
         return list(set(courses))
+
+    def get_courses(self):
+        """Returns all course objects from this catalog.
+        """
+        return self.courses.values()
         
     def find_course_by_crn(self, crn):
         """Searches all courses by CRNs. Not particularly efficient.
