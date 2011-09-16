@@ -2,6 +2,7 @@ from django.utils.importlib import import_module
 from django.db import models
 from timetable.courses.utils import options, capitalized
 from django.core.exceptions import ValidationError
+from django.db.models import F
 
 __all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting', 'Course', 'OfferedFor', 'SectionPeriod']
 
@@ -85,18 +86,18 @@ class Period(models.Model):
 
     @property
     def is_to_be_announced(self):
-        return None in (self.start_time, self.end_time)
+        return None in (self.start, self.end)
 
     def conflicts_with(self, period):
         "Returns True if the given period conflicts the current one."
         if self == period:
             return True
-        days = self.days_of_week_flag & section.days_of_week_flag
+        days = self.days_of_week_flag & period.days_of_week_flag
         return days > 0 and (
-            (self.start_time <= section.start_time <= self.end_time) or \
-            (self.start_time <= section.end_time <= self.end_time) or \
-            (section.start_time <= self.start_time <= section.end_time) or \
-            (section.start_time <= self.end_time <= section.end_time)
+            (self.start <= period.start <= self.end) or \
+            (self.start <= period.end <= self.end) or \
+            (period.start <= self.start <= period.end) or \
+            (period.start <= self.end <= period.end)
         )
 
     def is_on_day(self, day):
@@ -122,6 +123,9 @@ class Period(models.Model):
             else:
                 value += int(name) or 0
         self.days_of_week_flag = value
+
+    def to_tuple(self):
+        return (self.start, self.end, self.days_of_week_flag)
 
 class SectionCrosslisting(models.Model):
     """Interface for courses that are crosslisted. Crosslisted sections are similar to each other.
@@ -152,7 +156,7 @@ class Section(models.Model):
     seats_total = models.IntegerField()
 
     def __unicode__(self):
-        return "%s (%s) Seats: %d / %d" % (self.crn, self.number, self.seats_taken, self.seats_total)
+        return "%s (%s) Seats: %d / %d" % (self.number, self.crn, self.seats_taken, self.seats_total)
 
     @property
     def is_study_abroad(self):
@@ -211,6 +215,10 @@ class Course(models.Model):
     @credits.setter
     def credits(self, value):
         self.min_credits = self.max_credits = int(value)
+
+    @property
+    def available_sections(self):
+        return self.sections.filter(seats_taken__lt=F('seats_total'))
 
 class OfferedFor(models.Model):
     "The M2M model of courses and semesters."
