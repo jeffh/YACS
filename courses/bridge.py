@@ -4,6 +4,7 @@ from django.utils.importlib import import_module
 import re
 from timetable.courses.models import Semester, Course, Department, Section, Period, SectionPeriod, OfferedFor, SectionCrosslisting
 
+
 class RPIImporter(object):
     """Handles the importation of RPI course data into the database."""
 
@@ -66,6 +67,7 @@ class RPIImporter(object):
             self.create_sections(course, course_obj)
 
     def create_sections(self, course, course_obj):
+        "Inserts all section data, including time period information, into the database from the catalog."
         for section in course.sections:
             # TODO: encode prereqs / notes
             number = section.num
@@ -88,6 +90,7 @@ class RPIImporter(object):
 
             self.create_timeperiods(section, section_obj)
 
+    # maps from catalog data to database representation
     DOW_MAPPER = {
         'Monday': Period.MONDAY,
         'Tuesday': Period.TUESDAY,
@@ -97,6 +100,7 @@ class RPIImporter(object):
         'Saturday': Period.SATURDAY,
         'Sunday': Period.SUNDAY,
     }
+
     def compute_dow(self, days_of_week):
         """Assists in converting rpi_course's representation of days of the week to the database kind."""
         value = 0
