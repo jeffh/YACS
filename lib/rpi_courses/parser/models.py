@@ -137,6 +137,7 @@ class Section(ReadOnly):
     It is uniquely represented in SIS via CRN. The CRN is used for
     registration.
     """
+    STUDY_ABROAD = -1
     def __init__(self, crn, num, taken, total, periods, notes):
         self._crn, self._seats_taken, self._seats_total = \
             safeInt(crn), int(taken), int(total)
@@ -144,6 +145,8 @@ class Section(ReadOnly):
             self._num = int(num)
         except ValueError:
             self._num = num
+            if num == 'SA':
+                self._num = self.STUDY_ABROAD
         self._periods = tuple(periods)
         self._notes = tuple(set(notes))
     
@@ -185,6 +188,10 @@ class Section(ReadOnly):
             tag['crn'], tag['num'], tag['students'], tag['seats'],
             periods, notes
         )
+
+    @property
+    def is_study_abroad(self):
+        return self.num == self.STUDY_ABROAD
         
     @property
     def is_valid(self):
