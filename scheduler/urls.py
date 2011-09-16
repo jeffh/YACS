@@ -3,7 +3,7 @@ from django.conf.urls.defaults import patterns, include, url
 
 urlpatterns = patterns('',
     # selecting courses
-    url(r'^schools/(?P<school>[A-Za-z0-9]+)/schedules/$', 'timetable.scheduler.views.schedules', name='schedules'),
+    url(r'^schedules/$', 'timetable.scheduler.views.schedules', name='schedules'),
     # 
     #url(r'^schools/(?P<school>[a-z0-9]+)/schedules/$', 'timetable.scheduler.views.schedules', name='courses'),
     # Examples:
