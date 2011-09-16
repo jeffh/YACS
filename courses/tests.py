@@ -38,7 +38,7 @@ class OptionsTest(TestCase):
         self.assertEqual(g.next(), 16)
         self.assertEqual(g.next(), 32)
         # this generator is infinite...
-    
+
     def test_returning_a_list(self):
         g = utils.options(6)
         self.assertEqual(g, [1, 2, 4, 8, 16, 32])
