@@ -140,6 +140,7 @@ class SectionCrosslisting(models.Model):
 
 class Section(models.Model):
     """Represents a particular course a student can sign up for."""
+    STUDY_ABROAD = -1
     number = models.IntegerField()
 
     crn = models.IntegerField(unique=True)
@@ -152,6 +153,10 @@ class Section(models.Model):
 
     def __unicode__(self):
         return "%s (%s) Seats: %d / %d" % (self.crn, self.number, self.seats_taken, self.seats_total)
+
+    @property
+    def is_study_abroad(self):
+        return self.number == self.STUDY_ABROAD
 
     @property
     def seats_available(self):
