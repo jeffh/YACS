@@ -6,14 +6,6 @@ from django.db.models import F
 
 __all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting', 'Course', 'OfferedFor', 'SectionPeriod']
 
-class Department(models.Model):
-    """Represents a department. Provides UI organization capabilities to drill-down courses by department."""
-    name = models.CharField(max_length=200, blank=True, default='')
-    code = models.CharField(max_length=50)
-
-    def __unicode__(self):
-        return u"%s (%s)" % (self.name, self.code)
-
 class Semester(models.Model):
     """Represents the semester / quarter for a college. Courses may not be offered every semester.
     """
@@ -33,6 +25,16 @@ class Semester(models.Model):
 
     def __cmp__(self, other):
         return cmp(self.year, other.year) or cmp(self.month, other.month)
+
+class Department(models.Model):
+    """Represents a department. Provides UI organization capabilities to drill-down courses by department."""
+    name = models.CharField(max_length=200, blank=True, default='')
+    code = models.CharField(max_length=50, unique=True)
+    semesters = models.ManyToManyField(Semester, through='SemesterDepartment', related_name='departments')
+
+    def __unicode__(self):
+        return u"%s (%s)" % (self.name, self.code)
+
 
 class Period(models.Model):
     """Represents a time period that sections are held for during the week.
@@ -149,6 +151,7 @@ class Section(models.Model):
 
     crn = models.IntegerField(unique=True)
     course = models.ForeignKey('Course', related_name='sections')
+    semesters = models.ManyToManyField(Semester, through='SemesterSection', related_name='sections')
     periods = models.ManyToManyField(Period, through='SectionPeriod', related_name='courses')
     crosslisted = models.ForeignKey(SectionCrosslisting, related_name='sections', null=True, blank=True)
 
@@ -183,7 +186,7 @@ class Course(models.Model):
     number = models.IntegerField()
 
     department = models.ForeignKey(Department, related_name='courses')
-    semester = models.ManyToManyField(Semester, through='OfferedFor', related_name='courses')
+    semesters = models.ManyToManyField(Semester, through='OfferedFor', related_name='courses')
 
     min_credits = models.IntegerField()
     max_credits = models.IntegerField()
@@ -254,4 +257,16 @@ class SectionPeriod(models.Model):
         "Returns True if times conflict with the given section period."
         return self.period.conflicts_with(section_period.period)
 
+class SemesterDepartment(models.Model):
+    "M2M model of departments and semesters."
+    department = models.ForeignKey(Department, related_name='+')
+    semester = models.ForeignKey(Semester, related_name='+')
+
+    class Meta:
+        unique_together = ('department', 'semester')
+
+class SemesterSection(models.Model):
+    "M2M model of semesters and sections."
+    semester = models.ForeignKey(Semester, related_name='+')
+    section = models.ForeignKey(Section, related_name='+')
 

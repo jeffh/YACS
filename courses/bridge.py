@@ -2,7 +2,9 @@
 """
 from django.utils.importlib import import_module
 import re
-from timetable.courses.models import Semester, Course, Department, Section, Period, SectionPeriod, OfferedFor, SectionCrosslisting
+from timetable.courses.models import (Semester, Course, Department, Section,
+    Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment,
+    SemesterSection)
 
 
 class RPIImporter(object):
@@ -45,12 +47,12 @@ class RPIImporter(object):
                 self.create_crosslistings(semester_obj, set(catalog.crosslistings.values()))
                 semester_obj.save()  # => update date_updated property
 
-    def create_courses(self, catalog, semester):
+    def create_courses(self, catalog, semester_obj):
         "Inserts all the course data, including section information, into the database from the catalog."
         for course in catalog.get_courses():
             course_obj, created = Course.objects.get_or_create(
                 number=course.num,
-                department=Department.objects.get_or_create(code=course.dept)[0],
+                department=self.get_or_create_department(semester_obj, code=course.dept),
                 defaults=dict(
                     name=course.name,
                     min_credits=course.cred[0],
@@ -63,10 +65,10 @@ class RPIImporter(object):
                 course_obj.min_credits, course_obj.max_credits = course.cred
                 course_obj.grade_type = course.grade_type
                 course_obj.save()
-            OfferedFor.objects.get_or_create(course=course_obj, semester=semester)
-            self.create_sections(course, course_obj)
+            OfferedFor.objects.get_or_create(course=course_obj, semester=semester_obj)
+            self.create_sections(course, course_obj, semester_obj)
 
-    def create_sections(self, course, course_obj):
+    def create_sections(self, course, course_obj, semester_obj):
         "Inserts all section data, including time period information, into the database from the catalog."
         for section in course.sections:
             # TODO: encode prereqs / notes
@@ -82,6 +84,11 @@ class RPIImporter(object):
                     seats_total=section.seats_total,
                 )
             )
+            SemesterSection.objects.get_or_create(
+                semester=semester_obj,
+                section=section_obj,
+            )
+
             if not created:
                 section_obj.number = number
                 section_obj.seats_taken = section.seats_taken
@@ -115,8 +122,8 @@ class RPIImporter(object):
         for period in section.periods:
             day = 0
             period_obj, created = Period.objects.get_or_create(
-                start_time=period.start,
-                end_time=period.end,
+                start=period.start,
+                end=period.end,
                 days_of_week_flag=self.compute_dow(period.days),
             )
             sectionperiod_obj, created = SectionPeriod.objects.get_or_create(
@@ -133,6 +140,19 @@ class RPIImporter(object):
                 sectionperiod_obj.location = period.location
                 sectionperiod_obj.kind = period.type
                 sectionperiod_obj.save()
+
+    def get_or_create_department(self, semester_obj, code, name=''):
+        dept, created = Department.objects.get_or_create(
+            code=code,
+            defaults={
+                'name': name
+            }
+        )
+        SemesterDepartment.objects.get_or_create(
+            semester=semester_obj,
+            department=dept
+        )
+        return dept
 
     def create_crosslistings(self, semester_obj , crosslistings):
         "Creates all crosslisting information into the database for all the sections."
