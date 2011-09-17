@@ -6,6 +6,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     #url(r'^$', include('timetable.courses.urls')),
     #url(r'^$', include('timetable.scheduler.urls')),
+    url(r'^api/', include('timetable.api.urls', namespace='api')),
     # Examples:
     # url(r'^$', 'timetable.views.home', name='home'),
     # url(r'^timetable/', include('timetable.foo.urls')),
