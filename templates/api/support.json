@@ -1,0 +1,5 @@
+{
+	"version": {{ version|escapejs }},
+	"is_supported": {% if version >= min_version %}true{% else %}false{% endif %},
+	"reason": {% if version < min_version %}"Minimum API version this server supports is {{ min_version|escapejs }}."{% else %}""{% endif %}
+}

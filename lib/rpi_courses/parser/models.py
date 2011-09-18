@@ -2,6 +2,7 @@
 
 Generally, all instances should be read only.
 """
+from datetime import time
 from ..utils import safeInt
 
 class ReadOnly(object):
@@ -85,6 +86,22 @@ class Period(ReadOnly):
     @property
     def time_range(self):
         return (self.start, self.end)
+
+    @property
+    def start_time(self):
+        if self.start is None:
+            return None
+        s = str(self.start)
+        hours, minutes = (s[:-2], s[-2:])
+        return time(hour=int(hours), minute=int(minutes))
+    
+    @property
+    def end_time(self):
+        if self.end is None:
+            return None
+        s = str(self.end)
+        hours, minutes = (s[:-2], s[-2:])
+        return time(hour=int(hours), minute=int(minutes))
     
     def conflicts_with(self, period):
         "Checks this period conflicts with another period."

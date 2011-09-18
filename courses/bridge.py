@@ -95,7 +95,7 @@ class RPIImporter(object):
                 section_obj.seats_total = section.seats_total
                 section_obj.save()
 
-            self.create_timeperiods(section, section_obj)
+            self.create_timeperiods(semester_obj, section, section_obj)
 
     # maps from catalog data to database representation
     DOW_MAPPER = {
@@ -115,20 +115,23 @@ class RPIImporter(object):
            value = value | self.DOW_MAPPER.get(dow, 0)
         return value
 
-    def create_timeperiods(self, section, section_obj):
+    def create_timeperiods(self, semester_obj, section, section_obj):
         """Creates all the SectionPeriod and Period instances for the given section object from
         the catalog and the section_obj database equivalent to refer to.
         """
         for period in section.periods:
+            if None in (period.start, period.end):
+                continue  # invalid period for all we care about... ignore.
             day = 0
             period_obj, created = Period.objects.get_or_create(
-                start=period.start,
-                end=period.end,
+                start=period.start_time,
+                end=period.end_time,
                 days_of_week_flag=self.compute_dow(period.days),
             )
             sectionperiod_obj, created = SectionPeriod.objects.get_or_create(
                 period=period_obj,
                 section=section_obj,
+                semester=semester_obj,
                 defaults=dict(
                     instructor=period.instructor,
                     location=period.location,

@@ -79,7 +79,7 @@ class Scheduler(object):
                 self.exclude_time(*item)
         return self
 
-    def find_schedules(self, courses, return_generator=False):
+    def find_schedules(self, courses=None, return_generator=False):
         """Returns all the possible course combinations. Assumes no duplicate courses.
 
         ``return_generator``: If True, returns a generator instead of collection. Generators
@@ -110,10 +110,11 @@ class Scheduler(object):
 
     def create_variables(self, courses):
         """Internal use. Creates all variables in the problem instance for the given
-        courses.
+        courses. If given a dict of {course: sections}, will use the provided sections.
         """
+        has_sections = isinstance(courses, dict)
         for course in courses:
-            self.p.add_variable(course, self.get_sections(course))
+            self.p.add_variable(course, courses.get(course, []) if has_sections else self.get_sections(course))
 
     def create_constraints(self, courses):
         """Internal use. Creates all constraints in the problem instance for the given
@@ -126,7 +127,7 @@ class Scheduler(object):
                 self.p.add_constraint(section_constraint, [course1, course2])
             self.p.add_constraint(self.time_conflict, [course1])
 
-def compute_schedules(courses, excluded_times=(), free_sections_only=True, problem=None, return_generator=False):
+def compute_schedules(courses=None, excluded_times=(), free_sections_only=True, problem=None, return_generator=False):
     """
     Returns all possible schedules for the given courses.
     """
