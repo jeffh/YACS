@@ -41,8 +41,8 @@ class Period(models.Model):
 
     For particular details about a section, refer to the SectionPeriod model.
     """
-    start = models.IntegerField(default=None, null=True)
-    end = models.IntegerField(default=None, null=True)
+    start = models.TimeField(default=None, null=True)
+    end = models.TimeField(default=None, null=True)
 
     MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY = options(7)
     DAYS_OF_WEEK = (
@@ -78,13 +78,11 @@ class Period(models.Model):
 
     @property
     def start_time(self):
-        s = str(self.start)
-        return "%s:%s" % (s[:-2], s[-2:])
+        return self.start.strftime("%H:%M")
 
     @property
     def end_time(self):
-        s = str(self.end)
-        return "%s:%s" % (s[:-2], s[-2:])
+        return self.end_.strftime("%H:%M")
 
     @property
     def is_to_be_announced(self):
@@ -158,6 +156,9 @@ class Section(models.Model):
     seats_taken = models.IntegerField()
     seats_total = models.IntegerField()
 
+    #class Meta:
+    #    unique_together = ('number', 'course')
+
     def __unicode__(self):
         return "%s (%s) Seats: %d / %d" % (self.number, self.crn, self.seats_taken, self.seats_total)
 
@@ -168,6 +169,12 @@ class Section(models.Model):
     @property
     def seats_available(self):
         return self.seats_taken < self.seats_total
+
+    def periods_for_semester(self, **semester_filter_options):
+        options = {}
+        for name, value in semester_filter_options.items():
+            options['semester__'+name] = value
+        return self.course_times.filter().select_related('period')
 
     def conflicts_with(self, section):
         "Returns True if the given section conflicts with another provided section."
@@ -222,6 +229,13 @@ class Course(models.Model):
     @property
     def available_sections(self):
         return self.sections.filter(seats_taken__lt=F('seats_total'))
+    
+    def sections_by_semester(self, semester):
+        return self.sections.filter(semesters__contains=semester)
+    
+    def available_sections_by_semester(self, semester):
+        return self.available_sections.filter(semesters__contains=semester)
+
 
 class OfferedFor(models.Model):
     "The M2M model of courses and semesters."
@@ -238,15 +252,18 @@ class OfferedFor(models.Model):
 
 class SectionPeriod(models.Model):
     "M2M model of sections and periods"
-    period = models.ForeignKey(Period, related_name='course_times')
-    section = models.ForeignKey(Section, related_name='course_times')
+    period = models.ForeignKey(Period, related_name='section_times')
+    section = models.ForeignKey(Section, related_name='section_times')
 
+    # we could do M2M here, but the other data here is related, and it's just easier have one link
+    # per semeter...
+    semester = models.ForeignKey(Semester, related_name='section_times')
     instructor = models.CharField(max_length=150, blank=True)
     location = models.CharField(max_length=150, blank=True)
     kind = models.CharField(max_length=75, help_text="The kind of meeting time (eg - lab, recitation, lecture, etc.)")
 
     class Meta:
-        unique_together = ('period', 'section')
+        unique_together = ('period', 'section', 'semester')
         verbose_name = 'Section Period'
         verbose_name_plural = 'Section Periods'
 
