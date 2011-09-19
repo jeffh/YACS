@@ -3,7 +3,7 @@
 Generally, all instances should be read only.
 """
 from datetime import time
-from ..utils import safeInt
+from ..utils import safeInt, FrozenDict
 
 class ReadOnly(object):
     """All attributes that are prefixed with a single underscore will have
@@ -15,7 +15,15 @@ class ReadOnly(object):
     """
     def __getattr__(self, key):
         if not key.startswith('_') and not key.endswith('__'):
-            return getattr(self, '_'+key)
+            value = getattr(self, '_'+key)
+
+            the_type = type(value)
+            if the_type == list:
+                return tuple(value)
+            if the_type == dict and type_type != FrozenDict:
+                return FrozenDict(the_type)
+
+            return value
         raise AttributeError, "type object %r has no attribute %r" % (
             self.__class__.__name__, key
         )
