@@ -24,4 +24,7 @@ urlpatterns = patterns('',
 
     # computation APIs
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/schedules/', schedule_handler, defaults, name='scheduler'),
+    # the old API computed schedules on every request... quite slow!
+    # the new one caches to the database to avoid repeated schedule computations
+    #url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/old-schedules/', schedule_handler, defaults, name='scheduler'),
 )

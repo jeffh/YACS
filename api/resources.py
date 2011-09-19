@@ -7,3 +7,5 @@ bulk_course_handler = Resource(handlers.BulkCourseHandler)
 course_handler = Resource(handlers.CourseHandler)
 section_handler = Resource(handlers.SectionHandler)
 schedule_handler = Resource(handlers.ScheduleHandler)
+
+old_schedule_handler = Resource(handlers.OldScheduleHandler)
