@@ -10,7 +10,7 @@ urlpatterns = patterns('',
     ## Data APIs ##
     # narrowing by semester
     url(r'^$', semester_handler, defaults, name='semesters'),
-    url(r'^(?P<year>\d{4})/$', semester_handler, defaults, name='courses-by-year'),
+    url(r'^(?P<year>\d{4})/$', semester_handler, defaults, name='semesters-by-year'),
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/$', bulk_course_handler, defaults, name='courses-by-semester'),
     # or courses
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/(?P<cid>\d+)/$', course_handler, defaults, name='course-by-id'),

@@ -1,5 +1,6 @@
 from django.utils.importlib import import_module
 from django.db import models
+from timetable.courses.managers import SemesterBasedManager
 from timetable.courses.utils import options, capitalized
 from django.core.exceptions import ValidationError
 from django.db.models import F
@@ -31,6 +32,8 @@ class Department(models.Model):
     name = models.CharField(max_length=200, blank=True, default='')
     code = models.CharField(max_length=50, unique=True)
     semesters = models.ManyToManyField(Semester, through='SemesterDepartment', related_name='departments')
+
+    objects = SemesterBasedManager()
 
     def __unicode__(self):
         return u"%s (%s)" % (self.name, self.code)
@@ -156,6 +159,8 @@ class Section(models.Model):
     seats_taken = models.IntegerField()
     seats_total = models.IntegerField()
 
+    objects = SemesterBasedManager()
+
     #class Meta:
     #    unique_together = ('number', 'course')
 
@@ -199,6 +204,8 @@ class Course(models.Model):
     max_credits = models.IntegerField()
 
     grade_type = models.CharField(max_length=150, blank=True, default='')
+
+    objects = SemesterBasedManager()
 
     class Meta:
         unique_together = ('department', 'number')

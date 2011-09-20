@@ -18,6 +18,7 @@ def escape(path, quote=False):
     return str(path).replace(' ', '\\ ')
 
 def normalize(*path, **kwargs):
+    "Joins paths and then normalizes the path."
     if len(path) == 1 and type(path[0]) in (list, tuple):
         path = tuple(path[0])
     root = kwargs.get('root', '')

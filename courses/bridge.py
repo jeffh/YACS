@@ -33,9 +33,13 @@ class RPIImporter(object):
         for filename in get_files():
             name = self.FILE_RE.finditer(filename).next().groups()[0]
             semester = self.semesters.get(name + '.xml')
-            # if latest semester or newer semseter than what's in the database
-            if (not semester) or (semester == self.latest_semester):
+            # if latest semester or newer semester
+            if (not semester) or semester == self.latest_semester:
                 catalog = get_catalog(filename)
+
+                if semester == self.latest_semester and catalog.datetime <= self.latest_semester.date_updated:
+                    continue # already up-to-date
+
                 semester_obj, created = Semester.objects.get_or_create(
                     year=catalog.year,
                     month=catalog.month,

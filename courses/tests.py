@@ -11,22 +11,22 @@ from timetable.courses import utils
 
 class CapitalizationTest(TestCase):
     def test_capitalization_for_all_lowercase(self):
-        self.assertEqual(capitalized("foobar"), "Foobar")
+        self.assertEqual(utils.capitalized("foobar"), "Foobar")
 
     def test_capitalization_for_all_uppercase(self):
-        self.assertEqual(capitalized("FOOBAR"), "Foobar")
+        self.assertEqual(utils.capitalized("FOOBAR"), "Foobar")
 
     def test_capitalization_for_mixed_case(self):
-        self.assertEqual(capitalized("fOoBaR"), "Foobar")
+        self.assertEqual(utils.capitalized("fOoBaR"), "Foobar")
 
     def test_capitalization_for_letter(self):
-        self.assertEqual(capitalized("a"), "A")
+        self.assertEqual(utils.capitalized("a"), "A")
 
     def test_capitalization_for_blank(self):
-        self.assertEqual(capitalized(""), "")
+        self.assertEqual(utils.capitalized(""), "")
 
     def test_capitalization_spaces(self):
-        self.assertEqual(capitalized("   "), "   ")
+        self.assertEqual(utils.capitalized("   "), "   ")
 
 class OptionsTest(TestCase):
     def test_returning_a_generator(self):

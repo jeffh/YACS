@@ -16,15 +16,7 @@ class DepartmentHandler(ReadAPIBaseHandler):
     model = courses.Department
 
     def read(self, request, version, year=None, month=None):
-        qs = self.model.objects.all()
-
-        if year:
-            qs = qs.filter(semesters__year__contains=year).distinct()
-        
-        if month:
-            qs = qs.filter(semesters__month__contains=month).distinct()
-        
-        return qs
+        return self.model.objects.filter_by_semester(year, month).distinct()
 
 class SemesterHandler(ReadAPIBaseHandler):
     model = courses.Semester
@@ -46,7 +38,7 @@ class BulkCourseHandler(ReadAPIBaseHandler):
     fields = ('id', 'name', 'min_credits', 'max_credits', 'number')
 
     def read(self, request, version, code=None, number=None, year=None, month=None, name=None, crns=None):
-        qs = self.model.objects.all()
+        qs = self.model.objects.filter_by_semester(year, month)
 
         # filter by CRNs
         if request.GET.get('crns'):
@@ -59,14 +51,6 @@ class BulkCourseHandler(ReadAPIBaseHandler):
 
         if number:
             qs = qs.filter(number=number)
-
-        # filter by semester
-
-        if year:
-            qs = qs.filter(semesters__year__contains=year)
-        
-        if month:
-            qs = qs.filter(semesters__month__contains=month)
 
         # filter by name
 
@@ -86,10 +70,18 @@ class CourseHandler(BulkCourseHandler):
 
     def read(self, request, version, cid=None, **kwargs):
         qs = super(CourseHandler, self).read(request, version, **kwargs).select_related()
-        semester_obj = courses.Semester.objects.get(year=kwargs['year'], month=kwargs['month'])
+        try:
+            semester_obj = courses.Semester.objects.get(year=kwargs['year'], month=kwargs['month'])
+        except:
+            return rc.NOT_FOUND
         if cid:
             qs = qs.filter(id=cid)
-        obj = qs.get()
+        
+        try:
+            obj = qs.get()
+        except self.model.DoesNotExist:
+            return rc.NOT_FOUND
+        
         obj.sections_for_semester = obj.sections.filter(semesters=semester_obj)
         return obj
 
@@ -102,13 +94,7 @@ class SectionHandler(ReadAPIBaseHandler):
     )
 
     def read(self, request, version, cid=None, number=None, crn=None, year=None, month=None):
-        qs = self.model.objects
-
-        if year is not None:
-            qs = qs.filter(semesters__year__contains=year)
-        
-        if month is not None:
-            qs = qs.filter(semesters__month__contains=month)
+        qs = self.model.objects.filter_by_semester(year, month)
 
         if cid is not None:
             qs = qs.filter(course__id=cid)
@@ -119,8 +105,8 @@ class SectionHandler(ReadAPIBaseHandler):
         if crn is not None:
             qs = qs.filter(crn=crn)
 
-        if qs == self.model.objects:
-            raise rc.BAD_REQUEST
+        if not (cid or number or crn):
+            return rc.BAD_REQUEST
         
         objects = []
         for section in qs.select_related().distinct():

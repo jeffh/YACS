@@ -138,10 +138,10 @@ INSTALLED_APPS = (
     #'djcelery',
     #'djkombu',
     'django_bcrypt',
-    'fixture_generator',
     # local apps
     'timetable.courses',
     'timetable.scheduler',
+    'timetable.api',
 )
 
 if DEBUG:

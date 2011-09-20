@@ -11,7 +11,7 @@ class ScheduleManager(Manager):
         ).select_related('course').distinct()
 
         selected_courses = {}
-        for section in queryset:
+        for section in sections:
             selected_courses[section.course] = selected_courses.get(section.course, []) + [section]
         
         return self._create_from_schedules(compute_schedules(selected_courses), semester)
