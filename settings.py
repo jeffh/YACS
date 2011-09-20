@@ -1,17 +1,13 @@
 # Django settings for timetable project.
 import os
 import sys
-import djcelery
 from datetime import timedelta
-from celery.schedules import schedule
 
 # setup
 relative = lambda *x: os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
 
 if relative('lib') not in sys.path:
     sys.path.append(relative('lib'))
-
-djcelery.setup_loader()
 
 # end setup
 
@@ -26,11 +22,11 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'sqlite3.db',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'timetable',                      # Or path to database file if using sqlite3.
+        'USER': 'timetable',                      # Not used with sqlite3.
+        'PASSWORD': 'thereisn0sp00n',                  # Not used with sqlite3.
+        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
@@ -138,7 +134,8 @@ INSTALLED_APPS = (
     # third-party apps
     'south',
     'django_extensions',
-    'djcelery',
+    #'djcelery',
+    #'djkombu',
     'django_bcrypt',
     'fixture_generator',
     # local apps
@@ -148,10 +145,8 @@ INSTALLED_APPS = (
 
 if DEBUG:
     DJANGO_LOGGING = relative('logs', 'django.log')
-    #CELERYD_LOG_FILE = relative('logs', 'celery.log')
 else:
     DJANGO_LOGGING = os.path.join('var', 'log', 'timetable', 'django.log')
-    CELERYD_LOG_FILE = os.path.join('var', 'log', 'timetable', 'celery.log')
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -210,48 +205,6 @@ LOGGING = {
 COURSES_COLLEGE_NAME = 'Rensselaer'
 COURSES_COLLEGE_SHORT_NAME = 'RPI'
 COURSES_COLLEGE_PARSER = 'timetable.courses.bridge.import_rpi'
-
-# ==== CELERY CONFIG ====
-
-# amqplib, pika, redis, beanstalk, sqlalchemy, django, mongodb, couchdb
-BROKER_BACKEND = 'redis'
-BROKER_HOST = "localhost"
-BROKER_PORT = 6379
-BROKER_VHOST = '0'
-#BROKER_USER = "django"
-#BROKER_PASSWORD = "django_development"
-#BROKER_VHOST = "django_vhost"
-
-# disables async results
-CELERY_IGNORE_RESULT = False
-# database, cache, mongodb, redis, tyrant, or amqp
-CELERY_RESULT_BACKEND = "redis"
-# configure redis backend
-CELERY_REDIS_HOST = BROKER_HOST
-CELERY_REDIS_PORT = BROKER_PORT
-CELERY_REDIS_DB = 0
-# when results are automatically deleted?
-CELERY_TASK_RESULT_EXPIRES = timedelta(days=7)
-
-#CELERY_IMPORTS = () # full module paths to tasks.py
-# Worker settings
-# If you're doing mostly I/O you can have more processes,
-# but if mostly spending CPU, try to keep it close to the
-# number of CPUs on your machine. If not set, the number of CPUs/cores
-# available will be used.
-CELERYD_CONCURRENCY = 1
-
-CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-
-# periodic schedules / cron jobs
-CELERYBEAT_SCHEDULE = {
-    # follows periodic intervals defined in feeds, so hitting this tasks as
-    # a lot won't actually hit each feed.
-    #'source-checker': {
-    #    'task': 'source.tasks.update_sources',
-    #    'schedule': schedule(timedelta(minutes=1)),
-    #},
-}
 
 # ==== Django BCrypt ====
 # The number of rounds determines the complexity of the bcrypt algorithm.
