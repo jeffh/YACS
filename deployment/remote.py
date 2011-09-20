@@ -12,7 +12,9 @@ def _flags(kwargs, options):
             sb.append(options[name])
     return tuple(sb)
 
-def escape(path):
+def escape(path, quote=False):
+    if quote:
+        return '"%s"' % path.replace('"', '\\"')
     return str(path).replace(' ', '\\ ')
 
 def normalize(*path, **kwargs):

@@ -1,5 +1,6 @@
 from fabric.api import roles, env
 from fabric.context_managers import cd, prefix
+from fabric.contrib.files import upload_template
 
 import os
 import sys
@@ -9,11 +10,24 @@ from tempfile import NamedTemporaryFile
 from deployment.remote import exists, run, move, unzip, put, mkdir, phase_out, remove, which, normalize
 from deployment.config import DeploymentConfig
 from deployment.packaging import zipfiles, get_project_files, directory
-from deployment.commands import pip, python, virtualenv
+from deployment.commands import Command
+
+aptget = Command('apt-get', sudo=True)
+python = Command('python2.7',
+    sudo_install=lambda *_: aptget.install('-y', 'python-all')
+)
+pip = Command('pip-2.7',
+    install=lambda *_: run('curl', 'https://raw.github.com/pypa/pip/master/contrib/get-pip.py', '|',
+        python.path, '-')
+)
+virtualenv = Command('virtualenv',
+    install=lambda *_: pip.install('virtualenv')
+)
+
 
 env.use_distribute = True
 env.use_virtualenv = True
-env.host_type = 'standalone'
+env.apache_restart = ('apache2', 'restart')
 
 PROJECT_FILES = [
     directory('api', filter='*.py'),
@@ -23,12 +37,15 @@ PROJECT_FILES = [
     directory('lib', 'rpi_courses', filter='*.py'),
     directory('static', filter='*.*'),
     directory('templates', filter='*.*'),
+    directory('settings', filter='*.py'),
     '__init__.py',
     'manage.py',
     'requirements.txt',
-    'settings.py',
     'urls.py',
 ]
+TEMPLATES = {
+    normalize('settings', 'database_template.py'): normalize('settings', 'database.py')
+}
 
 DEPLOY_FILE = os.path.join('deployment', 'deploy.json')
 
@@ -54,28 +71,25 @@ def webfaction():
 
     env.use_distribute = False
     env.use_virtualenv = False
+    env.apache_restart = ('%s/apache2/bin/restart' % wf_root, )
 
     #mkdir('~/tmp', recursive=True)
 
 
-#@roles('webservers', 'databases', 'clock', 'workers')
+@roles('webservers')
 def new_deploy():
     "Performs the set up of a first deployment, installed all the required software."
     pass
 
-#@roles('webservers', 'databases', 'clock', 'workers')
-def deploy():
+@roles('webservers')
+def deploy(use_pip):
     "Performs updates to servers to update the code bases."
     upload_project()
-    migrate_db()
+    update_environment(use_pip)
+    restart()
 
 def activate_virtualenv_cmd():
     return 'source %s/bin/activate' % deploy_config.virtualenv_name
-
-@roles('webservers')
-def test():
-    if which('pip-2.7'):
-        print "PIP is installed"
 
 @roles('webservers')
 def upload_project():
@@ -104,9 +118,18 @@ def upload_project():
 
         unzip(deploy_config.project_root, 'project.zip', delete=True)
 
+        mkdir((deploy_config.project_root, 'logs'))
+
         # upload settings.py for staging?
+        upload_templates()
 
         backup.delete()
+
+@roles('webservers')
+def upload_templates():
+    with cd(deploy_config.project_root):
+        for src, dest in TEMPLATES.items():
+            upload_template(src, dest, context=deploy_config.deployment_settings, use_jinja=True, backup=False)
 
 @roles('webservers')
 def setup_environment():
@@ -132,22 +155,25 @@ def setup_environment():
 
 
 @roles('webservers')
-def update_environment():
+def update_environment(use_pip=False):
+    use_pip = bool(int(use_pip))
     with cd(deploy_config.project_root):
         if env.use_virtualenv:
-            pip.install(r='requirements.txt', E=deploy_config.virtualenv_name)
+            if use_pip:
+                pip.install(r='requirements.txt', E=deploy_config.virtualenv_name)
 
             with prefix(activate_virtualenv_cmd()):
                 run('python', 'manage.py', 'syncdb')
                 run('python', 'manage.py', 'migrate')
         else:
-            pip.install(r='requirements.txt')
-    migrate_db()
+            if use_pip:
+                pip.install(r='requirements.txt')
+
+            manage_py = python.extend(['manage.py'])
+            manage_py.syncdb()
+            manage_py.migrate()
 
 @roles('webservers')
-def migrate_db():
-    with cd(deploy_config.project_root):
-        manage_py = python.extend(['manage.py'])
-        manage_py.syncdb()
-        manage_py.migrate()
+def restart():
+    run(*env.apache_restart)
 

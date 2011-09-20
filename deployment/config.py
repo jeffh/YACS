@@ -15,7 +15,6 @@ class DeploymentConfig(object):
             env.roledefs = self.roles
         return self
 
-
     @property
     def deployment_settings(self):
         return self.obj[self.mode]
@@ -26,7 +25,7 @@ class DeploymentConfig(object):
         obj = self.deployment_settings
         for host in obj['hosts']:
             try:
-                results.append(self.servers[obj['hosts'][host]])
+                results.append(self.servers[host])
             except KeyError:
                 print >> sys.stderr, "(%(mode)s) Unknown server %(server)r" % {
                     'mode': self.mode,
@@ -62,3 +61,8 @@ class DeploymentConfig(object):
     @property
     def virtualenv_name(self):
         return self.deployment_settings['virtualenv']
+
+    @property
+    def databases(self):
+        return self.deployment_settings['databases']
+

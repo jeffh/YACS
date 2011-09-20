@@ -91,17 +91,3 @@ class Command(object):
 					raise TypeError("Command %r does not exist on the system." % self.__name)
 
 		return run(*self.get_command(args, kwargs), sudo=self.__use_sudo)
-
-aptget = Command('apt-get', sudo=True)
-
-python = Command('python2.7',
-    sudo_install=lambda *_: aptget.install('-y', 'python-all')
-)
-pip = Command('pip-2.7',
-    install=lambda *_: run('curl', 'https://raw.github.com/pypa/pip/master/contrib/get-pip.py', '|',
-    	python.path, '-')
-)
-virtualenv = Command('virtualenv',
-	install=lambda *_: pip.install('virtualenv')
-)
-

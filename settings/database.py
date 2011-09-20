@@ -1,4 +1,3 @@
-from timetable.settings.base import *
 
 DATABASES = {
     'default': {
