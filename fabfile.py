@@ -18,6 +18,7 @@ env.host_type = 'standalone'
 PROJECT_FILES = [
     directory('api', filter='*.py'),
     directory('courses', filter='*.py'),
+    directory('scheduler', filter='*.py'),
     directory('lib', 'csp', filter='*.py'),
     directory('lib', 'rpi_courses', filter='*.py'),
     directory('static', filter='*.*'),
@@ -65,7 +66,8 @@ def new_deploy():
 #@roles('webservers', 'databases', 'clock', 'workers')
 def deploy():
     "Performs updates to servers to update the code bases."
-    pass
+    upload_project()
+    migrate_db()
 
 def activate_virtualenv_cmd():
     return 'source %s/bin/activate' % deploy_config.virtualenv_name
@@ -102,7 +104,7 @@ def upload_project():
 
         unzip(deploy_config.project_root, 'project.zip', delete=True)
 
-        # upload settings.py for remote
+        # upload settings.py for staging?
 
         backup.delete()
 
@@ -139,8 +141,13 @@ def update_environment():
                 run('python', 'manage.py', 'syncdb')
                 run('python', 'manage.py', 'migrate')
         else:
-            #pip.install(r='requirements.txt')
-            manage_py = python.extend(['manage.py'])
-            manage_py.syncdb()
-            manage_py.migrate()
+            pip.install(r='requirements.txt')
+    migrate_db()
+
+@roles('webservers')
+def migrate_db():
+    with cd(deploy_config.project_root):
+        manage_py = python.extend(['manage.py'])
+        manage_py.syncdb()
+        manage_py.migrate()
 
