@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<meta name="description" content="The fastest way to create course schedules">
+<meta name="author" content="Jeff Hui">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1">
+
+<!-- For less capable mobile browsers
+<link rel="stylesheet" media="handheld" href="css/handheld.css?v=1">  -->
+
+<!-- For all browsers -->
+<link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/style.css?v=1">
+<link rel="stylesheet" media="print" href="{{ STATIC_URL }}css/print.css?v=1">
+<!-- For progressively larger displays -->
+<link rel="stylesheet" media="only screen and (min-width: 480px)" href="{{ STATIC_URL }}css/480.css?v=1">
+<link rel="stylesheet" media="only screen and (min-width: 768px)" href="{{ STATIC_URL }}css/768.css?v=1">
+<link rel="stylesheet" media="only screen and (min-width: 992px)" href="{{ STATIC_URL }}css/992.css?v=1">
+<link rel="stylesheet" media="only screen and (min-width: 1382px)" href="{{ STATIC_URL }}css/1382.css?v=1">
+<!-- For Retina displays -->
+<link rel="stylesheet" media="only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2)" href="{{ STATIC_URL }}css/2x.css?v=1">
+
+<!-- JavaScript at bottom except for Modernizr -->
+<script src="{{ STATIC_URL }}js/libs/modernizr-1.7.min.js"></script>
+
+<!-- For iPhone 4 -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ STATIC_URL }}img/h/apple-touch-icon.png">
+<!-- For iPad 1-->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ STATIC_URL }}img/m/apple-touch-icon.png">
+<!-- For iPhone 3G, iPod Touch and Android -->
+<link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}img/l/apple-touch-icon-precomposed.png">
+<!-- For Nokia -->
+<link rel="shortcut icon" href="{{ STATIC_URL }}img/l/apple-touch-icon.png">
+<!-- For everything else -->
+<link rel="shortcut icon" href="{{ STATIC_URL }}favicon.ico">
+
+<!--iOS. Delete if not required -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-startup-image" href="{{ STATIC_URL }}img/splash.png">
+
+<!--Microsoft. Delete if not required -->
+<meta http-equiv="cleartype" content="on">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+<!-- http://t.co/y1jPVnT 
+<link rel="canonical" href="/">
+-->
+{% endblock head %}
+
+
+{% block javascript %}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.js"></script>
+<script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.6.4.min.js">\x3C/script>')</script>
+<!-- Scripts -->
+<script src="js/plugins.js"></script>
+<script src="js/script.js"></script>
+
+<!--[if (lt IE 9) & (!IEMobile)]>
+<script src="js/libs/DOMAssistantCompressed-2.8.js"></script>
+<script src="js/libs/selectivizr-1.0.1.js"></script>
+<script src="js/libs/respond.min.js"></script>
+<![endif]-->
+
+<!-- http://t.co/HZe9oJ4
+<script>
+var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']]; // Change UA-XXXXX-X to be your site's ID
+(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
+g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+s.parentNode.insertBefore(g,s)}(document,'script'));
+</script>
+-->
+<noscript>Your browser does not support JavaScript!</noscript>
+{% endblock javascript %}

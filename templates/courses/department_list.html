@@ -1,0 +1,27 @@
+{% extends 'site_base.html' %}
+
+{% block content %}
+<div id="departments">
+<h2>Departments</h2>
+<ul>
+	{% for department in departments %}
+	<li><a href="">{% firstof department.name department.code %}</a></li>
+	{% endfor %}
+</ul>
+</div>
+{% endblock content %}
+
+{% block sidebar %}
+<div id="selected">
+<h2>Selected Courses</h2>
+{% if selected_courses %}
+	<ul>
+		{% for courses in selected_courses %}
+		<li>{{ courses.id }}</li>
+		{% endfor %}
+	</ul>
+{% else %}
+	<p>No selected courses</p>
+{% endif %}
+</div>
+{% endblock sidebar %}
