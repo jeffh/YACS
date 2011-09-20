@@ -5,7 +5,8 @@ from timetable.courses.utils import options, capitalized
 from django.core.exceptions import ValidationError
 from django.db.models import F
 
-__all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting', 'Course', 'OfferedFor', 'SectionPeriod']
+__all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting',
+    'Course', 'OfferedFor', 'SectionPeriod']
 
 class Semester(models.Model):
     """Represents the semester / quarter for a college. Courses may not be offered every semester.

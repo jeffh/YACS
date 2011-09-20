@@ -1,0 +1,1 @@
+# required to have to be picked up by django's INSTALLED_APPS
