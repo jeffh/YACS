@@ -37,7 +37,9 @@ class Department(models.Model):
     objects = SemesterBasedManager()
 
     def __unicode__(self):
-        return u"%s (%s)" % (self.name, self.code)
+        if self.name:
+            return u"%s (%s)" % (self.name, self.code)
+        return self.code
 
 
 class Period(models.Model):
@@ -229,6 +231,14 @@ class Course(models.Model):
         if self.min_credits == self.max_credits:
             return self.min_credits
         return (self.min_credits + self.max_credits) / 2.0
+
+    @property
+    def credits_display(self):
+        "Returns the number of credits the course for those needy humans."
+        if self.min_credits == self.max_credits:
+            return "%d credit%s" % (self.min_credits, '' if self.min_credits == 1 else 's')
+        return "%d - %d credits" % (self.min_credits, self.max_credits)
+
 
     @credits.setter
     def credits(self, value):

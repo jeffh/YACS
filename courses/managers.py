@@ -8,5 +8,8 @@ class SemesterBasedManager(Manager):
         
         if month:
             qs = qs.filter(semesters__month__contains=month)
+
+        if year or month:
+        	qs = qs.distinct()
         
         return qs

@@ -1,0 +1,26 @@
+
+<div id="selected">
+<h2>Selected Courses</h2>
+{% if selected_courses %}
+	<form action="{% url select-courses sem_year,sem_month %}?deselect=1" method="post">
+		{% csrf_token %}
+		<table id="courses">
+			{% for course in selected_courses %}
+			<tr>
+				<td class="checkbox"><input type="checkbox" id="selected_course_{{ course.id }}" name="selected_course_{{ course.id }}" /></td>
+				<td class="number"><label for="selected_course_{{ course.id }}">{{ course.number }}</label></td>
+				<td class="name"><label for="selected_course_{{ course.id }}">{{ course.name }}</label></td>
+				<td class="name"><label for="selected_course_{{ course.id }}">{{ course.credits_display }}</label></td>
+				<td></td>
+			</tr>
+			{% endfor %}
+		</table>
+		<p class="actions">
+			<input type="hidden" name="redirect_to" value="{{ request.path }}" />
+			<input type="submit" value="Remove" />
+		</p>
+	</form>
+{% else %}
+	<p>No selected courses</p>
+{% endif %}
+</div>

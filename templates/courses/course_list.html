@@ -1,0 +1,45 @@
+{% extends 'site_base.html' %}
+
+{% block header %}
+{{ block.super }}
+
+<p>
+	<a href="{% url departments sem_year,sem_month %}">&larr; Departments</a>
+</p>
+{% endblock header %}
+
+{% block content %}
+<div id="courses">
+<h2>Courses for {{ department }}</h2>
+{% include "courses/_search_courses.html" %}
+<form action="{% url select-courses sem_year,sem_month %}" method="post">
+	{% csrf_token %}
+	<p class="actions">
+		<input type="hidden" name="redirect_to" value="{{ request.path }}" />
+		<input type="submit" value="Add Selected" />
+	</p>
+	<table id="courses">
+		{% for course in courses %}
+		<tr>
+			<td class="checkbox"><input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}" /></td>
+			<td class="number"><label for="course_{{ course.id }}">{{ course.number }}</label></td>
+			<td class="name"><label for="course_{{ course.id }}">{{ course.name }}</label></td>
+			<td class="credits">
+				{% if course.credits != 4 %}
+				<label for="course_{{ course.id }}">{{ course.credits_display }}</label>
+				{% endif %}
+			</td>
+			<td></td>
+		</tr>
+		{% endfor %}
+	</table>
+	<p class="actions">
+		<input type="submit" value="Add Selected" />
+	</p>
+</form>
+</div>
+{% endblock content %}
+
+{% block sidebar %}
+{% include 'courses/_selected_courses.html' %}
+{% endblock sidebar %}
