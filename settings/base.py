@@ -111,6 +111,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -147,6 +148,7 @@ INSTALLED_APPS = (
     'django_extensions',
     #'djcelery',
     #'djkombu',
+    'debug_toolbar',
     'django_bcrypt',
     # local apps
     'timetable.courses',
@@ -223,3 +225,16 @@ COURSES_COLLEGE_PARSER = 'timetable.courses.bridge.import_rpi'
 #
 # This setting can be changed at any time without invalidating previously-generated hashes.
 BCRYPT_LOG_ROUNDS = 12
+
+# ==== Django Debug Toolbar ====
+INTERNAL_IPS = ('127.0.0.1',)
+
+def debug_toolbar_callback(request):
+    return (request.META['REMOTE_ADDR'] in INTERNAL_IPS) or request.user.is_staff
+
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': DEBUG,
+    'SHOW_TOOLBAR_CALLBACK': debug_toolbar_callback,
+    'HIDE_DJANGO_SQL': False,
+}
+
