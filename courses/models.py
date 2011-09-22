@@ -36,6 +36,9 @@ class Department(models.Model):
 
     objects = SemesterBasedManager()
 
+    class Meta:
+        ordering = ['code']
+
     def __unicode__(self):
         if self.name:
             return u"%s (%s)" % (self.name, self.code)
@@ -164,6 +167,9 @@ class Section(models.Model):
 
     objects = SemesterBasedManager()
 
+    class Meta:
+        ordering = ['number']
+
     #class Meta:
     #    unique_together = ('number', 'course')
 
@@ -175,8 +181,12 @@ class Section(models.Model):
         return self.number == self.STUDY_ABROAD
 
     @property
-    def seats_available(self):
-        return self.seats_taken < self.seats_total
+    def is_full(self):
+        return self.seats_left <= 0
+
+    @property
+    def seats_left(self):
+        return max(self.seats_total - self.seats_taken, 0)
 
     def periods_for_semester(self, **semester_filter_options):
         options = {}

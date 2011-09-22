@@ -1,6 +1,15 @@
-<form action="" method="get">
+{# This template partial is used in course_list and department_list #}
+<form action="{% url search-all-courses sem_year,sem_month %}" method="get">
 	<p>
-		<input type="search" placeholder="Search Courses" class="searchbox" />
+		<select name="d" id="d">
+			<option value="all"{% if query_department == 'all' %} selected="selected"{% endif %}>All</option>
+			{% for department in departments %}
+			<option value="{{ department.code }}"{% if query_department == department.code %} selected="selected"{% endif %}>
+			{% firstof department.name department.code %}
+			</option>
+			{% endfor %}
+		</select>
+		<input type="search" placeholder="Search Courses" class="searchbox" name="q" value="{{ query }}" />
 		<input type="submit" value="Search" />
 	</p>
 </form>

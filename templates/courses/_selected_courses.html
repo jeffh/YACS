@@ -1,23 +1,58 @@
+{# This template partial is used in course_list and department_list #}
+{% load courses %}
 
 <div id="selected">
-<h2>Selected Courses</h2>
+<h2><a name="selected">Selected Courses</a></h2>
 {% if selected_courses %}
-	<form action="{% url select-courses sem_year,sem_month %}?deselect=1" method="post">
+	<form action="{% url deselect-courses sem_year,sem_month %}" method="post">
 		{% csrf_token %}
 		<table id="courses">
 			{% for course in selected_courses %}
-			<tr>
-				<td class="checkbox"><input type="checkbox" id="selected_course_{{ course.id }}" name="selected_course_{{ course.id }}" /></td>
+			{% with seats_left_for_course=course|seats_left_for_course:selected_sections %}
+			<tr class="course">
+				<td class="checkbox"><input type="checkbox" id="selected_course_{{ course.id }}" name="selected_course_{{ course.id }}" checked="checked" /></td>
+				<td class="department"><label for="selected_course_{{ course.id }}">{{ course.department.code }}</label></td>
 				<td class="number"><label for="selected_course_{{ course.id }}">{{ course.number }}</label></td>
 				<td class="name"><label for="selected_course_{{ course.id }}">{{ course.name }}</label></td>
 				<td class="name"><label for="selected_course_{{ course.id }}">{{ course.credits_display }}</label></td>
-				<td></td>
+				<td class="seats_left">
+					{{ seats_left_for_course }} seats left
+				</td>
 			</tr>
+			<tr>
+				<td colspan="2"></td>
+				<td colspan="2">
+					{% with sections=selected_sections|sections_for:course %}
+						{% if sections %}
+							<ul>
+								{% for section in sections %}
+									<li class="section{% if section.is_full %} full{% endif %}">
+										<input type="checkbox" id="selected_course_{{ course.id }}_{{ section.crn }}" name="selected_course_{{ course.id }}_{{ section.crn }}"{% if section.is_full %} disabled="disabled"{% else %} checked="checked"{% endif %} />
+										<label for="selected_course_{{ course.id }}_{{ section.crn }}">
+											Section {{ section.number }} ({{ section.crn }}) -
+											{% if not section.is_full %}
+											{{ section.seats_left }} seat{{ section.seats_left|pluralize }} left
+											{% else %}
+											No seats lefts
+											{% endif %}
+										</label>
+									</li>
+								{% endfor %}
+							</ul>
+						{% else %}
+							There are no listed sections.
+						{% endif %}
+					{% endwith %}
+				</td>
+			</tr>
+			{% endwith %}
 			{% endfor %}
 		</table>
+		<p>Total Credits: {{ selected_courses|sum_credits }}</p>
 		<p class="actions">
-			<input type="hidden" name="redirect_to" value="{{ request.path }}" />
-			<input type="submit" value="Remove" />
+			<input type="hidden" name="redirect_to" value="{{ request.get_full_path }}" />
+			<input type="submit" value="Remove Unchecked" />
+			or <a href="{% url schedules sem_year,sem_month %}">View Schedules</a>
 		</p>
 	</form>
 {% else %}

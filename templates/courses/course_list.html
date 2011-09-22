@@ -1,27 +1,43 @@
+{# this template is also reused for search results #}
 {% extends 'site_base.html' %}
+
+{% load courses %}
 
 {% block header %}
 {{ block.super }}
 
 <p>
 	<a href="{% url departments sem_year,sem_month %}">&larr; Departments</a>
+	<a href="#selected">Jump to selected courses</a>
 </p>
 {% endblock header %}
 
 {% block content %}
 <div id="courses">
-<h2>Courses for {{ department }}</h2>
+
+<h2>
+{% if search_results %}
+Courses for {{ department }}
+{% else %}
+Search Results
+{% endif %}
+</h2>
+
 {% include "courses/_search_courses.html" %}
 <form action="{% url select-courses sem_year,sem_month %}" method="post">
 	{% csrf_token %}
 	<p class="actions">
-		<input type="hidden" name="redirect_to" value="{{ request.path }}" />
+		<input type="hidden" name="redirect_to" value="{{ request.get_full_path }}" />
 		<input type="submit" value="Add Selected" />
 	</p>
 	<table id="courses">
 		{% for course in courses %}
-		<tr>
+		{% with seats_left_for_course=course|seats_left_for_course:sections %}
+		<tr class="course{% if seats_left_for_course == 0 %} full{% endif %}">
 			<td class="checkbox"><input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}" /></td>
+			{% if search_results and query_department == 'all' %}
+			<td class="dept"><label for="course_{{ course.id }}">{{ course.department.code }}</label></td>
+			{% endif %}
 			<td class="number"><label for="course_{{ course.id }}">{{ course.number }}</label></td>
 			<td class="name"><label for="course_{{ course.id }}">{{ course.name }}</label></td>
 			<td class="credits">
@@ -29,8 +45,16 @@
 				<label for="course_{{ course.id }}">{{ course.credits_display }}</label>
 				{% endif %}
 			</td>
+			<td class="seats-left">
+				{% if seats_left_for_course < 30 %}
+				<label for="course_{{ course.id }}">
+				{{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
+				</label>
+				{% endif %}
+			</td>
 			<td></td>
 		</tr>
+		{% endwith %}
 		{% endfor %}
 	</table>
 	<p class="actions">

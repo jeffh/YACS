@@ -235,19 +235,19 @@ font-size : 1em; /* 16 / 16 = 1 */ }
 
 /* 4.LINKS */
 
-a, 
-a:visited {
+a:link, 
+a:link:visited {
 outline : none;
 color : rgb(23,119,175);
 text-decoration : none; }
  
-a:hover { 
+a:link:hover { 
 outline : none;
 color : rgb(40,40,40); 
 text-decoration : underline; }
  
-a:active, 
-a:focus { 
+a:link:active, 
+a:link:focus { 
 outline : none;
 color : rgb(0,0,0); }
 
