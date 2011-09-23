@@ -84,9 +84,9 @@ def test(app=None):
             with lcd('lib'):
                 local('nosetests')
             return
-        local('python manage.py test ' + app)
+        local('python manage.py test --failfast ' + app)
         return
-    local('python manage.py test api courses scheduler')
+    local('python manage.py test --failfast api courses scheduler')
     with lcd('lib'):
         local('nosetests')
     return
