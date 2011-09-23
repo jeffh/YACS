@@ -70,7 +70,7 @@ class Period(models.Model):
         unique_together = ('start', 'end', 'days_of_week_flag')
 
     def __unicode__(self):
-        return u"Period %s to %s on %s" % (self.start_time, self.end_time, ', '.join(self.days_of_week))
+        return u"%s to %s on %s" % (self.start_time, self.end_time, ', '.join(self.days_of_week))
 
     def _validate_time(self, value, name):
         s = str(value)
@@ -91,7 +91,7 @@ class Period(models.Model):
 
     @property
     def end_time(self):
-        return self.end_.strftime("%H:%M")
+        return self.end.strftime("%H:%M")
 
     @property
     def is_to_be_announced(self):
@@ -102,7 +102,7 @@ class Period(models.Model):
         if self == period:
             return True
         days = self.days_of_week_flag & period.days_of_week_flag
-        return days > 0 and (
+        return days and (
             (self.start <= period.start <= self.end) or \
             (self.start <= period.end <= self.end) or \
             (period.start <= self.start <= period.end) or \
@@ -301,7 +301,7 @@ class SectionPeriod(models.Model):
         verbose_name_plural = 'Section Periods'
 
     def __unicode__(self):
-        return "%s holds %s during %r at %s for section %s" % (self.instructor, self.kind, '', self.location, self.section)
+        return "%s holds %s during %r at %s for section %s" % (self.instructor, self.kind, self.period, self.location, self.section)
 
     def conflicts_with(self, section_period):
         "Returns True if times conflict with the given section period."
