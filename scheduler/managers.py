@@ -145,6 +145,7 @@ class ScheduleManager(Manager):
             transaction.commit()
 
     """
+    Old method of insertion... very slow
     def _create_from_schedules(self, schedules, semester):
         with transaction.commit_manually():
             from timetable.scheduler import models

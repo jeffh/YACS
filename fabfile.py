@@ -1,5 +1,5 @@
-from fabric.api import roles, env
-from fabric.context_managers import cd, prefix
+from fabric.api import roles, env, local
+from fabric.context_managers import cd, prefix, lcd
 from fabric.contrib.files import upload_template
 
 import os
@@ -75,6 +75,25 @@ def webfaction():
 
     #mkdir('~/tmp', recursive=True)
 
+def test(app=None):
+    """Returns all tests in lib and custom django apps. Optionally accepts specific apps to test.
+    If lib is provided as app, only the lib directory is tested.
+    """
+    if app is not None:
+        if app == 'lib':
+            with lcd('lib'):
+                local('nosetests')
+            return
+        local('python manage.py test ' + app)
+        return
+    local('python manage.py test api courses scheduler')
+    with lcd('lib'):
+        local('nosetests')
+    return
+
+def loc():
+    "Returns the number of lines of all source files, excluding migrations."
+    local('find -E . -iregex ".+/[^0][^/]+\.(py|html|json)$" | xargs wc -l')
 
 @roles('webservers')
 def new_deploy():
