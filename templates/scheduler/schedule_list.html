@@ -1,0 +1,23 @@
+{% extends 'site_base.html' %}
+
+
+{% block header %}
+{{ block.super }}
+<h2>Schedules</h2>
+{% endblock header %}
+
+{% block content %}
+<h2>Schedules</h2>
+{% for s in schedules %}
+<p>{{ s.id }}</p>
+<h3>Sections</h3>
+	{% for sec in s.all_sections %}
+		<p>{{ sec }}</p>
+		<h3>Periods</h3>
+		{% for p in sec.all_periods %}
+			<p>{{ p }}</p>
+		{% endfor %}
+	{% endfor %}
+{% endfor %}
+
+{% endblock content %}
