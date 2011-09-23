@@ -7,5 +7,8 @@ DATABASES = {
         'PASSWORD': 'thereisn0sp00n',
         'HOST': 'localhost',
         'PORT': '',
+        'OPTIONS': {
+            'autocommit': True,
+        }
     }
 }

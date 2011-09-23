@@ -7,5 +7,8 @@ DATABASES = {
         'PASSWORD': '{{ databases.default.password }}',
         'HOST': '{{ databases.default.host }}',
         'PORT': '{{ databases.default.port }}',
+        'OPTIONS': {
+            'autocommit': True,
+        }
     }
 }
