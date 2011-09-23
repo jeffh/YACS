@@ -169,7 +169,7 @@ def deselect_courses(request, year, month):
 
     print course_ids
 
-    #request.session[SELECTED_COURSES_SESSION_KEY] = course_ids
+    request.session[SELECTED_COURSES_SESSION_KEY] = course_ids
     
     if redirect_url:
         return redirect(redirect_url, year=year, month=month)
@@ -195,7 +195,7 @@ def select_courses(request, year, month):
             cid = int(name[len(PREFIX):])
         except (ValueError, TypeError):
             return HttpResponseBadRequest("Hey, what do you think you're trying to do.")
-        section_ids = list(models.Course.objects.get(id=cid).sections.all().values('id'))
+        section_ids = list(models.Course.objects.get(id=cid).sections.all().values_list('id', flat=True))
         course_ids[cid] = course_ids.get(cid, []) + section_ids
 
     request.session[SELECTED_COURSES_SESSION_KEY] = course_ids

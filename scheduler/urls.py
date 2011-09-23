@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import patterns, include, url
-
+from timetable.scheduler import views
 
 urlpatterns = patterns('',
     # selecting courses
-    url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/schedules/$', 'timetable.scheduler.views.schedules', name='schedules'),
+    url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/schedules/$', views.schedules, name='schedules'),
     # 
     #url(r'^schools/(?P<school>[a-z0-9]+)/schedules/$', 'timetable.scheduler.views.schedules', name='courses'),
     # Examples:

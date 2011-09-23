@@ -194,12 +194,17 @@ class Section(models.Model):
             options['semester__'+name] = value
         return self.course_times.filter().select_related('period')
 
+    def get_periods(self):
+        if getattr(self, 'all_periods', None) is None:
+            self.all_periods = self.periods.all()
+        return self.all_periods
+
     def conflicts_with(self, section):
         "Returns True if the given section conflicts with another provided section."
         if self == section:
             return True
-        periods = section.periods.all()
-        for period1 in self.periods.all():
+        periods = section.get_periods()
+        for period1 in self.get_periods():
             for period2 in periods:
                 if period1.conflicts_with(period2):
                     return True
