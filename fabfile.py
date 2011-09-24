@@ -101,7 +101,7 @@ def new_deploy():
     pass
 
 @roles('webservers')
-def deploy(use_pip):
+def deploy(use_pip=False):
     "Performs updates to servers to update the code bases."
     upload_project()
     update_environment(use_pip)
