@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
 from timetable.courses.models import Section
 from timetable.api.resources import (dept_handler, semester_handler, bulk_course_handler,
-    course_handler, section_handler, schedule_handler)
+    course_handler, section_handler, schedule_handler, compute_schedule_handler)
 
 defaults = {'emitter_format': 'json', 'version': 1}
 defaults_study_abroad = {'emitter_format': defaults['emitter_format'], 'crn': Section.STUDY_ABROAD, 'version': 1}
@@ -23,7 +23,7 @@ urlpatterns = patterns('',
     url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/departments/(?P<code>[A-Za-z0-9]+)/(?P<number>\d+)/$', course_handler, defaults, name='courses-by-subject'),
 
     # computation APIs
-    url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/schedules/', schedule_handler, defaults, name='scheduler'),
+    url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/schedules/', compute_schedule_handler, defaults, name='scheduler'),
     # the old API computed schedules on every request... quite slow!
     # the new one caches to the database to avoid repeated schedule computations
     #url(r'^(?P<year>\d{4})/(?P<month>\d{1,2})/old-schedules/', schedule_handler, defaults, name='scheduler'),

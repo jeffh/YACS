@@ -3,6 +3,6 @@ from timetable.scheduler import views
 
 urlpatterns = patterns('',
     # selecting courses
-    url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/schedules/$', views.schedules, name='schedules'),
+    url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/schedules/$', views.force_compute_schedules, name='schedules'),
 
 )

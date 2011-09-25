@@ -9,12 +9,13 @@
 {% block content %}
 <h2>Schedules</h2>
 
-{% for s in schedules %}
-<h2>{{ s.id }}</h2>
-<ul>{% for sec in s.all_sections %}
-<li>{{ sec }}</li>
+{% for schedule in schedules %}
+<ul>
+{% for course, section in schedule.items %}
+<li>{{ course }} -- {{ section }}</li>
 {% endfor %}
 </ul>
+<hr />
 {% endfor %}
 
 {% comment %}
