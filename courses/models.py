@@ -227,6 +227,7 @@ class Course(models.Model):
 
     class Meta:
         unique_together = ('department', 'number')
+        ordering = ['department__code', 'number']
 
     def __unicode__(self):
         return "%s (%s %s)" % (self.name, self.department.code, self.number)

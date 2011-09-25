@@ -20,7 +20,7 @@ DEPARTMENTS = dict(
     BMED="Biomedical Engineering",
     CHEM="Chemistry",
     CHME="Chemical Engineering",
-    CISH="Computer Science at Hartford"
+    CISH="Computer Science at Hartford",
     CIVL="Civil Engineering",
     COGS="Cognitive Science",
     COMM="Communication",
@@ -87,7 +87,7 @@ class RPIImporter(object):
             if (not semester) or semester == self.latest_semester:
                 catalog = get_catalog(filename)
 
-                if semester == self.latest_semester and catalog.datetime <= self.latest_semester.date_updated:
+                if self.latest_semester and semester == self.latest_semester and catalog.datetime <= self.latest_semester.date_updated:
                     continue # already up-to-date
 
                 semester_obj, created = Semester.objects.get_or_create(
@@ -198,11 +198,11 @@ class RPIImporter(object):
                 sectionperiod_obj.kind = period.type
                 sectionperiod_obj.save()
 
-    def get_or_create_department(self, semester_obj, code, name=''):
+    def get_or_create_department(self, semester_obj, code, name=None):
         dept, created = Department.objects.get_or_create(
             code=code,
             defaults={
-                'name': name
+                'name': name or ''
             }
         )
         SemesterDepartment.objects.get_or_create(

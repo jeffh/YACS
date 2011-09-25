@@ -162,12 +162,8 @@ def deselect_courses(request, year, month):
             return HttpResponseBadRequest("Hey, what do you think you're trying to do.")
         course_ids[cid] = course_ids.get(cid, []) + [sid]
 
-    print course_ids, valid_cids
-    
     for cid in set(course_ids.keys()) - set(valid_cids):
         del course_ids[cid]
-
-    print course_ids
 
     request.session[SELECTED_COURSES_SESSION_KEY] = course_ids
     
@@ -194,9 +190,19 @@ def select_courses(request, year, month):
         try:
             cid = int(name[len(PREFIX):])
         except (ValueError, TypeError):
-            return HttpResponseBadRequest("Hey, what do you think you're trying to do.")
-        section_ids = list(models.Course.objects.get(id=cid).sections.all().values_list('id', flat=True))
-        course_ids[cid] = course_ids.get(cid, []) + section_ids
+            return HttpResponseBadRequest("Hey, what do you think you're trying to do.") 
+        # TODO: optimize queries
+        section_ids = list(models.Section.objects.filter(
+            course__id=cid, semesters__year__contains=year, semesters__month__contains=month
+        ).values_list('crn', flat=True))
+        course_ids[cid] = []
+
+    queryset = models.Section.objects.filter(
+        course__id=cid, semesters__year__contains=year, semesters__month__contains=month
+    )
+    
+    for section in queryset:
+        course_ids[section.course_id].append(section.crn)
 
     request.session[SELECTED_COURSES_SESSION_KEY] = course_ids
     
