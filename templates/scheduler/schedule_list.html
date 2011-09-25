@@ -8,6 +8,16 @@
 
 {% block content %}
 <h2>Schedules</h2>
+
+{% for s in schedules %}
+<h2>{{ s.id }}</h2>
+<ul>{% for sec in s.all_sections %}
+<li>{{ sec }}</li>
+{% endfor %}
+</ul>
+{% endfor %}
+
+{% comment %}
 {% for s in schedules %}
 <p>{{ s.id }}</p>
 <h3>Sections</h3>
@@ -19,5 +29,6 @@
 		{% endfor %}
 	{% endfor %}
 {% endfor %}
+{% endcomment %}
 
 {% endblock content %}

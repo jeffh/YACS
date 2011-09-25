@@ -7,7 +7,9 @@
 <p><a href="#selected">Jump to selected courses</a></p>
 <ul>
 	{% for department in departments %}
-	<li><a href="{% url courses-by-dept sem_year,sem_month,department.code %}">{{ department }}</a></li>
+	<li><a href="{% url courses-by-dept sem_year,sem_month,department.code %}">
+		{{ department.code }} - {{ department.name }}
+	</a></li>
 	{% endfor %}
 </ul>
 </div>

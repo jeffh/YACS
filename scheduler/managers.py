@@ -30,6 +30,8 @@ class BulkInsert(object):
         return query
 
     def postgres_bulk_insert(self, table, columns, values):
+        if len(values) < 1:
+            return []
         query = self.bulk_insert_basesql(table, columns, values) + " RETURNING id"
 
         cursor = connection.cursor()
@@ -66,7 +68,7 @@ class ScheduleManager(Manager):
         """Creates all possible schedule objects from a given set of CRNs (sections)."""
         sections_and_periods = courses.SectionPeriod.objects.filter(
             semester=semester,
-            section__crn__in=crns,
+            section__crn__in=set(crns),
             #section__seats_taken__lt=F('section__seats_total'),
         ).select_related('period', 'section', 'section__course')
 
@@ -79,7 +81,9 @@ class ScheduleManager(Manager):
             snp.section.all_periods = secid_to_periods[snp.section_id]
             selected_courses[snp.section.course] = selected_courses.get(snp.section.course, []) + [snp.section]
         
-        return self._create_from_schedules(compute_schedules(selected_courses), semester)
+        schedules = compute_schedules(selected_courses)
+        
+        return self._create_from_schedules(schedules, semester)
 
     def create_all_from_course_ids(self, course_ids, semester):
         """Creates all possible schedule objects from a given set of course ids."""
@@ -88,50 +92,52 @@ class ScheduleManager(Manager):
         )
         return self._create_from_schedules(compute_schedules(selected_courses), semester)
 
+    """
     def _create_from_schedules(self, schedules, semester):
-        with transaction.commit_manually():
-            from timetable.scheduler import models
-            schedule_values = []
-            sis_values = []
-            cis_values = []
-            all_crns = set()
-            for schedule in schedules:
-                crns = self.model.ints_to_str([c.crn for c in schedule.values()])
-                if crns not in all_crns:
-                    all_crns = all_crns.union([crns])
-            existing_schedules = self.filter(crns_used__in=all_crns).values_list('crns_used', flat=True)
+        from timetable.scheduler import models
+        schedule_values = []
+        sis_values = []
+        cis_values = []
+        all_crns = set()
+        for schedule in schedules:
+            crns = self.model.ints_to_str([c.crn for c in schedule.values()])
+            if crns not in all_crns:
+                all_crns = all_crns.union([crns])
+        existing_schedules = self.filter(crns_used__in=all_crns).values_list('crns_used', flat=True)
 
-            seen = set()
-            for i, schedule in enumerate(schedules):
-                course_ids = self.model.ints_to_str([c.id for c in schedule.keys()])
-                crns = self.model.ints_to_str([c.crn for c in schedule.values()])
-                if crns in existing_schedules or crns in seen:
-                    continue
-                seen = seen.union([crns])
-                schedule_values.append([
-                    crns,
-                    course_ids,
+        seen = set()
+        for i, schedule in enumerate(schedules):
+            course_ids = self.model.ints_to_str([c.id for c in schedule.keys()])
+            crns = self.model.ints_to_str([c.crn for c in schedule.values()])
+            if crns in existing_schedules or crns in seen:
+                continue
+            seen = seen.union([crns])
+            schedule_values.append([
+                crns,
+                course_ids,
+                semester.id
+            ])
+            for course, section in schedule.items():
+                sis_values = [
+                    i,
+                    section.id,
+                    semester.id,
+                ]
+                cis_values = [
+                    i,
+                    course.id,
                     semester.id
-                ])
-                for course, section in schedule.items():
-                    sis_values.append([
-                        i,
-                        section.id,
-                        semester.id,
-                    ])
-                    cis_values.append([
-                        i,
-                        course.id,
-                        semester.id
-                    ])
-            
-            bulk_insert = BulkInsert()
+                ]
+        
+        bulk_insert = BulkInsert()
 
-            latest_ids = bulk_insert(
-                table=self.model._meta.db_table,
-                columns=['crns_used', 'course_ids_used', 'semester_id'],
-                values=schedule_values,
-            )
+        latest_ids = bulk_insert(
+            table=self.model._meta.db_table,
+            columns=['crns_used', 'course_ids_used', 'semester_id'],
+            values=schedule_values,
+        )
+        if latest_ids:
+            for crn in latest
             bulk_insert(
                 table=models.SectionInSchedule._meta.db_table,
                 columns=['schedule_id', 'section_id', 'semester_id'],
@@ -142,52 +148,44 @@ class ScheduleManager(Manager):
                 columns=['schedule_id', 'course_id', 'semester_id'],
                 values=[(lid, b, c) for (a, b, c), lid in zip(cis_values, latest_ids)],
             )
-            transaction.commit()
-
     """
-    Old method of insertion... very slow
+
+    #Old method of insertion... very slow
     def _create_from_schedules(self, schedules, semester):
         with transaction.commit_manually():
             from timetable.scheduler import models
             collection = []
             for schedule in schedules:
                 course_ids, crns = [c.id for c in schedule.keys()], [c.crn for c in schedule.values()]
-                obj, created = self.get_or_create(
-                    crns_used=self.model.ints_to_str(crns),
-                    course_ids_used=self.model.ints_to_str(course_ids),
-                    semester=semester
+                obj = self.model(
+                    crns=crns,
+                    course_ids=course_ids,
+                    semester=semester,
                 )
-                if not created:
-                    continue
-                for course, section in schedule.items():
-                    models.SectionInSchedule.objects.get_or_create(
-                        schedule=obj,
-                        section=section,
-                        semester=semester,
-                    )
-                    models.CourseInSchedule.objects.get_or_create(
-                        schedule=obj,
-                        course=course,
-                        semester=semester,
-                    )
+                #obj, created = self.get_or_create(
+                #    crns=crns,
+                #    course_ids=course_ids,
+                #    semester=semester
+                #)
                 collection.append(obj)
             transaction.commit()
         return collection
-    """
+    #"""
 
     def get_or_create_all_from_crns(self, crns, semester):
         "Gets all schedules for a given set of CRNs -- creating them if necessary."
         # looks terribly inefficient here -- since we're fetching the same thing multiple times
         # but the custom create method uses bulk inserts which reduces 340+ queries to 3, which is
         # a small price to pay to execute another read query afterwards.
-        queryset = self.model.objects.filter(
+        schedules = self.filter(
             semester=semester,
-            sections__crn__in=crns,
+            crns=crns,
+            #crns_used=self.model.ints_to_str(crns)
         )
-        if queryset.exists():
-            return queryset.distinct()
+        if schedules.exists():
+            return schedules
         self.create_all_from_crns(crns, semester)
-        return queryset.distinct()
+        return schedules
 
 
     def get_or_create_all_from_course_ids(self, course_ids, semester):
@@ -195,7 +193,7 @@ class ScheduleManager(Manager):
         # looks terribly inefficient here -- since we're fetching the same thing multiple times
         # but the custom create method uses bulk inserts which reduces 340+ queries to 3, which is
         # a small price to pay to execute another read query afterwards.
-        queryset = self.filter(course_ids_used=self.model.ints_to_str(course_ids), semester=semester)
+        queryset = self.filter(course_ids=course_ids, semester=semester)
         if queryset.exists():
             return queryset
         self.create_all_from_course_ids(course_ids, semester)

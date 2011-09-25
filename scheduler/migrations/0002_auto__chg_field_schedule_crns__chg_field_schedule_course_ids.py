@@ -8,26 +8,20 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         
-        # Adding model 'Schedule'
-        db.create_table('scheduler_schedule', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('crns', self.gf('django.db.models.fields.CommaSeparatedIntegerField')(unique=True, max_length=200)),
-            ('course_ids', self.gf('django.db.models.fields.CommaSeparatedIntegerField')(max_length=200, db_index=True)),
-            ('semester', self.gf('django.db.models.fields.related.ForeignKey')(related_name='schedules', to=orm['courses.Semester'])),
-        ))
-        db.send_create_signal('scheduler', ['Schedule'])
+        # Changing field 'Schedule.crns'
+        db.alter_column('scheduler_schedule', 'crns', self.gf('timetable.scheduler.fields.SetOfIntegersField')(unique=True))
 
-        # Adding unique constraint on 'Schedule', fields ['crns', 'semester']
-        db.create_unique('scheduler_schedule', ['crns', 'semester_id'])
+        # Changing field 'Schedule.course_ids'
+        db.alter_column('scheduler_schedule', 'course_ids', self.gf('timetable.scheduler.fields.SetOfIntegersField')())
 
 
     def backwards(self, orm):
         
-        # Removing unique constraint on 'Schedule', fields ['crns', 'semester']
-        db.delete_unique('scheduler_schedule', ['crns', 'semester_id'])
+        # Changing field 'Schedule.crns'
+        db.alter_column('scheduler_schedule', 'crns', self.gf('django.db.models.fields.CommaSeparatedIntegerField')(max_length=200, unique=True))
 
-        # Deleting model 'Schedule'
-        db.delete_table('scheduler_schedule')
+        # Changing field 'Schedule.course_ids'
+        db.alter_column('scheduler_schedule', 'course_ids', self.gf('django.db.models.fields.CommaSeparatedIntegerField')(max_length=200))
 
 
     models = {
@@ -42,8 +36,8 @@ class Migration(SchemaMigration):
         },
         'scheduler.schedule': {
             'Meta': {'unique_together': "(('crns', 'semester'),)", 'object_name': 'Schedule'},
-            'course_ids': ('django.db.models.fields.CommaSeparatedIntegerField', [], {'max_length': '200', 'db_index': 'True'}),
-            'crns': ('django.db.models.fields.CommaSeparatedIntegerField', [], {'unique': 'True', 'max_length': '200'}),
+            'course_ids': ('timetable.scheduler.fields.SetOfIntegersField', [], {'db_index': 'True'}),
+            'crns': ('timetable.scheduler.fields.SetOfIntegersField', [], {'unique': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'semester': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'schedules'", 'to': "orm['courses.Semester']"})
         }
