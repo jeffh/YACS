@@ -195,14 +195,7 @@ def select_courses(request, year, month):
         section_ids = list(models.Section.objects.filter(
             course__id=cid, semesters__year__contains=year, semesters__month__contains=month
         ).values_list('crn', flat=True))
-        course_ids[cid] = []
-
-    queryset = models.Section.objects.filter(
-        course__id=cid, semesters__year__contains=year, semesters__month__contains=month
-    )
-    
-    for section in queryset:
-        course_ids[section.course_id].append(section.crn)
+        course_ids[cid] = section_ids
 
     request.session[SELECTED_COURSES_SESSION_KEY] = course_ids
     

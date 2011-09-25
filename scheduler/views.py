@@ -3,8 +3,9 @@ from django.views.generic import ListView
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from timetable.courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY
-from timetable.courses.models import Semester, SectionPeriod, Course
+from timetable.courses.models import Semester, SectionPeriod, Course, Section
 from timetable.scheduler import models
+from timetable.scheduler.scheduler import compute_schedules
 
 from pprint import pprint
 
@@ -33,9 +34,46 @@ def build_schedule_object_graph(schedules, sections_and_periods):
     
     return schedules
 
-def compute_schedules(request, year, month):
-    pass
+def section_ids_to_periods(sections_and_periods):
+    secid_to_periods = {}
+    for snp in sections_and_periods:
+        secid_to_periods[snp.section_id] = secid_to_periods.get(snp.section_id, []) + [snp.period]
+    return secid_to_periods
 
+def force_compute_schedules(request, year, month):
+    selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
+    crns = [crn for sections in selected_courses.values() for crn in sections]
+
+    print 'crns', selected_courses
+
+    sections = Section.objects.filter(
+        crn__in=crns, semesters__year__contains=year, semesters__month__contains=month
+    ).select_related('course').distinct()
+
+    sections_and_periods = SectionPeriod.objects.filter(
+        semester__year__contains=year,
+        semester__month__contains=month,
+        section__crn__in=crns,
+        #section__seats_taken__lt=F('section__seats_total'),
+    ).select_related('section', 'period', 'section__course', 'section__course__department')
+
+    sid_to_periods = section_ids_to_periods(sections_and_periods)
+
+    selected_courses = {}
+    for section in sections:
+        section.all_periods = sid_to_periods[section.id]
+        selected_courses[section.course] = selected_courses.get(section.course, []) + [section]
+
+    schedules = compute_schedules(selected_courses)
+
+    pprint(schedules)
+
+    return render_to_response('scheduler/schedule_list.html', {
+        'schedules': schedules,
+    }, RequestContext(request))
+
+
+# scrapped... it's a lot more complicated to cache this data. Do it some other time.
 def schedules(request, year, month):
     selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
     crns = [crn for sections in selected_courses.values() for crn in sections]
