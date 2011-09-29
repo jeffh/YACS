@@ -75,6 +75,10 @@ def webfaction():
 
     #mkdir('~/tmp', recursive=True)
 
+def scss():
+    "Watches sass files to convert to css"
+    local('sass --watch static/global/scss:static/global/css')
+
 def test(app=None):
     """Returns all tests in lib and custom django apps. Optionally accepts specific apps to test.
     If lib is provided as app, only the lib directory is tested.
