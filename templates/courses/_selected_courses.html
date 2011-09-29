@@ -1,27 +1,33 @@
 {# This template partial is used in course_list and department_list #}
 {% load courses %}
 
-<div id="selected">
+<div id="selected" class="tableview">
 <h2><a name="selected">Selected Courses</a></h2>
 {% if selected_courses %}
 	<form action="{% url deselect-courses sem_year,sem_month %}" method="post">
 		{% csrf_token %}
-		<table id="courses">
+		<table id="selected_courses">
 			{% for course in selected_courses %}
 			{% with seats_left_for_course=course|seats_left_for_course:selected_sections %}
 			<tr class="course">
 				<td class="checkbox"><input type="checkbox" id="selected_course_{{ course.id }}" name="selected_course_{{ course.id }}" checked="checked" /></td>
 				<td class="department"><label for="selected_course_{{ course.id }}">{{ course.department.code }}</label></td>
-				<td class="number"><label for="selected_course_{{ course.id }}">{{ course.number }}</label></td>
+				<td class="course_number"><label for="selected_course_{{ course.id }}">{{ course.number }}</label></td>
 				<td class="name"><label for="selected_course_{{ course.id }}">{{ course.name }}</label></td>
-				<td class="name"><label for="selected_course_{{ course.id }}">{{ course.credits_display }}</label></td>
+				<td class="credits">
+					<label for="selected_course_{{ course.id }}">
+					{% if course.credits_display != '4 credits' %}
+					{{ course.credits_display }}
+					{% endif %}
+					</label>
+				</td>
 				<td class="seats_left">
-					{{ seats_left_for_course }} seats left
+					<span class="number">{{ seats_left_for_course }}</span> seats left
 				</td>
 			</tr>
-			<tr>
-				<td colspan="2">{{ course.id }}</td>
-				<td colspan="2">
+			<tr class="sections">
+				<td colspan="1">&nbsp;</td>
+				<td colspan="5">
 					{% with sections=selected_sections|sections_for:course %}
 						{% if sections %}
 							<ul>
@@ -48,11 +54,10 @@
 			{% endwith %}
 			{% endfor %}
 		</table>
-		<p>Total Credits: {{ selected_courses|sum_credits }}</p>
+		<p class="total_credits">{{ selected_courses|sum_credits }} total</p>
 		<p class="actions">
 			<input type="hidden" name="redirect_to" value="{{ request.get_full_path }}" />
-			<input type="submit" value="Remove Unchecked" />
-			or <a href="{% url schedules sem_year,sem_month %}">View Schedules</a>
+			<a href="{% url schedules sem_year,sem_month %}">View Schedules</a>
 		</p>
 	</form>
 {% else %}

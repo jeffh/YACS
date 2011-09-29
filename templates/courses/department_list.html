@@ -1,15 +1,29 @@
 {% extends 'site_base.html' %}
 
+{% block header %}
+{{ block.super }}
+<div class="nav">
+	<ul>
+		<li><a href="" class="selected">Catalog</a></li>
+		<li><a href="#selected">Selected</a></li>
+		<li><a href="">Schedules</a></li>
+	</ul>
+</div>
+{% endblock header %}
+
 {% block content %}
 {% include "courses/_search_courses.html" %}
-<div id="departments">
-<h2>Departments</h2>
-<p><a href="#selected">Jump to selected courses</a></p>
+
+<div id="departments" class="listview">
 <ul>
 	{% for department in departments %}
-	<li><a href="{% url courses-by-dept sem_year,sem_month,department.code %}">
-		{{ department.code }} - {{ department.name }}
-	</a></li>
+	<li>
+		<a href="{% url courses-by-dept sem_year,sem_month,department.code %}">
+			<span class="disclosure">&gt;</span>
+			<span class="deptcode">{{ department.code }}</span>
+			<span class="deptname">{{ department.name }}</span>
+		</a>
+	</li>
 	{% endfor %}
 </ul>
 </div>

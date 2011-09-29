@@ -29,6 +29,7 @@ _____________________________________________________
 15.VENDOR-SPECIFIC 
 16.TEMPLATE SPECIFICS
 17.MODERNIZR
+18.CUSTOM
 
 COLOURS 
 
@@ -120,7 +121,7 @@ h3,
 h4, 
 h5, 
 h6 {
-font-family : "Helvetica Neue", Helvetica, Arial;
+font-family : "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-weight : bold; }
 
 h1 { 
@@ -433,3 +434,5 @@ http://yui.yahooapis.com/2.8.1/build/base/base.css
 http://webaim.org/techniques/css/invisiblecontent/
 http://drupal.org/node/897638
 */
+
+/* 18.CUSTOM */

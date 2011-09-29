@@ -1,0 +1,190 @@
+
+/* HEADER */
+header {
+	background: red;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 40px;
+}
+header h1 {
+	padding-top: 5px;
+	text-align: center;
+	font-size: 150%;
+}
+.navitem {
+	position: absolute;
+	top: 10px;
+	font-size: 16px;
+}
+.navitem.right {
+	right: 0;
+}
+.navitem a:link, .navitem a:visited {
+	padding: 5px 10px;
+	margin: 5px;
+	text-decoration: none;
+	color: #fff;
+	background: green;
+}
+.navitem a:link:hover {
+	text-decoration: none;
+}
+/* END HEADER */
+
+/* BODY */
+html {
+	height: 100%;
+}
+body {
+	padding: 0;
+	padding-top: 40px;
+	width: 100%;
+}
+
+h2 {
+	font-size: 105%;
+	background: #7af;
+	color: #fff;
+	padding: 3px 5px;
+	margin: 0;
+	font-weight: normal;
+}
+
+p {
+	padding: 0 5px;
+}
+/* END BODY */
+
+/* SEARCHBOX */
+.searchform {
+	background: blue;
+	margin: 0 auto;
+	padding: 5px;
+	text-align: center;
+}
+.searchform #d {
+	display: none;
+}
+.searchform .searchbox {
+	width: 100%;
+	font-size: 120%;
+	padding: 0;
+	margin: 0;
+	height: 32px;
+}
+/* END SEARCHBOX */
+
+/* LISTVIEW */
+.listview ul {
+	list-style: none;
+}
+.listview li {
+	margin: 0;
+	border-bottom: 1px solid #dfdfdf;
+}
+.listview li a:link, .listview li a:visited {
+	padding: 0 5px;
+	display: block;
+	color: #000;
+}
+.listview li a:link:hover {
+	background: #ddf;
+	text-decoration: none;
+}
+.listview li a:active {
+	background: #36f;
+}
+.listview li .disclosure {
+	float: right;
+	padding-right: 3px;
+	font-weight: bold;
+	font-size: 110%;
+	color: #999;
+}
+
+/* END LISVIEW */
+
+/* TABLEVIEW */
+
+.tableview tr td {
+	border-bottom: 1px solid #dfdfdf;
+}
+
+/* END TABLEVIEW */
+
+/* DEPARTMENTS */
+#departments .deptcode {
+	font-size: 110%;
+}
+#departments .deptname {
+	display: block;
+	font-size: 90%;
+	color: #333;
+	height: 1.5em;
+	white-space: nowrap;
+	width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+/* END DEPARTMENTS */
+
+/* SELECTED_COURSES */
+#selected .course td {
+	border-bottom: 0;
+}
+#selected .sections td {
+	border-bottom: 1px solid #dfdfdf;
+}
+#selected .checkbox {
+	padding: 0 0 0 3px;
+}
+#selected .department {
+	padding: 0 2px;
+	font-size: 90%;
+}
+#selected .course_number {
+	padding: 0;
+}
+#selected .name {
+	font-size: 120%;
+	text-transform: lowercase;
+}
+#selected .credits {
+	display: none;
+}
+#selected .seats_left {
+	display: none;
+}
+#selected ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+#selected ul li {
+	padding: 10px 0;
+	border-top: 1px solid #eee;
+}
+.total_credits {
+	float: left;
+}
+.actions {
+	float: right;
+	padding-right: 5px;
+}
+/* END SELETED_COURSES */
+
+/* FOOTER */
+
+footer {
+	font-size: 80%;
+	text-align: center;
+	color: #777;
+	padding-bottom: 2px;
+}
+footer a:link, footer a:visited {
+	color: #56c;
+}
+
+/* END FOOTER */

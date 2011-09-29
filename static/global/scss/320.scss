@@ -1,0 +1,267 @@
+@import "mixins.scss";
+
+$border-color: #740000;
+
+/* GENERAL */
+html {
+	background: #8d0000 url('../img/320-bg.png') 0 0 repeat-x;
+	/* @include background-gradient(#af0000, #8d0000); */
+}
+body {
+	padding: 0;
+	color: #fff;
+	width: 85%;
+	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	min-width: 320px;
+}
+
+h2 {
+	font-size: 115%;
+	color: #fff;
+	padding: 3px 5px;
+	margin: 0;
+	font-weight: normal;
+}
+
+p {
+	padding: 0 5px;
+}
+/* END GENERAL */
+
+/* HEADER */
+header {
+	h1 {
+		padding: 0.5em 0;
+		margin: 0;
+		text-align: center;
+		font-size: 200%;
+		color: #fff;
+		font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	}
+}
+.nav {
+	height: 3em;
+	text-align: center;
+	float: right;
+	position: relative;
+	left: -50%;
+
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		position: relative;
+		left: 50%;
+	}
+	li {
+		$border: 1px solid #c66;
+
+		float: left;
+		margin: 0;
+		padding: 0;
+		border: $border;
+		border-left: 0;
+		border-right: 0;
+		text-align: center;
+
+		&:first-child {
+			border-left: $border;
+			@include border-radius(5px 0 0 5px);
+			a:link {
+				@include border-radius(5px 0 0 5px);
+			}
+		}
+		&:last-child {
+			border-right: $border;
+			@include border-radius(0 5px 5px 0);
+			a:link, a:link:visited {
+				@include border-radius(0 5px 5px 0);
+				border-right: 0;
+			}
+		}
+	}
+	a:link, a:visited {
+		float: left;
+		display: block;
+		padding: 0.5em;
+		color: #fff;
+		width: 75px;
+		@include button-gradient;
+		border-right: 1px solid #560000;
+	}
+	a:link:hover, a:visited:hover {
+		background: #f99;
+		text-decoration: none;
+		@include button-gradient-hover;
+	}
+	a.selected:link, a.selected:link:visited {
+		font-weight: bold;
+		@include button-gradient-selected;
+	}
+}
+/* END HEADER */
+
+/* SEARCHBOX */
+.searchform {
+	width: 280px;
+	margin: 0 auto;
+	padding: 5px;
+	text-align: center;
+
+	#d {
+		display: none;
+	}
+	.searchbox {
+		width: 100%;
+		font-size: 120%;
+		padding: 0;
+		margin: 0;
+		height: 32px;
+	}
+}
+/* END SEARCHBOX */
+
+/* LISTVIEW */
+.listview {
+	ul {
+		list-style: none;
+	}
+	li {
+		$border: 1px solid $border-color;
+
+		margin: 0;
+
+		a:link, a:visited {
+			padding: 3px 5px;
+			display: block;
+			color: #dfdfdf;
+			border-top: $border;
+		}
+
+		&:last-child {
+			a:link, a:visited {
+				border-bottom: $border;
+			}
+		}
+		a:link:hover, a:visited:hover {
+			@include background-gradient(#5d0000, #390001);
+			text-decoration: none;
+			color: #fff;
+
+			.disclosure {
+				color: #940000;
+			}
+		}
+		a:active {
+			background: #36f;
+		}
+		.disclosure {
+			display: block;
+			float: right;
+			font-size: 140%;
+			color: #640000;
+		}
+	}
+}
+
+/* END LISVIEW */
+
+/* TABLEVIEW */
+
+/* END TABLEVIEW */
+
+/* DEPARTMENTS */
+#departments {
+	margin-top: 1em;
+
+	.deptcode {
+		font-size: 110%;
+	}
+	.deptname {
+		display: block;
+		font-size: 90%;
+		color: #daa;
+		height: 1.5em;
+		white-space: nowrap;
+		width: 95%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	a:link:hover, a:visited:hover {
+		.deptname {
+			color: #fff;
+		}
+	}
+}
+/* END DEPARTMENTS */
+
+/* SELECTED_COURSES */
+#selected {
+	.course td {
+		border-bottom: 0;
+	}
+	.sections td {
+		border-bottom: 1px solid #c66;
+	}
+	.sections:last-child td {
+		border-bottom: 0;
+	}
+	.checkbox {
+		padding: 0 0 0 3px;
+	}
+	.department {
+		padding: 0 2px;
+		font-size: 90%;
+	}
+	.course_number {
+		padding: 0;
+	}
+	.name {
+		font-size: 120%;
+		text-transform: lowercase;
+	}
+	.credits {
+		display: none;
+	}
+	.seats_left {
+		display: none;
+	}
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+
+		li {
+			padding: 5px 0;
+			border-top: 1px solid $border-color;
+
+			&:first-child {
+				padding: 0 0 5px 0;
+				border-top: 0;
+			}
+		}
+	}
+}
+.total_credits {
+	float: left;
+}
+.actions {
+	float: right;
+	padding-right: 5px;
+}
+/* END SELETED_COURSES */
+
+/* FOOTER */
+
+footer {
+	font-size: 80%;
+	text-align: center;
+	color: #777;
+	padding-bottom: 2px;
+
+	a:link, a:visited {
+		color: #56c;
+	}
+}
+
+/* END FOOTER */

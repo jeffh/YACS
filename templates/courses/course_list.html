@@ -17,9 +17,9 @@
 
 <h2>
 {% if search_results %}
-Courses for {{ department }}
-{% else %}
 Search Results
+{% else %}
+Courses for {{ department.code }}
 {% endif %}
 </h2>
 
@@ -34,7 +34,9 @@ Search Results
 		{% for course in courses %}
 		{% with seats_left_for_course=course|seats_left_for_course:sections %}
 		<tr class="course{% if seats_left_for_course == 0 %} full{% endif %}">
-			<td class="checkbox"><input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}" /></td>
+			<td class="checkbox">
+			<input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}"{% if course in selected_courses %} checked="checked"{% endif %} />
+			</td>
 			{% if search_results and query_department == 'all' %}
 			<td class="dept"><label for="course_{{ course.id }}">{{ course.department.code }}</label></td>
 			{% endif %}
