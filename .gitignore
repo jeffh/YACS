@@ -2,3 +2,5 @@
 /sqlite3.db
 .DS_Store
 /logs/
+/.sass-cache/
+/build/
