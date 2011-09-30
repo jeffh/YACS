@@ -11,6 +11,7 @@ urlpatterns = patterns('',
     #url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/selected_courses/$', 'timetable.scheduler.views.selected_courses', name='selected-courses'),
     url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/(?P<code>[A-Z]+)/$', views.CourseByDeptListView.as_view(), name='courses-by-dept'),
 
+    #url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/selected/$', views.SelectedCoursesListView.as_view(), name='selected-courses'),
     # actions
     url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/select/$', views.select_courses, name='select-courses'),
     url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/deselect/$', views.deselect_courses, name='deselect-courses'),

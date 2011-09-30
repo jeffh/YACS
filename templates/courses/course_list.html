@@ -5,31 +5,43 @@
 
 {% block header %}
 {{ block.super }}
-
-<p>
-	<a href="{% url departments sem_year,sem_month %}">&larr; Departments</a>
-	<a href="#selected">Jump to selected courses</a>
-</p>
+<div class="nav">
+	<ul>
+		<li><a href="{% url departments sem_year,sem_month %}" class="button selected">Catalog</a></li>
+		<li><a href="#selected" class="button">Selected</a></li>
+		<li><a href="{% url schedules sem_year,sem_month %}" class="button">Schedules</a></li>
+	</ul>
+</div>
 {% endblock header %}
 
 {% block content %}
-<div id="courses">
-
-<h2>
-{% if search_results %}
-Search Results
-{% else %}
-Courses for {{ department.code }}
-{% endif %}
-</h2>
-
 {% include "courses/_search_courses.html" %}
+
+<div id="courses" class="listview {% if search_results %}search-results {% if query_department == 'all' %}all-dept{% else %}specific-dept{% endif %}{% endif %}">
+
 <form action="{% url select-courses sem_year,sem_month %}" method="post">
 	{% csrf_token %}
-	<p class="actions">
-		<input type="hidden" name="redirect_to" value="{{ request.get_full_path }}" />
-		<input type="submit" value="Add Selected" />
-	</p>
+	<ul>
+		{% for course in courses %}
+			<li>
+				<input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}"{% if course in selected_courses %} checked="checked"{% endif %} />
+				<span class="dept">{{ course.department.code }}</span>
+				<span class="number">{{ course.number }}</span>
+				<span class="name">{{ course.name }}</span>
+				<span class="credits">
+					{% if course.credits != 4 %}
+					{{ course.credits_display }}
+					{% endif %}
+				</span>
+				<span class="seats-left">
+					{% if seats_left_for_course < 30 %}
+					{{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
+					{% endif %}
+				</span>
+			</li>
+		{% endfor %}
+	</ul>
+	{% comment %}
 	<table id="courses">
 		{% for course in courses %}
 		{% with seats_left_for_course=course|seats_left_for_course:sections %}
@@ -59,7 +71,9 @@ Courses for {{ department.code }}
 		{% endwith %}
 		{% endfor %}
 	</table>
+	{% endcomment %}
 	<p class="actions">
+		<input type="hidden" name="redirect_to" value="{{ request.get_full_path }}" />
 		<input type="submit" value="Add Selected" />
 	</p>
 </form>

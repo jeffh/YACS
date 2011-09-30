@@ -410,6 +410,11 @@ header h1 {
   margin-right: 0; }
 
 /* END SELETED_COURSES */
+/* COURSES */
+#courses.search-results.specific-dept {
+  display: none; }
+
+/* END COURSES */
 /* FOOTER */
 footer {
   font-size: 80%;

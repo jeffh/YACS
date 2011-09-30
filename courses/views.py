@@ -39,6 +39,17 @@ class SelectedCoursesMixin(SemesterBasedMixin):
         data['selected_courses'], data['selected_sections'] = self.get_selected_courses()
         return data
 
+class SelectedCoursesListView(SelectedCoursesMixin, ListView):
+    template_name = 'courses/selected_courses_list.html'
+
+    def get_queryset(self):
+        return self.get_selected_courses()[1]
+
+    def get_context_data(self, **kwargs):
+        data = super(SelectedCoursesListView, self).get_context_data(**kwargs)
+        return data
+
+
 class DepartmentListView(SelectedCoursesMixin, ListView):
     "Provides all departments."
     context_object_name = 'departments'
