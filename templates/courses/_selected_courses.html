@@ -6,28 +6,27 @@
 {% if selected_courses %}
 	<form action="{% url deselect-courses sem_year,sem_month %}" method="post">
 		{% csrf_token %}
-		<table id="selected_courses">
+		<ul id="selected_courses">
 			{% for course in selected_courses %}
 			{% with seats_left_for_course=course|seats_left_for_course:selected_sections %}
-			<tr class="course">
-				<td class="checkbox"><input type="checkbox" id="selected_course_{{ course.id }}" name="selected_course_{{ course.id }}" checked="checked" /></td>
-				<td class="department"><label for="selected_course_{{ course.id }}">{{ course.department.code }}</label></td>
-				<td class="course_number"><label for="selected_course_{{ course.id }}">{{ course.number }}</label></td>
-				<td class="name"><label for="selected_course_{{ course.id }}">{{ course.name }}</label></td>
-				<td class="credits">
-					<label for="selected_course_{{ course.id }}">
-					{% if course.credits_display != '4 credits' %}
-					{{ course.credits_display }}
-					{% endif %}
-					</label>
-				</td>
-				<td class="seats_left">
-					<span class="number">{{ seats_left_for_course }}</span> seats left
-				</td>
-			</tr>
-			<tr class="sections">
-				<td colspan="1">&nbsp;</td>
-				<td colspan="5">
+			<li class="course">
+				<input type="checkbox" id="selected_course_{{ course.id }}" name="selected_course_{{ course.id }}" checked="checked" />
+				<label for="selected_course_{{ course.id }}">
+					<span class="name">{{ course.name }}</span>
+					<span class="code">
+						<span class="department">{{ course.department.code }}</span>
+						<span class="course_number">{{ course.number }}</span>
+					</span>
+					<span class="credits">
+						{% if course.credits_display != '4 credits' %}
+						{{ course.credits_display }}
+						{% endif %}
+					</span>
+					<span class="seats-left">
+						<span class="number">{{ seats_left_for_course }}</span> seats left
+					</span>
+				</label>
+				<span class="sections">
 					{% with sections=selected_sections|sections_for:course %}
 						{% if sections %}
 							<ul>
@@ -35,11 +34,18 @@
 									<li class="section{% if section.is_full %} full{% endif %}">
 										<input type="checkbox" id="selected_course_{{ course.id }}_{{ section.crn }}" name="selected_course_{{ course.id }}_{{ section.crn }}"{% if section.is_full %} disabled="disabled"{% else %} checked="checked"{% endif %} />
 										<label for="selected_course_{{ course.id }}_{{ section.crn }}">
-											Section {{ section.number }} ({{ section.crn }}) -
+											<span class="section-number">
+												Section {{ section.number }}
+											</span>
+											(<span class="crn">{{ section.crn }}</span>) -
 											{% if not section.is_full %}
+											<span class="section-seats-left">
 											{{ section.seats_left }} seat{{ section.seats_left|pluralize }} left
+											</span>
 											{% else %}
+											<span class="section-seats-left none">
 											No seats lefts
+											</span>
 											{% endif %}
 										</label>
 									</li>
@@ -49,15 +55,15 @@
 							There are no listed sections.
 						{% endif %}
 					{% endwith %}
-				</td>
-			</tr>
+				</span>
+			</li>
 			{% endwith %}
 			{% endfor %}
-		</table>
+		</ul>
 		<p class="total_credits">{{ selected_courses|sum_credits }} total</p>
 		<p class="actions">
 			<input type="hidden" name="redirect_to" value="{{ request.get_full_path }}" />
-			<a href="{% url schedules sem_year,sem_month %}">View Schedules</a>
+			<a href="{% url schedules sem_year,sem_month %}" class="button">View Schedules</a>
 		</p>
 	</form>
 {% else %}
