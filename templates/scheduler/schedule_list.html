@@ -3,7 +3,13 @@
 
 {% block header %}
 {{ block.super }}
-<h2>Schedules</h2>
+<div class="nav">
+	<ul>
+		<li><a href="{% url departments sem_year,sem_month %}" class="button selected">Catalog</a></li>
+		<li><a href="#selected" class="button">Selected</a></li>
+		<li><a href="{% url schedules sem_year,sem_month %}" class="button">Schedules</a></li>
+	</ul>
+</div>
 {% endblock header %}
 
 {% block content %}

@@ -19,59 +19,40 @@
 
 <div id="courses" class="listview {% if search_results %}search-results {% if query_department == 'all' %}all-dept{% else %}specific-dept{% endif %}{% endif %}">
 
+{% if not search_query %}
+<h2>{% firstof department.name department.code %}</h2>
+{% endif %}
+
 <form action="{% url select-courses sem_year,sem_month %}" method="post">
 	{% csrf_token %}
 	<ul>
 		{% for course in courses %}
-			<li>
-				<input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}"{% if course in selected_courses %} checked="checked"{% endif %} />
-				<span class="dept">{{ course.department.code }}</span>
-				<span class="number">{{ course.number }}</span>
-				<span class="name">{{ course.name }}</span>
-				<span class="credits">
-					{% if course.credits != 4 %}
-					{{ course.credits_display }}
-					{% endif %}
-				</span>
-				<span class="seats-left">
-					{% if seats_left_for_course < 30 %}
-					{{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
-					{% endif %}
-				</span>
-			</li>
-		{% endfor %}
-	</ul>
-	{% comment %}
-	<table id="courses">
-		{% for course in courses %}
 		{% with seats_left_for_course=course|seats_left_for_course:sections %}
-		<tr class="course{% if seats_left_for_course == 0 %} full{% endif %}">
-			<td class="checkbox">
-			<input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}"{% if course in selected_courses %} checked="checked"{% endif %} />
-			</td>
-			{% if search_results and query_department == 'all' %}
-			<td class="dept"><label for="course_{{ course.id }}">{{ course.department.code }}</label></td>
-			{% endif %}
-			<td class="number"><label for="course_{{ course.id }}">{{ course.number }}</label></td>
-			<td class="name"><label for="course_{{ course.id }}">{{ course.name }}</label></td>
-			<td class="credits">
-				{% if course.credits != 4 %}
-				<label for="course_{{ course.id }}">{{ course.credits_display }}</label>
-				{% endif %}
-			</td>
-			<td class="seats-left">
-				{% if seats_left_for_course < 30 %}
+			<li class="{% if seats_left_for_course < 1 %}no-seats{% endif %}">
+				<input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}"{% if course in selected_courses %} checked="checked"{% endif %} />
 				<label for="course_{{ course.id }}">
-				{{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
+				<span class="name">{{ course.name }}</span>
+				<span class="secondary">
+					<span class="code">
+						<span class="dept">{{ course.department.code }}</span>
+						<span class="number">{{ course.number }}</span>
+					</span>
+					<span class="seats-left">
+						{% if seats_left_for_course < 30 %}
+						{{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
+						{% endif %}
+					</span>
+					<span class="credits">
+						{% if course.credits != 4 %}
+						{{ course.credits_display }}
+						{% endif %}
+					</span>
+				</span>
 				</label>
-				{% endif %}
-			</td>
-			<td></td>
-		</tr>
+			</li>
 		{% endwith %}
 		{% endfor %}
-	</table>
-	{% endcomment %}
+	</ul>
 	<p class="actions">
 		<input type="hidden" name="redirect_to" value="{{ request.get_full_path }}" />
 		<input type="submit" value="Add Selected" />

@@ -1,6 +1,7 @@
 @import "mixins.scss";
 
 $border-color: #d0d0d0;
+$highlight: #940000;
 
 /* GENERAL */
 html {
@@ -286,10 +287,10 @@ header {
 
 /* SELECTED_COURSES */
 #selected {
-	$highlight: #940000;
 	color: #111;
 
 	h2 {
+		clear: both;
 		color: #333;
 		font-weight: 200;
 		letter-spacing: 1px;
@@ -379,9 +380,65 @@ header {
 /* END SELETED_COURSES */
 
 /* COURSES */
-
-#courses.search-results.specific-dept {
-	display: none;
+#courses {
+	li {
+		&:first-child {
+			border-top: 1px solid $border-color;
+		}
+		border-bottom: 1px solid $border-color;
+	}
+	h2 {
+		clear: both;
+		color: #333;
+		font-weight: 200;
+		letter-spacing: 1px;
+		padding: 0 0 5px 0;
+		text-shadow: 1px 1px 0 #fff;
+	}
+	.name {
+		text-transform: lowercase;
+		padding-left: 2px;
+	}
+	.code {
+		font-size: 85%;
+		color: $highlight;
+	}
+	.credits, .seats-left {
+		color: #666;
+		font-size: 90%;
+		padding-left: 5px;
+	}
+	.credits {
+		padding-top: 1px;
+	}
+	.seats-left {
+		float: right;
+		color: #222;
+		font-size: 85%;
+		padding-top: 3px;
+	}
+	.secondary {
+		clear: left;
+		display: block;
+		margin-top: -2px;
+		padding-left: 22px;
+		text-shadow: 1px 1px 0 #fff;
+	}
+ 	&.search-results.specific-dept {
+		display: none;
+	}
+	.no-seats {
+		color: #777;
+		.credits {
+			color: #999;
+		}
+		.seats-left {
+			color: #666;
+		}
+		.code {
+			color: #766;
+		}
+	}
 }
 
 /* END COURSES */

@@ -343,6 +343,7 @@ header h1 {
 #selected {
   color: #111; }
   #selected h2 {
+    clear: both;
     color: #333;
     font-weight: 200;
     letter-spacing: 1px;
@@ -411,8 +412,50 @@ header h1 {
 
 /* END SELETED_COURSES */
 /* COURSES */
+#courses li {
+  border-bottom: 1px solid #d0d0d0; }
+  #courses li:first-child {
+    border-top: 1px solid #d0d0d0; }
+#courses h2 {
+  clear: both;
+  color: #333;
+  font-weight: 200;
+  letter-spacing: 1px;
+  padding: 0 0 5px 0;
+  text-shadow: 1px 1px 0 #fff; }
+#courses .name {
+  text-transform: lowercase;
+  padding-left: 2px; }
+#courses .code {
+  font-size: 85%;
+  color: #940000; }
+#courses .credits, #courses .seats-left {
+  color: #666;
+  font-size: 90%;
+  padding-left: 5px; }
+#courses .credits {
+  padding-top: 1px; }
+#courses .seats-left {
+  float: right;
+  color: #222;
+  font-size: 85%;
+  padding-top: 3px; }
+#courses .secondary {
+  clear: left;
+  display: block;
+  margin-top: -2px;
+  padding-left: 22px;
+  text-shadow: 1px 1px 0 #fff; }
 #courses.search-results.specific-dept {
   display: none; }
+#courses .no-seats {
+  color: #777; }
+  #courses .no-seats .credits {
+    color: #999; }
+  #courses .no-seats .seats-left {
+    color: #666; }
+  #courses .no-seats .code {
+    color: #766; }
 
 /* END COURSES */
 /* FOOTER */
