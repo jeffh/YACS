@@ -1,49 +1,49 @@
-/* 480 
+@import "mixins.scss";
 
-_____________________________________________________
+body {
+    min-width: 480px;
 
-320 and Up boilerplate extension
+    @include transition(min-width $transition-fast $transition-type);
+}
 
-Author: Andy Clarke
-Version: 0.9b
-URL: http://stuffandnonsense.co.uk/projects/320andup/
-License: http://creativecommons.org/licenses/MIT/
-_____________________________________________________
+.listview {
+    li {
+        a:link, a:visited {
+            padding: 3px 7px;
 
-1.ROOT
-2.HEADINGS
-3.TYPOGRAPHY
-4.LINKS
-5.FIGURES & IMAGES
-6.TABLES
-7.FORMS (See css/mylibs/forms.css)
-8.BANNER — header[role="banner"]
-9.NAVIGATION — nav[role="navigation"]
-10.CONTENT
-11.MAIN — div[role="main"]
-12.COMPLIMENTARY — div[role="complementary"]
-13.CONTENTINFO — footer[role="contentinfo"]
-14.GLOBAL OBJECTS
-15.VENDOR-SPECIFIC 
-16.TEMPLATE SPECIFICS
-17.MODERNIZR
+            @include transition(padding $transition-normal $transition-type);
+        }
+    }
+}
 
-*/
+.searchform {
+    width: 300px;
+    margin: 7px auto;
+    padding: 0;
+    text-align: center;
 
-/* 1.ROOT */
-/* 2.HEADINGS */
-/* 3.TYPOGRAPHY */
-/* 4.LINKS */
-/* 5.FIGURES & IMAGES */
-/* 6.TABLES */
-/* 7.FORMS (See css/mylibs/forms.css) */
-/* 8.BANNER */
-/* 9.NAVIGATION */
-/* 10.CONTENT */
-/* 11.MAIN */
-/* 12.COMPLIMENTARY */
-/* 13.CONTENTINFO */
-/* 14.GLOBAL OBJECTS */
-/* 15.VENDOR-SPECIFIC */
-/* 16.TEMPLATE SPECIFICS */
-/* 17.MODERNIZR */
+    #d {
+        display: block;
+        float: left;
+        width: 75px;
+        /* UI behavior is weird in FF, cut.
+        @include transition(all $transition-normal $transition-type);
+        */
+    }
+    .searchbox {
+        width: 210px;
+        margin-left: 10px;
+
+        @include transition(none $transition-fast $transition-type);
+    }
+}
+
+#selected {
+    padding: 0 10px;
+}
+
+.schedules {
+    .class {
+        width: 83.3333333%;
+    }
+}
