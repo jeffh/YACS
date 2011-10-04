@@ -15,7 +15,9 @@ body {
 	color: #333;
 	width: 85%;
 	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	min-width: 320px;
+	min-width: 315px;
+
+    @include transition(all $transition-fast $transition-type);
 }
 .touch body {
 	width: 100%;
@@ -47,6 +49,7 @@ p {
 	padding: 5px 10px;
 	display: block;
 	border: 1px solid #933;
+
 	@include border-radius(5px);
 	@include background-gradient(#a42020, #741010);
 
@@ -135,36 +138,57 @@ header {
 		border: 0;
 		border-left: 1px solid #943030;
 		border-right: 1px solid #560000;
+
 		@include border-radius(0);
+
+		&:hover {
+			text-decoration: none;
+			border-left: 1px solid #943030;
+			border-right: 1px solid #560000;
+		}
 	}
-	a:link:hover, a:visited:hover {
-		text-decoration: none;
-	}
-	a.selected:link, a.selected:link:visited {
-		cursor: default;
-		border: 0;
-		border-left: 1px solid #943030;
-		border-right: 1px solid #560000;
-		@include background-gradient(#741010, #942020);
+	a.selected {
+		&:link, &:visited {
+			border: 0;
+			border-left: 1px solid #943030;
+			border-right: 1px solid #560000;
+			color: #f77;
+
+			@include background-gradient(#741010, #942020);
+
+			&:hover {
+				color: #fff;
+				@include background-gradient(#741010, #b42020);
+			}
+		}
 	}
 }
 /* END HEADER */
 
 /* SEARCHBOX */
 .searchform {
-	width: 288px;
+	width: 300px;
 	margin: 7px auto;
 	padding: 0;
 	text-align: center;
 
 	#d {
-		display: none;
+        float: left;
+        display: none;
+		font-size: 100%;
+
+        /* FF has an internal min-width, cut.
+        width: 0px;
+	    @include transition(all $transition-fast $transition-type $transition-fast);
+        */
 	}
 	.searchbox {
-		width: 100%;
+		width: 300px;
 		padding: 0;
 		margin: 0;
-		font-size: 120%;
+		font-size: 100%;
+
+	    @include transition(all $transition-normal $transition-type);
 	}
 }
 /* END SEARCHBOX */
@@ -186,6 +210,8 @@ header {
 			color: #222;
 			text-shadow: 1px 1px 0 #fff;
 			border-top: $border;
+
+            @include transition(all $transition-normal $transition-type);
 		}
 
 		&:last-child {
@@ -196,11 +222,11 @@ header {
 		a:link:hover, a:visited:hover {
 			@include highlight-gradient;
 			text-decoration: none;
-			color: #940000;
+			color: $highlight;
 			text-shadow: 1px 1px 0 #fff;
 
 			.disclosure {
-				color: #942222;/*#940000;*/
+				color: $highlight;
 			}
 		}
 		a:link:active, a:visited:active {
@@ -230,6 +256,7 @@ header {
 		color: #fff;
 		text-shadow: 0 0 0 transparent;
 		@include background-gradient(#b30505, #960100);
+		-webkit-tap-highlight-color: -webkit-linear-gradient(top, #b30505 0%, #960100 100%);
 
 		.disclosure {
 			color: #fff;
@@ -262,7 +289,7 @@ header {
 	}
 	a:link:hover, a:visited:hover {
 		.deptname {
-			color: #692222;
+			color: $highlight;
 		}
 	}
 	a:link:active, a:visited:active {
@@ -288,6 +315,7 @@ header {
 /* SELECTED_COURSES */
 #selected {
 	color: #111;
+	padding: 0 5px;
 
 	h2 {
 		clear: both;
@@ -388,7 +416,8 @@ header {
 		border-bottom: 1px solid $border-color;
 	}
 	h2 {
-		clear: both;
+		text-align: center;
+		clear: none;
 		color: #333;
 		font-weight: 200;
 		letter-spacing: 1px;
@@ -396,7 +425,6 @@ header {
 		text-shadow: 1px 1px 0 #fff;
 	}
 	.name {
-		text-transform: lowercase;
 		padding-left: 2px;
 	}
 	.code {
@@ -442,6 +470,173 @@ header {
 }
 
 /* END COURSES */
+
+/* SCHEDULES */
+
+.schedules {
+	h1 {
+		font-size: 130%;
+		padding: 20px 0 0 0;
+		text-align: center;
+		font-weight: 200;
+		text-shadow: 1px 1px 0 #fff;
+		$arrow-height: 10px;
+		$arrow-width: 20px;
+
+		.prev-schedule, .next-schedule {
+			text-decoration: none;
+			font-size: 150%;
+			margin: 0;
+			padding: 2px 0 0 0;
+			color: $highlight - #333;
+			letter-spacing: -8px;
+			border: 10px solid $highlight;
+
+			&:hover {
+				color: #b42020;
+			}
+
+			&.disabled {
+				cursor: default;
+				color: $border-color;
+			}
+		}
+		.prev-schedule {
+			float: left;
+			text-align: left;
+			border-color: transparent $highlight transparent transparent;
+			border-width: $arrow-height $arrow-width $arrow-height 0;
+
+			&:hover {
+				border-color: transparent #b42020 transparent transparent;
+			}
+			&.disabled {
+				border-color: transparent $border-color transparent transparent;
+			}
+		}
+		.next-schedule {
+			float: right;
+			text-align: right;
+			border-color: transparent transparent transparent $highlight;
+			border-width: $arrow-height 0 $arrow-height $arrow-width;
+
+			&:hover {
+				border-color: transparent transparent transparent #b42020;
+			}
+			&.disabled {
+				border-color: transparent transparent transparent $border-color;
+			}
+		}
+	}
+	.schedule-crns {
+		padding: 0;
+		margin: -30px 0 5px 0;
+		text-align: right;
+		font-size: 95%;
+		/* too noisy, remove for now */
+		display: none;
+	}
+
+	.dow {
+		padding: 5px 0;
+		margin: -36px 0 3px 0;
+		display: block;
+		clear: left;
+		text-align: center;
+		font-size: 130%;
+		font-weight: 200;
+		border-bottom: 1px solid $border-color;
+		text-shadow: 1px 1px 0 #fff;
+
+		&:first-child {
+			float: none;
+			padding: 0 0 5px 0;
+			margin: 0 0 3px 0;
+		}
+	}
+	.row {
+		display: block;
+		clear: left;
+		width: 100%;
+		height: 60px;
+		border-bottom: 1px solid $border-color;
+
+		&:first-child {
+			color: $border-color - #444;
+		}
+		&:last-child {
+			color: $border-color - #444;
+		}
+	}
+	.hour {
+		padding: 0 5px 0 0;
+		display: block;
+		width: 50px;
+		text-align: right;
+		text-shadow: 1px 1px 0 #fff;
+	}
+	.class {
+		margin: -23px 0 0 0;
+		clear: left;
+		display: block;
+		float: right;
+		position: relative;
+		width: 78.125%;
+		background: #d7b8b8;
+		padding: 5px;
+		font-size: 90%;
+		border: 1px solid #bc9393;
+
+		@include border-radius(3px);
+
+		.time {
+			float: right;
+			display: block;
+		}
+		.code {
+			display: block;
+		}
+		.name {
+			text-transform: lowercase;
+			padding: 0;
+			font-size: 110%;
+			display: block;
+		}
+		.crn {
+			font-weight: bold;
+		}
+		.location {
+			float: right;
+		}
+		.location, .instructor, .kind {
+			display: block;
+			float: left;
+			padding-top: 1em;
+			padding-right: 0.3em;
+		}
+		.location { float: right; }
+
+		&.small { /* approximately 1 hour time slot */
+			.name { display: none; }
+			.location, .instructor, .kind {
+				padding-top: 0;
+			}
+
+			&.very { /* approximately 30 min time slot */
+				padding: 6px 5px 5px 5px;
+				.time { display: none; }
+				.code, .kind { float: left; }
+				.code { padding-right: 0.3em; }
+				.instructor {
+					float: right;
+				}
+				.location { display: none }
+			}
+		}
+	}
+}
+
+/* END SCHEDULES */
 
 /* FOOTER */
 

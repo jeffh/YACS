@@ -1,28 +1,81 @@
 {% extends 'site_base.html' %}
 
+{% load scheduler %}
 
 {% block header %}
 {{ block.super }}
 <div class="nav">
 	<ul>
-		<li><a href="{% url departments sem_year,sem_month %}" class="button selected">Catalog</a></li>
+		<li><a href="{% url departments sem_year,sem_month %}" class="button">Catalog</a></li>
 		<li><a href="#selected" class="button">Selected</a></li>
-		<li><a href="{% url schedules sem_year,sem_month %}" class="button">Schedules</a></li>
+		<li><a href="{% url schedules sem_year,sem_month %}" class="button selected">Schedules</a></li>
 	</ul>
 </div>
 {% endblock header %}
 
 {% block content %}
-<h2>Schedules</h2>
+<div class="schedules">
+{% for i, schedule in schedules|enumerate %}
+	<h1>
+		<a href="#schedule{% if not forloop.first %}{{ i|add:'-1' }}{% else %}{{ i }}{% endif %}" class="prev-schedule{% if forloop.first %} disabled{% endif %}"></a>
+		<a name="schedule{{ i }}">Schedule {{ i }}</a>
+		<a href="#schedule{% if not forloop.last %}{{ i|add:'1' }}{% else %}{{ i }}{% endif %}" class="next-schedule{% if forloop.last %} disabled{% endif %}"></a>
+	</h1>
+	<div class="schedule">
+		{% for dow in dows %}
+		<h2 class="dow">{{ dow }}</h2>
+		{% if forloop.first %}
+		<p class="schedule-crns">
+			{% for section in schedule.values %}
+				{{ section.crn }}{% if forloop.revcounter0 > 1 %}, {% endif %}
+				{% if forloop.revcounter0 == 1 %}
+				&amp;
+				{% endif %}
+			{% endfor %}
+		</p>
+		{% endif %}
 
-{% for schedule in schedules %}
-<ul>
-{% for course, section in schedule.items %}
-<li>{{ course }} -- {{ section }}</li>
+		<div class="day-calendar">
+			{% for hour in time_range %}
+				<div class="row">
+					<span class="hour">{{ hour|humanize_hour }}</span>
+					{% for course, section in schedule.items %}
+						{% with section|for_dayofweek:dow|for_hour:hour as section_period %}
+							{% if section_period %}
+								{% with section_period.period as period %}
+								<span class="class{% if 35 >= period|period_height:50 %} very{% endif %}{% if 60 >= period|period_height:50 %} small{% endif %}" style="height: {{ period|period_height:50 }}px">
+									<span class="time">
+										{{ period|display_period }}
+									</span>
+									<span class="code">
+										{{ course.code }}-{{ section.number }}
+										(<span class="crn">{{ section.crn }}</span>)
+									</span>
+									<span class="name">
+										{{ course.name }}
+									</span>
+									<span class="kind">
+										{{ section_period.kind }}
+									</span>
+									<span class="instructor">
+										{{ section_period.instructor }}
+									</span>
+									<span class="location">
+										{{ section_period.location }}
+									</span>
+								</span>
+								{% endwith %}
+							{% endif %}
+						{% endwith %}
+					{% endfor %}
+				</div>
+
+			{% endfor %}
+		</div>
+		{% endfor %}
+	</div>
 {% endfor %}
-</ul>
-<hr />
-{% endfor %}
+</div>
 
 {% comment %}
 {% for s in schedules %}

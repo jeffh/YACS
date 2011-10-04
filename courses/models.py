@@ -242,6 +242,11 @@ class Course(models.Model):
         return False
 
     @property
+    def code(self):
+        "Returns the department code and course number as a string."
+        return '%s %s' % (self.department.code, self.number)
+
+    @property
     def credits(self):
         "Returns the number of credits the course is. If there is a range, returns the average."
         if self.min_credits == self.max_credits:
@@ -263,10 +268,10 @@ class Course(models.Model):
     @property
     def available_sections(self):
         return self.sections.filter(seats_taken__lt=F('seats_total'))
-    
+
     def sections_by_semester(self, semester):
         return self.sections.filter(semesters__contains=semester)
-    
+
     def available_sections_by_semester(self, semester):
         return self.available_sections.filter(semesters__contains=semester)
 

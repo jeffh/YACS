@@ -28,23 +28,36 @@ def build_schedule_object_graph(schedules, sections_and_periods):
         for crn in schedule.crns:
             sections.append(crn_to_section[crn])
         sid_to_sections[schedule.id] = sections
-    
+
     for schedule in schedules:
         schedule.all_sections = sid_to_sections[schedule.id]
-    
+
     return schedules
+
+def sorted_daysofweek(dow):
+    "Sorts list of days of the week to what we're expected."
+    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    return [d for d in days if d in dow]
+
+def period_stats(periods):
+    min_time, max_time, dow_used = None, None, set()
+    for period in periods:
+        min_time = min(min_time or period.start, period.start)
+        max_time = max(max_time or period.end, period.end)
+        dow_used = dow_used.union(period.days_of_week)
+
+    timerange = range(min_time.hour -1 , max_time.hour + 2)
+    return timerange, sorted_daysofweek(dow_used)
 
 def section_ids_to_periods(sections_and_periods):
     secid_to_periods = {}
     for snp in sections_and_periods:
-        secid_to_periods[snp.section_id] = secid_to_periods.get(snp.section_id, []) + [snp.period]
+        secid_to_periods[snp.section_id] = secid_to_periods.get(snp.section_id, []) + [snp]
     return secid_to_periods
 
 def force_compute_schedules(request, year, month):
     selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
     crns = [crn for sections in selected_courses.values() for crn in sections]
-
-    print 'crns', selected_courses
 
     sections = Section.objects.filter(
         crn__in=crns, semesters__year__contains=year, semesters__month__contains=month
@@ -59,19 +72,26 @@ def force_compute_schedules(request, year, month):
 
     sid_to_periods = section_ids_to_periods(sections_and_periods)
 
+    periods = [snp.period for snp in sections_and_periods]
+
     selected_courses = {}
     for section in sections:
-        section.all_periods = sid_to_periods[section.id]
+        section.all_section_periods = sid_to_periods[section.id]
         selected_courses[section.course] = selected_courses.get(section.course, []) + [section]
 
     schedules = compute_schedules(selected_courses)
 
     pprint(schedules)
 
+    timerange, dows = period_stats(periods)
+
     return render_to_response('scheduler/schedule_list.html', {
         'schedules': schedules,
+        'time_range': timerange,
+        'dows': dows,
+        'sem_year': year,
+        'sem_month': month,
     }, RequestContext(request))
-
 
 # scrapped... it's a lot more complicated to cache this data. Do it some other time.
 def schedules(request, year, month):
@@ -95,5 +115,7 @@ def schedules(request, year, month):
 
     return render_to_response('scheduler/schedule_list.html', {
         'schedules': schedules,
+        'sem_year': year,
+        'sem_month': month,
     }, RequestContext(request))
 

@@ -26,12 +26,12 @@ _____________________________________________________
 12.COMPLIMENTARY — div[role="complementary"]
 13.CONTENTINFO — footer[role="contentinfo"]
 14.GLOBAL OBJECTS
-15.VENDOR-SPECIFIC 
+15.VENDOR-SPECIFIC
 16.TEMPLATE SPECIFICS
 17.MODERNIZR
 18.CUSTOM
 
-COLOURS 
+COLOURS
 
 */
 
@@ -44,8 +44,8 @@ b, u, i, center,
 dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
 table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
 time, mark, audio, video {
 margin : 0;
@@ -55,48 +55,48 @@ font-size : 100%;
 font : inherit;
 vertical-align : baseline; }
 
-article, aside, details, figcaption, figure, 
+article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 display : block; }
 
-blockquote, q { 
+blockquote, q {
 quotes : none; }
 
-blockquote:before, 
+blockquote:before,
 blockquote:after,
-q:before, 
-q:after { 
+q:before,
+q:after {
 content : ""; content: none; }
 
-del { 
+del {
 text-decoration : line-through; }
 
-ins { 
-background-color : rgb(255,255,153); 
-color : rgb(0,0,0); 
+ins {
+background-color : rgb(255,255,153);
+color : rgb(0,0,0);
 text-decoration : none; }
 
-mark { 
-background-color : rgb(255,255,153); 
-color : rgb(0,0,0); 
-font-style : italic; 
+mark {
+background-color : rgb(255,255,153);
+color : rgb(0,0,0);
+font-style : italic;
 font-weight : bold; }
 
-abbr[title], 
-dfn[title] { 
-border-bottom : 1px dotted; 
+abbr[title],
+dfn[title] {
+border-bottom : 1px dotted;
 cursor : help; }
 
-table { 
-border-collapse : collapse; 
+table {
+border-collapse : collapse;
 border-spacing : 0; }
 
-hr { 
-display : block; 
-height : 1px; 
-border : 0; 
+hr {
+display : block;
+height : 1px;
+border : 0;
 border-top : 1px solid rgb(204,204,204);
-margin : 1em 0; 
+margin : 1em 0;
 padding : 0; }
 
 /* 1.ROOT */
@@ -105,130 +105,130 @@ html {
 overflow-y : scroll;
 background : rgb(255,255,255) /* url(../img/tmp/grid.png) repeat-y 50% 0 */; }
 
-body { 
+body {
 margin : 0 auto;
 padding : 24px 0;
 width : 90% /* 252px */;
 font : 100%/1.4 Cambria, Georgia, Times, "Times New Roman";
-color : rgb(40,40,40); 
+color : rgb(40,40,40);
 background-color : transparent; }
 
 /* 2.HEADINGS */
 
-h1, 
-h2, 
-h3, 
-h4, 
-h5, 
+h1,
+h2,
+h3,
+h4,
+h5,
 h6 {
 font-family : "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-weight : bold; }
 
-h1 { 
+h1 {
 margin-bottom : .75em;
 font-size : 3em; /* 48 / 16 = 3 */
 line-height : 1.2; }
 
-h2 { 
+h2 {
 margin-bottom : .75em;
 font-size : 2em; /* 36 / 16 = 2 */
 line-height : 1.2; }
 
-h3 { 
+h3 {
 margin-bottom : 1em;
 font-size : 1.5em; /* 24 / 16 = 1.5 */
 line-height : 1.3; }
 
-h4 { 
+h4 {
 margin-bottom : 1.25em;
 font-size : 1.25em; /* 20 / 16 = 1.25 */
 line-height : 1.25; }
 
-h5 { 
+h5 {
 margin-bottom : 1.5em;
 font-size : 1em; /* 16 / 16 = 1 */ }
 
-h6 { 
+h6 {
 font-size : 1em; /* 16 / 16 = 1 */ }
 
 /* 3.TYPOGRAPHY */
 
-p, 
-ol, 
-ul, 
-dl, 
-address { 
-margin-bottom : 1.5em; 
+p,
+ol,
+ul,
+dl,
+address {
+margin-bottom : 1.5em;
 font-size : 1em; /* 16 / 16 = 1 */ }
 
-ul, 
-ol { 
-margin : 0 0 1.5em -24px; 
+ul,
+ol {
+margin : 0 0 1.5em -24px;
 padding-left : 24px; }
 
-ul { 
+ul {
 list-style-type : disc; }
 
-ol { 
+ol {
 list-style-type : decimal; }
 
-li ul, 
-li ol { 
+li ul,
+li ol {
 margin : 0;
 font-size : 1em; /* 16 / 16 = 1 */ }
 
-dl, 
-dd { 
+dl,
+dd {
 margin-bottom : 1.5em; }
 
-dt { 
+dt {
 font-weight : normal; }
 
-blockquote  { 
-margin : 0 0 1.5em -24px; 
-padding-left : 24px; 
+blockquote  {
+margin : 0 0 1.5em -24px;
+padding-left : 24px;
 border-left : 1px solid rgb(200,200,200);
 font-style : italic; }
 
-blockquote:before, 
-blockquote:after, 
-q:before, 
+blockquote:before,
+blockquote:after,
+q:before,
 q:after {
 content : '';
 content : none; }
 
-b, 
-strong	{ 
+b,
+strong	{
 font-weight : bold; }
 
-i, 
-em { 
+i,
+em {
 font-style : italic; }
 
-sup, 
-sub { 
+sup,
+sub {
 position : relative;
-font-size : 75%; 
+font-size : 75%;
 line-height : 0; }
 
-sup { 
+sup {
 top : -.5em; }
 
-sub { 
+sub {
 bottom : -.25em; }
 
-address { 
+address {
 font-style : normal; }
 
-pre { 
-margin-bottom : 1.5em; 
-white-space : pre; 
-white-space : pre-wrap; 
+pre {
+margin-bottom : 1.5em;
+white-space : pre;
+white-space : pre-wrap;
 word-wrap : break-word; }
 
-pre, 
-code { 
-font : .875em 'andale mono', 'lucida console', monospace; 
+pre,
+code {
+font : .875em 'andale mono', 'lucida console', monospace;
 line-height : 1.5; }
 
 small {
@@ -236,19 +236,19 @@ font-size : 1em; /* 16 / 16 = 1 */ }
 
 /* 4.LINKS */
 
-a:link, 
+a:link,
 a:link:visited {
 outline : none;
 color : rgb(23,119,175);
 text-decoration : none; }
- 
-a:link:hover { 
+
+a:link:hover {
 outline : none;
-color : rgb(40,40,40); 
+color : rgb(40,40,40);
 text-decoration : underline; }
- 
-a:link:active, 
-a:link:focus { 
+
+a:link:active,
+a:link:focus {
 outline : none;
 color : rgb(0,0,0); }
 
@@ -269,23 +269,23 @@ font-weight : normal; }
 
 /* 6.TABLES */
 
-table { 
+table {
 border-collapse : collapse;
 border-spacing : 0;
-margin-bottom : 1.4em; 
+margin-bottom : 1.4em;
 width : 100%;
 font-size : .875em; /* 14 / 16 = .875 */ }
 
-th { 
+th {
 font-weight : bold; }
 
-th, td, caption { 
+th, td, caption {
 padding : .25em 10px .25em 5px; }
 
-tfoot { 
+tfoot {
 font-style : italic; }
 
-caption { 
+caption {
 background-color : transparent; }
 
 /* 7.FORMS (See css/mylibs/forms.css) */
@@ -299,67 +299,69 @@ background-color : transparent; }
 
 /* 14.GLOBAL OBJECTS */
 
-.clearfix { 
+.clearfix {
 zoom : 1; }
 
-.clearfix:before, 
-.clearfix:after { 
-content : "\0020"; 
-display : block; 
-height : 0; 
+.clearfix:before,
+.clearfix:after {
+content : "\0020";
+display : block;
+height : 0;
 overflow : hidden; }
 
-.clearfix:after { 
+.clearfix:after {
 clear : both; }
 
 /* 15.VENDOR-SPECIFIC */
 
 body {
--webkit-text-size-adjust : 100%; 
+-webkit-text-size-adjust : 100%;
 -ms-text-size-adjust : 100%; }
 
-a:link { 
+a:link {
 -webkit-tap-highlight-color : rgb(52,158,219); }
 
-::-webkit-selection { 
-background : rgb(23,119,175); 
-color : rgb(250,250,250); 
+::-webkit-selection {
+background : rgb(23,119,175);
+color : rgb(250,250,250);
 text-shadow : none; }
 
-::-moz-selection { 
-background : rgb(23,119,175); 
-color : rgb(250,250,250); 
+::-moz-selection {
+background : rgb(23,119,175);
+color : rgb(250,250,250);
 text-shadow : none; }
 
-::selection { 
-background : rgb(23,119,175); 
-color : rgb(250,250,250); 
+::selection {
+background : rgb(23,119,175);
+color : rgb(250,250,250);
 text-shadow : none; }
 
 /* input[type=search] {
 -webkit-appearance : none; }
 
-input[type="search"]::-webkit-search-decoration, 
+input[type="search"]::-webkit-search-decoration,
 input[type="search"]::-webkit-search-cancel-button {
 display : none; } */
 
+/*
 ::-webkit-input-placeholder {
 padding : 10px;
-font-size : .875em; 
+font-size : .875em;
 line-height : 1.4; }
 
-input:-moz-placeholder { 
+input:-moz-placeholder {
 padding : 10px;
-font-size : .875em; 
+font-size : .875em;
 line-height : 1.4; }
+*/
 
 .ie7 img,
-.iem7 img { 
+.iem7 img {
 -ms-interpolation-mode : bicubic; }
 
 div,
 input,
-textarea  { 
+textarea  {
 -webkit-box-sizing : border-box;
 -moz-box-sizing : border-box;
 -o-box-sizing : border-box;
@@ -368,42 +370,42 @@ box-sizing : border-box; }
 /* Non-semantic helper classes */
 
 /* Image replacement */
-.ir { 
-display : block; 
-text-indent : -999em; 
-overflow : hidden; 
-background-repeat : no-repeat; 
-text-align : left; 
+.ir {
+display : block;
+text-indent : -999em;
+overflow : hidden;
+background-repeat : no-repeat;
+text-align : left;
 direction : ltr; }
 
 /* Hide for screenreaders and visual browsers */
-.hidden { 
-display : none; 
+.hidden {
+display : none;
 visibility : hidden; }
 
 /* Hide visually */
-.visuallyhidden { 
+.visuallyhidden {
 position : absolute;
-clip : rect(0 0 0 0); 
+clip : rect(0 0 0 0);
 overflow : hidden;
 margin: -1px;
 padding : 0;
-height : 1px;      
+height : 1px;
 width : 1px;
 border : 0; }
 
 /* Allow an element to be focusable via keyboard  */
 .visuallyhidden.focusable:active,
-.visuallyhidden.focusable:focus { 
+.visuallyhidden.focusable:focus {
 position : static;
-clip : auto; 
+clip : auto;
 overflow : visible;
-height : auto; 
-margin : 0;   
+height : auto;
+margin : 0;
 width : auto; }
 
 /* Hide but maintain layout */
-.invisible { 
+.invisible {
 visibility : hidden; }
 
 /* 16.TEMPLATE SPECIFICS */
@@ -417,8 +419,8 @@ margin-bottom : 1.5em; }
 
 /* 17.MODERNIZR */
 
-/* 
-Sources: 
+/*
+Sources:
 http://meyerweb.com/eric/tools/css/reset
 http://people.opera.com/patrickl/experiments/keyboard/test
 http://gist.github.com/413930

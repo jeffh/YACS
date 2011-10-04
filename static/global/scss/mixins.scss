@@ -1,3 +1,25 @@
+/* Shortcut for CSS3 Transitions for browsers */
+
+$transition-fast: 0.2s;
+$transition-normal: 0.3s;
+$transition-slow: 0.5s;
+$transition-very-slow: 1.0s;
+$transition-type: ease-out;
+
+@mixin transition($args) {
+	-webkit-transition: $args;
+	-moz-transition: $args;
+	-o-transition: $args;
+	-ms-transition: $args;
+	transition: $args;
+}
+
+@mixin opacity($opacity) {
+    zoom: 1;
+    filter: alpha(opacity=$opacity * 100);
+    opacity: $opacity;
+}
+
 @mixin border-radius ($radius) {
 	border-radius: $radius;
 	-moz-border-radius: $radius;
