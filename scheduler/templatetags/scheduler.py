@@ -55,8 +55,9 @@ def remove_zero_prefix(timestr):
 
 @register.filter
 def normal_time(time):
-    return remote_zero_prefix(time.strftime('%I:%M %p'))
+    return remove_zero_prefix(time.strftime('%I:%M'))
 
+# too much code here... may get cut
 @register.filter
 def display_period(period):
     format = "%s-%s"

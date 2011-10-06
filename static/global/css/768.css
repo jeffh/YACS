@@ -1,71 +1,201 @@
-/*
-Syntax error: Invalid CSS after "http": expected expression (e.g. 1px, bold), was "://stuffandnons..."
-        on line 9 of static/global/sass/768.sass
+body {
+  min-width: 768px;
+  width: 95%;
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  -ms-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out; }
 
-4: 
-5: 320 and Up boilerplate extension
-6: 
-7: Author: Andy Clarke
-8: Version: 0.9b
-9: URL: http://stuffandnonsense.co.uk/projects/320andup/
-10: License: http://creativecommons.org/licenses/MIT/
-11: _____________________________________________________
-12: 
-13: 1.ROOT
-14: 2.HEADINGS
+#departments li a:link, #departments li a:visited {
+  font-size: 120%;
+  height: 1.5em; }
+#departments .disclosure {
+  font-size: 110%; }
+#departments .deptcode {
+  display: block;
+  width: 75px;
+  float: left; }
+#departments .deptname {
+  position: relative;
+  top: 2px;
+  display: inline;
+  overflow: visible;
+  text-overflow: clip; }
 
-Backtrace:
-static/global/sass/768.sass:9
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/scss/parser.rb:898:in `expected'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/script/lexer.rb:193:in `expected!'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/script/parser.rb:458:in `assert_done'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/script/parser.rb:50:in `parse'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/script/parser.rb:140:in `parse'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/script.rb:32:in `parse'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:809:in `parse_script'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:585:in `parse_property'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:574:in `parse_property_or_rule'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:555:in `parse_line'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:448:in `build_tree'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:467:in `block in append_children'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:466:in `each'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:466:in `append_children'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:323:in `_to_tree'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:293:in `_render'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:240:in `render'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:319:in `update_stylesheet'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:181:in `block (2 levels) in update_stylesheets'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:175:in `each'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:175:in `block in update_stylesheets'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:173:in `each'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:173:in `update_stylesheets'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:257:in `block (4 levels) in watch'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/path.rb:73:in `call'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/path.rb:73:in `run_callback'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/path.rb:55:in `callback_action'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/path.rb:31:in `create'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/state/directory.rb:26:in `block in created'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/state/directory.rb:25:in `each'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/state/directory.rb:25:in `created'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/state/directory.rb:17:in `refresh'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:17:in `block (2 levels) in run'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:17:in `each'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:17:in `block in run'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:15:in `loop'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:15:in `run'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/monitor.rb:26:in `run'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm.rb:20:in `monitor'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:245:in `watch'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin.rb:111:in `method_missing'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/exec.rb:408:in `watch_or_update'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/exec.rb:294:in `process_result'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/exec.rb:41:in `parse'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/exec.rb:21:in `parse!'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/bin/sass:8:in `<top (required)>'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/bin/sass:19:in `load'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/bin/sass:19:in `<main>'
-*/
-body:before {
-  white-space: pre;
-  font-family: monospace;
-  content: "Syntax error: Invalid CSS after \"http\": expected expression (e.g. 1px, bold), was \"://stuffandnons...\"\A         on line 9 of static/global/sass/768.sass\A \A 4: \A 5: 320 and Up boilerplate extension\A 6: \A 7: Author: Andy Clarke\A 8: Version: 0.9b\A 9: URL: http://stuffandnonsense.co.uk/projects/320andup/\A 10: License: http://creativecommons.org/licenses/MIT/\A 11: _____________________________________________________\A 12: \A 13: 1.ROOT\A 14: 2.HEADINGS"; }
+#courses li {
+  position: relative; }
+#courses .name {
+  font-size: 120%; }
+#courses .code {
+  font-size: 100%;
+  float: left;
+  padding-right: 5px; }
+#courses .seats-left {
+  font-size: 100%;
+  margin-top: -3px; }
+#courses .credits {
+  font-size: 100%;
+  color: #555;
+  display: inline; }
+#courses .instructors {
+  font-size: 95%; }
+  #courses .instructors li {
+    padding: 0 4px; }
+#courses .kinds {
+  display: inline; }
+  #courses .kinds ul {
+    display: inline;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    right: 0; }
+  #courses .kinds li {
+    margin: 0;
+    border: 0;
+    float: right;
+    margin-left: 3px;
+    padding: 0 4px;
+    background: #e0e0e0;
+    color: #333;
+    text-shadow: transparent 0 0 0;
+    border-radius: 0 0 2px 2px;
+    -moz-border-radius: 0 0 2px 2px;
+    -webkit-border-radius: 0 0 2px 2px; }
+
+.schedules {
+  float: right;
+  position: relative;
+  left: -50%; }
+  .schedules h1 {
+    position: relative;
+    left: 50%;
+    clear: both; }
+  .schedules .schedule {
+    padding-top: 1em;
+    position: relative;
+    left: 50%;
+    /*
+    margin-right: 65px;
+    */ }
+  .schedules .dayview {
+    width: 135px;
+    margin: 0 3px;
+    float: left;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    -ms-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out; }
+    .schedules .dayview .hour {
+      display: none;
+      width: 48px; }
+    .schedules .dayview .dow {
+      float: none;
+      padding: 0 0 5px 0;
+      margin: 0 0 3px 0; }
+    .schedules .dayview:first-child .dow {
+      padding-left: 25%; }
+    .schedules .dayview .class {
+      width: 115px;
+      margin: -1px 3px 0 0; }
+      .schedules .dayview .class .time {
+        display: none; }
+      .schedules .dayview .class .crn {
+        display: block; }
+      .schedules .dayview .class .kind {
+        position: absolute;
+        display: block;
+        top: 0;
+        right: 0;
+        font-size: 90%;
+        padding: 5px 5px 0 0;
+        margin: 0; }
+      .schedules .dayview .class.small {
+        font-size: 80%;
+        overflow: hidden;
+        -webkit-transition: all 0.2s ease-in-out;
+        -moz-transition: all 0.2s ease-in-out;
+        -o-transition: all 0.2s ease-in-out;
+        -ms-transition: all 0.2s ease-in-out;
+        transition: all 0.2s ease-in-out; }
+        .schedules .dayview .class.small .kind {
+          position: absolute;
+          top: 5px;
+          right: 0;
+          font-size: 100%; }
+        .schedules .dayview .class.small .name, .schedules .dayview .class.small .location, .schedules .dayview .class.small .instructor {
+          /*display: none;*/
+          zoom: 1;
+          filter: alpha(opacity=0);
+          opacity: 0;
+          -webkit-transition: all 0.3s ease-in-out;
+          -moz-transition: all 0.3s ease-in-out;
+          -o-transition: all 0.3s ease-in-out;
+          -ms-transition: all 0.3s ease-in-out;
+          transition: all 0.3s ease-in-out; }
+        .schedules .dayview .class.small .name {
+          display: none; }
+        .schedules .dayview .class.small .instructor {
+          zoom: 1;
+          filter: alpha(opacity=60);
+          opacity: 0.6; }
+        .schedules .dayview .class.small:hover, .schedules .dayview .class.small .selected {
+          min-height: 70px;
+          box-shadow: 0 2px 10px #666; }
+          .schedules .dayview .class.small:hover .location, .schedules .dayview .class.small:hover .instructor, .schedules .dayview .class.small:hover .name, .schedules .dayview .class.small .selected .location, .schedules .dayview .class.small .selected .instructor, .schedules .dayview .class.small .selected .name {
+            /*display: inline;*/
+            zoom: 1;
+            filter: alpha(opacity=100);
+            opacity: 1;
+            -webkit-transition: all 0.3s ease-in-out;
+            -moz-transition: all 0.3s ease-in-out;
+            -o-transition: all 0.3s ease-in-out;
+            -ms-transition: all 0.3s ease-in-out;
+            transition: all 0.3s ease-in-out; }
+        .schedules .dayview .class.small.very .kind {
+          display: block; }
+        .schedules .dayview .class.small.very .location, .schedules .dayview .class.small.very .instructor, .schedules .dayview .class.small.very .crn {
+          float: none;
+          display: inline;
+          zoom: 1;
+          filter: alpha(opacity=0);
+          opacity: 0;
+          -webkit-transition: all 0.3s ease-in-out;
+          -moz-transition: all 0.3s ease-in-out;
+          -o-transition: all 0.3s ease-in-out;
+          -ms-transition: all 0.3s ease-in-out;
+          transition: all 0.3s ease-in-out; }
+        .schedules .dayview .class.small.very .instructor {
+          display: block;
+          zoom: 1;
+          filter: alpha(opacity=60);
+          opacity: 0.6; }
+        .schedules .dayview .class.small.very .crn {
+          font-weight: bold;
+          zoom: 1;
+          filter: alpha(opacity=40);
+          opacity: 0.4; }
+        .schedules .dayview .class.small.very:hover .location, .schedules .dayview .class.small.very:hover .crn, .schedules .dayview .class.small.very:hover .instructor, .schedules .dayview .class.small.very .selected .location, .schedules .dayview .class.small.very .selected .crn, .schedules .dayview .class.small.very .selected .instructor {
+          zoom: 1;
+          filter: alpha(opacity=100);
+          opacity: 1;
+          -webkit-transition: all 0.3s ease-in-out;
+          -moz-transition: all 0.3s ease-in-out;
+          -o-transition: all 0.3s ease-in-out;
+          -ms-transition: all 0.3s ease-in-out;
+          transition: all 0.3s ease-in-out; }
+    .schedules .dayview:first-child {
+      width: 185px; }
+      .schedules .dayview:first-child .hour {
+        display: block; }
+      .schedules .dayview:first-child .class {
+        margin: -1px 3px 0 0; }
+    .schedules .dayview .name {
+      display: none; }
+    .schedules .dayview .location {
+      float: none;
+      clear: both;
+      padding: 0; }
+    .schedules .dayview .instructor {
+      padding-top: 0.5em; }

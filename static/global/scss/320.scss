@@ -2,6 +2,7 @@
 
 $border-color: #d0d0d0;
 $highlight: #940000;
+$nav-width: 300px;
 
 /* GENERAL */
 html {
@@ -167,7 +168,7 @@ header {
 
 /* SEARCHBOX */
 .searchform {
-	width: 300px;
+	width: $nav-width;
 	margin: 7px auto;
 	padding: 0;
 	text-align: center;
@@ -183,7 +184,7 @@ header {
         */
 	}
 	.searchbox {
-		width: 300px;
+		width: $nav-width;
 		padding: 0;
 		margin: 0;
 		font-size: 100%;
@@ -195,6 +196,9 @@ header {
 
 /* LISTVIEW */
 .listview {
+	p {
+		padding: 5px;
+	}
 	ul {
 		list-style: none;
 	}
@@ -229,7 +233,7 @@ header {
 				color: $highlight;
 			}
 		}
-		a:link:active, a:visited:active {
+		a:link:active, a:visited:active, a.selected {
 			color: #fff;
 			text-shadow: 0 0 0 transparent;
 			@include background-gradient(#b30505, #960100);
@@ -286,6 +290,7 @@ header {
 		width: 95%;
 		overflow: hidden;
 		text-overflow: ellipsis;
+		white-space: normal;
 	}
 	a:link:hover, a:visited:hover {
 		.deptname {
@@ -409,6 +414,15 @@ header {
 
 /* COURSES */
 #courses {
+	margin-top: 1em;
+
+    label {
+        vertical-align: middle;
+    }
+    input { /* checkbox */
+        position: relative;
+        top: 10px;
+    }
 	li {
 		&:first-child {
 			border-top: 1px solid $border-color;
@@ -467,6 +481,9 @@ header {
 			color: #766;
 		}
 	}
+    .instructors, .kinds {
+    	display: none;
+    }
 }
 
 /* END COURSES */
@@ -479,7 +496,9 @@ header {
 		padding: 20px 0 0 0;
 		text-align: center;
 		font-weight: 200;
+		margin: auto;
 		text-shadow: 1px 1px 0 #fff;
+		width: $nav-width - 10px;
 		$arrow-height: 10px;
 		$arrow-width: 20px;
 
@@ -537,18 +556,20 @@ header {
 		display: none;
 	}
 
-	.dow {
-		padding: 5px 0;
-		margin: -36px 0 3px 0;
-		display: block;
-		clear: left;
-		text-align: center;
-		font-size: 130%;
-		font-weight: 200;
-		border-bottom: 1px solid $border-color;
-		text-shadow: 1px 1px 0 #fff;
+	.dayview {
+		.dow {
+			padding: 5px 0;
+			margin: -36px 0 3px 0;
+			display: block;
+			clear: left;
+			text-align: center;
+			font-size: 130%;
+			font-weight: 200;
+			border-bottom: 1px solid $border-color;
+			text-shadow: 1px 1px 0 #fff;
+		}
 
-		&:first-child {
+		&:first-child .dow {
 			float: none;
 			padding: 0 0 5px 0;
 			margin: 0 0 3px 0;
@@ -574,20 +595,22 @@ header {
 		width: 50px;
 		text-align: right;
 		text-shadow: 1px 1px 0 #fff;
+		margin-bottom: -22px;
 	}
 	.class {
-		margin: -23px 0 0 0;
+		margin: -1px 5px 0 0;
 		clear: left;
 		display: block;
 		float: right;
 		position: relative;
-		width: 78.125%;
+		width: 76.5625%;
 		background: #d7b8b8;
 		padding: 5px;
 		font-size: 90%;
 		border: 1px solid #bc9393;
 
 		@include border-radius(3px);
+        @include transition(width $transition-fast $transition-type);
 
 		.time {
 			float: right;
@@ -605,16 +628,19 @@ header {
 		.crn {
 			font-weight: bold;
 		}
-		.location {
-			float: right;
-		}
 		.location, .instructor, .kind {
 			display: block;
 			float: left;
 			padding-top: 1em;
-			padding-right: 0.3em;
+			padding-right: 5px;
 		}
-		.location { float: right; }
+        .kind {
+        	color: #444;
+        }
+		.location {
+			float: right;
+			padding-right: 0;
+		}
 
 		&.small { /* approximately 1 hour time slot */
 			.name { display: none; }
@@ -624,8 +650,8 @@ header {
 
 			&.very { /* approximately 30 min time slot */
 				padding: 6px 5px 5px 5px;
-				.time { display: none; }
-				.code, .kind { float: left; }
+				.time, .kind, .location { display: none; }
+				.code { float: left; }
 				.code { padding-right: 0.3em; }
 				.instructor {
 					float: right;

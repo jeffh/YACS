@@ -37,6 +37,19 @@
 						<span class="dept">{{ course.department.code }}</span>
 						<span class="number">{{ course.number }}</span>
 					</span>
+					{% comment %}
+					<div class="sections">
+						<ul>
+							{% for sections in course.sections.all %}
+							{% for period in sections.periods.all %}
+							<li>
+								{{ period }}
+							</li>
+							{% endfor %}
+							{% endfor %}
+						</ul>
+					</div>
+					{% endcomment %}
 					<span class="seats-left">
 						{% if seats_left_for_course < 30 %}
 						{{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
@@ -47,6 +60,24 @@
 						{{ course.credits_display }}
 						{% endif %}
 					</span>
+					<div class="instructors">
+						<ul>
+							{% for instructor in course.instructors %}
+							<li>
+								{{ instructor }}
+							</li>
+							{% endfor %}
+						</ul>
+					</div>
+					<div class="kinds">
+						<ul>
+							{% for kind in course.kinds %}
+							<li>
+								{{ kind }}
+							</li>
+							{% endfor %}
+						</ul>
+					</div>
 				</span>
 				</label>
 			</li>

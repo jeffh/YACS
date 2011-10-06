@@ -68,19 +68,21 @@ class SearchCoursesMixin(SemesterBasedMixin):
         if isinstance(dept_code, models.Department):
             department_filter = Q(department=dept_code)
         elif dept_code:
-            department_filter = Q(department__code=dept_code)
+            department_filter = Q(department__code__iexact=dept_code)
 
         def filter_types(query):
+            if not query:
+                return Q()
             return Q(department__name__icontains=query) | Q(department__code__icontains=query) | \
                 Q(name__icontains=query) | Q(number__contains=query)
-        
+
         complete_filters = filter_types(query)
         part_filters = Q()
         for part in parts:
             if part:
                 part_filters = part_filters & filter_types(part)
         return (complete_filters | part_filters) & department_filter
-    
+
     def get_context_data(self, **kwargs):
         data = super(SearchCoursesMixin, self).get_context_data(**kwargs)
         year, month = self.get_year_and_month()
@@ -97,8 +99,6 @@ class SearchCoursesListView(SearchCoursesMixin, SelectedCoursesMixin, ListView):
         depart = self.request.GET.get('d', 'all')
         if depart == 'all':
             depart = None
-
-        query_filters = Q()
 
         courses = models.Course.objects.filter_by_semester(year, month).select_related()
         courses = courses.filter(self.search_courses_query(query, depart))
@@ -125,7 +125,7 @@ class CourseByDeptListView(SearchCoursesMixin, SelectedCoursesMixin, ListView):
         query = self.request.GET.get('q')
         if query:
             courses = courses.filter(self.search_courses_query(query, self.department))
-        return courses
+        return courses.select_related()
 
     def get_context_data(self, **kwargs):
         data = super(CourseByDeptListView, self).get_context_data(**kwargs)
@@ -177,7 +177,7 @@ def deselect_courses(request, year, month):
         del course_ids[cid]
 
     request.session[SELECTED_COURSES_SESSION_KEY] = course_ids
-    
+
     if redirect_url:
         return redirect(redirect_url, year=year, month=month)
     return redirect('index')
@@ -186,7 +186,7 @@ def select_courses(request, year, month):
 
     if request.method == 'GET':
         return HttpResponseBadRequest("Nothing here, move along.")
-    
+
     redirect_url = request.POST.get('redirect_to')
 
     if type(request.session.get(SELECTED_COURSES_SESSION_KEY, {})) != dict:
@@ -201,7 +201,7 @@ def select_courses(request, year, month):
         try:
             cid = int(name[len(PREFIX):])
         except (ValueError, TypeError):
-            return HttpResponseBadRequest("Hey, what do you think you're trying to do.") 
+            return HttpResponseBadRequest("Hey, what do you think you're trying to do.")
         # TODO: optimize queries
         section_ids = list(models.Section.objects.filter(
             course__id=cid, semesters__year__contains=year, semesters__month__contains=month
@@ -209,7 +209,7 @@ def select_courses(request, year, month):
         course_ids[cid] = section_ids
 
     request.session[SELECTED_COURSES_SESSION_KEY] = course_ids
-    
+
     if redirect_url:
         return redirect(redirect_url, year=year, month=month)
     return redirect('index')

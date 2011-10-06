@@ -1,43 +1,79 @@
-/* Shortcut for CSS3 Transitions for browsers */
 body {
   min-width: 480px;
-  -webkit-transition: min-width 0.2s ease-out;
-  -moz-transition: min-width 0.2s ease-out;
-  -o-transition: min-width 0.2s ease-out;
-  -ms-transition: min-width 0.2s ease-out;
-  transition: min-width 0.2s ease-out; }
+  -webkit-transition: all 0.2s ease-in-out;
+  -moz-transition: all 0.2s ease-in-out;
+  -o-transition: all 0.2s ease-in-out;
+  -ms-transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out; }
 
 .listview li a:link, .listview li a:visited {
   padding: 3px 7px;
-  -webkit-transition: padding 0.3s ease-out;
-  -moz-transition: padding 0.3s ease-out;
-  -o-transition: padding 0.3s ease-out;
-  -ms-transition: padding 0.3s ease-out;
-  transition: padding 0.3s ease-out; }
+  -webkit-transition: padding 0.3s ease-in-out;
+  -moz-transition: padding 0.3s ease-in-out;
+  -o-transition: padding 0.3s ease-in-out;
+  -ms-transition: padding 0.3s ease-in-out;
+  transition: padding 0.3s ease-in-out; }
 
 .searchform {
-  width: 300px;
+  width: 480px;
   margin: 7px auto;
   padding: 0;
   text-align: center; }
   .searchform #d {
     display: block;
-    float: left;
     width: 75px;
     /* UI behavior is weird in FF, cut.
     @include transition(all $transition-normal $transition-type);
     */ }
   .searchform .searchbox {
-    width: 210px;
+    width: 385px;
     margin-left: 10px;
-    -webkit-transition: none 0.2s ease-out;
-    -moz-transition: none 0.2s ease-out;
-    -o-transition: none 0.2s ease-out;
-    -ms-transition: none 0.2s ease-out;
-    transition: none 0.2s ease-out; }
+    -webkit-transition: none 0.2s ease-in-out;
+    -moz-transition: none 0.2s ease-in-out;
+    -o-transition: none 0.2s ease-in-out;
+    -ms-transition: none 0.2s ease-in-out;
+    transition: none 0.2s ease-in-out; }
 
 #selected {
   padding: 0 10px; }
 
+#courses .instructors {
+  display: inline;
+  font-size: 85%; }
+  #courses .instructors ul {
+    display: table-cell;
+    padding: 0;
+    width: 300px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; }
+  #courses .instructors li {
+    margin: 0;
+    border: 0;
+    display: inline;
+    margin-left: 0.2em;
+    padding: 1px 3px;
+    background: #e0e0e0;
+    color: #333;
+    text-shadow: transparent 0 0 0;
+    border-radius: 2px 2px 0 0;
+    -moz-border-radius: 2px 2px 0 0;
+    -webkit-border-radius: 2px 2px 0 0; }
+#courses .no-seats .instructors li, #courses .no-seats .kinds li {
+  background: #eee;
+  color: #777; }
+
 .schedules .class {
-  width: 83.3333333%; }
+  width: 83.3333333%;
+  -webkit-transition: width 0.2s ease-in-out;
+  -moz-transition: width 0.2s ease-in-out;
+  -o-transition: width 0.2s ease-in-out;
+  -ms-transition: width 0.2s ease-in-out;
+  transition: width 0.2s ease-in-out; }
+  .schedules .class.small {
+    /* approximately 1 hour time slot */ }
+    .schedules .class.small .name {
+      display: block;
+      float: left;
+      padding-right: 0.3em;
+      font-size: 100%; }

@@ -2,6 +2,8 @@
 
 {% load scheduler %}
 
+{% block body-id %}schedules-page{% endblock %}
+
 {% block header %}
 {{ block.super }}
 <div class="nav">
@@ -23,54 +25,58 @@
 	</h1>
 	<div class="schedule">
 		{% for dow in dows %}
-		<h2 class="dow">{{ dow }}</h2>
-		{% if forloop.first %}
-		<p class="schedule-crns">
-			{% for section in schedule.values %}
-				{{ section.crn }}{% if forloop.revcounter0 > 1 %}, {% endif %}
-				{% if forloop.revcounter0 == 1 %}
-				&amp;
-				{% endif %}
-			{% endfor %}
-		</p>
-		{% endif %}
-
-		<div class="day-calendar">
-			{% for hour in time_range %}
-				<div class="row">
-					<span class="hour">{{ hour|humanize_hour }}</span>
-					{% for course, section in schedule.items %}
-						{% with section|for_dayofweek:dow|for_hour:hour as section_period %}
-							{% if section_period %}
-								{% with section_period.period as period %}
-								<span class="class{% if 35 >= period|period_height:50 %} very{% endif %}{% if 60 >= period|period_height:50 %} small{% endif %}" style="height: {{ period|period_height:50 }}px">
-									<span class="time">
-										{{ period|display_period }}
-									</span>
-									<span class="code">
-										{{ course.code }}-{{ section.number }}
-										(<span class="crn">{{ section.crn }}</span>)
-									</span>
-									<span class="name">
-										{{ course.name }}
-									</span>
-									<span class="kind">
-										{{ section_period.kind }}
-									</span>
-									<span class="instructor">
-										{{ section_period.instructor }}
-									</span>
-									<span class="location">
-										{{ section_period.location }}
-									</span>
-								</span>
-								{% endwith %}
-							{% endif %}
-						{% endwith %}
+		<div class="dayview">
+			<h2 class="dow">{{ dow }}</h2>
+			{% if forloop.first %}
+				<p class="schedule-crns">
+					{% for section in schedule.values %}
+						{{ section.crn }}{% if forloop.revcounter0 > 1 %}, {% endif %}
+						{% if forloop.revcounter0 == 1 %}
+						&amp;
+						{% endif %}
 					{% endfor %}
-				</div>
+				</p>
+			{% endif %}
 
-			{% endfor %}
+			<div class="hourview">
+				{% for hour in time_range %}
+					<div class="row">
+						<span class="hour">{{ hour|humanize_hour }}</span>
+						{% for course, section in schedule.items %}
+							{% with section|for_dayofweek:dow|for_hour:hour as section_period %}
+								{% if section_period %}
+									{% with section_period.period as period %}
+									<span class="class{% if 35 >= period|period_height:50 %} very{% endif %}{% if 60 >= period|period_height:50 %} small{% endif %}" style="height: {{ period|period_height:50 }}px">
+										<span class="time">
+											<span class="start">{{ period.start|normal_time }}</span>
+											<span class="sep">-</span>
+											<span class="end">{{ period.end|normal_time }}</span>
+										</span>
+										<span class="code">
+											{{ course.code }}-{{ section.number }}
+											<span class="crn">#{{ section.crn }}</span>
+										</span>
+										<span class="name">
+											{{ course.name }}
+										</span>
+										<span class="kind">
+											{{ section_period.kind }}
+										</span>
+										<span class="instructor">
+											{{ section_period.instructor }}
+										</span>
+										<span class="location">
+											{{ section_period.location }}
+										</span>
+									</span>
+									{% endwith %}
+								{% endif %}
+							{% endwith %}
+						{% endfor %}
+					</div>
+
+				{% endfor %}
+			</div>
 		</div>
 		{% endfor %}
 	</div>

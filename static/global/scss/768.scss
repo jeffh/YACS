@@ -1,49 +1,228 @@
-/* 768 
+@import "mixins.scss";
 
-_____________________________________________________
+body {
+    min-width: 768px;
+    width: 95%;
 
-320 and Up boilerplate extension
+    @include transition(all $transition-fast $transition-type);
+}
 
-Author: Andy Clarke
-Version: 0.9b
-URL: http://stuffandnonsense.co.uk/projects/320andup/
-License: http://creativecommons.org/licenses/MIT/
-_____________________________________________________
+#departments {
+    li {
+        a:link, a:visited {
+            font-size: 120%;
+            height: 1.5em;
+        }
+    }
+    .disclosure {
+        font-size: 110%;
+    }
+    .deptcode {
+        display: block;
+        width: 75px;
+        float: left;
+    }
+    .deptname {
+        position: relative;
+        top: 2px;
+        display: inline;
+        overflow: visible;
+        text-overflow: clip;
+    }
+}
 
-1.ROOT
-2.HEADINGS
-3.TYPOGRAPHY
-4.LINKS
-5.FIGURES & IMAGES
-6.TABLES
-7.FORMS (See css/mylibs/forms.css)
-8.BANNER — header[role="banner"]
-9.NAVIGATION — nav[role="navigation"]
-10.CONTENT
-11.MAIN — div[role="main"]
-12.COMPLIMENTARY — div[role="complementary"]
-13.CONTENTINFO — footer[role="contentinfo"]
-14.GLOBAL OBJECTS
-15.VENDOR-SPECIFIC 
-16.TEMPLATE SPECIFICS
-17.MODERNIZR
+#courses {
+    li {
+        position: relative;
+    }
+    .name {
+        font-size: 120%;
+    }
+    .code {
+        font-size: 100%;
+        float: left;
+        padding-right: 5px;
+    }
+    .seats-left {
+        font-size: 100%;
+        margin-top: -3px;
+    }
+    .credits {
+        font-size: 100%;
+        color: #555;
+        display: inline;
+    }
+    .instructors {
+        font-size: 95%;
 
-*/
+        li {
+            padding: 0 4px;
+        }
+    }
+    .kinds {
+        display: inline;
 
-/* 1.ROOT */
-/* 2.HEADINGS */
-/* 3.TYPOGRAPHY */
-/* 4.LINKS */
-/* 5.FIGURES & IMAGES */
-/* 6.TABLES */
-/* 7.FORMS (See css/mylibs/forms.css) */
-/* 8.BANNER */
-/* 9.NAVIGATION */
-/* 10.CONTENT */
-/* 11.MAIN */
-/* 12.COMPLIMENTARY */
-/* 13.CONTENTINFO */
-/* 14.GLOBAL OBJECTS */
-/* 15.VENDOR-SPECIFIC */
-/* 16.TEMPLATE SPECIFICS */
-/* 17.MODERNIZR */
+        ul {
+            display: inline;
+            padding: 0;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+        li {
+            margin: 0;
+            border: 0;
+            float: right;
+            margin-left: 3px;
+            padding: 0 4px;
+            background: $inline-list-bg;
+            color: #333;
+            text-shadow: transparent 0 0 0;
+
+            @include border-radius(0 0 2px 2px);
+        }
+    }
+}
+
+.schedules {
+    float: right;
+    position: relative;
+    left: -50%;
+
+    h1 {
+        position: relative;
+        left: 50%;
+
+        clear: both;
+    }
+    .schedule {
+        padding-top: 1em;
+        position: relative;
+        left: 50%;
+        /*
+        margin-right: 65px;
+        */
+    }
+    .dayview {
+        width: 135px;
+        margin: 0 3px;
+        float: left;
+
+        @include transition(all $transition-fast $transition-type);
+
+        .hour {
+            display: none;
+            width: 48px;
+        }
+        .dow {
+            float: none;
+            padding: 0 0 5px 0;
+            margin: 0 0 3px 0;
+        }
+        &:first-child .dow {
+            padding-left: 25%;
+        }
+        .class {
+            width: 115px;
+            margin: -1px 3px 0 0;
+
+            .time { display: none }
+
+            .crn {
+                display: block;
+            }
+            .kind {
+                position: absolute;
+                display: block;
+                top: 0;
+                right: 0;
+                font-size: 90%;
+                padding: 5px 5px 0 0;
+                margin: 0;
+            }
+
+            &.small {
+                font-size: 80%;
+                overflow: hidden;
+
+                @include transition(all $transition-fast $transition-type);
+
+                .kind {
+                    position: absolute;
+                    top: 5px;
+                    right: 0;
+                    font-size: 100%;
+                }
+
+                .name, .location, .instructor {
+                    /*display: none;*/
+                    @include opacity(0.0);
+                    @include transition(all $transition-normal $transition-type);
+                }
+                .name {
+                    display: none;
+                }
+                .instructor {
+                    @include opacity(0.6);
+                }
+
+                &:hover, .selected {
+                    min-height: 70px;
+                    box-shadow: 0 2px 10px #666;
+
+                    .location, .instructor, .name {
+                        /*display: inline;*/
+                        @include opacity(1.0);
+                        @include transition(all $transition-normal $transition-type);
+                    }
+                }
+                &.very {
+                    .kind {
+                        display: block;
+                    }
+                    .location, .instructor, .crn {
+                        float: none;
+                        display: inline;
+                        @include opacity(0.0);
+                        @include transition(all $transition-normal $transition-type);
+                    }
+                    .instructor {
+                        display: block;
+                        @include opacity(0.6);
+                    }
+                    .crn {
+                        font-weight: bold;
+                        @include opacity(0.4);
+                    }
+                    &:hover, .selected {
+                        .location, .crn, .instructor {
+                            @include opacity(1.0);
+                            @include transition(all $transition-normal $transition-type);
+                        }
+                    }
+                }
+            }
+        }
+
+        &:first-child {
+            width: 185px;
+            .hour {
+                display: block;
+            }
+            .class {
+                margin: -1px 3px 0 0;
+            }
+        }
+        .name {
+            display: none;
+        }
+        .location {
+            float: none;
+            clear: both;
+            padding: 0;
+        }
+        .instructor {
+            padding-top: 0.5em;
+        }
+    }
+}

@@ -3,7 +3,7 @@
 body {
     min-width: 480px;
 
-    @include transition(min-width $transition-fast $transition-type);
+    @include transition(all $transition-fast $transition-type);
 }
 
 .listview {
@@ -17,21 +17,20 @@ body {
 }
 
 .searchform {
-    width: 300px;
+    width: 480px;
     margin: 7px auto;
     padding: 0;
     text-align: center;
 
     #d {
         display: block;
-        float: left;
         width: 75px;
         /* UI behavior is weird in FF, cut.
         @include transition(all $transition-normal $transition-type);
         */
     }
     .searchbox {
-        width: 210px;
+        width: 385px;
         margin-left: 10px;
 
         @include transition(none $transition-fast $transition-type);
@@ -42,8 +41,56 @@ body {
     padding: 0 10px;
 }
 
+#courses {
+    .instructors {
+        display: inline;
+        font-size: 85%;
+
+        ul {
+            display: table-cell;
+            padding: 0;
+            width: 300px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        li {
+            margin: 0;
+            border: 0;
+            display: inline;
+            margin-left: 0.2em;
+            padding: 1px 3px;
+
+            background: $inline-list-bg;
+            color: #333;
+            text-shadow: transparent 0 0 0;
+
+            @include border-radius(2px 2px 0 0);
+        }
+    }
+    .no-seats {
+        .instructors, .kinds {
+            li {
+                background: #eee;
+                color: #777;
+            }
+        }
+    }
+}
+
 .schedules {
     .class {
         width: 83.3333333%;
+
+        @include transition(width $transition-fast $transition-type);
+
+        &.small { /* approximately 1 hour time slot */
+            .name {
+                display: block;
+                float: left;
+                padding-right: 0.3em;
+                font-size: 100%;
+            }
+        }
     }
 }

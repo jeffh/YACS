@@ -22,7 +22,7 @@ URL: http://stuffandnonsense.co.uk/projects/320andup
 {% block head %}{% endblock %}
 </head>
 
-<body class="clearfix">
+<body class="clearfix" id="{% block body-id %}{% endblock %}">
 
 <header role="banner" class="clearfix">
 {% block header %}
@@ -32,7 +32,7 @@ URL: http://stuffandnonsense.co.uk/projects/320andup
 
 <div class="content clearfix">
 
-<div role="main">
+<div role="main" class="main">
 {% block content %}{% endblock %}
 </div>
 

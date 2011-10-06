@@ -1,10 +1,10 @@
-/* Shortcut for CSS3 Transitions for browsers */
+$inline-list-bg: #e0e0e0;
 
 $transition-fast: 0.2s;
 $transition-normal: 0.3s;
 $transition-slow: 0.5s;
 $transition-very-slow: 1.0s;
-$transition-type: ease-out;
+$transition-type: ease-in-out;
 
 @mixin transition($args) {
 	-webkit-transition: $args;

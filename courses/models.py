@@ -1,12 +1,13 @@
 from django.utils.importlib import import_module
 from django.db import models
-from timetable.courses.managers import SemesterBasedManager
+from timetable.courses import managers
 from timetable.courses.utils import options, capitalized
 from django.core.exceptions import ValidationError
 from django.db.models import F
 
 __all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting',
     'Course', 'OfferedFor', 'SectionPeriod']
+
 
 class Semester(models.Model):
     """Represents the semester / quarter for a college. Courses may not be offered every semester.
@@ -34,7 +35,7 @@ class Department(models.Model):
     code = models.CharField(max_length=50, unique=True)
     semesters = models.ManyToManyField(Semester, through='SemesterDepartment', related_name='departments')
 
-    objects = SemesterBasedManager()
+    objects = managers.SemesterBasedManager()
 
     class Meta:
         ordering = ['code']
@@ -165,7 +166,7 @@ class Section(models.Model):
     seats_taken = models.IntegerField()
     seats_total = models.IntegerField()
 
-    objects = SemesterBasedManager()
+    objects = managers.SemesterBasedManager()
 
     class Meta:
         ordering = ['number']
@@ -223,7 +224,7 @@ class Course(models.Model):
 
     grade_type = models.CharField(max_length=150, blank=True, default='')
 
-    objects = SemesterBasedManager()
+    objects = managers.SemesterBasedManager()
 
     class Meta:
         unique_together = ('department', 'number')
@@ -260,7 +261,6 @@ class Course(models.Model):
             return "%d credit%s" % (self.min_credits, '' if self.min_credits == 1 else 's')
         return "%d - %d credits" % (self.min_credits, self.max_credits)
 
-
     @credits.setter
     def credits(self, value):
         self.min_credits = self.max_credits = int(value)
@@ -275,11 +275,24 @@ class Course(models.Model):
     def available_sections_by_semester(self, semester):
         return self.available_sections.filter(semesters__contains=semester)
 
+    # TODO: These few properties should be moved into a manager for query optimization
+    @property
+    def section_periods(self):
+        return SectionPeriod.objects.filter_by_course(course=self)
+
+    @property
+    def instructors(self):
+        return SectionPeriod.objects.select_instructors(course=self)
+
+    @property
+    def kinds(self):
+        return SectionPeriod.objects.select_kinds(course=self)
+
 
 class OfferedFor(models.Model):
     "The M2M model of courses and semesters."
-    course = models.ForeignKey(Course, related_name='offered_for')
-    semester = models.ForeignKey(Semester, related_name='offers')
+    course = models.ForeignKey('Course', related_name='offered_for')
+    semester = models.ForeignKey('Semester', related_name='offers')
 
     class Meta:
         unique_together = ('course', 'semester')
@@ -291,15 +304,17 @@ class OfferedFor(models.Model):
 
 class SectionPeriod(models.Model):
     "M2M model of sections and periods"
-    period = models.ForeignKey(Period, related_name='section_times')
-    section = models.ForeignKey(Section, related_name='section_times')
+    period = models.ForeignKey('Period', related_name='section_times')
+    section = models.ForeignKey('Section', related_name='section_times')
 
     # we could do M2M here, but the other data here is related, and it's just easier have one link
     # per semeter...
-    semester = models.ForeignKey(Semester, related_name='section_times')
+    semester = models.ForeignKey('Semester', related_name='section_times')
     instructor = models.CharField(max_length=150, blank=True)
     location = models.CharField(max_length=150, blank=True)
     kind = models.CharField(max_length=75, help_text="The kind of meeting time (eg - lab, recitation, lecture, etc.)")
+
+    objects = managers.SectionPeriodManager()
 
     class Meta:
         unique_together = ('period', 'section', 'semester')
@@ -315,14 +330,15 @@ class SectionPeriod(models.Model):
 
 class SemesterDepartment(models.Model):
     "M2M model of departments and semesters."
-    department = models.ForeignKey(Department, related_name='+')
-    semester = models.ForeignKey(Semester, related_name='+')
+    department = models.ForeignKey('Department', related_name='+')
+    semester = models.ForeignKey('Semester', related_name='+')
 
     class Meta:
         unique_together = ('department', 'semester')
 
 class SemesterSection(models.Model):
     "M2M model of semesters and sections."
-    semester = models.ForeignKey(Semester, related_name='+')
-    section = models.ForeignKey(Section, related_name='+')
+    semester = models.ForeignKey('Semester', related_name='+')
+    section = models.ForeignKey('Section', related_name='+')
 
+### END RELATED MODELS ###
