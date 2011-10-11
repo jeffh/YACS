@@ -16,7 +16,7 @@ class DepartmentHandler(ReadAPIBaseHandler):
     model = courses.Department
 
     def read(self, request, version, year=None, month=None):
-        return self.model.objects.filter_by_semester(year, month).distinct()
+        return self.model.objects.by_semester(year, month).distinct()
 
 class SemesterHandler(ReadAPIBaseHandler):
     model = courses.Semester
@@ -38,7 +38,7 @@ class BulkCourseHandler(ReadAPIBaseHandler):
     fields = ('id', 'name', 'min_credits', 'max_credits', 'number')
 
     def read(self, request, version, code=None, number=None, year=None, month=None, name=None, crns=None):
-        qs = self.model.objects.filter_by_semester(year, month)
+        qs = self.model.objects.by_semester(year, month)
 
         # filter by CRNs
         if request.GET.get('crns'):
@@ -94,7 +94,7 @@ class SectionHandler(ReadAPIBaseHandler):
     )
 
     def read(self, request, version, cid=None, number=None, crn=None, year=None, month=None):
-        qs = self.model.objects.filter_by_semester(year, month)
+        qs = self.model.objects.by_semester(year, month)
 
         if cid is not None:
             qs = qs.filter(course__id=cid)

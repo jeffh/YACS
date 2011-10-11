@@ -1,4 +1,45 @@
 
+class ExtendedAttributeError(AttributeError):
+    def __init__(self, msg, obj, full_attr, error_attr):
+        super(ExtendedAttributeError, self).__init__(msg % {
+            'obj': obj,
+            'full_attr': full_attr, # the full path we were trying to access
+            'error_attr': error_attr, # the attr access that caused the error
+        })
+        self.obj = obj
+        self.full_attr = full_attr
+        self.error_attr = error_attr
+
+_NONE = object()
+def extended_getattr(obj, attrpath, default=_NONE):
+    """Like getattr, but allows the attrname to be a dot-path notation::
+
+      extended_getattr(obj, 'a.b') == obj.a.b
+    """
+    path = str(attrpath).split('.')
+    value = obj
+    for name in path:
+        value = getattr(value, name, _NONE)
+        if value == _NONE:
+            raise ExtendedAttributeError("%(obj)r does not have attribute %(error_attr)r when trying to walk %(full_attr)r", value, attrpath, name)
+    return value
+
+def dict_by_attr(collection, attrname):
+    """Creates a dictionary of a collection using a specific attribute name of each item as the key.
+    Uses a list as the value to avoid overwriting objects with duplicate key values.
+
+    Alternatively, attrname can be a function that returns the key to store the object into.
+    """
+    mapping = {}
+    for item in collection:
+        if callable(attrname):
+            key = attrname(item)
+        else:
+            key = extended_getattr(item, attrname)
+        mapping[key] = mapping.get(key, []) + [item]
+    return mapping
+
+
 def options(amount=None):
     """Provides values for options which can be ORed together.
 

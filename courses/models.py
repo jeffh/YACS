@@ -35,7 +35,7 @@ class Department(models.Model):
     code = models.CharField(max_length=50, unique=True)
     semesters = models.ManyToManyField(Semester, through='SemesterDepartment', related_name='departments')
 
-    objects = managers.SemesterBasedManager()
+    objects = managers.QuerySetManager(managers.SemesterBasedQuerySet)
 
     class Meta:
         ordering = ['code']
@@ -166,7 +166,7 @@ class Section(models.Model):
     seats_taken = models.IntegerField()
     seats_total = models.IntegerField()
 
-    objects = managers.SemesterBasedManager()
+    objects = managers.QuerySetManager(managers.SemesterBasedQuerySet)
 
     class Meta:
         ordering = ['number']
@@ -224,7 +224,7 @@ class Course(models.Model):
 
     grade_type = models.CharField(max_length=150, blank=True, default='')
 
-    objects = managers.SemesterBasedManager()
+    objects = managers.QuerySetManager(managers.CourseManager)
 
     class Meta:
         unique_together = ('department', 'number')
@@ -314,7 +314,7 @@ class SectionPeriod(models.Model):
     location = models.CharField(max_length=150, blank=True)
     kind = models.CharField(max_length=75, help_text="The kind of meeting time (eg - lab, recitation, lecture, etc.)")
 
-    objects = managers.SectionPeriodManager()
+    objects = managers.QuerySetManager(managers.SectionPeriodQuerySet)
 
     class Meta:
         unique_together = ('period', 'section', 'semester')

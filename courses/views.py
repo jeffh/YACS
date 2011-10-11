@@ -11,7 +11,7 @@ SELECTED_COURSES_SESSION_KEY = 'selected'
 
 def get_sections(courses, year, month):
     course_ids = [c.id for c in courses]
-    queryset = models.Section.objects.filter_by_semester(year, month)
+    queryset = models.Section.objects.by_semester(year, month)
     sections = queryset.filter(course__id__in=course_ids)
 
     return sections
@@ -29,7 +29,7 @@ class SelectedCoursesMixin(SemesterBasedMixin):
     def get_selected_courses(self):
         year, month = self.get_year_and_month()
         course_ids = self.request.session.get(SELECTED_COURSES_SESSION_KEY, [])
-        queryset = models.Course.objects.filter_by_semester(year, month)
+        queryset = models.Course.objects.by_semester(year, month)
         courses = queryset.filter(id__in=course_ids).select_related('department')
 
         return courses, get_sections(courses, year, month)
@@ -49,49 +49,24 @@ class SelectedCoursesListView(SelectedCoursesMixin, ListView):
         data = super(SelectedCoursesListView, self).get_context_data(**kwargs)
         return data
 
-
 class DepartmentListView(SelectedCoursesMixin, ListView):
     "Provides all departments."
     context_object_name = 'departments'
 
     def get_queryset(self):
         year, month = self.get_year_and_month()
-        return models.Department.objects.filter_by_semester(year, month)
+        return models.Department.objects.by_semester(year, month)
 
-class SearchCoursesMixin(SemesterBasedMixin):
-    def search_courses_query(self, query, dept_code=None):
-        """Generates a Q object that filters by department name & code; course name & number.
-        """
-        parts = query.split(' ')
-
-        department_filter = Q()
-        if isinstance(dept_code, models.Department):
-            department_filter = Q(department=dept_code)
-        elif dept_code:
-            department_filter = Q(department__code__iexact=dept_code)
-
-        def filter_types(query):
-            if not query:
-                return Q()
-            return Q(department__name__icontains=query) | Q(department__code__icontains=query) | \
-                Q(name__icontains=query) | Q(number__contains=query)
-
-        complete_filters = filter_types(query)
-        part_filters = Q()
-        for part in parts:
-            if part:
-                part_filters = part_filters & filter_types(part)
-        return (complete_filters | part_filters) & department_filter
+class SearchMixin(object):
 
     def get_context_data(self, **kwargs):
-        data = super(SearchCoursesMixin, self).get_context_data(**kwargs)
-        year, month = self.get_year_and_month()
-        data['departments'] = models.Department.objects.filter_by_semester(year, month)
+        data = super(SearchMixin, self).get_context_data(**kwargs)
+        data['departments'] = models.Department.objects.all()
         return data
 
-class SearchCoursesListView(SearchCoursesMixin, SelectedCoursesMixin, ListView):
+class SearchCoursesListView(SearchMixin, SelectedCoursesMixin, ListView):
     context_object_name = 'courses'
-    template_name = 'course_list'
+    template_name = 'courses/course_list.html'
 
     def get_queryset(self):
         year, month = self.get_year_and_month()
@@ -100,32 +75,38 @@ class SearchCoursesListView(SearchCoursesMixin, SelectedCoursesMixin, ListView):
         if depart == 'all':
             depart = None
 
-        courses = models.Course.objects.filter_by_semester(year, month).select_related()
-        courses = courses.filter(self.search_courses_query(query, depart))
+        self.department = None
+        if depart:
+            self.department = models.Department.objects.get(code=depart)
+
+        courses = models.Course.objects.by_semester(year, month).select_related()
+        courses = courses.search(query, self.department)
         if not query:
             courses = courses.order_by('department__code', 'number')
-        return courses
+        return courses.full_select(year, month)
 
     def get_context_data(self, **kwargs):
         data = super(SearchCoursesListView, self).get_context_data(**kwargs)
         data['query'] = self.request.GET.get('q', '')
         data['query_department'] = self.request.GET.get('d', 'all')
+        data['department'] = self.department
         data['search_results'] = True
         data['sections'] = get_sections(data['courses'], *self.get_year_and_month())
         return data
 
-class CourseByDeptListView(SearchCoursesMixin, SelectedCoursesMixin, ListView):
+class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
     context_object_name = 'courses'
+    template_name = 'courses/course_list.html'
 
     def get_queryset(self):
         year, month = self.get_year_and_month()
         self.department = models.Department.objects.get(code=self.kwargs['code'])
-        courses = models.Course.objects.filter_by_semester(year, month).filter(department=self.department)
+        courses = models.Course.objects.by_semester(year, month).by_department(self.department)
 
         query = self.request.GET.get('q')
         if query:
-            courses = courses.filter(self.search_courses_query(query, self.department))
-        return courses.select_related()
+            courses = courses.search(query, self.department)
+        return courses.select_related('department').full_select(year, month)
 
     def get_context_data(self, **kwargs):
         data = super(CourseByDeptListView, self).get_context_data(**kwargs)
@@ -152,7 +133,7 @@ class CourseDetailView(SemesterBasedMixin, DetailView):
 
     def get_sections(self, course):
         year, month = self.get_year_and_month()
-        section_periods = models.SectionPeriod.objects.filter_by_course(course, year, month).select_related()
+        section_periods = models.SectionPeriod.objects.by_course(course, year, month).select_related()
 
         periods_for_section = {}
         for sp in section_periods:
