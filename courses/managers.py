@@ -17,8 +17,13 @@ class SemesterBasedManager(Manager):
 class SectionPeriodManager(SemesterBasedManager):
     use_for_related_fields = True
 
-    def filter_by_course(self, course):
-        return self.filter(section__course=course)
+    def filter_by_course(self, course, year=None, month=None):
+        qs = self
+        if year:
+            qs = qs.filter(semester__year__contains=year)
+        if month:
+            qs = qs.filter(semester__month__contains=month)
+        return qs.filter(section__course=course)
 
     def select_instructors(self, course):
         return self.filter_by_course(course).values_list('instructor', flat=True).distinct().order_by('instructor')

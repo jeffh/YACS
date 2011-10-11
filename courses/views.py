@@ -1,4 +1,4 @@
-from django.views.generic import ListView, RedirectView
+from django.views.generic import ListView, RedirectView, DetailView
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseBadRequest
 from django.shortcuts import redirect
@@ -133,6 +133,36 @@ class CourseByDeptListView(SearchCoursesMixin, SelectedCoursesMixin, ListView):
         data['query'] = self.request.GET.get('q', '')
         data['sections'] = get_sections(data['courses'], *self.get_year_and_month())
         return data
+
+class CourseDetailView(SemesterBasedMixin, DetailView):
+    "Shows gruesome amount of detail for a course"
+    context_object_name = 'course'
+
+    def get_query_set(self):
+        return models.Course.objects.all().select_related()
+
+    def get_object(self):
+        deptcode, number = self.kwargs.get('code'), self.kwargs.get('number')
+        obj = self.get_query_set().get(department__code=deptcode, number=number)
+
+        # attach additional properties:
+        obj.all_sections = self.get_sections(obj)
+
+        return obj
+
+    def get_sections(self, course):
+        year, month = self.get_year_and_month()
+        section_periods = models.SectionPeriod.objects.filter_by_course(course, year, month).select_related()
+
+        periods_for_section = {}
+        for sp in section_periods:
+            periods_for_section[sp.section] = periods_for_section.get(sp.section, []) + [sp.period]
+
+        sections = []
+        for sp in section_periods:
+            sp.section.all_periods = periods_for_section[sp.section]
+            sections.append(sp.section)
+        return sections
 
 class RedirectToLatestSemesterRedirectView(RedirectView):
     "Simply redirects to the latest semester."
