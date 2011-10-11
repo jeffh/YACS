@@ -14,8 +14,13 @@ class ReadAPIBaseHandler(AnonymousBaseHandler):
 class DepartmentHandler(ReadAPIBaseHandler):
     model = courses.Department
 
-    def read(self, request, version, year=None, month=None):
-        return self.model.objects.by_semester(year, month).distinct()
+    def read(self, request, version, year=None, month=None, code=None):
+        qs = self.model.objects.by_semester(year, month).distinct()
+
+        if code:
+            return qs.get(code=code)
+
+        return qs
 
 class SemesterHandler(ReadAPIBaseHandler):
     model = courses.Semester
