@@ -29,7 +29,7 @@ class TestAPIAvailability(ShortcutTestCase):
     def test_get_semesters(self):
         "/api/"
         self.get('semesters', status_code=200)
-    
+
     def test_get_semesters_by_year(self):
         "/api/2011/"
         self.get('semesters-by-year', year=2011, status_code=200)
@@ -41,11 +41,11 @@ class TestAPIAvailability(ShortcutTestCase):
     def test_get_courses_by_id(self):
         "/api/2011/1/2/"
         self.get('course-by-id', year=2011, month=1, cid=2, status_code=200)
-    
+
     def test_get_sections_by_number(self):
         "/api/2011/1/2/1/"
         self.get('sections-by-number', year=2011, month=1, cid=2, number=1, status_code=200)
-    
+
     def test_get_sections_by_studying_abroad(self):
         "/api/2011/1/2/study-abroad/"
         self.get('sections-by-study-abroad', year=2011, month=1, cid=2, status_code=200)
@@ -69,4 +69,4 @@ class TestAPIAvailability(ShortcutTestCase):
     def test_get_schedules_via_course_ids(self):
         "/api/2011/1/schedules/?cids=13337"
         self.get('scheduler', year=2011, month=1, get='?cids=2', status_code=200)
-    
+

@@ -79,21 +79,26 @@ def scss():
     "Watches sass files to convert to css"
     local('sass --watch static/global/scss:static/global/css')
 
-def test(app=None):
+def test(apps=None):
     """Returns all tests in lib and custom django apps. Optionally accepts specific apps to test.
     If lib is provided as app, only the lib directory is tested.
     """
-    if app is not None:
+    if apps is None:
+        apps = 'api courses scheduler'
+    apps = apps.split(' ')
+    test_lib = 'lib' in apps
+
+    if test_lib:
+        print
+        print "=" * 50, "TESTING LIB"
+        with lcd('lib'):
+            local('nosetests')
+    for app in apps:
         if app == 'lib':
-            with lcd('lib'):
-                local('nosetests')
-            return
+            continue
+        print
+        print "=" * 50, "TESTING", app.upper()
         local('python manage.py test --failfast ' + app)
-        return
-    local('python manage.py test --failfast api courses scheduler')
-    with lcd('lib'):
-        local('nosetests')
-    return
 
 def loc():
     "Returns the number of lines of all source files, excluding migrations."
@@ -166,7 +171,7 @@ def setup_environment():
 
         if exists(deploy_config.virtualenv_name):
             remove(deploy_config.virtualenv_name, recursive=True, force=True)
-        
+
         if env.use_virtualenv:
             virtualenv('--no-site-packages', deploy_config.virtualenv_name)
 

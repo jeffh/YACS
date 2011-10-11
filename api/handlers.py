@@ -27,10 +27,10 @@ class SemesterHandler(ReadAPIBaseHandler):
 
         if year:
             qs = qs.filter(year=year)
-        
+
         if month:
             qs = qs.filter(month=month)
-        
+
         return qs
 
 class BulkCourseHandler(ReadAPIBaseHandler):
@@ -56,7 +56,7 @@ class BulkCourseHandler(ReadAPIBaseHandler):
 
         if name:
             qs = qs.filter(name__icontains=name)
-        
+
         return qs.distinct()
 
 class CourseHandler(BulkCourseHandler):
@@ -76,12 +76,12 @@ class CourseHandler(BulkCourseHandler):
             return rc.NOT_FOUND
         if cid:
             qs = qs.filter(id=cid)
-        
+
         try:
             obj = qs.get()
         except self.model.DoesNotExist:
             return rc.NOT_FOUND
-        
+
         obj.sections_for_semester = obj.sections.filter(semesters=semester_obj)
         return obj
 
@@ -107,7 +107,7 @@ class SectionHandler(ReadAPIBaseHandler):
 
         if not (cid or number or crn):
             return rc.BAD_REQUEST
-        
+
         objects = []
         for section in qs.select_related().distinct():
             section.section_times_for_semester = section.section_times.filter(
@@ -129,7 +129,7 @@ class ScheduleHandler(AnonymousBaseHandler):
             response = rc.BAD_REQUEST
             response.write(': all params are empty.')
             return response
-        
+
         crns, cids = GET_LIST('crns'), GET_LIST('cids')
         verbose = GET('complete', 0)
 
@@ -145,7 +145,7 @@ class ScheduleHandler(AnonymousBaseHandler):
             self.assert_size_restriction(cids)
             schedules = models.Schedule.objects.get_or_create_all_from_course_ids(cids, semester)
             return self.output_schedules(schedules, verbose)
-        
+
         return []
 
     def coerce_to_ints(self, items):
@@ -183,7 +183,7 @@ class ScheduleHandler(AnonymousBaseHandler):
             for course in schedule.courses.all():
                 result[course.id] = course
         return result
-        
+
 
 class OldScheduleHandler(AnonymousBaseHandler):
     model = courses.Course
@@ -198,7 +198,7 @@ class OldScheduleHandler(AnonymousBaseHandler):
             response = rc.BAD_REQUEST
             response.write(': all params are empty.')
             return response
-        
+
         crns, cids = GET_LIST('crns'), GET_LIST('cids')
         verbose = GET('complete', 0)
 
@@ -246,7 +246,7 @@ class OldScheduleHandler(AnonymousBaseHandler):
                 output.append(s)
 
         return output
-    
+
     def _read_courses(self, request, course_ids, year, month):
         selected_courses = courses.Course.objects.filter(
             id__in=course_ids, semesters__year__contains=year, semesters__month__contains=month
@@ -265,6 +265,6 @@ class OldScheduleHandler(AnonymousBaseHandler):
         selected_courses = {}
         for section in queryset:
             selected_courses[section.course] = selected_courses.get(section.course, []) + [section]
-        
+
         return compute_schedules(selected_courses)
 
