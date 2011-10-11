@@ -8,6 +8,7 @@ django-debug-toolbar==0.8.5
 django-dynamic-fixture==1.2.3
 django-picklefield==0.1.9
 django-piston==0.2.2
+icalendar==2.2
 py-bcrypt==0.2
 pycrypto==2.3
 pyparsing==1.5.6
