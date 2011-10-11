@@ -278,15 +278,21 @@ class Course(models.Model):
     # TODO: These few properties should be moved into a manager for query optimization
     @property
     def section_periods(self):
-        return SectionPeriod.objects.filter_by_course(course=self)
+        if not hasattr(self, 'all_section_periods'):
+            return SectionPeriod.objects.filter_by_course(course=self)
+        return self.all_section_periods
 
     @property
     def instructors(self):
-        return SectionPeriod.objects.select_instructors(course=self)
+        if not hasattr(self, 'all_section_periods'):
+            return SectionPeriod.objects.select_instructors(course=self)
+        return set(sp.instructor for sp in self.section_periods)
 
     @property
     def kinds(self):
-        return SectionPeriod.objects.select_kinds(course=self)
+        if not hasattr(self, 'all_section_periods'):
+            return SectionPeriod.objects.select_kinds(course=self)
+        return set(sp.kind for sp in self.section_periods)
 
 
 class OfferedFor(models.Model):
