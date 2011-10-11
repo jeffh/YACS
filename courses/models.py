@@ -166,7 +166,7 @@ class Section(models.Model):
     seats_taken = models.IntegerField()
     seats_total = models.IntegerField()
 
-    objects = managers.QuerySetManager(managers.SemesterBasedQuerySet)
+    objects = managers.QuerySetManager(managers.SectionQuerySet)
 
     class Meta:
         ordering = ['number']

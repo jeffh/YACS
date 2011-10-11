@@ -10,6 +10,7 @@ from django.conf import settings
 
 from timetable.courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY
 from timetable.courses.models import Semester, SectionPeriod, Course, Section
+from timetable.courses.utils import dict_by_attr
 from timetable.scheduler import models
 from timetable.scheduler.scheduler import compute_schedules
 
@@ -40,29 +41,33 @@ def force_compute_schedules(request, year, month):
     selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
     crns = [crn for sections in selected_courses.values() for crn in sections]
 
-    sections = Section.objects.filter(
-        crn__in=crns, semesters__year__contains=year, semesters__month__contains=month
-    ).select_related('course').distinct()
+    #sections = Section.objects.filter(
+    #    crn__in=crns, semesters__year__contains=year, semesters__month__contains=month
+    #).select_related('course').distinct()
 
-    sections_and_periods = SectionPeriod.objects.filter(
-        semester__year__contains=year,
-        semester__month__contains=month,
-        section__crn__in=crns,
-        #section__seats_taken__lt=F('section__seats_total'),
-    ).select_related('section', 'period', 'section__course', 'section__course__department')
+    #sections_and_periods = SectionPeriod.objects.filter(
+    #    semester__year__contains=year,
+    #    semester__month__contains=month,
+    #    section__crn__in=crns,
+    #    #section__seats_taken__lt=F('section__seats_total'),
+    #).select_related('section', 'period', 'section__course', 'section__course__department')
 
-    sid_to_periods = section_ids_to_periods(sections_and_periods)
+    #sid_to_periods = section_ids_to_periods(sections_and_periods)
 
-    periods = [snp.period for snp in sections_and_periods]
+    print 'crns', crns
+    sections = Section.objects.filter(crn__in=crns).select_related('course', 'course__department').full_select(year, month)
 
-    selected_courses = {}
-    for section in sections:
-        section.all_section_periods = sid_to_periods[section.id]
-        selected_courses[section.course] = selected_courses.get(section.course, []) + [section]
+    selected_courses = dict_by_attr(sections, 'course')
+
+    periods = set(p for s in sections for p in s.all_periods)
+    print periods
+
+    #selected_courses = {}
+    #for section in sections:
+    #    section.all_section_periods = sid_to_periods[section.id]
+    #    selected_courses[section.course] = selected_courses.get(section.course, []) + [section]
 
     schedules = compute_schedules(selected_courses)
-
-    pprint(schedules)
 
     timerange, dows = period_stats(periods)
 

@@ -24,7 +24,7 @@ def extended_getattr(obj, attrpath, default=_NONE):
             raise ExtendedAttributeError("%(obj)r does not have attribute %(error_attr)r when trying to walk %(full_attr)r", value, attrpath, name)
     return value
 
-def dict_by_attr(collection, attrname):
+def dict_by_attr(collection, attrname, value_attrname=None):
     """Creates a dictionary of a collection using a specific attribute name of each item as the key.
     Uses a list as the value to avoid overwriting objects with duplicate key values.
 
@@ -36,6 +36,8 @@ def dict_by_attr(collection, attrname):
             key = attrname(item)
         else:
             key = extended_getattr(item, attrname)
+        if value_attrname:
+            item = extended_getattr(item, value_attrname)
         mapping[key] = mapping.get(key, []) + [item]
     return mapping
 

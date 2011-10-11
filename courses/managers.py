@@ -53,6 +53,9 @@ class SectionPeriodQuerySet(SemesterBasedQuerySet):
     def by_course(self, course, year=None, month=None):
         return self.by_semester(year, month).filter(section__course=course)
 
+    def by_sections(self, sections, year=None, month=None):
+        return self.by_semester(year, month).filter(section__in=sections)
+
     def by_courses(self, courses, year=None, month=None):
         return self.by_semester(year, month).filter(section__course__in=courses)
 
@@ -61,6 +64,24 @@ class SectionPeriodQuerySet(SemesterBasedQuerySet):
 
     def select_kinds(self, course):
         return self.by_course(course).values_list('kind', flat=True).distinct().order_by('kind')
+
+class SectionQuerySet(SemesterBasedQuerySet):
+    def full_select(self, year=None, month=None):
+        """Returns all Sections in the given queryset, plus SectionPeriod and Periods.
+        """
+        from timetable.courses.models import SectionPeriod
+        queryset = SectionPeriod.objects.by_sections(self, year, month).select_related('period', 'section')
+
+        sid2sps = dict_by_attr(queryset, 'section.id')
+        sid2periods = dict_by_attr(queryset, 'section.id', value_attrname='period')
+
+        result = []
+        for section in self:
+            section.all_periods = sid2periods.get(section.id, [])
+            section.all_section_periods = sid2sps.get(section.id, [])
+            result.append(section)
+
+        return result
 
 class CourseManager(SemesterBasedQuerySet):
     def _filter_types(self, query):
@@ -78,10 +99,10 @@ class CourseManager(SemesterBasedQuerySet):
         is actively evaluated.
         """
         from timetable.courses.models import SectionPeriod
-        courses = self
-        sps = SectionPeriod.objects.by_courses(courses, year, month).select_related(
+        sps = SectionPeriod.objects.by_courses(self, year, month).select_related(
             'period', 'section', 'section__course'
         )
+
         sid2sps = dict_by_attr(sps, 'section_id')
         cid2sections = dict_by_attr([sp.section for sp in sps], 'course.id')
         cid2sps = dict_by_attr(sps, 'section.course.id')
@@ -90,7 +111,7 @@ class CourseManager(SemesterBasedQuerySet):
             sp.section.all_periods = sid2sps.get(sp.section.id, [])
 
         result = []
-        for course in courses:
+        for course in self:
             course.all_sections = cid2sections.get(course.id, [])
             course.all_section_periods = cid2sps.get(course.id, [])
             result.append(course)
