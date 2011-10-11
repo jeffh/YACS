@@ -11,7 +11,6 @@ class ReadAPIBaseHandler(AnonymousBaseHandler):
     def read(self, request, version):
         return self.model.objects.all()
 
-
 class DepartmentHandler(ReadAPIBaseHandler):
     model = courses.Department
 
@@ -20,7 +19,7 @@ class DepartmentHandler(ReadAPIBaseHandler):
 
 class SemesterHandler(ReadAPIBaseHandler):
     model = courses.Semester
-    exclude = ('id', 'ref',)
+    fields = ('date_updated', 'month', 'name', 'year', 'num_of_departments', 'num_of_courses', 'num_of_sections')
 
     def read(self, request, version, year=None, month=None):
         qs = self.model.objects.all()
@@ -30,6 +29,13 @@ class SemesterHandler(ReadAPIBaseHandler):
 
         if month:
             qs = qs.filter(month=month)
+
+        if year and month:
+            instance = qs.get()
+            instance.num_of_departments = instance.departments.count()
+            instance.num_of_courses = instance.courses.count()
+            instance.num_of_sections = instance.sections.count()
+            return instance
 
         return qs
 
