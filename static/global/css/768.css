@@ -54,14 +54,13 @@ body {
   float: right;
   position: relative;
   left: -50%; }
-  .schedules h1 {
+  .schedules h1, .schedules .schedule, .schedules .share {
     position: relative;
-    left: 50%;
+    left: 50%; }
+  .schedules h1 {
     clear: both; }
   .schedules .schedule {
     padding-top: 1em;
-    position: relative;
-    left: 50%;
     /*
     margin-right: 65px;
     */ }

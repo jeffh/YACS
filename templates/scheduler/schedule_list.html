@@ -23,7 +23,12 @@
 		<a name="schedule{{ i }}">Schedule {{ i }}</a>
 		<a href="#schedule{% if not forloop.last %}{{ i|add:'1' }}{% else %}{{ i }}{% endif %}" class="next-schedule{% if forloop.last %} disabled{% endif %}"></a>
 	</h1>
+	<p class="share">
+	<a href="#facebook">Facebook</a>
+	<a href="#link">Link Here</a>
+	</p>
 	<div class="schedule">
+		{# monday - friday #}
 		{% for dow in dows %}
 		<div class="dayview">
 			<h2 class="dow">{{ dow }}</h2>

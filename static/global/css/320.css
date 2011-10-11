@@ -621,6 +621,8 @@ header h1 {
       border-color: transparent transparent transparent #b42020; }
     .schedules h1 .next-schedule.disabled {
       border-color: transparent transparent transparent #d0d0d0; }
+.schedules .share {
+  text-align: center; }
 .schedules .schedule-crns {
   padding: 0;
   margin: -30px 0 5px 0;

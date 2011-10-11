@@ -71,16 +71,16 @@ body {
     position: relative;
     left: -50%;
 
-    h1 {
+    h1, .schedule, .share {
         position: relative;
         left: 50%;
+    }
 
+    h1 {
         clear: both;
     }
     .schedule {
         padding-top: 1em;
-        position: relative;
-        left: 50%;
         /*
         margin-right: 65px;
         */
