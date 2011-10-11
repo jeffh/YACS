@@ -1,7 +1,7 @@
 @import "mixins.scss";
 
 body {
-    min-width: 480px;
+    min-width: 470px;
 
     @include transition(all $transition-fast $transition-type);
 }
@@ -17,20 +17,20 @@ body {
 }
 
 .searchform {
-    width: 480px;
+    width: 295px;
     margin: 7px auto;
     padding: 0;
     text-align: center;
 
     #d {
         display: block;
-        width: 75px;
+        width: 65px;
         /* UI behavior is weird in FF, cut.
         @include transition(all $transition-normal $transition-type);
         */
     }
     .searchbox {
-        width: 385px;
+        width: 220px;
         margin-left: 10px;
 
         @include transition(none $transition-fast $transition-type);
@@ -42,36 +42,60 @@ body {
 }
 
 #courses {
+    .seats-left {
+        top: 30px;
+    }
     .instructors {
-        display: inline;
+        display: block;
         font-size: 85%;
 
         ul {
-            display: table-cell;
+            display: inline;
             padding: 0;
+            /*
             width: 300px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            */
         }
         li {
             margin: 0;
             border: 0;
             display: inline;
-            margin-left: 0.2em;
-            padding: 1px 3px;
+            padding: 0 2px;
 
             background: $inline-list-bg;
             color: #333;
             text-shadow: transparent 0 0 0;
 
-            @include border-radius(2px 2px 0 0);
+            @include border-radius(2px);
+        }
+    }
+    .kinds {
+        display: inline;
+
+        ul {
+            display: inline;
+            padding: 0;
+            position: absolute;
+            top: 5px;
+            right: 10px;
+        }
+        li {
+            border: 0;
+            float: right;
+            margin: 0 3px 0 0;
+            padding: 0 4px;
+            color: #333;
+            text-shadow: transparent 0 0 0;
+
+            @include border-radius(0 0 2px 2px);
         }
     }
     .no-seats {
         .instructors, .kinds {
             li {
-                background: #eee;
                 color: #777;
             }
         }

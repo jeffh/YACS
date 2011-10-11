@@ -23,7 +23,7 @@ html {
 body {
   padding: 0;
   color: #333;
-  width: 85%;
+  width: 90%;
   font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   min-width: 315px;
   -webkit-transition: all 0.2s ease-in-out;
@@ -51,6 +51,9 @@ a:link:hover, a:visited:hover {
 
 p {
   padding: 0 5px; }
+
+.clear {
+  clear: both; }
 
 .button {
   color: #eee;
@@ -369,7 +372,7 @@ header h1 {
     width: 95%;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: normal; }
+    white-space: noclip; }
   #departments a:link:hover .deptname, #departments a:visited:hover .deptname {
     color: #940000; }
   #departments a:link:active .deptname, #departments a:visited:active .deptname {
@@ -464,11 +467,18 @@ header h1 {
   #courses input {
     /* checkbox */
     position: relative;
-    top: 10px; }
+    top: 8px;
+    float: left; }
   #courses li {
+    position: relative;
     border-bottom: 1px solid #d0d0d0; }
     #courses li:first-child {
       border-top: 1px solid #d0d0d0; }
+  #courses .padded {
+    padding: 4px 8px;
+    display: block; }
+  #courses a:link, #courses a:visited {
+    border: 0; }
   #courses h2 {
     text-align: center;
     clear: none;
@@ -478,41 +488,99 @@ header h1 {
     padding: 0 0 5px 0;
     text-shadow: 1px 1px 0 #fff; }
   #courses .name {
-    padding-left: 2px; }
+    padding-left: 2px;
+    width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: noclip; }
+  #courses .disclosure {
+    float: none;
+    position: absolute;
+    right: 0;
+    top: -1px;
+    /* TODO: add COURSE DETAIL */
+    display: none; }
   #courses .code {
     font-size: 85%;
     color: #940000; }
   #courses .credits, #courses .seats-left {
-    color: #666;
+    color: #222;
     font-size: 90%;
-    padding-left: 5px; }
+    padding-left: 3px; }
   #courses .credits {
-    padding-top: 1px; }
+    display: inline;
+    padding-right: 3px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px; }
   #courses .seats-left {
     float: right;
-    color: #222;
     font-size: 85%;
-    padding-top: 3px; }
+    position: absolute;
+    right: 17px;
+    top: 25px; }
   #courses .secondary {
     clear: left;
     display: block;
     margin-top: -2px;
-    padding-left: 22px;
+    padding-left: 13px;
     text-shadow: 1px 1px 0 #fff; }
-  #courses.search-results.specific-dept {
-    display: none; }
-  #courses .no-seats {
+  #courses .no-seats a:link, #courses .no-seats a:visited, #courses .no-seats .padded {
     color: #777; }
-    #courses .no-seats .credits {
-      color: #999; }
-    #courses .no-seats .seats-left {
+    #courses .no-seats a:link .name, #courses .no-seats a:visited .name, #courses .no-seats .padded .name {
+      color: #777; }
+    #courses .no-seats a:link .credits, #courses .no-seats a:visited .credits, #courses .no-seats .padded .credits {
+      color: #777; }
+    #courses .no-seats a:link .seats-left, #courses .no-seats a:visited .seats-left, #courses .no-seats .padded .seats-left {
       color: #666; }
-    #courses .no-seats .code {
+    #courses .no-seats a:link .code, #courses .no-seats a:visited .code, #courses .no-seats .padded .code {
       color: #766; }
+  #courses a:link:hover, #courses a:visited:hover {
+    background: #fff;
+    background: -moz-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
+    /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(50%, white), color-stop(100%, rgba(255, 255, 255, 0)));
+    /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
+    /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
+    /* Opera11.10+ */
+    background: -ms-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
+    /* IE10+ */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#00ffffff',GradientType=1 );
+    /* IE6-9 */
+    background: linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
+    /* W3C */
+    text-decoration: none;
+    color: #940000;
+    text-shadow: #fff 1px 1px 0; }
+    #courses a:link:hover .name, #courses a:link:hover .code, #courses a:visited:hover .name, #courses a:visited:hover .code {
+      color: #940000; }
+    #courses a:link:hover .credits, #courses a:visited:hover .credits {
+      background: transparent; }
+    #courses a:link:hover .disclosure, #courses a:visited:hover .disclosure {
+      color: #940000; }
+  #courses a:link:active, #courses a:visited:active, #courses a.selected {
+    color: #fff;
+    text-shadow: transparent 0 0 0; }
   #courses .instructors, #courses .kinds {
     display: none; }
 
 /* END COURSES */
+/* COURSE DETAIL */
+#course h1 {
+  font-size: 95%;
+  font-weight: 200;
+  padding: 0;
+  margin: 0; }
+#course h2 {
+  font-weight: 200; }
+#course .code {
+  color: #940000;
+  padding-left: 20px; }
+
+/* END COURSE DETAIL */
 /* SCHEDULES */
 .schedules h1 {
   font-size: 130%;

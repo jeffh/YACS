@@ -2,8 +2,7 @@
 
 body {
     min-width: 768px;
-    width: 95%;
-
+    max-width: 992px; /* TODO: remove me after 992 is implemented */
     @include transition(all $transition-fast $transition-type);
 }
 
@@ -32,6 +31,9 @@ body {
 }
 
 #courses {
+    input { /* checkbox */
+        top: 7px;
+    }
     li {
         position: relative;
     }
@@ -45,41 +47,21 @@ body {
     }
     .seats-left {
         font-size: 100%;
-        margin-top: -3px;
+        top: 30px;
     }
     .credits {
         font-size: 100%;
         color: #555;
-        display: inline;
+        display: block;
+        float: left;
     }
     .instructors {
         font-size: 95%;
+        padding-top: 2px;
+        clear: none;
 
         li {
             padding: 0 4px;
-        }
-    }
-    .kinds {
-        display: inline;
-
-        ul {
-            display: inline;
-            padding: 0;
-            position: absolute;
-            top: 0;
-            right: 0;
-        }
-        li {
-            margin: 0;
-            border: 0;
-            float: right;
-            margin-left: 3px;
-            padding: 0 4px;
-            background: $inline-list-bg;
-            color: #333;
-            text-shadow: transparent 0 0 0;
-
-            @include border-radius(0 0 2px 2px);
         }
     }
 }

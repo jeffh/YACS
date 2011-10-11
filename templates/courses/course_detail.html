@@ -1,0 +1,43 @@
+{% extends 'site_base.html' %}
+
+{% block body-id %}course-page{% endblock %}
+
+{% block header %}
+{{ block.super }}
+<div class="nav">
+    <ul>
+        <li><a href="{% url departments sem_year,sem_month %}" class="button selected">Catalog</a></li>
+        <li><a href="#selected" class="button">Selected</a></li>
+        <li><a href="{% url schedules sem_year,sem_month %}" class="button">Schedules</a></li>
+    </ul>
+</div>
+{% endblock header %}
+
+{% block content %}
+{% include "courses/_search_courses.html" %}
+<div id="course">
+    <h1>
+        <input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}"{% if course in selected_courses %} checked="checked"{% endif %} />
+        {{ course.name }}
+    </h1>
+    <p class="code">{{ course.code }}</p>
+    <h2>Sections</h2>
+    <ul>
+        {% for section in course.all_sections %}
+        <li>
+            Section {{ section.number }} (<span class="crn">{{ section.crn }}</span>)
+            <span class="times-in-words">
+                M &amp; Th from 4:00-5:00pm
+            </span>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <!-- TODO: show week view ??? -->
+</div>
+{% endblock content %}
+
+
+{% block sidebar %}
+{% include 'courses/_selected_courses.html' %}
+{% endblock sidebar %}

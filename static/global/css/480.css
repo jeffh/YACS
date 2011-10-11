@@ -1,5 +1,5 @@
 body {
-  min-width: 480px;
+  min-width: 470px;
   -webkit-transition: all 0.2s ease-in-out;
   -moz-transition: all 0.2s ease-in-out;
   -o-transition: all 0.2s ease-in-out;
@@ -15,18 +15,18 @@ body {
   transition: padding 0.3s ease-in-out; }
 
 .searchform {
-  width: 480px;
+  width: 295px;
   margin: 7px auto;
   padding: 0;
   text-align: center; }
   .searchform #d {
     display: block;
-    width: 75px;
+    width: 65px;
     /* UI behavior is weird in FF, cut.
     @include transition(all $transition-normal $transition-type);
     */ }
   .searchform .searchbox {
-    width: 385px;
+    width: 220px;
     margin-left: 10px;
     -webkit-transition: none 0.2s ease-in-out;
     -moz-transition: none 0.2s ease-in-out;
@@ -37,30 +37,50 @@ body {
 #selected {
   padding: 0 10px; }
 
+#courses .seats-left {
+  top: 30px; }
 #courses .instructors {
-  display: inline;
+  display: block;
   font-size: 85%; }
   #courses .instructors ul {
-    display: table-cell;
+    display: inline;
     padding: 0;
+    /*
     width: 300px;
     overflow: hidden;
     white-space: nowrap;
-    text-overflow: ellipsis; }
+    text-overflow: ellipsis;
+    */ }
   #courses .instructors li {
     margin: 0;
     border: 0;
     display: inline;
-    margin-left: 0.2em;
-    padding: 1px 3px;
-    background: #e0e0e0;
+    padding: 0 2px;
+    background: transparent;
     color: #333;
     text-shadow: transparent 0 0 0;
-    border-radius: 2px 2px 0 0;
-    -moz-border-radius: 2px 2px 0 0;
-    -webkit-border-radius: 2px 2px 0 0; }
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px; }
+#courses .kinds {
+  display: inline; }
+  #courses .kinds ul {
+    display: inline;
+    padding: 0;
+    position: absolute;
+    top: 5px;
+    right: 10px; }
+  #courses .kinds li {
+    border: 0;
+    float: right;
+    margin: 0 3px 0 0;
+    padding: 0 4px;
+    color: #333;
+    text-shadow: transparent 0 0 0;
+    border-radius: 0 0 2px 2px;
+    -moz-border-radius: 0 0 2px 2px;
+    -webkit-border-radius: 0 0 2px 2px; }
 #courses .no-seats .instructors li, #courses .no-seats .kinds li {
-  background: #eee;
   color: #777; }
 
 .schedules .class {

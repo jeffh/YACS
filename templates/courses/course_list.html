@@ -30,56 +30,98 @@
 		{% with seats_left_for_course=course|seats_left_for_course:sections %}
 			<li class="{% if seats_left_for_course < 1 %}no-seats{% endif %}">
 				<input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}"{% if course in selected_courses %} checked="checked"{% endif %} />
-				<label for="course_{{ course.id }}">
-				<span class="name">{{ course.name }}</span>
-				<span class="secondary">
-					<span class="code">
-						<span class="dept">{{ course.department.code }}</span>
-						<span class="number">{{ course.number }}</span>
+				<label class="padded">
+					<span class="name">{{ course.name }}</span>
+					<span class="disclosure">&gt;</span>
+					<span class="secondary">
+						<span class="code">
+							<span class="dept">{{ course.department.code }}</span>
+							<span class="number">{{ course.number }}</span>
+						</span>
+						{% comment %}
+						<div class="sections">
+							<ul>
+								{% for sections in course.sections.all %}
+								{% for period in sections.periods.all %}
+								<li>
+									{{ period }}
+								</li>
+								{% endfor %}
+								{% endfor %}
+							</ul>
+						</div>
+						{% endcomment %}
+						<span class="credits">
+							{% if course.credits != 4 %}
+							{{ course.credits_display }}
+							{% endif %}
+						</span>
+						<span class="seats-left">
+							{% if seats_left_for_course < 30 %}
+							{{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
+							{% endif %}
+						</span>
+						<div class="instructors">
+							<ul>
+								{% for instructor in course.instructors %}
+								<li>
+									{{ instructor }}
+								</li>
+								{% endfor %}
+							</ul>
+						</div>
+						<div class="kinds">
+							<ul>
+								{% for kind in course.kinds %}
+								<li>
+									{{ kind }}
+								</li>
+								{% endfor %}
+							</ul>
+						</div>
 					</span>
-					{% comment %}
-					<div class="sections">
-						<ul>
-							{% for sections in course.sections.all %}
-							{% for period in sections.periods.all %}
-							<li>
-								{{ period }}
-							</li>
-							{% endfor %}
-							{% endfor %}
-						</ul>
-					</div>
-					{% endcomment %}
-					<span class="seats-left">
-						{% if seats_left_for_course < 30 %}
-						{{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
-						{% endif %}
-					</span>
-					<span class="credits">
-						{% if course.credits != 4 %}
-						{{ course.credits_display }}
-						{% endif %}
-					</span>
-					<div class="instructors">
-						<ul>
-							{% for instructor in course.instructors %}
-							<li>
-								{{ instructor }}
-							</li>
-							{% endfor %}
-						</ul>
-					</div>
-					<div class="kinds">
-						<ul>
-							{% for kind in course.kinds %}
-							<li>
-								{{ kind }}
-							</li>
-							{% endfor %}
-						</ul>
-					</div>
-				</span>
 				</label>
+				{% comment %}
+				<a href="{% url course sem_year,sem_month,department.code,course.number %}">
+					<span class="name">{{ course.name }}</span>
+					<span class="disclosure">&gt;</span>
+					<span class="secondary">
+						<span class="code">
+							<span class="dept">{{ course.department.code }}</span>
+							<span class="number">{{ course.number }}</span>
+						</span>
+						<span class="credits">
+							{% if course.credits != 4 %}
+							{{ course.credits_display }}
+							{% endif %}
+						</span>
+						<span class="seats-left">
+							{% if seats_left_for_course < 30 %}
+							{{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
+							{% endif %}
+						</span>
+						<div class="instructors">
+							<ul>
+								{% for instructor in course.instructors %}
+								<li>
+									{{ instructor }}
+								</li>
+								{% endfor %}
+							</ul>
+						</div>
+						<div class="kinds">
+							<ul>
+								{% for kind in course.kinds %}
+								<li>
+									{{ kind }}
+								</li>
+								{% endfor %}
+							</ul>
+						</div>
+					</span>
+				</a>
+				{% endcomment %}
+				<div class="clear"></div>
 			</li>
 		{% endwith %}
 		{% endfor %}

@@ -14,7 +14,7 @@ html {
 body {
 	padding: 0;
 	color: #333;
-	width: 85%;
+	width: 90%;
 	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	min-width: 315px;
 
@@ -43,6 +43,7 @@ a:link:hover, a:visited:hover {
 p {
 	padding: 0 5px;
 }
+.clear { clear: both; }
 .button {
 	color: #eee;
 	text-shadow: 1px 1px 0 #111;
@@ -290,7 +291,7 @@ header {
 		width: 95%;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		white-space: normal;
+		white-space: noclip;
 	}
 	a:link:hover, a:visited:hover {
 		.deptname {
@@ -421,13 +422,23 @@ header {
     }
     input { /* checkbox */
         position: relative;
-        top: 10px;
+        top: 8px;
+        float: left;
     }
 	li {
+		position: relative;
+		border-bottom: 1px solid $border-color;
+
 		&:first-child {
 			border-top: 1px solid $border-color;
 		}
-		border-bottom: 1px solid $border-color;
+	}
+	.padded {
+		padding: 4px 8px;
+		display: block;
+	}
+	a:link, a:visited {
+		border: 0;
 	}
 	h2 {
 		text-align: center;
@@ -440,46 +451,86 @@ header {
 	}
 	.name {
 		padding-left: 2px;
+		width: 90%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: noclip;
+	}
+	.disclosure {
+		float: none;
+		position: absolute;
+		right: 0;
+		top: -1px;
+		/* TODO: add COURSE DETAIL */
+		display: none;
 	}
 	.code {
 		font-size: 85%;
 		color: $highlight;
 	}
 	.credits, .seats-left {
-		color: #666;
+		color: #222;
 		font-size: 90%;
-		padding-left: 5px;
+		padding-left: 3px;
 	}
 	.credits {
-		padding-top: 1px;
+        display: inline;
+        padding-right: 3px;
+        background: #e0e0e0;
+
+        @include border-radius(2px);
 	}
 	.seats-left {
 		float: right;
-		color: #222;
 		font-size: 85%;
-		padding-top: 3px;
+		position: absolute;
+		right: 17px;
+		top: 25px;
 	}
 	.secondary {
 		clear: left;
 		display: block;
 		margin-top: -2px;
-		padding-left: 22px;
+		padding-left: 13px;
 		text-shadow: 1px 1px 0 #fff;
 	}
- 	&.search-results.specific-dept {
-		display: none;
-	}
 	.no-seats {
-		color: #777;
+		a:link, a:visited, .padded {
+			color: #777;
+			.name {
+				color: #777;
+			}
+			.credits {
+				color: #777;
+			}
+			.seats-left {
+				color: #666;
+			}
+			.code {
+				color: #766;
+			}
+		}
+	}
+	a:link:hover, a:visited:hover {
+		@include highlight-gradient;
+		text-decoration: none;
+		color: $highlight;
+		text-shadow: #fff 1px 1px 0;
+
+		.name, .code {
+			color: $highlight;
+		}
 		.credits {
-			color: #999;
+			background: transparent;
 		}
-		.seats-left {
-			color: #666;
+
+		.disclosure {
+			color: $highlight;
 		}
-		.code {
-			color: #766;
-		}
+	}
+	a:link:active, a:visited:active, a.selected {
+		color: #fff;
+		text-shadow: transparent 0 0 0;
 	}
     .instructors, .kinds {
     	display: none;
@@ -487,6 +538,26 @@ header {
 }
 
 /* END COURSES */
+
+
+/* COURSE DETAIL */
+#course {
+	h1 {
+		font-size: 95%;
+		font-weight: 200;
+		padding: 0;
+		margin: 0;
+	}
+	h2 {
+		font-weight: 200;
+
+	}
+	.code {
+		color: $highlight;
+		padding-left: 20px;
+	}
+}
+/* END COURSE DETAIL */
 
 /* SCHEDULES */
 
