@@ -26,10 +26,10 @@ class SemesterBasedQuerySet(QuerySet):
     def by_semester(self, year=None, month=None):
         qs = self
         if year:
-            qs = qs.filter(semesters__year__contains=year)
+            qs = qs.filter(semesters__year__exact=year)
 
         if month:
-            qs = qs.filter(semesters__month__contains=month)
+            qs = qs.filter(semesters__month__exact=month)
 
         if year or month:
             qs = qs.distinct()
@@ -40,10 +40,10 @@ class SectionPeriodQuerySet(SemesterBasedQuerySet):
     def by_semester(self, year=None, month=None):
         qs = self
         if year:
-            qs = qs.filter(semester__year__contains=year)
+            qs = qs.filter(semester__year__exact=year)
 
         if month:
-            qs = qs.filter(semester__month__contains=month)
+            qs = qs.filter(semester__month__exact=month)
 
         if year or month:
             qs = qs.distinct()
