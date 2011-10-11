@@ -1,38 +1,19 @@
+from icalendar import Calendar, Event, UTC, vText
+from datetime import datetime
+
 from django.db.models import F
 from django.views.generic import ListView
+from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
+from django.conf import settings
+
 from timetable.courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY
 from timetable.courses.models import Semester, SectionPeriod, Course, Section
 from timetable.scheduler import models
 from timetable.scheduler.scheduler import compute_schedules
 
-from pprint import pprint
-
-def build_schedule_object_graph(schedules, sections_and_periods):
-    schedules = list(set(schedules))
-
-    secid_to_periods = {}
-    for snp in sections_and_periods:
-        secid_to_periods[snp.section_id] = secid_to_periods.get(snp.section_id, []) + [snp.period]
-
-    crn_to_section = {}
-    for snp in sections_and_periods:
-        snp.section.all_periods = secid_to_periods[snp.section_id]
-        crn_to_section[snp.section.crn] = snp.section
-
-    sid_to_sections = {}
-    for schedule in schedules:
-        sections = []
-        print repr(schedule.crns)
-        for crn in schedule.crns:
-            sections.append(crn_to_section[crn])
-        sid_to_sections[schedule.id] = sections
-
-    for schedule in schedules:
-        schedule.all_sections = sid_to_sections[schedule.id]
-
-    return schedules
+ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')
 
 def sorted_daysofweek(dow):
     "Sorts list of days of the week to what we're expected."
@@ -93,29 +74,41 @@ def force_compute_schedules(request, year, month):
         'sem_month': month,
     }, RequestContext(request))
 
-# scrapped... it's a lot more complicated to cache this data. Do it some other time.
-def schedules(request, year, month):
-    selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
-    crns = [crn for sections in selected_courses.values() for crn in sections]
 
-    semester = get_object_or_404(Semester, year=year, month=month)
-    # we just need objects to be created
-    schedules = models.Schedule.objects.get_or_create_all_from_crns(crns, semester)
+def icalendar(request, year, month, crns):
+    "Exports a given calendar into ics format."
+    # TODO: gather all courses for schedule
+    cal = Calendar()
+    cal.add('prodid', ICAL_PRODID)
+    cal.add('version', '2.0') # ical spec version
 
-    pprint(schedules)
+    # TODO: define instead of using placeholders
+    sections = None # placeholder
+    for section in sections:
+        periods = None # placeholder
+        for period in periods:
+            event = Event()
+            event.add('summary', '%s - %s (%s)' % (section.course.code, section.course.name, section.crn))
 
-    sections_and_periods = SectionPeriod.objects.filter(
-        semester=semester,
-        section__crn__in=crns,
-        #section__seats_taken__lt=F('section__seats_total'),
-    ).select_related('section', 'period', 'section__course', 'section__course__department')
+            # datetime of the first event occurrence
+            event.add('dtstart', datetime.now())
+            event.add('dtend', datetime.now())
 
-    # build the entire schedule object tree
-    schedules = build_schedule_object_graph(schedules, sections_and_periods)
+            # recurrence rule
+            event.add('rrule', dict(
+                freq='weekly',
+                interval=1, # every week
+                byday='mo tu we th fr'.spit(' '),
+                until=datetime.now()
+            ))
+            # dates to exclude
+            #event.add('exdate', (datetime.now(),))
 
-    return render_to_response('scheduler/schedule_list.html', {
-        'schedules': schedules,
-        'sem_year': year,
-        'sem_month': month,
-    }, RequestContext(request))
+            event.add('location', section.section_period.location)
+            event.add('uid', '%s_%s_%s' % (year, month, section.crn))
 
+
+            cal.add_component(event)
+    response = HttpResponse(cal.as_string())
+    response['Content-Type'] = 'text/calendar'
+    return response

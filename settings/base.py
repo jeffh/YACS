@@ -215,9 +215,12 @@ LOGGING = {
 }
 
 # ==== Courses App ====
-COURSES_COLLEGE_NAME = 'Rensselaer'
-COURSES_COLLEGE_SHORT_NAME = 'RPI'
-COURSES_COLLEGE_PARSER = 'timetable.courses.bridge.rpi.import_rpi'
+COURSES_COLLEGE_NAME = 'Rensselaer Polytechnic Institute'  # the full name of the school
+COURSES_COLLEGE_SHORT_NAME = 'RPI'  # short-hand name of the school
+COURSES_COLLEGE_PARSER = 'timetable.courses.bridge.rpi.import_rpi'  # full path to the function that does all the importing
+
+# ==== Scheduler App ====
+SCHEDULER_ICAL_PRODUCT_ID = '-//Jeff Hui//YACS Export 1.0//EN'
 
 # ==== Django BCrypt ====
 # The number of rounds determines the complexity of the bcrypt algorithm.
