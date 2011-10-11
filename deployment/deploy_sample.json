@@ -1,0 +1,49 @@
+{
+    "servers": {
+        "myonlyserver": "user@myserver.com"
+    },
+    "staging": {
+        "databases": {
+            "default": {
+                "engine": "django.db.backends.postgresql_psycopg2",
+                "name": "jeff_timetable_staging",
+                "user": "jeff_timetable_staging",
+                "password": "a very secret password",
+                "host": "localhost",
+                "port": ""
+            }
+        },
+        "roles": {
+            "webservers": ["myonlyserver"],
+            "databases": ["myonlyserver"],
+            "cron": ["myonlyserver"]
+        },
+        "file_paths": {
+
+        },
+        "virtualenv": "staging_timetable_virtualenv",
+        "project_root": "/home/jeff/timetable_staging/timetable"
+    },
+    "production": {
+        "databases": {
+            "default": {
+                "engine": "django.db.backends.postgresql_psycopg2",
+                "name": "jeff_timetable",
+                "user": "jeff_timetable",
+                "password": "a very secret password",
+                "host": "localhost",
+                "port": ""
+            }
+        },
+        "roles": {
+            "webservers": ["myonlyserver"],
+            "databases": ["myonlyserver"],
+            "cron": ["myonlyserver"]
+        },
+        "file_paths": {
+
+        },
+        "virtualenv": "timetable_virtualenv",
+        "project_root": "/home/jeff/timetable/timetable"
+    }
+}
