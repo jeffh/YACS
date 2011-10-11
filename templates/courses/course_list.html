@@ -30,7 +30,7 @@
 		{% with seats_left_for_course=course|seats_left_for_course:sections %}
 			<li class="{% if seats_left_for_course < 1 %}no-seats{% endif %}">
 				<input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}"{% if course in selected_courses %} checked="checked"{% endif %} />
-				<label class="padded">
+				<label class="padded" for="course_{{ course.id }}">
 					<span class="name">{{ course.name }}</span>
 					<span class="disclosure">&gt;</span>
 					<span class="secondary">
@@ -38,19 +38,6 @@
 							<span class="dept">{{ course.department.code }}</span>
 							<span class="number">{{ course.number }}</span>
 						</span>
-						{% comment %}
-						<div class="sections">
-							<ul>
-								{% for sections in course.sections.all %}
-								{% for period in sections.periods.all %}
-								<li>
-									{{ period }}
-								</li>
-								{% endfor %}
-								{% endfor %}
-							</ul>
-						</div>
-						{% endcomment %}
 						<span class="credits">
 							{% if course.credits != 4 %}
 							{{ course.credits_display }}
