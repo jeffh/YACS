@@ -2,6 +2,11 @@ from django.db.models import Manager, Q
 from django.db.models.query import QuerySet
 from timetable.courses.utils import dict_by_attr
 
+# using the fancy queryset manager technique, as describe:
+# http://adam.gomaa.us/blog/2009/feb/16/subclassing-django-querysets/index.html
+#
+# the one flaw is using abstract models. But we're not using that right?
+
 class QuerySetManager(Manager):
     use_for_related_fields = True
     def __init__(self, queryset_class=QuerySet):
