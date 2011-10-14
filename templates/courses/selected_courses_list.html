@@ -1,0 +1,15 @@
+{% extends 'site_base.html' %}
+
+{% load courses %}
+
+{% block header %}
+{{ block.super }}
+{% include '_nav.html' with selected='selected' %}
+{% endblock header %}
+
+{% block content %}
+{% include 'courses/_selected_courses.html' %}
+{% endblock content %}
+
+{% block sidebar %}
+{% endblock sidebar %}
