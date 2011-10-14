@@ -3,6 +3,7 @@ from django_dynamic_fixture import new, get, DynamicFixture as F
 from timetable.courses import models
 from testing_utils import ShortcutTestCase
 from django.utils.simplejson import loads
+from datetime import time
 
 class TestAPI(ShortcutTestCase):
     urls = 'timetable.api.urls'
@@ -114,6 +115,13 @@ class TestAPI(ShortcutTestCase):
         "/api/2011/1/departments/CSCI/"
         json = self.json_get('department', year=2011, month=1, code='CSCI', status_code=200)
         self.assertEqual(json['code'], 'CSCI')
+
+    def test_get_periods(self):
+        json = self.json_get('periods', status_code=200)
+
+    def test_get_period(self):
+        p = get(models.Period, id=1, start=time(), end=time())
+        json = self.json_get('period', pid=p.id, status_code=200)
 
     def test_get_courses_by_department(self):
         "/api/2011/1/departments/CSCI/courses/"

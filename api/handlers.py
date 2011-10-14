@@ -11,6 +11,17 @@ class ReadAPIBaseHandler(AnonymousBaseHandler):
     def read(self, request, version):
         return self.model.objects.all()
 
+class PeriodHandler(ReadAPIBaseHandler):
+    model = courses.Period
+
+    def read(self, request, version, pid=None):
+        qs = self.model.objects.all()
+
+        if pid:
+            return qs.get(pk=pid)
+
+        return qs
+
 class DepartmentHandler(ReadAPIBaseHandler):
     model = courses.Department
 
@@ -24,7 +35,7 @@ class DepartmentHandler(ReadAPIBaseHandler):
 
 class SemesterHandler(ReadAPIBaseHandler):
     model = courses.Semester
-    fields = ('date_updated', 'month', 'name', 'year', 'num_of_departments', 'num_of_courses', 'num_of_sections')
+    fields = ('id', 'date_updated', 'month', 'name', 'year', 'num_of_departments', 'num_of_courses', 'num_of_sections')
 
     def read(self, request, version, year=None, month=None):
         qs = self.model.objects.all()
@@ -99,7 +110,7 @@ class CourseHandler(BulkCourseHandler):
 class SectionHandler(ReadAPIBaseHandler):
     model = courses.Section
     fields = (
-        'number', 'crn', 'seats_taken', 'seats_total',
+        'id', 'number', 'crn', 'seats_taken', 'seats_total',
         ('section_times_for_semester', ('kind', 'location', 'instructor', ('period', ('start', 'end', 'days_of_week')))),
         ('course', ('id', 'name')),
     )
