@@ -1,0 +1,8 @@
+
+<div class="nav">
+    <ul>
+        <li><a href="{% url departments sem_year,sem_month %}" class="catalog button{% if selected == 'catalog' %} selected{% endif %}">Catalog</a></li>
+        <li><a href="{% url selected-courses sem_year,sem_month %}" class="selected-courses button{% if selected == 'selected' %} selected{% endif %}">Selected</a></li>
+        <li><a href="{% url schedules sem_year,sem_month %}" class="schedules button{% if selected == 'schedules' %} selected{% endif %}">Schedules</a></li>
+    </ul>
+</div>
