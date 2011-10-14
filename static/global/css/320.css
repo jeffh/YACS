@@ -582,7 +582,7 @@ header h1 {
 
 /* END COURSE DETAIL */
 /* SCHEDULES */
-.schedules h1 {
+#schedules h1 {
   font-size: 130%;
   padding: 20px 0 0 0;
   text-align: center;
@@ -590,7 +590,7 @@ header h1 {
   margin: auto;
   text-shadow: 1px 1px 0 #fff;
   width: 290px; }
-  .schedules h1 .prev-schedule, .schedules h1 .next-schedule {
+  #schedules h1 .prev-schedule, #schedules h1 .next-schedule {
     text-decoration: none;
     font-size: 150%;
     margin: 0;
@@ -598,39 +598,39 @@ header h1 {
     color: #610000;
     letter-spacing: -8px;
     border: 10px solid #940000; }
-    .schedules h1 .prev-schedule:hover, .schedules h1 .next-schedule:hover {
+    #schedules h1 .prev-schedule:hover, #schedules h1 .next-schedule:hover {
       color: #b42020; }
-    .schedules h1 .prev-schedule.disabled, .schedules h1 .next-schedule.disabled {
+    #schedules h1 .prev-schedule.disabled, #schedules h1 .next-schedule.disabled {
       cursor: default;
       color: #d0d0d0; }
-  .schedules h1 .prev-schedule {
+  #schedules h1 .prev-schedule {
     float: left;
     text-align: left;
     border-color: transparent #940000 transparent transparent;
     border-width: 10px 20px 10px 0; }
-    .schedules h1 .prev-schedule:hover {
+    #schedules h1 .prev-schedule:hover {
       border-color: transparent #b42020 transparent transparent; }
-    .schedules h1 .prev-schedule.disabled {
+    #schedules h1 .prev-schedule.disabled {
       border-color: transparent #d0d0d0 transparent transparent; }
-  .schedules h1 .next-schedule {
+  #schedules h1 .next-schedule {
     float: right;
     text-align: right;
     border-color: transparent transparent transparent #940000;
     border-width: 10px 0 10px 20px; }
-    .schedules h1 .next-schedule:hover {
+    #schedules h1 .next-schedule:hover {
       border-color: transparent transparent transparent #b42020; }
-    .schedules h1 .next-schedule.disabled {
+    #schedules h1 .next-schedule.disabled {
       border-color: transparent transparent transparent #d0d0d0; }
-.schedules .share {
+#schedules .share {
   text-align: center; }
-.schedules .schedule-crns {
+#schedules .schedule-crns {
   padding: 0;
   margin: -30px 0 5px 0;
   text-align: right;
   font-size: 95%;
   /* too noisy, remove for now */
   display: none; }
-.schedules .dayview .dow {
+#schedules .dayview .dow {
   padding: 5px 0;
   margin: -36px 0 3px 0;
   display: block;
@@ -640,28 +640,28 @@ header h1 {
   font-weight: 200;
   border-bottom: 1px solid #d0d0d0;
   text-shadow: 1px 1px 0 #fff; }
-.schedules .dayview:first-child .dow {
+#schedules .dayview:first-child .dow {
   float: none;
   padding: 0 0 5px 0;
   margin: 0 0 3px 0; }
-.schedules .row {
+#schedules .row {
   display: block;
   clear: left;
   width: 100%;
   height: 60px;
   border-bottom: 1px solid #d0d0d0; }
-  .schedules .row:first-child {
+  #schedules .row:first-child {
     color: #8c8c8c; }
-  .schedules .row:last-child {
+  #schedules .row:last-child {
     color: #8c8c8c; }
-.schedules .hour {
+#schedules .hour {
   padding: 0 5px 0 0;
   display: block;
   width: 50px;
   text-align: right;
   text-shadow: 1px 1px 0 #fff;
   margin-bottom: -22px; }
-.schedules .class {
+#schedules .class {
   margin: -1px 5px 0 0;
   clear: left;
   display: block;
@@ -680,46 +680,46 @@ header h1 {
   -o-transition: width 0.2s ease-in-out;
   -ms-transition: width 0.2s ease-in-out;
   transition: width 0.2s ease-in-out; }
-  .schedules .class .time {
+  #schedules .class .time {
     float: right;
     display: block; }
-  .schedules .class .code {
+  #schedules .class .code {
     display: block; }
-  .schedules .class .name {
+  #schedules .class .name {
     text-transform: lowercase;
     padding: 0;
     font-size: 110%;
     display: block; }
-  .schedules .class .crn {
+  #schedules .class .crn {
     font-weight: bold; }
-  .schedules .class .location, .schedules .class .instructor, .schedules .class .kind {
+  #schedules .class .location, #schedules .class .instructor, #schedules .class .kind {
     display: block;
     float: left;
     padding-top: 1em;
     padding-right: 5px; }
-  .schedules .class .kind {
+  #schedules .class .kind {
     color: #444; }
-  .schedules .class .location {
+  #schedules .class .location {
     float: right;
     padding-right: 0; }
-  .schedules .class.small {
+  #schedules .class.small {
     /* approximately 1 hour time slot */ }
-    .schedules .class.small .name {
+    #schedules .class.small .name {
       display: none; }
-    .schedules .class.small .location, .schedules .class.small .instructor, .schedules .class.small .kind {
+    #schedules .class.small .location, #schedules .class.small .instructor, #schedules .class.small .kind {
       padding-top: 0; }
-    .schedules .class.small.very {
+    #schedules .class.small.very {
       /* approximately 30 min time slot */
       padding: 6px 5px 5px 5px; }
-      .schedules .class.small.very .time, .schedules .class.small.very .kind, .schedules .class.small.very .location {
+      #schedules .class.small.very .time, #schedules .class.small.very .kind, #schedules .class.small.very .location {
         display: none; }
-      .schedules .class.small.very .code {
+      #schedules .class.small.very .code {
         float: left; }
-      .schedules .class.small.very .code {
+      #schedules .class.small.very .code {
         padding-right: 0.3em; }
-      .schedules .class.small.very .instructor {
+      #schedules .class.small.very .instructor {
         float: right; }
-      .schedules .class.small.very .location {
+      #schedules .class.small.very .location {
         display: none; }
 
 /* END SCHEDULES */

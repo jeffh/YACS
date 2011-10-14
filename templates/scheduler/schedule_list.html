@@ -16,7 +16,7 @@
 {% endblock header %}
 
 {% block content %}
-<div class="schedules">
+<div id="schedules">
 {% for i, schedule in schedules|enumerate %}
 	<h1>
 		<a href="#schedule{% if not forloop.first %}{{ i|add:'-1' }}{% else %}{{ i }}{% endif %}" class="prev-schedule{% if forloop.first %} disabled{% endif %}"></a>
@@ -25,7 +25,7 @@
 	</h1>
 	<p class="share">
 	<a href="#facebook">Facebook</a>
-	<a href="#link">Link Here</a>
+	<a href="#link">Permalink</a>
 	<a href="#ics">iCal</a>
 	</p>
 	<div class="schedule">

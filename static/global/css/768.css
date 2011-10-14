@@ -50,21 +50,21 @@ body {
   #courses .instructors li {
     padding: 0 4px; }
 
-.schedules {
+#schedules {
   float: right;
   position: relative;
   left: -50%; }
-  .schedules h1, .schedules .schedule, .schedules .share {
+  #schedules h1, #schedules .schedule, #schedules .share {
     position: relative;
     left: 50%; }
-  .schedules h1 {
+  #schedules h1 {
     clear: both; }
-  .schedules .schedule {
+  #schedules .schedule {
     padding-top: 1em;
     /*
     margin-right: 65px;
     */ }
-  .schedules .dayview {
+  #schedules .dayview {
     width: 135px;
     margin: 0 3px;
     float: left;
@@ -73,23 +73,23 @@ body {
     -o-transition: all 0.2s ease-in-out;
     -ms-transition: all 0.2s ease-in-out;
     transition: all 0.2s ease-in-out; }
-    .schedules .dayview .hour {
+    #schedules .dayview .hour {
       display: none;
       width: 48px; }
-    .schedules .dayview .dow {
+    #schedules .dayview .dow {
       float: none;
       padding: 0 0 5px 0;
       margin: 0 0 3px 0; }
-    .schedules .dayview:first-child .dow {
+    #schedules .dayview:first-child .dow {
       padding-left: 25%; }
-    .schedules .dayview .class {
+    #schedules .dayview .class {
       width: 115px;
       margin: -1px 3px 0 0; }
-      .schedules .dayview .class .time {
+      #schedules .dayview .class .time {
         display: none; }
-      .schedules .dayview .class .crn {
+      #schedules .dayview .class .crn {
         display: block; }
-      .schedules .dayview .class .kind {
+      #schedules .dayview .class .kind {
         position: absolute;
         display: block;
         top: 0;
@@ -97,7 +97,7 @@ body {
         font-size: 90%;
         padding: 5px 5px 0 0;
         margin: 0; }
-      .schedules .dayview .class.small {
+      #schedules .dayview .class.small {
         font-size: 80%;
         overflow: hidden;
         -webkit-transition: all 0.2s ease-in-out;
@@ -105,12 +105,12 @@ body {
         -o-transition: all 0.2s ease-in-out;
         -ms-transition: all 0.2s ease-in-out;
         transition: all 0.2s ease-in-out; }
-        .schedules .dayview .class.small .kind {
+        #schedules .dayview .class.small .kind {
           position: absolute;
           top: 5px;
           right: 0;
           font-size: 100%; }
-        .schedules .dayview .class.small .name, .schedules .dayview .class.small .location, .schedules .dayview .class.small .instructor {
+        #schedules .dayview .class.small .name, #schedules .dayview .class.small .location, #schedules .dayview .class.small .instructor {
           /*display: none;*/
           zoom: 1;
           filter: alpha(opacity=0);
@@ -120,16 +120,16 @@ body {
           -o-transition: all 0.3s ease-in-out;
           -ms-transition: all 0.3s ease-in-out;
           transition: all 0.3s ease-in-out; }
-        .schedules .dayview .class.small .name {
+        #schedules .dayview .class.small .name {
           display: none; }
-        .schedules .dayview .class.small .instructor {
+        #schedules .dayview .class.small .instructor {
           zoom: 1;
           filter: alpha(opacity=60);
           opacity: 0.6; }
-        .schedules .dayview .class.small:hover, .schedules .dayview .class.small .selected {
+        #schedules .dayview .class.small:hover, #schedules .dayview .class.small .selected {
           min-height: 70px;
           box-shadow: 0 2px 10px #666; }
-          .schedules .dayview .class.small:hover .location, .schedules .dayview .class.small:hover .instructor, .schedules .dayview .class.small:hover .name, .schedules .dayview .class.small .selected .location, .schedules .dayview .class.small .selected .instructor, .schedules .dayview .class.small .selected .name {
+          #schedules .dayview .class.small:hover .location, #schedules .dayview .class.small:hover .instructor, #schedules .dayview .class.small:hover .name, #schedules .dayview .class.small .selected .location, #schedules .dayview .class.small .selected .instructor, #schedules .dayview .class.small .selected .name {
             /*display: inline;*/
             zoom: 1;
             filter: alpha(opacity=100);
@@ -139,9 +139,9 @@ body {
             -o-transition: all 0.3s ease-in-out;
             -ms-transition: all 0.3s ease-in-out;
             transition: all 0.3s ease-in-out; }
-        .schedules .dayview .class.small.very .kind {
+        #schedules .dayview .class.small.very .kind {
           display: block; }
-        .schedules .dayview .class.small.very .location, .schedules .dayview .class.small.very .instructor, .schedules .dayview .class.small.very .crn {
+        #schedules .dayview .class.small.very .location, #schedules .dayview .class.small.very .instructor, #schedules .dayview .class.small.very .crn {
           float: none;
           display: inline;
           zoom: 1;
@@ -152,17 +152,17 @@ body {
           -o-transition: all 0.3s ease-in-out;
           -ms-transition: all 0.3s ease-in-out;
           transition: all 0.3s ease-in-out; }
-        .schedules .dayview .class.small.very .instructor {
+        #schedules .dayview .class.small.very .instructor {
           display: block;
           zoom: 1;
           filter: alpha(opacity=60);
           opacity: 0.6; }
-        .schedules .dayview .class.small.very .crn {
+        #schedules .dayview .class.small.very .crn {
           font-weight: bold;
           zoom: 1;
           filter: alpha(opacity=40);
           opacity: 0.4; }
-        .schedules .dayview .class.small.very:hover .location, .schedules .dayview .class.small.very:hover .crn, .schedules .dayview .class.small.very:hover .instructor, .schedules .dayview .class.small.very .selected .location, .schedules .dayview .class.small.very .selected .crn, .schedules .dayview .class.small.very .selected .instructor {
+        #schedules .dayview .class.small.very:hover .location, #schedules .dayview .class.small.very:hover .crn, #schedules .dayview .class.small.very:hover .instructor, #schedules .dayview .class.small.very .selected .location, #schedules .dayview .class.small.very .selected .crn, #schedules .dayview .class.small.very .selected .instructor {
           zoom: 1;
           filter: alpha(opacity=100);
           opacity: 1;
@@ -171,17 +171,17 @@ body {
           -o-transition: all 0.3s ease-in-out;
           -ms-transition: all 0.3s ease-in-out;
           transition: all 0.3s ease-in-out; }
-    .schedules .dayview:first-child {
+    #schedules .dayview:first-child {
       width: 185px; }
-      .schedules .dayview:first-child .hour {
+      #schedules .dayview:first-child .hour {
         display: block; }
-      .schedules .dayview:first-child .class {
+      #schedules .dayview:first-child .class {
         margin: -1px 3px 0 0; }
-    .schedules .dayview .name {
+    #schedules .dayview .name {
       display: none; }
-    .schedules .dayview .location {
+    #schedules .dayview .location {
       float: none;
       clear: both;
       padding: 0; }
-    .schedules .dayview .instructor {
+    #schedules .dayview .instructor {
       padding-top: 0.5em; }

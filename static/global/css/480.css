@@ -83,16 +83,16 @@ body {
 #courses .no-seats .instructors li, #courses .no-seats .kinds li {
   color: #777; }
 
-.schedules .class {
+#schedules .class {
   width: 83.3333333%;
   -webkit-transition: width 0.2s ease-in-out;
   -moz-transition: width 0.2s ease-in-out;
   -o-transition: width 0.2s ease-in-out;
   -ms-transition: width 0.2s ease-in-out;
   transition: width 0.2s ease-in-out; }
-  .schedules .class.small {
+  #schedules .class.small {
     /* approximately 1 hour time slot */ }
-    .schedules .class.small .name {
+    #schedules .class.small .name {
       display: block;
       float: left;
       padding-right: 0.3em;
