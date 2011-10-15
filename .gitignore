@@ -4,3 +4,4 @@
 /logs/
 /.sass-cache/
 /build/
+/deployment/deploy.json
