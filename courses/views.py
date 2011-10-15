@@ -1,9 +1,10 @@
-from django.views.generic import ListView, RedirectView, DetailView
+from django.views.generic import ListView, RedirectView, DetailView, View
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.db.models import Q
 from timetable.courses import models
+from json import dumps
 
 import re
 
@@ -16,7 +17,18 @@ def get_sections(courses, year, month):
 
     return sections
 
-class SemesterBasedMixin(object):
+class TemplateBaseOverride(object):
+    template_base = 'site_base.html'
+
+    def get_template_base(self):
+        return self.template_base
+
+    def get_context_data(self, **kwargs):
+        data = super(TemplateBaseOverride, self).get_context_data(**kwargs)
+        data['template_base'] = self.get_template_base()
+        return data
+
+class SemesterBasedMixin(TemplateBaseOverride):
     def get_year_and_month(self):
         return self.kwargs['year'], self.kwargs['month']
 
@@ -156,72 +168,74 @@ class RedirectToLatestSemesterRedirectView(RedirectView):
         semester = models.Semester.objects.all().order_by('-year', '-month')[0]
         return reverse(self.url_name, kwargs=dict(year=semester.year, month=semester.month))
 
-def deselect_courses(request, year, month):
+class DeselectCoursesView(SemesterBasedMixin, View):
+    def get_redirect_url(self):
+        redirect_url = self.request.POST.get('redirect_to')
+        if redirect_url:
+            year, month = self.get_year_and_month()
+            return redirect(redirect_url, year=year, month=month)
+        return redirect('index')
 
-    if request.method == 'GET':
-        return HttpResponseBadRequest("Nothing here, move along.")
+    def render_to_response(self, context):
+        return self.get_redirect_url()
 
-    redirect_url = request.POST.get('redirect_to')
+    def get_context_data(self, **kwargs):
+        return kwargs
 
-    course_ids = {} # store sections (and in session)
-    valid_cids = [] # only use CIDs that were checked
+    def update_selected(self):
+        course_ids = {} # store sections (and in session)
+        valid_cids = [] # only use CIDs that were checked
 
-    for name in request.POST:
-        match = re.match(r'selected_course_(\d+)_(\d+)', name)
-        if not match:
-            match = re.match(r'selected_course_(\d+)', name)
-            if match:
-                try:
-                    cid = int(match.groups()[0])
-                except (ValueError, TypeError):
-                    return HttpResponseBadRequest("Hey, what do you think you're trying to do.")
-                valid_cids.append(cid)
-            continue
-        try:
-            cid, sid = match.groups()
-            cid, sid = int(cid), int(sid)
-        except (ValueError, TypeError):
-            return HttpResponseBadRequest("Hey, what do you think you're trying to do.")
-        course_ids[cid] = course_ids.get(cid, []) + [sid]
+        for name in self.request.POST:
+            match = re.match(r'selected_course_(\d+)_(\d+)', name)
+            if not match:
+                match = re.match(r'selected_course_(\d+)', name)
+                if match:
+                    try:
+                        cid = int(match.groups()[0])
+                    except (ValueError, TypeError):
+                        raise HttpResponseBadRequest("Hey, what do you think you're trying to do?")
+                    valid_cids.append(cid)
+                continue
+            try:
+                cid, sid = match.groups()
+                cid, sid = int(cid), int(sid)
+            except (ValueError, TypeError):
+                raise HttpResponseBadRequest("Hey, what do you think you're trying to do?")
+            course_ids[cid] = course_ids.get(cid, []) + [sid]
 
-    for cid in set(course_ids.keys()) - set(valid_cids):
-        del course_ids[cid]
+        for cid in set(course_ids.keys()) - set(valid_cids):
+            del course_ids[cid]
 
-    request.session[SELECTED_COURSES_SESSION_KEY] = course_ids
+        return course_ids
 
-    if redirect_url:
-        return redirect(redirect_url, year=year, month=month)
-    return redirect('index')
 
-def select_courses(request, year, month):
+    def post(self, request, *args, **kwargs):
+        self.request, self.args, self.kwargs = request, args, kwargs
+        selection = request.session[SELECTED_COURSES_SESSION_KEY] = self.update_selected()
+        return self.render_to_response(self.get_context_data(selection=selection))
 
-    if request.method == 'GET':
-        return HttpResponseBadRequest("Nothing here, move along.")
+class SelectCoursesView(DeselectCoursesView):
+    def update_selected(self):
+        if type(self.request.session.get(SELECTED_COURSES_SESSION_KEY, {})) != dict:
+            self.request.session[SELECTED_COURSES_SESSION_KEY] = {}
 
-    redirect_url = request.POST.get('redirect_to')
+        year, month = self.get_year_and_month()
+        course_ids = self.request.session.get(SELECTED_COURSES_SESSION_KEY, {})
+        PREFIX = 'course_'
 
-    if type(request.session.get(SELECTED_COURSES_SESSION_KEY, {})) != dict:
-        request.session[SELECTED_COURSES_SESSION_KEY] = {}
+        for name in self.request.POST:
+            if not name.startswith(PREFIX):
+                continue
+            try:
+                cid = int(name[len(PREFIX):])
+            except (ValueError, TypeError):
+                raise HttpResponseBadRequest("Hey, what do you think you're trying to do?")
+            # TODO: optimize queries
+            section_ids = list(models.Section.objects.filter(
+                course__id=cid, semesters__year__contains=year, semesters__month__contains=month
+            ).values_list('crn', flat=True))
+            course_ids[cid] = section_ids
 
-    course_ids = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
-    PREFIX = 'course_'
-
-    for name in request.POST:
-        if not name.startswith(PREFIX):
-            continue
-        try:
-            cid = int(name[len(PREFIX):])
-        except (ValueError, TypeError):
-            return HttpResponseBadRequest("Hey, what do you think you're trying to do.")
-        # TODO: optimize queries
-        section_ids = list(models.Section.objects.filter(
-            course__id=cid, semesters__year__contains=year, semesters__month__contains=month
-        ).values_list('crn', flat=True))
-        course_ids[cid] = section_ids
-
-    request.session[SELECTED_COURSES_SESSION_KEY] = course_ids
-
-    if redirect_url:
-        return redirect(redirect_url, year=year, month=month)
-    return redirect('index')
+        return course_ids
 
