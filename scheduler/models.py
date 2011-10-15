@@ -1,7 +1,7 @@
 #from django.db import models
-#from timetable.courses.models import Course, Semester, Section, SectionPeriod, Period
-#from timetable.scheduler import managers
-#from timetable.scheduler.fields import SetOfIntegersField
+#from yacs.courses.models import Course, Semester, Section, SectionPeriod, Period
+#from yacs.scheduler import managers
+#from yacs.scheduler.fields import SetOfIntegersField
 #import traceback as tb
 #
 #class Schedule(models.Model):

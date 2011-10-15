@@ -2,7 +2,7 @@
 """
 from django.utils.importlib import import_module
 import re
-from timetable.courses.models import (Semester, Course, Department, Section,
+from yacs.courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment,
     SemesterSection)
 

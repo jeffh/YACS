@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import patterns, include, url
-from timetable.courses import views
+from yacs.courses import views
 
 
 urlpatterns = patterns('',
@@ -13,8 +13,8 @@ urlpatterns = patterns('',
 
     url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/selected/$', views.SelectedCoursesListView.as_view(), name='selected-courses'),
     # actions
-    url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/select/$', views.select_courses, name='select-courses'),
-    url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/deselect/$', views.deselect_courses, name='deselect-courses'),
+    url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/select/$', views.SelectCoursesView.as_view(), name='select-courses'),
+    url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/deselect/$', views.DeselectCoursesView.as_view(), name='deselect-courses'),
 
     # other possible urls to have:
     # /semesters/ => view all past semesters

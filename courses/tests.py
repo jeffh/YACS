@@ -8,8 +8,8 @@ Replace this with more appropriate tests for your application.
 from django.test import TestCase
 from django_dynamic_fixture import new, get, DynamicFixture as F
 from testing_utils import ShortcutTestCase
-from timetable.courses import models
-from timetable.courses import utils
+from yacs.courses import models
+from yacs.courses import utils
 
 class BasicSchema(ShortcutTestCase):
     def setUp(self):
@@ -35,14 +35,14 @@ class BasicSchema(ShortcutTestCase):
         self.semester, self.course, self.cs_dept, self.ecse_dept = semester, course, cs_dept, ecse_dept
 
 class ListDepartmentsTest(BasicSchema):
-    urls = 'timetable.urls'
+    urls = 'yacs.urls'
     def test_list_departments(self):
         response = self.get('departments', year=2011, month=1, status_code=200)
         self.assertIn(self.cs_dept, response.context['departments'])
         self.assertIn(self.ecse_dept, response.context['departments'])
 
 class SearchTest(BasicSchema):
-    urls = 'timetable.urls'
+    urls = 'yacs.urls'
     def setUp(self):
         super(SearchTest, self).setUp()
         course = get(models.Course, department=self.cs_dept, number=4230, name='Intro to Computing')

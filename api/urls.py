@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
-from timetable.courses.models import Section
-from timetable.api.resources import (dept_handler, semester_handler, bulk_course_handler,
+from yacs.courses.models import Section
+from yacs.api.resources import (dept_handler, semester_handler, bulk_course_handler,
     course_handler, section_handler, schedule_handler, compute_schedule_handler, period_handler)
 
 defaults = {'emitter_format': 'json', 'version': 1}

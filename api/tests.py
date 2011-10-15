@@ -1,12 +1,12 @@
 from django.core.urlresolvers import reverse
 from django_dynamic_fixture import new, get, DynamicFixture as F
-from timetable.courses import models
+from yacs.courses import models
 from testing_utils import ShortcutTestCase
 from django.utils.simplejson import loads
 from datetime import time
 
 class TestAPI(ShortcutTestCase):
-    urls = 'timetable.api.urls'
+    urls = 'yacs.api.urls'
     def setUp(self):
         # dynamic fixtures doesn't create intermediary models when automatically generating,
         # so we have to create them manually.

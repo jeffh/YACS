@@ -1,5 +1,5 @@
 from piston.resource import Resource
-from timetable.api import handlers
+from yacs.api import handlers
 
 dept_handler = Resource(handlers.DepartmentHandler)
 semester_handler = Resource(handlers.SemesterHandler)

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from timetable.courses.bridge import import_courses
+from yacs.courses.bridge import import_courses
 
 class Command(BaseCommand):
 	help = "Downloads the course data and imports it into the database."

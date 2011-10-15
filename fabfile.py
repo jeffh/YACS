@@ -136,8 +136,7 @@ def upload_project():
     # extract into location.
 
     with phase_out(deploy_config.project_root) as backup:
-        if backup.exists:
-            mkdir(deploy_config.project_root, recursive=True)
+        mkdir(deploy_config.project_root, recursive=True)
 
         move(
             (deploy_config.project_root, '..', 'project.zip'),
@@ -193,6 +192,7 @@ def update_environment(use_pip=False):
             with prefix(activate_virtualenv_cmd()):
                 run('python', 'manage.py', 'syncdb')
                 run('python', 'manage.py', 'migrate')
+                run('python', 'manage.py', 'collectstatic', '--noinput')
         else:
             if use_pip:
                 pip.install(r='requirements.txt')
@@ -200,6 +200,16 @@ def update_environment(use_pip=False):
             manage_py = python.extend(['manage.py'])
             manage_py.syncdb()
             manage_py.migrate()
+            manage_py.collectstatic('--noinput')
+
+@roles('webservers')
+def update_courses():
+    with cd(deploy_config.project_root):
+        if env.use_virtualenv:
+            with prefix(activate_virtualenv_cmd()):
+                run('python', 'manage.py', 'import_course_data')
+        else:
+            python.extend(['manage.py']).import_course_data()
 
 @roles('webservers')
 def restart():

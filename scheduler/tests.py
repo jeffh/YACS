@@ -1,7 +1,7 @@
 from django.core.urlresolvers import reverse
 from django_dynamic_fixture import new, get, DynamicFixture as F
-from timetable.courses import models
-from timetable.scheduler.views import SELECTED_COURSES_SESSION_KEY
+from yacs.courses import models
+from yacs.scheduler.views import SELECTED_COURSES_SESSION_KEY
 from shortcuts import ShortcutTestCase
 from datetime import time
 
@@ -27,7 +27,7 @@ def create_periods(*ranges):
     return periods
 
 class TestScheduleViews(ShortcutTestCase):
-    urls = 'timetable.urls'
+    urls = 'yacs.urls'
 
     def setUp(self):
         semester = get(models.Semester, year=2011, month=1)

@@ -124,7 +124,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",
 )
 
-ROOT_URLCONF = 'timetable.urls'
+ROOT_URLCONF = 'yacs.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -151,9 +151,9 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'django_bcrypt',
     # local apps
-    'timetable.courses',
-    'timetable.scheduler',
-    'timetable.api',
+    'yacs.courses',
+    'yacs.scheduler',
+    'yacs.api',
 )
 
 if DEBUG:
@@ -217,7 +217,7 @@ LOGGING = {
 # ==== Courses App ====
 COURSES_COLLEGE_NAME = 'Rensselaer Polytechnic Institute'  # the full name of the school
 COURSES_COLLEGE_SHORT_NAME = 'RPI'  # short-hand name of the school
-COURSES_COLLEGE_PARSER = 'timetable.courses.bridge.rpi.import_rpi'  # full path to the function that does all the importing
+COURSES_COLLEGE_PARSER = 'yacs.courses.bridge.rpi.import_rpi'  # full path to the function that does all the importing
 
 # ==== Scheduler App ====
 SCHEDULER_ICAL_PRODUCT_ID = '-//Jeff Hui//YACS Export 1.0//EN'
@@ -233,7 +233,7 @@ BCRYPT_LOG_ROUNDS = 12
 INTERNAL_IPS = ('127.0.0.1',)
 
 def debug_toolbar_callback(request):
-    return (request.META['REMOTE_ADDR'] in INTERNAL_IPS) or request.user.is_staff
+    return (DEBUG and request.META['REMOTE_ADDR'] in INTERNAL_IPS) or request.user.is_staff
 
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,

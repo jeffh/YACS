@@ -1,8 +1,8 @@
 from piston.handler import BaseHandler, AnonymousBaseHandler
 from piston.utils import throttle, rc
-from timetable.courses import models as courses
-from timetable.scheduler import models
-from timetable.scheduler.scheduler import compute_schedules
+from yacs.courses import models as courses
+from yacs.scheduler import models
+from yacs.scheduler.scheduler import compute_schedules
 
 
 class ReadAPIBaseHandler(AnonymousBaseHandler):

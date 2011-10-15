@@ -1,6 +1,6 @@
 from django.db.models import Manager, Q
 from django.db.models.query import QuerySet
-from timetable.courses.utils import dict_by_attr
+from yacs.courses.utils import dict_by_attr
 
 # using the fancy queryset manager technique, as describe:
 # http://adam.gomaa.us/blog/2009/feb/16/subclassing-django-querysets/index.html
@@ -69,7 +69,7 @@ class SectionQuerySet(SemesterBasedQuerySet):
     def full_select(self, year=None, month=None):
         """Returns all Sections in the given queryset, plus SectionPeriod and Periods.
         """
-        from timetable.courses.models import SectionPeriod
+        from yacs.courses.models import SectionPeriod
         queryset = SectionPeriod.objects.by_sections(self, year, month).select_related('period', 'section')
 
         sid2sps = dict_by_attr(queryset, 'section.id')
@@ -98,7 +98,7 @@ class CourseManager(SemesterBasedQuerySet):
         Since this operation performs multiple selects and merges the resulting queries, the queryset
         is actively evaluated.
         """
-        from timetable.courses.models import SectionPeriod
+        from yacs.courses.models import SectionPeriod
         sps = SectionPeriod.objects.by_courses(self, year, month).select_related(
             'period', 'section', 'section__course'
         )
@@ -120,7 +120,7 @@ class CourseManager(SemesterBasedQuerySet):
 
     def _search_Q(self, query, dept_code=None):
         "Returns a composed set of django.db.models.Q objects for searching courses."
-        from timetable.courses.models import Department
+        from yacs.courses.models import Department
         parts = query.split(' ')
 
         department_filter = Q()

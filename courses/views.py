@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseBadRequest
 from django.shortcuts import redirect
 from django.db.models import Q
-from timetable.courses import models
+from yacs.courses import models
 from json import dumps
 
 import re

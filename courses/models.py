@@ -1,7 +1,7 @@
 from django.utils.importlib import import_module
 from django.db import models
-from timetable.courses import managers
-from timetable.courses.utils import options, capitalized
+from yacs.courses import managers
+from yacs.courses.utils import options, capitalized
 from django.core.exceptions import ValidationError
 from django.db.models import F
 
@@ -281,6 +281,18 @@ class Course(models.Model):
         if not hasattr(self, 'all_section_periods'):
             return SectionPeriod.objects.filter_by_course(course=self)
         return self.all_section_periods
+
+    @property
+    def crns(self):
+        if not hasattr(self, 'all_section_periods'):
+            return SectionPeriod.objects.filter_by_course(course=self).values_list('section__crn', flat=True)
+        return set(sp.section.crn for sp in self.section_periods)
+
+    @property
+    def full_crns(self):
+        if not hasattr(self, 'all_section_periods'):
+            return SectionPeriod.objects.filter_by_course(course=self).filter(section__seats_taken__lt=F('section__seats_total')).values_list('section__crn', flat=True)
+        return set(sp.section.crn for sp in self.section_periods if sp.section.seats_taken >= sp.section.seats_total)
 
     @property
     def instructors(self):

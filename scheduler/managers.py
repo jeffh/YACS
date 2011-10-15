@@ -1,8 +1,8 @@
 from django.db.models import Manager
 from django.db import transaction, IntegrityError, connection
-from timetable.courses import models as courses
-from timetable.scheduler.scheduler import compute_schedules
-#from timetable.scheduler import models
+from yacs.courses import models as courses
+from yacs.scheduler.scheduler import compute_schedules
+#from yacs.scheduler import models
 
 class BulkInsert(object):
     def __init__(self, engine=None):
@@ -94,7 +94,7 @@ class ScheduleManager(Manager):
 
     """
     def _create_from_schedules(self, schedules, semester):
-        from timetable.scheduler import models
+        from yacs.scheduler import models
         schedule_values = []
         sis_values = []
         cis_values = []
@@ -153,7 +153,7 @@ class ScheduleManager(Manager):
     #Old method of insertion... very slow
     def _create_from_schedules(self, schedules, semester):
         with transaction.commit_manually():
-            from timetable.scheduler import models
+            from yacs.scheduler import models
             collection = []
             for schedule in schedules:
                 course_ids, crns = [c.id for c in schedule.keys()], [c.crn for c in schedule.values()]

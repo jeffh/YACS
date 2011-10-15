@@ -1,7 +1,7 @@
 """All the data-importing functions are listed here for various colleges.
 """
 import re
-from timetable.courses.models import (Semester, Course, Department, Section,
+from yacs.courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment,
     SemesterSection)
 

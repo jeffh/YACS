@@ -8,20 +8,22 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.conf import settings
 
-from timetable.courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY
-from timetable.courses.models import Semester, SectionPeriod, Course, Section
-from timetable.courses.utils import dict_by_attr
-from timetable.scheduler import models
-from timetable.scheduler.scheduler import compute_schedules
+from yacs.courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY
+from yacs.courses.models import Semester, SectionPeriod, Course, Section
+from yacs.courses.utils import dict_by_attr
+from yacs.scheduler import models
+from yacs.scheduler.scheduler import compute_schedules
 
 ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')
 
+DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 def sorted_daysofweek(dow):
     "Sorts list of days of the week to what we're expected."
-    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    return [d for d in days if d in dow]
+    return [d for d in DAYS if d in dow]
 
 def period_stats(periods):
+    if len(periods) < 1:
+        return range(8, 20), DAYS[:5]
     min_time, max_time, dow_used = None, None, set()
     for period in periods:
         min_time = min(min_time or period.start, period.start)

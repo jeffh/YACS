@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import patterns, include, url
-from timetable.scheduler import views
+from yacs.scheduler import views
 
 urlpatterns = patterns('',
     # selecting courses

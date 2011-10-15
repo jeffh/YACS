@@ -1,5 +1,5 @@
 from django.contrib import admin
-from timetable.courses.models import *
+from yacs.courses.models import *
 
 class DepartmentAdmin(admin.ModelAdmin):
     pass
