@@ -34,7 +34,7 @@ body {
 
 .touch body {
   width: 100%;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  font-family: "Helvetica Neue", "Open Sans", Helvetica, Arial, sans-serif; }
 
 h2 {
   font-size: 115%;
@@ -134,7 +134,7 @@ header h1 {
   text-align: center;
   font-size: 200%;
   color: #333;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue", "Lato", Helvetica, Arial, sans-serif;
   font-weight: 100; }
 
 .nav {
