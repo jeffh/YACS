@@ -44,7 +44,7 @@ PROJECT_FILES = [
     'urls.py',
 ]
 TEMPLATES = {
-    normalize('settings', 'database_template.py'): normalize('settings', 'database.py')
+    normalize('settings', 'overrides_template.py'): normalize('settings', 'overrides.py')
 }
 
 DEPLOY_FILE = os.path.join('deployment', 'deploy.json')
