@@ -17,7 +17,7 @@
 		<a name="schedule{{ i }}">Schedule {{ i }}</a>
 		<a href="#schedule{% if not forloop.last %}{{ i|add:'1' }}{% else %}{{ i }}{% endif %}" class="next-schedule{% if forloop.last %} disabled{% endif %}"></a>
 	</h1>
-	<p class="share">
+	<p class="share" style="display: none;">
 	<a href="#facebook">Facebook</a>
 	<a href="#link">Permalink</a>
 	<a href="#ics">iCal</a>
@@ -98,3 +98,7 @@
 {% endcomment %}
 
 {% endblock content %}
+
+{% block sidebar %}
+{% include 'courses/_selected_courses.html' %}
+{% endblock sidebar %}

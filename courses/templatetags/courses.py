@@ -22,9 +22,13 @@ def seats_left_for_course(course, sections=None):
 		sections = course.sections.all()
 	else:
 		sections = [s for s in sections if course.id == s.course_id]
-	
+
 	seats_left = 0
 	for section in sections:
 		seats_left += section.seats_left
-	
+
 	return seats_left
+
+@register.filter
+def join(collection, sep=','):
+	return unicode(sep).join(map(unicode, collection))
