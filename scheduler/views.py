@@ -39,6 +39,14 @@ def section_ids_to_periods(sections_and_periods):
         secid_to_periods[snp.section_id] = secid_to_periods.get(snp.section_id, []) + [snp]
     return secid_to_periods
 
+def take(amount, generator):
+    result = []
+    for i, g in enumerate(generator):
+        result.append(g)
+        if i + 1 >= amount:
+            break
+    return result
+
 def force_compute_schedules(request, year, month):
     selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
     crns = [crn for sections in selected_courses.values() for crn in sections]
@@ -69,7 +77,7 @@ def force_compute_schedules(request, year, month):
     #    section.all_section_periods = sid_to_periods[section.id]
     #    selected_courses[section.course] = selected_courses.get(section.course, []) + [section]
 
-    schedules = compute_schedules(selected_courses)
+    schedules = take(20, compute_schedules(selected_courses, return_generator=True))
 
     timerange, dows = period_stats(periods)
 

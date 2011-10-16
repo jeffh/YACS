@@ -2,3 +2,4 @@
 """
 from problem import Problem
 from solvers import *
+from nil import is_nil

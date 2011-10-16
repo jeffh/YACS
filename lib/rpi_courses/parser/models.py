@@ -8,9 +8,9 @@ from ..utils import safeInt, FrozenDict
 class ReadOnly(object):
     """All attributes that are prefixed with a single underscore will have
     a equivalent getter property without the underscore prefix.
-    
+
     This restricts all those attributes to read-only.
-    
+
     eg - setting self._foo, allows you to access it publicly using self.foo
     """
     def __getattr__(self, key):
@@ -34,7 +34,7 @@ class CrossListing(ReadOnly):
     """
     def __init__(self, crns, seats):
         self._crns, self._seats = set(crns), seats
-    
+
     def __eq__(self, other):
         return self.crns == other.crns and self.seats == other.seats
 
@@ -51,14 +51,15 @@ class Period(ReadOnly):
     def __init__(self, type, instructor, start, end, location, int_days):
         self._type, self._instructor, self._location = \
             type.strip(), instructor.strip(), location.strip()
-        
+
         try:
             self._start, self._end = int(start), int(end)
         except ValueError:
             # == '** TBA **'
             self._start = self._end = None
         self._int_days = tuple(map(int, int_days))
-        
+        self.__hash = None
+
     def __repr__(self):
         return "<Period: start=%r end=%r days=%r>" % (
             self.start, self.end, self.days
@@ -70,13 +71,12 @@ class Period(ReadOnly):
             other.start, other.end, other.int_days)
 
     def __hash__(self):
-        result = hash(self.type)
-        mul = 31
-        for v in (self.instructor, self.location, self.start, self.end, \
-            self.int_days):
-            result += mul * hash(v)
-            mul *= 31
-        return result
+        if self.__hash is None:
+            result = hash(self.type)
+            for v in (self.instructor, self.location, self.start, self.end, self.int_days):
+                result = result ^ hash(v)
+            self.__hash = result
+        return self.__hash
 
     @staticmethod
     def from_soup_tag(tag):
@@ -90,7 +90,7 @@ class Period(ReadOnly):
             tag['type'], tag['instructor'], tag['start'], tag['end'],
             tag['location'], days
         )
-    
+
     @property
     def time_range(self):
         return (self.start, self.end)
@@ -102,7 +102,7 @@ class Period(ReadOnly):
         s = str(self.start)
         hours, minutes = (s[:-2], s[-2:])
         return time(hour=int(hours), minute=int(minutes))
-    
+
     @property
     def end_time(self):
         if self.end is None:
@@ -110,7 +110,7 @@ class Period(ReadOnly):
         s = str(self.end)
         hours, minutes = (s[:-2], s[-2:])
         return time(hour=int(hours), minute=int(minutes))
-    
+
     def conflicts_with(self, period):
         "Checks this period conflicts with another period."
         if self.tba or period.tba:
@@ -119,44 +119,44 @@ class Period(ReadOnly):
         for i in self.int_days:
             if i in period.int_days:
                 same_day = True
-        
+
         if not same_day:
             return False
-        
+
         return self.start <= period.start <= self.end or \
             period.start <= self.start <= period.end or \
             self.start <= period.end <= self.end or \
             period.start <= self.end <= period.end
-    
+
     @property
     def tba(self):
         "The time period hasn't been announced yet."
         return self.start is None or self.end is None
-    
+
     @property
     def is_lecture(self):
         return self.type == 'LEC'
-    
+
     @property
     def is_studio(self):
         return self.type == 'STU'
-    
+
     @property
     def is_lab(self):
         return self.type == 'LAB'
-    
+
     @property
     def is_testing_period(self):
         return self.type == 'TES'
-    
+
     @property
     def is_recitation(self):
         return self.type == 'REC'
-    
+
     @property
     def days(self):
         return tuple(map(DAY_MAPPER.get, self.int_days))
-        
+
 class Section(ReadOnly):
     """A section is a particular timeslot to take the given course.
     It is uniquely represented in SIS via CRN. The CRN is used for
@@ -174,22 +174,22 @@ class Section(ReadOnly):
                 self._num = self.STUDY_ABROAD
         self._periods = tuple(periods)
         self._notes = tuple(set(notes))
-    
+        self.__hash = None
+
     #def __eq__(self, other):
     #    return (self.crn, self.num, self.seats_taken, self.seats_total, \
     #        self.periods, self.notes) == (other.crn, other.num, \
     #        other.seats_taken, other.periods, self.notes)
-            
-    
+
+
     def __hash__(self):
-        result = hash(self.crn)
-        mul = 31
-        for v in (self.seats_taken, self.seats_total, self.num, \
-            self.periods, self.notes):
-            result += mul * hash(v)
-            mul *= 31
-        return result
-    
+        if self.__hash is None:
+            result = hash(self.crn)
+            for v in (self.seats_taken, self.seats_total, self.num, self.periods, self.notes):
+                result = result ^ hash(v)
+            self.__hash = result
+        return self.__hash
+
     def conflicts_with(self, section):
         for period in self.periods:
             for p in section.periods:
@@ -217,7 +217,7 @@ class Section(ReadOnly):
     @property
     def is_study_abroad(self):
         return self.num == self.STUDY_ABROAD
-        
+
     @property
     def is_valid(self):
         """Returns True if the given data for this section is valid."""
@@ -234,14 +234,15 @@ class Section(ReadOnly):
         A negative number indicates more seats taken than are available.
         """
         return self.seats_total - self.seats_taken
-    
+
     def __repr__(self):
-        return "<Section: crn=%(crn)r num=%(num)r seats=%(used)r/%(total)r>" % {
-            'crn': self.crn,
-            'num': self.num,
-            'used': self.seats_taken,
-            'total': self.seats_total,
-        }
+        #return "<Section: crn=%(crn)r num=%(num)r seats=%(used)r/%(total)r>" % {
+        #    'crn': self.crn,
+        #    'num': self.num,
+        #    'used': self.seats_taken,
+        #    'total': self.seats_total,
+        #}
+        return "%d" % self.num
 
     def __eq__(self, other):
         if isinstance(other, Section):
@@ -261,30 +262,30 @@ class Course(ReadOnly):
             (int(credmin), int(credmax)), grade_type.strip()
         self._sections = tuple(sections)
         self.__free_sections = None
-        
+        self.__hash = None
+
     def __contains__(self, crn):
         for section in self.sections:
             if section.crn == crn:
                 return True
         return False
-    
+
     def __eq__(self, other):
         return (
-            self.name == other.name and self.dept == other.dept and
             self.num == other.num and self.cred == other.cred and
             self.grade_type == other.grade_type and
+            self.name == other.name and self.dept == other.dept and
             self.sections == other.sections
         )
-    
+
     def __hash__(self):
-        result = hash(self.name)
-        mul = 31
-        for v in (self.dept, self.num, self.cred[0], self.cred[1], \
-            self.grade_type, self.sections):
-            result += mul * hash(v)
-            mul *= 31
-        return result
-        
+        if self.__hash is None:
+            result = hash(self.name)
+            for v in (self.dept, self.num, self.cred[0], self.cred[1], self.grade_type, self.sections):
+                result = result ^ hash(v)
+            self.__hash = result
+        return self.__hash
+
     def __str__(self):
         return "%(name)s %(dept)s %(num)s" % {
             'name': self.name,
@@ -293,27 +294,28 @@ class Course(ReadOnly):
         }
 
     def __repr__(self):
-        return "<Course: %(name)r, %(dept)r, %(num)r, %(mincred)r, %(maxcred)r, %(grade_type)r, section_count=%(section_count)s>" % {
-            'name': self.name,
-            'dept': self.dept,
-            'num': self.num,
-            'mincred': self.cred[0],
-            'maxcred': self.cred[1],
-            'grade_type': self.grade_type,
-            'section_count': len(self.sections)
-        }
-        
+        #return "<Course: %(name)r, %(dept)r, %(num)r, %(mincred)r, %(maxcred)r, %(grade_type)r, section_count=%(section_count)s>" % {
+        #    'name': self.name,
+        #    'dept': self.dept,
+        #    'num': self.num,
+        #    'mincred': self.cred[0],
+        #    'maxcred': self.cred[1],
+        #    'grade_type': self.grade_type,
+        #    'section_count': len(self.sections)
+        #}
+        return "%s" % self.name
+
     @property
     def available_sections(self):
         if self.__free_sections is None:
             self.__free_sections = tuple(s for s in self.sections if s.seats_left > 0)
         return self.__free_sections
-    
+
     @property
     def credits(self):
-        """Returns either a tuple representing the credit range or a 
+        """Returns either a tuple representing the credit range or a
         single integer if the range is set to one value.
-        
+
         Use self.cred to always get the tuple.
         """
         if self.cred[0] == self.cred[1]:

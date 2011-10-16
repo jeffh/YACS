@@ -1,5 +1,5 @@
 
-from csp import Problem, is_nil, BruteForceSolver
+from csp import Problem, is_nil
 
 __all__ = ['compute_schedules', 'TimeRange', 'Scheduler']
 
@@ -32,7 +32,9 @@ class TimeRange(object):
         return False
 
 def section_constraint(section1, section2):
-	return is_nil(section1) or is_nil(section2) or not section1.conflicts_with(section2)
+    if is_nil(section1) or is_nil(section2):
+        return True
+    return not section1.conflicts_with(section2)
 
 class Scheduler(object):
     """High-level API that wraps the course scheduling feature.
@@ -131,6 +133,7 @@ def compute_schedules(courses=None, excluded_times=(), free_sections_only=True, 
     """
     Returns all possible schedules for the given courses.
     """
+    problem = problem or BacktrackingSolver()
     s = Scheduler(free_sections_only, problem)
     s.exclude_times(*tuple(excluded_times))
     return s.find_schedules(courses, return_generator)

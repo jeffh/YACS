@@ -15,13 +15,22 @@ class TimeRange(object):
             self.start, self.end, self.days_of_week
         )
 
-    def __contains__(self, period):
-        days, start, end = period.days_of_week_flag, period.start, period.end
+    def days_conflict(self, days):
+        print self.days_of_week, days
+        for day in self.days_of_week:
+            if day in days:
+                return True
+        return False
 
-        return days & self.days_of_week > 0 and (self.start <= start <= self.end or \
-            start <= self.start <= end or \
-            self.start <= end <= self.end or \
-            start <= self.end <= end)
+    def __contains__(self, period):
+        days, start, end = period
+
+        return self.days_conflict(days) and (
+            self.start <= start <= self.end or
+            start <= self.start <= end or
+            self.start <= end <= self.end or
+            start <= self.end <= end
+        )
 
     def conflicts_with(self, section):
         "Returns True if the given section conflicts with this time range."
@@ -32,7 +41,9 @@ class TimeRange(object):
         return False
 
 def section_constraint(section1, section2):
-	return is_nil(section1) or is_nil(section2) or not section1.conflicts_with(section2)
+    if is_nil(section1) or is_nil(section2):
+        return True
+    return not section1.conflicts_with(section2)
 
 class Scheduler(object):
     """High-level API that wraps the course scheduling feature.
@@ -103,6 +114,8 @@ class Scheduler(object):
         """Internal use. Determines when the given time range conflicts with the set of
         excluded time ranges.
         """
+        if is_nil(schedule):
+            return True
         for timerange in self._excluded_times:
             if timerange.conflicts_with(schedule):
                 return False
