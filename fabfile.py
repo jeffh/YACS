@@ -84,7 +84,7 @@ def test(apps=None):
     If lib is provided as app, only the lib directory is tested.
     """
     if apps is None:
-        apps = 'api courses scheduler'
+        apps = 'api courses scheduler lib'
     apps = apps.split(' ')
     test_lib = 'lib' in apps
 
