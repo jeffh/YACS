@@ -1,47 +1,75 @@
 (function($, window, document, undefined){
 
 var selection = {}; // course_id => crns
+window.selection = selection;
 
 var updateFuse = new Utils.Fuse({
     delay: 250,
     execute: function(){
-        console.log('saving selection');
         var parameters = {};
-        $.each(selection, function(value, name){
-            var key = 'course_' + name;
-            parameters[key] = "checked";
+        $.each(selection, function(cid, crns){
+            parameters['selected_course_' + cid] = "checked";
+            $.each(crns, function(i, crn){
+                parameters['selected_course_' + cid + '_' + crn] = "checked";
+            });
         });
-        /*
-        $.ajax(url, {
-            method: "POST",
-            parameters: 'csrf_token=' + Utils.csrf_token() + '&' + $.param(parameters),
+        console.log('post', parameters);
+        $.ajax(Utils.selectURL(), {
+            type: "post",
+            data: $.param(parameters),
             complete: function(){
             }
         });
-        */
     }
 });
 
 // lower level operations to modify the selection, should automatically
 // handle syncing with the server
 function addSectionToSelection(courseID, crn){
+    courseID = parseInt(courseID, 10);
+    crn = parseInt(crn, 10);
     updateFuse.stop();
     if(!selection[courseID])
         selection[courseID] = [];
-    if(!$.inArray(crn, selection[courseID]))
-        selection[courseID].push(crn);
+    if($.inArray(crn, selection[courseID]) !== -1)
+        return;
+    selection[courseID].push(crn);
     updateFuse.start();
 }
 
 function removeSectionFromSelection(courseID, crn){
+    courseID = parseInt(courseID, 10);
+    crn = parseInt(crn, 10);
     if(!selection[courseID])
         return;
     updateFuse.stop();
-    selection[courseID].remove(crn);
+    if($.inArray(crn, selection[courseID]) === -1)
+        return;
+    selection[courseID].removeItem(crn);
     if(selection[courseID].length === 0)
         delete selection[courseID];
     updateFuse.start();
 }
+
+function syncSelection(){
+    $.ajax(Utils.selectionURL(), {
+        type: 'GET',
+        dataType: 'text',
+        success: function(content, status, request){
+            var sections = Utils.json(content);
+            updateFuse.freeze();
+            $.each(sections, function(){
+                addSectionToSelection(this.course.id, this.crn);
+            });
+            updateFuse.thaw();
+            // TODO: update
+        },
+        error: function(request, status, error){
+
+        }
+    })
+}
+
 // end selection handling
 
 // event handling for #selected
@@ -115,6 +143,8 @@ $(function(){
     // hide add to selection button... autoadd on check
     $('#courses').live('change', courseSelected);
     $('#courses input[type=submit]').hide();
+
+    syncSelection();
 });
 
 })(jQuery, window, document);

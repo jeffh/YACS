@@ -22,18 +22,29 @@ $.extend(Utils, {
     CSRFToken: function(){
         return getCookie('csrftoken');
     },
+    selectionURL: function(){
+        return $.trim($('meta[name=selection-url]').attr('content'));
+    },
+    selectURL: function(){
+        return $.trim($('meta[name=select-url]').attr('content'));
+    },
+    json: function(contents){
+        contents = contents.substr('for(;;); '.length);
+        return eval('(' + contents + ')');
+    },
     splitNonEmpty: function(string, separator){
         separator = separator || ',';
         var result = [];
         $.each(string.split(','), function(){
-            result.push(this);
+            if($.trim(this) !== '')
+                result.push(this);
         });
         return result;
     },
     setDifference: function(arr1, arr2){
         var result = [];
         $.each(arr1, function(){
-            if(!$.inArray(this, arr2))
+            if($.inArray(this, arr2) === -1)
                 result.push(this);
         });
         return result;
@@ -51,15 +62,12 @@ $.extend(Utils, {
                 self.timer = null;
             }
         };
-
         this.freeze = function(){
-            self.stop();
             self.isFrozen = true;
         };
         this.thaw = function(){
             self.isFrozen = false;
         };
-
         this.trigger = function(){
             self.stop();
             if(!self.isFrozen)
@@ -71,6 +79,21 @@ $.extend(Utils, {
             if(!self.isFrozen)
                 self.timer = setTimeout(self.trigger, self.options.delay);
         };
+    }
+});
+
+$.extend(Array.prototype, {
+    // Array Remove - By John Resig (MIT Licensed)
+    // http://ejohn.org/blog/javascript-array-remove/
+    remove: function(from, to){
+        var rest = this.slice((to || from) + 1 || this.length);
+        this.length = from < 0 ? this.length + from : from;
+        return this.push.apply(this, rest);
+    },
+    removeItem: function(item){
+        var i = this.indexOf(item);
+        if(i === -1) return this.length;
+        return this.remove(i);
     }
 });
 
