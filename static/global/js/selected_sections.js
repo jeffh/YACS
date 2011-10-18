@@ -43,8 +43,10 @@ function removeSectionFromSelection(courseID, crn){
     if(!selection[courseID])
         return;
     updateFuse.stop();
-    if($.inArray(crn, selection[courseID]) === -1)
+    if($.inArray(crn, selection[courseID]) === -1){
+        console.log(crn, 'not in', courseID);
         return;
+    }
     selection[courseID].removeItem(crn);
     if(selection[courseID].length === 0)
         delete selection[courseID];
@@ -73,12 +75,14 @@ function syncSelection(){
 // end selection handling
 
 // event handling for #selected
-function sectionChanged(){
+function sectionChanged(evt){
     // update selection via ajax ???
-    var crn = $(this).find('.crn').text(), courseID = $(this).attr('data-cid');
+    var crn = $(this).attr('data-crn'), courseID = $(this).attr('data-cid');
 
     if (this.checked){
         addSectionToSelection(courseID, crn);
+        // check parent if not done so
+        $(this).parent('.course').find('input[type=checkbox]:first').attr('checked', 'checked');
         return;
     }
 
@@ -93,7 +97,8 @@ function courseChanged(evt){
         $sections.removeAttr('checked');
 
     $sections.each(function(){
-        sectionChanged.call(this, [evt]);
+        console.log($(this).attr('data-crn'), this);
+        sectionChanged.call(this, evt);
     });
 }
 
