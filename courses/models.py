@@ -45,6 +45,12 @@ class Department(models.Model):
             return u"%s (%s)" % (self.name, self.code)
         return self.code
 
+    def toJSON(self, select_related=()):
+        return {
+            'name': self.name,
+            'code': self.code,
+        }
+
 
 class Period(models.Model):
     """Represents a time period that sections are held for during the week.
@@ -177,6 +183,18 @@ class Section(models.Model):
     def __unicode__(self):
         return "%s (%s) Seats: %d / %d" % (self.number, self.crn, self.seats_taken, self.seats_total)
 
+    def toJSON(self, select_related=()):
+        values = {
+            'number': self.number,
+            'crn': self.crn,
+            'seats_taken': self.seats_taken,
+            'seats_total': self.seats_total,
+            'seats_left': self.seats_left,
+        }
+        if any(s == Course._meta.db_table for s, _ in select_related):
+            values['course'] = self.course.toJSON(select_related)
+        return values
+
     @property
     def is_study_abroad(self):
         return self.number == self.STUDY_ABROAD
@@ -241,6 +259,18 @@ class Course(models.Model):
                 if section1.conflicts_with(section2):
                     return True
         return False
+
+    def toJSON(self, select_related=()):
+        values = {
+            'id': self.pk,
+            'name': self.name,
+            'number': self.number,
+            'min_credits': self.min_credits,
+            'max_credits': self.max_credits,
+        }
+        if 'department' in select_related:
+            values['department'] = self.department.toJSON(select_related)
+        return values
 
     @property
     def code(self):

@@ -1,3 +1,10 @@
+from json import dumps, JSONEncoder
+
+class ObjectJSONEncoder(JSONEncoder):
+    def default(self, o):
+        if callable(getattr(o, 'toJSON', None)):
+            return o.toJSON()
+        return super(ObjectJSONEncoder, self).default(o)
 
 class ExtendedAttributeError(AttributeError):
     def __init__(self, msg, obj, full_attr, error_attr):

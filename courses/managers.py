@@ -36,6 +36,9 @@ class SemesterBasedQuerySet(QuerySet):
 
         return qs
 
+    def toJSON(self):
+        return [m.toJSON(self.query.related_select_cols) for m in self]
+
 class SectionPeriodQuerySet(SemesterBasedQuerySet):
     def by_semester(self, year=None, month=None):
         qs = self

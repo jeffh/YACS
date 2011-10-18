@@ -1,9 +1,11 @@
 from django.views.generic import ListView, RedirectView, DetailView, View
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseBadRequest
+from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import redirect
 from django.db.models import Q
+from django.db.models.query import QuerySet
 from yacs.courses import models
+from yacs.courses.utils import ObjectJSONEncoder
 from json import dumps
 
 import re
@@ -16,6 +18,39 @@ def get_sections(courses, year, month):
     sections = queryset.filter(course__id__in=course_ids)
 
     return sections
+
+class AjaxJsonResponseMixin(object):
+    json_content_prefix = 'for(;;); '
+    json_allow_callback = False
+    json_callback_parameter = 'callback'
+    json_encoder = ObjectJSONEncoder()
+
+    def get_json_response(self, content, **httpresponse_kwargs):
+        return HttpResponse(content, content_type='application/json', **httpresponse_kwargs)
+
+    def get_json_allow_callback(self):
+        return self.json_allow_callback
+
+    def get_json_callback_parameter(self):
+        return self.json_callback_parameter
+
+    def get_json_content_prefix(self):
+        return self.json_content_prefix
+
+    def get_json_callback_parameter_name(self):
+        return self.request.GET.get(self.get_json_callback_parameter(), '')
+
+    def convert_context_to_json(self, context):
+        name = self.get_json_callback_parameter_name()
+        obj = json_encoder.encode(context)
+        if name:
+            return "%s(%s)" % (name, obj)
+        return obj
+
+    def render_to_response(self, context):
+        if self.request.is_ajax():
+            return self.get_json_response(self.get_json_content_prefix() + self.convert_context_to_json(context))
+        return super(AjaxJsonResponseMixin, self).render_to_response(context)
 
 class TemplateBaseOverride(object):
     template_base = 'site_base.html'
@@ -51,15 +86,15 @@ class SelectedCoursesMixin(SemesterBasedMixin):
         data['selected_courses'], data['selected_sections'] = self.get_selected_courses()
         return data
 
-class SelectedCoursesListView(SelectedCoursesMixin, ListView):
+class SelectedCoursesListView(AjaxJsonResponseMixin, SelectedCoursesMixin, ListView):
     template_name = 'courses/selected_courses_list.html'
+
+    def convert_context_to_json(self, context):
+        return self.json_encoder.encode(context['selected_sections'].select_related('course'))
 
     def get_queryset(self):
         return self.get_selected_courses()[1]
 
-    def get_context_data(self, **kwargs):
-        data = super(SelectedCoursesListView, self).get_context_data(**kwargs)
-        return data
 
 class DepartmentListView(SelectedCoursesMixin, ListView):
     "Provides all departments."
@@ -168,7 +203,7 @@ class RedirectToLatestSemesterRedirectView(RedirectView):
         semester = models.Semester.objects.all().order_by('-year', '-month')[0]
         return reverse(self.url_name, kwargs=dict(year=semester.year, month=semester.month))
 
-class DeselectCoursesView(SemesterBasedMixin, View):
+class DeselectCoursesView(AjaxJsonResponseMixin, SemesterBasedMixin, View):
     def get_redirect_url(self):
         redirect_url = self.request.POST.get('redirect_to')
         if redirect_url:
@@ -177,7 +212,12 @@ class DeselectCoursesView(SemesterBasedMixin, View):
         return redirect('index')
 
     def render_to_response(self, context):
+        if self.request.is_ajax():
+            return super(DeselectCoursesView, self).render_to_response(context)
         return self.get_redirect_url()
+
+    def convert_context_to_json(self, context):
+        return self.json_encoder.encode(self.request.session[SELECTED_COURSES_SESSION_KEY])
 
     def get_context_data(self, **kwargs):
         return kwargs
