@@ -233,7 +233,7 @@ BCRYPT_LOG_ROUNDS = 12
 INTERNAL_IPS = ('127.0.0.1',)
 
 def debug_toolbar_callback(request):
-    return (DEBUG and request.META['REMOTE_ADDR'] in INTERNAL_IPS) or request.user.is_staff
+    return request.user.is_staff
 
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
