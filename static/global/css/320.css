@@ -136,6 +136,24 @@ header h1 {
   color: #333;
   font-family: "Helvetica Neue", "Lato", Helvetica, Arial, sans-serif;
   font-weight: 100; }
+header .alpha {
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #eee;
+  background: #940000;
+  padding: 5px;
+  position: absolute;
+  top: 22px;
+  right: 0;
+  border-radius: 4px 0 0 4px;
+  -moz-border-radius: 4px 0 0 4px;
+  -webkit-border-radius: 4px 0 0 4px; }
+  header .alpha a:link, header .alpha a:visited, header .alpha a:hover {
+    color: #eee; }
+  header .alpha:hover {
+    color: #fff;
+    background: #a51111; }
+    header .alpha:hover:after {
+      content: ' - Send comments to @jeffhui'; }
 
 .nav {
   height: 3em;

@@ -88,6 +88,29 @@ header {
 		font-family: "Helvetica Neue", "Lato", Helvetica, Arial, sans-serif;
 		font-weight: 100;
 	}
+	.alpha {
+		font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		color: #eee;
+		background: $highlight;
+		padding: 5px;
+		position: absolute;
+		top: 22px;
+		right: 0;
+
+		@include border-radius(4px 0 0 4px);
+
+		a:link, a:visited, a:hover {
+			color: #eee;
+		}
+		&:hover {
+			color: #fff;
+			background: $highlight + #111;
+
+			&:after {
+				content: ' - Send comments to @jeffhui';
+			}
+		}
+	}
 }
 .nav {
 	height: 3em;
