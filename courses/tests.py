@@ -7,7 +7,7 @@ Replace this with more appropriate tests for your application.
 
 from django.test import TestCase
 from django_dynamic_fixture import new, get, DynamicFixture as F
-from testing_utils import ShortcutTestCase
+from shortcuts import ShortcutTestCase
 from yacs.courses import models
 from yacs.courses import utils
 

@@ -2,6 +2,7 @@ from fabric.api import roles, env, local
 from fabric.context_managers import cd, prefix, lcd
 from fabric.contrib.files import upload_template
 
+import shutil
 import os
 import sys
 import zipfile
@@ -78,6 +79,18 @@ def webfaction():
 def scss():
     "Watches sass files to convert to css"
     local('sass --watch static/global/scss:static/global/css')
+
+def clean():
+    "Removes all pyc cache files."
+    for root, dirs, files in os.walk('.'):
+        for f in files:
+            if f.endswith('.pyc'):
+                print " FILE", os.path.join(root, f)[2:]
+                os.unlink(os.path.join(root, f))
+        for d in dirs:
+            if d == '__pycache__':
+                print " DIR ", os.path.join(root, d)[2:]
+                shutil.rmtree(os.path.join(root, d))
 
 def test(apps=None):
     """Returns all tests in lib and custom django apps. Optionally accepts specific apps to test.
