@@ -69,7 +69,7 @@ class SemesterBasedMixin(TemplateBaseOverride):
         sem = getattr(self, 'semester', None)
         if sem is None:
             year, month = self.get_year_and_month()
-            if self.semester is None:
+            if getattr(self, 'semester', None) is None:
                 self.semester = models.Semester.objects.get(year=year, month=month)
             sem = self.semester
         return sem

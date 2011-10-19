@@ -24,8 +24,10 @@ class QuerySetManager(Manager):
 
 class SerializableQuerySet(QuerySet):
 
+    force_into_json_array = False
+
     def toJSON(self):
-        if len(self) == 1:
+        if len(self) == 1 and not self.force_into_json_array:
             return self[0].toJSON(self.query.related_select_cols)
         return [m.toJSON(self.query.related_select_cols) for m in self]
 

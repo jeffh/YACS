@@ -97,7 +97,9 @@ class SemesterDetailView(APIMixin, views.SemesterDetailView):
 
 class SearchCoursesListView(APIMixin, views.SearchCoursesListView):
     def get_queryset(self):
-        return super(SearchCoursesListView, self).get_queryset(full_select=False)
+        qs = super(SearchCoursesListView, self).get_queryset(full_select=False)
+        qs.force_into_json_array = True
+        return qs
 
 class CourseByDeptListView(APIMixin, views.CourseByDeptListView):
     def get_api_payload(self):
@@ -127,9 +129,17 @@ class SectionListView(APIMixin, views.SemesterBasedMixin, ListView):
 class SectionDetailView(APIMixin, views.SemesterBasedMixin, DetailView):
     def get_queryset(self):
         year, month = self.get_year_and_month()
-        dept, num, crn = self.kwargs.get('code'), self.kwargs.get('number'), self.kwargs.get('crn')
-        return models.Section.objects.by_semester(year, month).by_course_code(dept, num).filter(crn=crn).full_select(year, month)
+        dept, num, crn, secnum = self.kwargs.get('code'), self.kwargs.get('number'), self.kwargs.get('crn'), self.kwargs.get('secnum')
+        qs = models.Section.objects.by_semester(year, month).by_course_code(dept, num)
+        if crn is not None:
+            qs = qs.filter(crn=crn)
+        if secnum is not None:
+            qs = qs.filter(number=secnum)
+        return qs.full_select(year, month)
 
     def get_object(self):
-        return self.get_queryset()[0]
+        try:
+            return self.get_queryset()[0]
+        except IndexError:
+            raise models.Section.DoesNotExist
 
