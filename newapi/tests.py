@@ -7,28 +7,24 @@ from datetime import time
 class TestLatestAPI(ShortcutTestCase):
     fixtures = ['semesters.json', 'courses/fixtures/calc1.json', 'courses/fixtures/intro-to-cs.json', 'courses/fixtures/data-structures.json']
     urls = 'yacs.newapi.urls'
-    def json_get(self, *args, **kwargs):
-        response = self.get(*args, **kwargs)
-        return loads(response.content)
-
     def fields(self, dicts, field):
         return list(d[field] for d in dicts)
 
-    def test_get_latest_semester(self):
+    def test_get_semester(self):
         json = self.json_get('semester', status_code=200)
         self.assertEqual(json['status'], 'OK')
         sem = json['payload']
         self.assertEqual(sem['year'], 2011)
         self.assertEqual(sem['month'], 9)
 
-    def test_get_latest_departments(self):
+    def test_get_departments(self):
         json = self.json_get('departments', status_code=200)
         self.assertEqual(json['status'], 'OK')
         self.assertEqual(len(json['payload']), 3)
         self.assertEqual(self.fields(json['payload'], 'code'), ['CSCI', 'ECSE', 'MATH'])
         self.assertEqual(self.fields(json['payload'], 'name'), ['Computer Science', 'Electrical, Computer, and Systems Engineering', 'Mathematics'])
 
-    def test_get_latest_courses_by_dept(self):
+    def test_get_courses_by_dept(self):
         json = self.json_get('courses-by-dept', code='CSCI', status_code=200)
         self.assertEqual(json['status'], 'OK')
         dept = json['payload']
@@ -87,7 +83,7 @@ class TestLatestAPI(ShortcutTestCase):
         self.assertEqual(obj['seats_left'], 2)
         self.assertEqual(obj['seats_total'], 50)
         self.assertEqual(obj['crn'], 85723)
-        # self.assertEqual(obj['periods'], ...)
+        # TODO: self.assertEqual(obj['periods'], ...)
 
     # TODO: make more comprehensive
     def test_get_sections(self):
@@ -102,9 +98,20 @@ class TestLatestAPI(ShortcutTestCase):
         self.assertEqual(obj['seats_left'], 2)
         self.assertEqual(obj['seats_total'], 50)
         self.assertEqual(obj['crn'], 85723)
+        # TODO: self.assertEqual(obj['periods'], ...)
 
 # yeah, I know, not the best practice to be doing this.. but I'm short on time!
 class TestLatestAPIViaYearAndMonth(TestLatestAPI):
     def json_get(self, *args, **kwargs):
-        response = self.get(*args, year=2011, month=9, **kwargs)
-        return loads(response.content)
+        return super(TestLatestAPIViaYearAndMonth, self).json_get(*args, year=2011, month=9, **kwargs)
+
+    # TODO: make more comprehensive
+class TestSemesterAPI(ShortcutTestCase):
+    fixtures = ['semesters.json']
+    urls = 'yacs.newapi.urls'
+
+    def test_get_semesters(self):
+        json = self.json_get('semesters', status_code=200)
+
+    def test_get_semesters_by_year(self):
+        json = self.json_get('semesters-by-year', year=2011, status_code=200)

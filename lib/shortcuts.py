@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.utils.simplejson import loads
 
 class ShortcutTestCase(TestCase):
     def get(self, url_name, *args, **kwargs):
@@ -11,6 +12,10 @@ class ShortcutTestCase(TestCase):
         if status is not None:
             self.assertEqual(response.status_code, status)
         return response
+
+    def json_get(self, *args, **kwargs):
+        response = self.get(*args, **kwargs)
+        return loads(response.content)
 
     def post(self, url_name, *args, **kwargs):
         status = kwargs.pop('status_code', None)
