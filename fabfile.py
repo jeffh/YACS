@@ -32,7 +32,7 @@ env.use_virtualenv = True
 env.apache_restart = ('apache2', 'restart')
 
 PROJECT_FILES = [
-    directory('api', filter='*.py'),
+    directory('newapi', filter='*.py'),
     directory('courses', filter='*.py'),
     directory('scheduler', filter='*.py'),
     directory('lib', 'csp', filter='*.py'),
@@ -168,7 +168,7 @@ def test(apps=None):
 
 def loc():
     "Returns the number of lines of all source files, excluding migrations."
-    local('find -E . -iregex ".+/[^0][^/]+\.(py|html|json)$" | xargs wc -l')
+    local('find -E . -iregex ".+/[^0][^/]+\.(py|html|js|scss|txt)$" | xargs wc -l')
 
 @roles('webservers')
 def new_deploy():
