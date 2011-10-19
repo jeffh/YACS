@@ -9,7 +9,7 @@ from yacs.courses.utils import dict_by_attr
 
 class QuerySetManager(Manager):
     use_for_related_fields = True
-    def __init__(self, queryset_class=QuerySet):
+    def __init__(self, queryset_class):
         super(QuerySetManager, self).__init__()
         self.queryset_class = queryset_class
 
@@ -22,7 +22,15 @@ class QuerySetManager(Manager):
         except AttributeError:
             return getattr(self.get_query_set(), attr)
 
-class SemesterBasedQuerySet(QuerySet):
+class SerializableQuerySet(QuerySet):
+
+    def toJSON(self):
+        if len(self) == 1:
+            return self[0].toJSON(self.query.related_select_cols)
+        return [m.toJSON(self.query.related_select_cols) for m in self]
+
+
+class SemesterBasedQuerySet(SerializableQuerySet):
     def by_semester(self, year=None, month=None):
         qs = self
         if year:
@@ -35,9 +43,6 @@ class SemesterBasedQuerySet(QuerySet):
             qs = qs.distinct()
 
         return qs
-
-    def toJSON(self):
-        return [m.toJSON(self.query.related_select_cols) for m in self]
 
 class SectionPeriodQuerySet(SemesterBasedQuerySet):
     def by_semester(self, year=None, month=None):
@@ -52,6 +57,9 @@ class SectionPeriodQuerySet(SemesterBasedQuerySet):
             qs = qs.distinct()
 
         return qs
+
+    def by_course_code(self, code, number, year=None, month=None):
+        return self.by_semester(year, month).filter(section__course__department__code=code, section__course__number=number)
 
     def by_course(self, course, year=None, month=None):
         return self.by_semester(year, month).filter(section__course=course)
@@ -86,6 +94,14 @@ class SectionQuerySet(SemesterBasedQuerySet):
 
         return result
 
+    def by_course_code(self, code, number):
+        qs = self
+        if code:
+            qs = qs.filter(course__department__code=code)
+        if number:
+            qs = qs.filter(course__number=number)
+        return qs
+
     def by_course_id(self, course_id):
         return self.filter(course__id=course_id)
 
@@ -93,7 +109,7 @@ class SectionQuerySet(SemesterBasedQuerySet):
         "Filters out all sections that are unavailable. This means seats taken >= seats total."
         return self.filter(seats_taken__lt=F('seats_total'))
 
-class CourseManager(SemesterBasedQuerySet):
+class CourseQuerySet(SemesterBasedQuerySet):
     def _filter_types(self, query):
         if not query:
             return Q()

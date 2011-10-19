@@ -4,6 +4,7 @@ from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import redirect
 from django.db.models import Q
 from django.db.models.query import QuerySet
+from django.conf import settings
 from yacs.courses import models
 from yacs.courses.utils import ObjectJSONEncoder
 from json import dumps
@@ -16,7 +17,7 @@ class AjaxJsonResponseMixin(object):
     json_content_prefix = 'for(;;); '
     json_allow_callback = False
     json_callback_parameter = 'callback'
-    json_encoder = ObjectJSONEncoder()
+    json_encoder = ObjectJSONEncoder(indent=4 if settings.DEBUG else None)
 
     def get_json_response(self, content, **httpresponse_kwargs):
         return HttpResponse(content, content_type='application/json', **httpresponse_kwargs)
@@ -35,7 +36,7 @@ class AjaxJsonResponseMixin(object):
 
     def convert_context_to_json(self, context):
         name = self.get_json_callback_parameter_name()
-        obj = json_encoder.encode(context)
+        obj = self.json_encoder.encode(context)
         if name:
             return "%s(%s)" % (name, obj)
         return obj
@@ -58,12 +59,37 @@ class TemplateBaseOverride(object):
 
 class SemesterBasedMixin(TemplateBaseOverride):
     def get_year_and_month(self):
-        return self.kwargs['year'], self.kwargs['month']
+        year, month = self.kwargs.get('year'), self.kwargs.get('month')
+        if year or month:
+            return year, month
+        self.semester = getattr(self, 'semester', None) or models.Semester.objects.all().order_by('-year', '-month')[0]
+        return self.semester.year, self.semester.month
+
+    def get_semester(self):
+        sem = getattr(self, 'semester', None)
+        if sem is None:
+            year, month = self.get_year_and_month()
+            if self.semester is None:
+                self.semester = models.Semester.objects.get(year=year, month=month)
+            sem = self.semester
+        return sem
 
     def get_context_data(self, **kwargs):
         data = super(SemesterBasedMixin, self).get_context_data(**kwargs)
         data['sem_year'], data['sem_month'] = self.get_year_and_month()
         return data
+
+class SemesterListView(ListView):
+    def get_queryset(self):
+        qs = models.Semester.objects.all()
+        year = self.kwargs.get('year')
+        if year:
+            qs = qs.filter(year=year)
+        return qs
+
+class SemesterDetailView(SemesterBasedMixin, DetailView):
+    def get_object(self):
+        return self.get_semester()
 
 class SelectedCoursesMixin(SemesterBasedMixin):
     def get_sections(self, courses, year, month):
@@ -121,7 +147,7 @@ class SearchCoursesListView(SearchMixin, SelectedCoursesMixin, ListView):
     context_object_name = 'courses'
     template_name = 'courses/course_list.html'
 
-    def get_queryset(self):
+    def get_queryset(self, full_select=True):
         year, month = self.get_year_and_month()
         query = self.request.GET.get('q', '')
         depart = self.request.GET.get('d', 'all')
@@ -136,7 +162,9 @@ class SearchCoursesListView(SearchMixin, SelectedCoursesMixin, ListView):
         courses = courses.search(query, self.department)
         if not query:
             courses = courses.order_by('department__code', 'number')
-        return courses.full_select(year, month)
+        if full_select:
+            courses = courses.full_select(year, month)
+        return courses
 
     def get_context_data(self, **kwargs):
         data = super(SearchCoursesListView, self).get_context_data(**kwargs)
@@ -151,7 +179,7 @@ class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
     context_object_name = 'courses'
     template_name = 'courses/course_list.html'
 
-    def get_queryset(self):
+    def get_queryset(self, select_related=True, full_select=True):
         year, month = self.get_year_and_month()
         self.department = models.Department.objects.get(code=self.kwargs['code'])
         courses = models.Course.objects.by_semester(year, month).by_department(self.department)
@@ -159,7 +187,11 @@ class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
         query = self.request.GET.get('q')
         if query:
             courses = courses.search(query, self.department)
-        return courses.select_related('department').full_select(year, month)
+        if select_related:
+            courses = courses.select_related('department')
+        if full_select:
+            courses = courses.full_select(year, month)
+        return courses
 
     def get_context_data(self, **kwargs):
         data = super(CourseByDeptListView, self).get_context_data(**kwargs)
@@ -172,12 +204,15 @@ class CourseDetailView(SemesterBasedMixin, DetailView):
     "Shows gruesome amount of detail for a course"
     context_object_name = 'course'
 
-    def get_query_set(self):
+    def get_queryset(self):
         return models.Course.objects.all().select_related()
 
     def get_object(self):
         deptcode, number = self.kwargs.get('code'), self.kwargs.get('number')
-        obj = self.get_query_set().get(department__code=deptcode, number=number)
+        if deptcode and number:
+            obj = self.get_queryset().get(department__code=deptcode, number=number)
+        else:
+            obj = self.get_queryset().get(id=self.kwargs.get('cid'))
 
         # attach additional properties:
         obj.all_sections = self.get_sections(obj)
@@ -198,7 +233,7 @@ class CourseDetailView(SemesterBasedMixin, DetailView):
             sections.append(sp.section)
         return sections
 
-class RedirectToLatestSemesterRedirectView(RedirectView):
+class RedirectToLatestSemesterRedirectView(SemesterBasedMixin, RedirectView):
     "Simply redirects to the latest semester."
     url_name = 'departments'
 
@@ -206,7 +241,7 @@ class RedirectToLatestSemesterRedirectView(RedirectView):
         return self.url_name
 
     def get_redirect_url(self, **kwargs):
-        semester = models.Semester.objects.all().order_by('-year', '-month')[0]
+        semester = self.get_semester()
         return reverse(self.url_name, kwargs=dict(year=semester.year, month=semester.month))
 
 class DeselectCoursesView(AjaxJsonResponseMixin, SemesterBasedMixin, View):

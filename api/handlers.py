@@ -81,7 +81,7 @@ class BulkCourseHandler(ReadAPIBaseHandler):
 
         return qs.distinct()
 
-class CourseHandler(BulkCourseHandler):
+class CourseHandler(ReadAPIBaseHandler):
     model = courses.Course
     fields = (
         'id', 'name', 'min_credits', 'max_credits', 'number', 'grade_type',
@@ -90,10 +90,12 @@ class CourseHandler(BulkCourseHandler):
         ('semesters', ('year', 'month', 'name'))
     )
 
-    def read(self, request, version, cid=None, **kwargs):
-        qs = super(CourseHandler, self).read(request, version, **kwargs).select_related()
+    def read(self, request, version, year, month, cid=None):
+        #qs = super(CourseHandler, self).read(request, version, year=year, month=month).select_related()
+        qs = self.model.objects.by_semester(year, month)
+
         try:
-            semester_obj = courses.Semester.objects.get(year=kwargs['year'], month=kwargs['month'])
+            semester_obj = courses.Semester.objects.get(year=year, month=month)
         except:
             return rc.NOT_FOUND
         if cid:
@@ -102,6 +104,7 @@ class CourseHandler(BulkCourseHandler):
         try:
             obj = qs.get()
         except self.model.DoesNotExist:
+            print 'course not found'
             return rc.NOT_FOUND
 
         obj.sections_for_semester = obj.sections.filter(semesters=semester_obj)

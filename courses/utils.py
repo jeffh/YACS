@@ -1,9 +1,12 @@
 from json import dumps, JSONEncoder
+import datetime
 
 class ObjectJSONEncoder(JSONEncoder):
     def default(self, o):
         if callable(getattr(o, 'toJSON', None)):
             return o.toJSON()
+        if isinstance(o, datetime.datetime) or isinstance(o, datetime.date) or isinstance(o, datetime.time):
+            return o.isoformat()
         return super(ObjectJSONEncoder, self).default(o)
 
 class ExtendedAttributeError(AttributeError):

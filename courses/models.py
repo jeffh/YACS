@@ -8,6 +8,8 @@ from django.db.models import F
 __all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting',
     'Course', 'OfferedFor', 'SectionPeriod']
 
+def has_model(select_related, model):
+    return any(s == model._meta.db_table for s, _ in select_related)
 
 class Semester(models.Model):
     """Represents the semester / quarter for a college. Courses may not be offered every semester.
@@ -18,6 +20,8 @@ class Semester(models.Model):
     ref = models.CharField(max_length=150, help_text="Internally used by bridge module to refer to a semester.", unique=True)
     date_updated = models.DateTimeField(auto_now=True)
 
+    objects = managers.QuerySetManager(managers.SerializableQuerySet)
+
     class Meta:
         unique_together = (
             ('year', 'month'),
@@ -25,6 +29,17 @@ class Semester(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def toJSON(self, select_related=()):
+        json = {
+            'year': self.year,
+            'month': self.month,
+            'name': self.name,
+            'date_updated': self.date_updated,
+        }
+        if has_model(select_related, Department):
+            json['departments'] = self.departments.all().toJSON(select_related)
+        return json
 
     def __cmp__(self, other):
         return cmp(self.year, other.year) or cmp(self.month, other.month)
@@ -46,11 +61,13 @@ class Department(models.Model):
         return self.code
 
     def toJSON(self, select_related=()):
-        return {
+        json = {
             'name': self.name,
             'code': self.code,
         }
-
+        if has_model(select_related, Semester):
+            json['semesters'] = self.semesters.all().toJSON(select_related)
+        return json
 
 class Period(models.Model):
     """Represents a time period that sections are held for during the week.
@@ -71,6 +88,8 @@ class Period(models.Model):
         (SUNDAY, 'Sunday'),
     )
 
+    #objects = managers.QuerySetManager()
+
     days_of_week_flag = models.IntegerField()
 
     class Meta:
@@ -78,6 +97,14 @@ class Period(models.Model):
 
     def __unicode__(self):
         return u"%s to %s on %s" % (self.start_time, self.end_time, ', '.join(self.days_of_week))
+
+    def toJSON(self, select_related=()):
+        return {
+            'start_time': self.start,
+            'end_time': self.end,
+            'days_of_the_week': self.days_of_week,
+            #'is_to_be_announced': self.is_to_be_announced,
+        }
 
     def _validate_time(self, value, name):
         s = str(value)
@@ -151,6 +178,8 @@ class SectionCrosslisting(models.Model):
     semester = models.ForeignKey(Semester, related_name='section_crosslistings')
     ref = models.CharField(max_length=200, unique=True, help_text='Internal unique identification used by bridge module.')
 
+    #objects = managers.QuerySetManager()
+
     class Meta:
         verbose_name = 'Section Crosslisting'
         verbose_name_plural = 'Section Crosslistings'
@@ -191,8 +220,10 @@ class Section(models.Model):
             'seats_total': self.seats_total,
             'seats_left': self.seats_left,
         }
-        if any(s == Course._meta.db_table for s, _ in select_related):
+        if has_model(select_related, Course):
             values['course'] = self.course.toJSON(select_related)
+        if hasattr(self, 'all_section_periods'):
+            values['periods'] = [sp.toJSON() for sp in self.all_section_periods]
         return values
 
     @property
@@ -242,7 +273,7 @@ class Course(models.Model):
 
     grade_type = models.CharField(max_length=150, blank=True, default='')
 
-    objects = managers.QuerySetManager(managers.CourseManager)
+    objects = managers.QuerySetManager(managers.CourseQuerySet)
 
     class Meta:
         unique_together = ('department', 'number')
@@ -267,9 +298,11 @@ class Course(models.Model):
             'number': self.number,
             'min_credits': self.min_credits,
             'max_credits': self.max_credits,
-        }
-        if 'department' in select_related:
+            }
+        if has_model(select_related, Department):
             values['department'] = self.department.toJSON(select_related)
+        if hasattr(self, 'all_sections'):
+            values['sections'] = [s.toJSON() for s in self.all_sections]
         return values
 
     @property
@@ -371,6 +404,15 @@ class SectionPeriod(models.Model):
 
     def __unicode__(self):
         return "%s holds %s during %r at %s for section %s" % (self.instructor, self.kind, self.period, self.location, self.section)
+
+    def toJSON(self, select_related=()):
+        json = {
+            'instructor': self.instructor,
+            'location': self.location,
+            'kind': self.kind,
+        }
+        json.update(self.period.toJSON())
+        return json
 
     def conflicts_with(self, section_period):
         "Returns True if times conflict with the given section period."

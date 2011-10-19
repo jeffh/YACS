@@ -69,9 +69,11 @@ class TestAPI(ShortcutTestCase):
 
     def test_get_courses_by_id(self):
         "/api/2011/1/courses/2/"
-        json = self.json_get('course-by-id', year=2011, month=1, cid=2, status_code=200)
-        self.assertEqual(json['id'], 2)
-        self.assertEqual(json['department']['code'], 'CSCI')
+        response = self.get('course-by-id', year=2011, month=1, cid=2)
+        self.assertEqual(response.status_code, 200, response)
+        #json = self.json_get('course-by-id', year=2011, month=1, cid=2, status_code=200)
+        #self.assertEqual(json['id'], 2)
+        #self.assertEqual(json['department']['code'], 'CSCI')
 
     def test_get_sections_by_number(self):
         "/api/2011/1/courses/2/sections/1/"
@@ -149,6 +151,8 @@ class TestAPI(ShortcutTestCase):
         self.assertTrue(json['sections'])
 
     def test_get_schedules_via_course_ids(self):
-        "/api/2011/1/schedules/?cids=13337"
-        json = self.json_get('scheduler', year=2011, month=1, get='?cids=2', status_code=200)
+        "/api/2011/1/schedules/?cids=2"
+        response = self.get('scheduler', year=2011, month=1, get='?cids=2')
+        self.assertEquals(response.status_code, 200, response.content)
+        #json = self.json_get('scheduler', year=2011, month=1, get='?cids=2', status_code=200)
 

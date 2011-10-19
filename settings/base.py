@@ -154,7 +154,8 @@ INSTALLED_APPS = (
     # local apps
     'yacs.courses',
     'yacs.scheduler',
-    'yacs.api',
+    #'yacs.api',
+    'yacs.newapi',
 )
 
 if DEBUG:
@@ -215,6 +216,10 @@ LOGGING = {
     }
 }
 
+# ==== API App ====
+# Return queries executed in json, only works when DEBUG = True
+API_RETURN_QUERIES = True
+
 # ==== Courses App ====
 COURSES_COLLEGE_NAME = 'Rensselaer Polytechnic Institute'  # the full name of the school
 COURSES_COLLEGE_SHORT_NAME = 'RPI'  # short-hand name of the school
@@ -237,7 +242,7 @@ def debug_toolbar_callback(request):
     return request.user.is_staff
 
 DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
+    'INTERCEPT_REDIRECTS': True,
     'SHOW_TOOLBAR_CALLBACK': debug_toolbar_callback,
     'HIDE_DJANGO_SQL': False,
 }
