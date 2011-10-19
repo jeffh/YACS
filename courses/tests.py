@@ -184,6 +184,66 @@ class TestMultipleCourseSelecting(ShortcutTestCase):
             result[self.c3.id] = self.calc1_nonfull
         return self.set_session({SELECTED_COURSES_SESSION_KEY: result})
 
+    def test_selecting_courses_via_ajax(self):
+        "Simulate what a typical browser would hit when selecting courses."
+        response = self.get('courses-by-dept', year=2011, month=9, code='CSCI', status_code=200)
+        json = self.json_post('deselect-courses', year=2011, month=9,
+            ajax_request=True, status_code=200, prefix='for(;;); ', data={
+            'selected_course_' + str(self.c.id): 'checked',
+            'selected_course_' + str(self.c.id) + '_85723': 'checked',
+            'selected_course_' + str(self.c.id) + '_86573': 'checked',
+        })
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(len(selected), 1)
+        self.assertEqual(selected.get(self.c.id), self.intro_cs_sections)
+
+        # apply to more sections
+        json = self.json_post('deselect-courses', year=2011, month=9,
+            ajax_request=True, status_code=200, prefix='for(;;); ', data={
+            'selected_course_' + str(self.c.id): 'checked',
+            'selected_course_' + str(self.c.id) + '_85723': 'checked',
+            'selected_course_' + str(self.c.id) + '_86573': 'checked',
+            'selected_course_' + str(self.c2.id): 'checked',
+            'selected_course_' + str(self.c2.id) + '_85065': 'checked',
+            'selected_course_' + str(self.c2.id) + '_85468': 'checked',
+            'selected_course_' + str(self.c2.id) + '_86693': 'checked',
+            'selected_course_' + str(self.c2.id) + '_85411': 'checked',
+            'selected_course_' + str(self.c2.id) + '_85488': 'checked',
+        })
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(len(selected), 2)
+        self.assertEqual(selected.get(self.c.id), self.intro_cs_sections)
+        self.assertSetEqual(set(selected.get(self.c2.id)), set(self.intro_algos_nonfull))
+
+        # remove some sections via selected courses
+        response = self.get('selected-courses', year=2011, month=9, status_code=200)
+        json = self.json_post('deselect-courses', year=2011, month=9,
+            ajax_request=True, status_code=200, prefix='for(;;);', data={
+            'selected_course_' + str(self.c.id): 'checked',
+            'selected_course_' + str(self.c.id) + '_85723': 'checked',
+            'selected_course_' + str(self.c.id) + '_86573': 'checked',
+            'selected_course_' + str(self.c2.id): 'checked',
+            'selected_course_' + str(self.c2.id) + '_85065': 'checked',
+            'selected_course_' + str(self.c2.id) + '_85468': 'checked',
+            'selected_course_' + str(self.c2.id) + '_86693': 'checked',
+        })
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(len(selected), 2)
+        self.assertEqual(selected.get(self.c.id), self.intro_cs_sections)
+        self.assertSetEqual(set(selected.get(self.c2.id)), set([85065, 85468, 86693]))
+
+        # remove some course
+        json = self.json_post('deselect-courses', year=2011, month=9,
+            ajax_request=True, status_code=200, prefix='for(;;);', data={
+            'selected_course_' + str(self.c2.id): 'checked',
+            'selected_course_' + str(self.c2.id) + '_85065': 'checked',
+            'selected_course_' + str(self.c2.id) + '_85468': 'checked',
+            'selected_course_' + str(self.c2.id) + '_86693': 'checked',
+        })
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(len(selected), 1)
+        self.assertSetEqual(set(selected.get(self.c2.id)), set([85065, 85468, 86693]))
+
     def test_selecting_courses(self):
         """Selecting a course should populate the selected courses with the cid => crns.
         Also should avoid full sections.

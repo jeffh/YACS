@@ -24,6 +24,7 @@ class QuerySetManager(Manager):
 
 class SerializableQuerySet(QuerySet):
 
+    # set to True to make toJSON() to always output a list
     force_into_json_array = False
 
     def toJSON(self):
