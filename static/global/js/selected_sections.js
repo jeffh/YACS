@@ -40,8 +40,10 @@ function addSectionToSelection(courseID, crn){
 function removeSectionFromSelection(courseID, crn){
     courseID = parseInt(courseID, 10);
     crn = parseInt(crn, 10);
-    if(!selection[courseID])
+    if(!selection[courseID]){
+        console.log('no sections were selected in course ' + courseID);
         return;
+    }
     updateFuse.stop();
     if($.inArray(crn, selection[courseID]) === -1){
         console.log(crn, 'not in', courseID);
@@ -58,10 +60,12 @@ function syncSelection(){
         type: 'GET',
         dataType: 'text',
         success: function(content, status, request){
-            var sections = Utils.json(content);
+            var selection = Utils.json(content);
             updateFuse.freeze();
-            $.each(sections, function(){
-                addSectionToSelection(this.course.id, this.crn);
+            $.each(selection, function(crns, cid){
+                $.each(crns, function(crn){
+                    addSectionToSelection(cid, crn);
+                });
             });
             updateFuse.thaw();
             // TODO: update
