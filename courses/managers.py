@@ -9,7 +9,7 @@ from yacs.courses.utils import dict_by_attr
 
 class QuerySetManager(Manager):
     use_for_related_fields = True
-    def __init__(self, queryset_class):
+    def __init__(self, queryset_class=QuerySet):
         super(QuerySetManager, self).__init__()
         self.queryset_class = queryset_class
 

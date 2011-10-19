@@ -107,10 +107,10 @@ def generate_fixtures():
         return ' '.join(include(*pair) for pair in pairs)
 
     def generate_fixture(output, models):
-        local('python manage.py makefixture --indent=4 %s > courses/fixtures/%s.json' % (
+        local('python manage.py makefixture --indent=4 %s > %s.json' % (
             models, output
         ))
-    def fixture(output, course_name):
+    def course_fixture(output, course_name):
         course_id = models.Course.objects.get(name=course_name).id
         sp_ids = models.SectionPeriod.objects.filter(section__course__id=course_id).values_list('id', flat=True)
         ss_ids = models.SemesterSection.objects.filter(section__course__id=course_id).values_list('id', flat=True)
@@ -122,11 +122,27 @@ def generate_fixtures():
             )
         )
 
-    fixture('calc1', 'CALCULUS I')
-    fixture('calc2', 'CALCULUS II')
-    fixture('data-structures', 'DATA STRUCTURES')
-    fixture('intro-to-algorithms', 'INTRODUCTION TO ALGORITHMS')
-    fixture('intro-to-cs', 'INTRO TO COMPUTER PROGRAMMING')
+    def semester_fixtures(output, course_names):
+        ids = models.OfferedFor.objects.filter(course__name__in=course_names).values_list('id', flat=True)
+        query = models.SemesterDepartment.objects.filter(department__code__in=('CSCI', 'MATH', 'ECSE'))
+        return generate_fixture(output,
+            include_all(
+                ('Semester', models.Semester.objects.all().values_list('id', flat=True)),
+                ('SemesterDepartment', query.values_list('id', flat=True)),
+                ('OfferedFor', ids),
+            )
+        )
+
+    course_fixture('courses/fixtures/calc1', 'CALCULUS I')
+    course_fixture('courses/fixtures/calc2', 'CALCULUS II')
+    course_fixture('courses/fixtures/data-structures', 'DATA STRUCTURES')
+    course_fixture('courses/fixtures/intro-to-algorithms', 'INTRODUCTION TO ALGORITHMS')
+    course_fixture('courses/fixtures/intro-to-cs', 'INTRO TO COMPUTER PROGRAMMING')
+    print "Generating newapi fixtures"
+    semester_fixtures('newapi/fixtures/semesters', ('CALCULUS I', 'DATA STRUCTURES', 'INTRO TO COMPUTER PROGRAMMING'))
+    #course_fixture('newapi/fixtures/calc1', 'CALCULUS I')
+    #course_fixture('newapi/fixtures/data-structures', 'DATA STRUCTURES')
+    #course_fixture('newapi/fixtures/intro-to-cs', 'INTRO TO COMPUTER PROGRAMMING')
 
 
 def test(apps=None):

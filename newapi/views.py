@@ -24,7 +24,7 @@ class APIMixin(views.AjaxJsonResponseMixin):
         return self.default_content_type
 
     def convert_extension_to_content_type(self, ext):
-        return mimetypes.guess_type('file.'+ext)[0]
+        return mimetypes.guess_type('file.' + (ext or ''))[0]
 
     def get_content_type(self):
         format = self.kwargs.get('format')
