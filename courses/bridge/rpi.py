@@ -32,6 +32,7 @@ DEPARTMENTS = dict(
     EPOW="Electrical, Computer, and Systems Engineering",
     ERTH="Earth and Environmental Sciences",
     ESCI="Engineering Science",
+    EXCH="Exchange (Study Abroad)",
     IENV="Interdisciplinary Environmental",
     IHSS="Interdisciplinary Studies",
     ISCI="Interdisciplinary Science",
@@ -65,7 +66,7 @@ class RPIImporter(object):
         self.semesters = {}  # semester.ref: semester obj
         for semester in Semester.objects.all():
             self.semesters[semester.ref] = semester
-        
+
         self.latest_semester = None
         if len(self.semesters) > 0:
             self.latest_semester = max(self.semesters.values())
@@ -75,7 +76,7 @@ class RPIImporter(object):
         if get_files is None:
             from rpi_courses import list_xml_files
             get_files = list_xml_files
-        
+
         if get_catalog is None:
             from rpi_courses import CourseCatalog
             get_catalog = CourseCatalog.from_url
