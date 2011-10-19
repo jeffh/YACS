@@ -1,6 +1,7 @@
 from fabric.api import roles, env, local
 from fabric.context_managers import cd, prefix, lcd
 from fabric.contrib.files import upload_template
+from fabric.contrib import django
 
 import shutil
 import os
@@ -91,6 +92,42 @@ def clean():
             if d == '__pycache__':
                 print " DIR ", os.path.join(root, d)[2:]
                 shutil.rmtree(os.path.join(root, d))
+
+def generate_fixtures():
+    # Set up the Django Enviroment
+    django.project('yacs')
+    import sys
+    sys.path.append('..')
+    from yacs.courses import models
+
+    def include(model, ids):
+        return ' '.join('yacs.courses.%s[%d]' % (model, pk) for pk in ids)
+
+    def include_all(*pairs):
+        return ' '.join(include(*pair) for pair in pairs)
+
+    def generate_fixture(output, models):
+        local('python manage.py makefixture --indent=4 %s > courses/fixtures/%s.json' % (
+            models, output
+        ))
+    def fixture(output, course_name):
+        course_id = models.Course.objects.get(name=course_name).id
+        sp_ids = models.SectionPeriod.objects.filter(section__course__id=course_id).values_list('id', flat=True)
+        ss_ids = models.SemesterSection.objects.filter(section__course__id=course_id).values_list('id', flat=True)
+        return generate_fixture(output,
+            include_all(
+                ('Course', [course_id]),
+                ('SectionPeriod', sp_ids),
+                ('SemesterSection', ss_ids),
+            )
+        )
+
+    fixture('calc1', 'CALCULUS I')
+    fixture('calc2', 'CALCULUS II')
+    fixture('data-structures', 'DATA STRUCTURES')
+    fixture('intro-to-algorithms', 'INTRODUCTION TO ALGORITHMS')
+    fixture('intro-to-cs', 'INTRO TO COMPUTER PROGRAMMING')
+
 
 def test(apps=None):
     """Returns all tests in lib and custom django apps. Optionally accepts specific apps to test.

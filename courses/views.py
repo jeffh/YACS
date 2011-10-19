@@ -12,13 +12,6 @@ import re
 
 SELECTED_COURSES_SESSION_KEY = 'selected'
 
-def get_sections(courses, year, month):
-    course_ids = [c.id for c in courses]
-    queryset = models.Section.objects.by_semester(year, month)
-    sections = queryset.filter(course__id__in=course_ids)
-
-    return sections
-
 class AjaxJsonResponseMixin(object):
     json_content_prefix = 'for(;;); '
     json_allow_callback = False
@@ -73,24 +66,37 @@ class SemesterBasedMixin(TemplateBaseOverride):
         return data
 
 class SelectedCoursesMixin(SemesterBasedMixin):
+    def get_sections(self, courses, year, month):
+        course_ids = [c.id for c in courses]
+        queryset = models.Section.objects.by_semester(year, month)
+        sections = queryset.filter(course__id__in=course_ids)
+
+        return sections
+
     def get_selected_courses(self):
         year, month = self.get_year_and_month()
-        course_ids = self.request.session.get(SELECTED_COURSES_SESSION_KEY, [])
+        course_ids = self.request.session.get(SELECTED_COURSES_SESSION_KEY, {})
         queryset = models.Course.objects.by_semester(year, month)
-        courses = queryset.filter(id__in=course_ids).select_related('department')
+        courses = queryset.filter(id__in=course_ids.keys()).select_related('department')
 
-        return courses, get_sections(courses, year, month)
+        return courses, self.get_sections(courses, year, month)
+
+    def get_selected_section_ids(self):
+        return set(s for sections in self.request.session.get(SELECTED_COURSES_SESSION_KEY, {}).values() for s in sections)
 
     def get_context_data(self, **kwargs):
         data = super(SelectedCoursesMixin, self).get_context_data(**kwargs)
-        data['selected_courses'], data['selected_sections'] = self.get_selected_courses()
+        data['selected_courses'], data['selected_course_sections'] = self.get_selected_courses()
+        data['selected_section_ids'] = self.get_selected_section_ids()
         return data
 
 class SelectedCoursesListView(AjaxJsonResponseMixin, SelectedCoursesMixin, ListView):
     template_name = 'courses/selected_courses_list.html'
 
     def convert_context_to_json(self, context):
-        return self.json_encoder.encode(context['selected_sections'].select_related('course'))
+        #queryset = context['selected_course_sections'].select_related('course')
+        #result = self.json_encoder.encode(queryset)
+        return self.json_encoder.encode(self.request.session.get(SELECTED_COURSES_SESSION_KEY, {}))
 
     def get_queryset(self):
         return self.get_selected_courses()[1]
@@ -138,7 +144,7 @@ class SearchCoursesListView(SearchMixin, SelectedCoursesMixin, ListView):
         data['query_department'] = self.request.GET.get('d', 'all')
         data['department'] = self.department
         data['search_results'] = True
-        data['sections'] = get_sections(data['courses'], *self.get_year_and_month())
+        data['sections'] = self.get_sections(data['courses'], *self.get_year_and_month())
         return data
 
 class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
@@ -159,7 +165,7 @@ class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
         data = super(CourseByDeptListView, self).get_context_data(**kwargs)
         data['department'] = self.department
         data['query'] = self.request.GET.get('q', '')
-        data['sections'] = get_sections(data['courses'], *self.get_year_and_month())
+        data['sections'] = self.get_sections(data['courses'], *self.get_year_and_month())
         return data
 
 class CourseDetailView(SemesterBasedMixin, DetailView):
@@ -252,16 +258,22 @@ class DeselectCoursesView(AjaxJsonResponseMixin, SemesterBasedMixin, View):
 
     def post(self, request, *args, **kwargs):
         self.request, self.args, self.kwargs = request, args, kwargs
-        selection = request.session[SELECTED_COURSES_SESSION_KEY] = self.update_selected()
+        selection = self.update_selected()
+        request.session[SELECTED_COURSES_SESSION_KEY] = selection
         return self.render_to_response(self.get_context_data(selection=selection))
 
 class SelectCoursesView(DeselectCoursesView):
     def update_selected(self):
-        if type(self.request.session.get(SELECTED_COURSES_SESSION_KEY, {})) != dict:
+        if not isinstance(self.request.session.get(SELECTED_COURSES_SESSION_KEY, {}), dict):
             self.request.session[SELECTED_COURSES_SESSION_KEY] = {}
 
         year, month = self.get_year_and_month()
-        course_ids = self.request.session.get(SELECTED_COURSES_SESSION_KEY, {})
+        dept = self.request.POST.get('dept')
+        removable_course_ids = None
+        if dept:
+            removable_course_ids = models.Course.objects.filter(department__code=dept).values_list('id', flat=True)
+
+        course_ids = {}
         PREFIX = 'course_'
 
         for name in self.request.POST:
@@ -272,10 +284,18 @@ class SelectCoursesView(DeselectCoursesView):
             except (ValueError, TypeError):
                 raise HttpResponseBadRequest("Hey, what do you think you're trying to do?")
             # TODO: optimize queries
-            section_ids = list(models.Section.objects.filter(
-                course__id=cid, semesters__year__contains=year, semesters__month__contains=month
-            ).values_list('crn', flat=True))
+            section_ids = list(models.Section.objects.by_availability().
+                by_course_id(cid).by_semester(year, month).values_list('crn', flat=True)
+            )
             course_ids[cid] = section_ids
+            if removable_course_ids is not None and cid in removable_course_ids:
+                removable_course_ids.remove(cid)
 
+        if removable_course_ids is None:
+            return course_ids
+
+        for cid, crns in self.request.session.get(SELECTED_COURSES_SESSION_KEY, {}).items():
+            if cid not in course_ids and cid not in removable_course_ids:
+                course_ids[cid] = crns
         return course_ids
 

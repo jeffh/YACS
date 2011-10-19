@@ -297,7 +297,7 @@ class Course(models.Model):
 
     @property
     def available_sections(self):
-        return self.sections.filter(seats_taken__lt=F('seats_total'))
+        return self.sections.by_availability()
 
     def sections_by_semester(self, semester):
         return self.sections.filter(semesters__contains=semester)

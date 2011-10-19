@@ -1,0 +1,362 @@
+[
+    {
+        "pk": 224, 
+        "model": "courses.course", 
+        "fields": {
+            "name": "INTRO TO COMPUTER PROGRAMMING", 
+            "min_credits": 4, 
+            "grade_type": "", 
+            "number": 1010, 
+            "max_credits": 4, 
+            "department": 10
+        }
+    }, 
+    {
+        "pk": 267, 
+        "model": "courses.sectionperiod", 
+        "fields": {
+            "kind": "LAB", 
+            "section": 636, 
+            "period": 60, 
+            "semester": 2, 
+            "location": "WALKER 6113", 
+            "instructor": "Lewis"
+        }
+    }, 
+    {
+        "pk": 268, 
+        "model": "courses.sectionperiod", 
+        "fields": {
+            "kind": "LEC", 
+            "section": 637, 
+            "period": 61, 
+            "semester": 2, 
+            "location": "LALLY 102", 
+            "instructor": "Schoch"
+        }
+    }, 
+    {
+        "pk": 1725, 
+        "model": "courses.sectionperiod", 
+        "fields": {
+            "kind": "LEC", 
+            "section": 2945, 
+            "period": 61, 
+            "semester": 4, 
+            "location": "LALLY 102", 
+            "instructor": "Schoch"
+        }
+    }, 
+    {
+        "pk": 1726, 
+        "model": "courses.sectionperiod", 
+        "fields": {
+            "kind": "LEC", 
+            "section": 2946, 
+            "period": 60, 
+            "semester": 4, 
+            "location": "WALKER 5113", 
+            "instructor": "Lewis"
+        }
+    }, 
+    {
+        "pk": 3056, 
+        "model": "courses.sectionperiod", 
+        "fields": {
+            "kind": "LAB", 
+            "section": 5307, 
+            "period": 60, 
+            "semester": 5, 
+            "location": "WALKER 6113", 
+            "instructor": "Lewis"
+        }
+    }, 
+    {
+        "pk": 3057, 
+        "model": "courses.sectionperiod", 
+        "fields": {
+            "kind": "LEC", 
+            "section": 5308, 
+            "period": 61, 
+            "semester": 5, 
+            "location": "LALLY 102", 
+            "instructor": "Schoch"
+        }
+    }, 
+    {
+        "pk": 4411, 
+        "model": "courses.sectionperiod", 
+        "fields": {
+            "kind": "LEC", 
+            "section": 7772, 
+            "period": 61, 
+            "semester": 7, 
+            "location": "LALLY 102", 
+            "instructor": "Kuchera"
+        }
+    }, 
+    {
+        "pk": 4412, 
+        "model": "courses.sectionperiod", 
+        "fields": {
+            "kind": "LEC", 
+            "section": 7773, 
+            "period": 60, 
+            "semester": 7, 
+            "location": "LALLY 102", 
+            "instructor": "Schoch"
+        }
+    }, 
+    {
+        "pk": 636, 
+        "model": "courses.semestersection", 
+        "fields": {
+            "semester": 2, 
+            "section": 636
+        }
+    }, 
+    {
+        "pk": 637, 
+        "model": "courses.semestersection", 
+        "fields": {
+            "semester": 2, 
+            "section": 637
+        }
+    }, 
+    {
+        "pk": 2945, 
+        "model": "courses.semestersection", 
+        "fields": {
+            "semester": 4, 
+            "section": 2945
+        }
+    }, 
+    {
+        "pk": 2946, 
+        "model": "courses.semestersection", 
+        "fields": {
+            "semester": 4, 
+            "section": 2946
+        }
+    }, 
+    {
+        "pk": 5307, 
+        "model": "courses.semestersection", 
+        "fields": {
+            "semester": 5, 
+            "section": 5307
+        }
+    }, 
+    {
+        "pk": 5308, 
+        "model": "courses.semestersection", 
+        "fields": {
+            "semester": 5, 
+            "section": 5308
+        }
+    }, 
+    {
+        "pk": 7772, 
+        "model": "courses.semestersection", 
+        "fields": {
+            "semester": 7, 
+            "section": 7772
+        }
+    }, 
+    {
+        "pk": 7773, 
+        "model": "courses.semestersection", 
+        "fields": {
+            "semester": 7, 
+            "section": 7773
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "courses.department", 
+        "fields": {
+            "code": "CSCI", 
+            "name": "Computer Science"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "courses.semester", 
+        "fields": {
+            "date_updated": "2011-09-25 17:36:15", 
+            "month": 1, 
+            "ref": "201001.xml", 
+            "name": "Spring 2010", 
+            "year": 2010
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "courses.semester", 
+        "fields": {
+            "date_updated": "2011-09-25 17:36:37", 
+            "month": 9, 
+            "ref": "201009.xml", 
+            "name": "Fall 2010", 
+            "year": 2010
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "courses.semester", 
+        "fields": {
+            "date_updated": "2011-09-25 17:36:58", 
+            "month": 1, 
+            "ref": "201101.xml", 
+            "name": "Spring 2011", 
+            "year": 2011
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "courses.semester", 
+        "fields": {
+            "date_updated": "2011-09-25 17:37:20", 
+            "month": 9, 
+            "ref": "201109.xml", 
+            "name": "Fall 2011", 
+            "year": 2011
+        }
+    }, 
+    {
+        "pk": 60, 
+        "model": "courses.period", 
+        "fields": {
+            "start": "18:00:00", 
+            "days_of_week_flag": 9, 
+            "end": "19:50:00"
+        }
+    }, 
+    {
+        "pk": 636, 
+        "model": "courses.section", 
+        "fields": {
+            "seats_total": 40, 
+            "number": 1, 
+            "crosslisted": null, 
+            "course": 224, 
+            "crn": 50843, 
+            "seats_taken": 41
+        }
+    }, 
+    {
+        "pk": 61, 
+        "model": "courses.period", 
+        "fields": {
+            "start": "08:00:00", 
+            "days_of_week_flag": 9, 
+            "end": "09:50:00"
+        }
+    }, 
+    {
+        "pk": 637, 
+        "model": "courses.section", 
+        "fields": {
+            "seats_total": 40, 
+            "number": 2, 
+            "crosslisted": null, 
+            "course": 224, 
+            "crn": 52051, 
+            "seats_taken": 37
+        }
+    }, 
+    {
+        "pk": 2945, 
+        "model": "courses.section", 
+        "fields": {
+            "seats_total": 50, 
+            "number": 1, 
+            "crosslisted": null, 
+            "course": 224, 
+            "crn": 65764, 
+            "seats_taken": 40
+        }
+    }, 
+    {
+        "pk": 2946, 
+        "model": "courses.section", 
+        "fields": {
+            "seats_total": 50, 
+            "number": 2, 
+            "crosslisted": null, 
+            "course": 224, 
+            "crn": 66646, 
+            "seats_taken": 33
+        }
+    }, 
+    {
+        "pk": 5307, 
+        "model": "courses.section", 
+        "fields": {
+            "seats_total": 40, 
+            "number": 1, 
+            "crosslisted": null, 
+            "course": 224, 
+            "crn": 73662, 
+            "seats_taken": 41
+        }
+    }, 
+    {
+        "pk": 5308, 
+        "model": "courses.section", 
+        "fields": {
+            "seats_total": 40, 
+            "number": 2, 
+            "crosslisted": null, 
+            "course": 224, 
+            "crn": 74776, 
+            "seats_taken": 37
+        }
+    }, 
+    {
+        "pk": 7772, 
+        "model": "courses.section", 
+        "fields": {
+            "seats_total": 50, 
+            "number": 1, 
+            "crosslisted": null, 
+            "course": 224, 
+            "crn": 85723, 
+            "seats_taken": 48
+        }
+    }, 
+    {
+        "pk": 7773, 
+        "model": "courses.section", 
+        "fields": {
+            "seats_total": 50, 
+            "number": 2, 
+            "crosslisted": null, 
+            "course": 224, 
+            "crn": 86573, 
+            "seats_taken": 32
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "courses.semester", 
+        "fields": {
+            "date_updated": "2011-09-25 17:36:16", 
+            "month": 5, 
+            "ref": "201005.xml", 
+            "name": "Summer 2010", 
+            "year": 2010
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "courses.semester", 
+        "fields": {
+            "date_updated": "2011-09-25 17:36:59", 
+            "month": 5, 
+            "ref": "201105.xml", 
+            "name": "Summer 2011", 
+            "year": 2011
+        }
+    }
+]

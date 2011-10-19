@@ -150,6 +150,7 @@ INSTALLED_APPS = (
     #'djkombu',
     'debug_toolbar',
     'django_bcrypt',
+    'test_utils',
     # local apps
     'yacs.courses',
     'yacs.scheduler',

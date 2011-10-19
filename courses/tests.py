@@ -10,6 +10,12 @@ from django_dynamic_fixture import new, get, DynamicFixture as F
 from shortcuts import ShortcutTestCase
 from yacs.courses import models
 from yacs.courses import utils
+from yacs.courses.views import SELECTED_COURSES_SESSION_KEY
+
+# utils
+def course(name):
+    return models.Course.objects.get(name=name)
+# end utils
 
 class BasicSchema(ShortcutTestCase):
     def setUp(self):
@@ -94,6 +100,170 @@ class SearchTest(BasicSchema):
         self.assertIn(self.course1, courses)
         self.assertNotIn(self.course2, courses)
         self.assertNotIn(self.course3, courses)
+
+
+class TestSingleCourseSelecting(ShortcutTestCase):
+    fixtures = ['intro-to-cs.json']
+    urls = 'yacs.urls'
+
+    def setUp(self):
+        self.c = course('INTRO TO COMPUTER PROGRAMMING')
+
+    def test_default_has_no_selection(self):
+        "A new visitor should have no selected courses."
+        response = self.get('departments', year=2011, month=9)
+        self.assertFalse(self.client.session.get(SELECTED_COURSES_SESSION_KEY))
+
+    def set_selected(self):
+        self.set_session({SELECTED_COURSES_SESSION_KEY: {
+            self.c.id: [85723, 86573]
+        }})
+
+    def test_selecting_a_course(self):
+        "Selecting a course should populate the selected courses with the cid => crns."
+        self.assertFalse(self.client.session.get(SELECTED_COURSES_SESSION_KEY))
+
+        response = self.post('select-courses', year=2011, month=9, status_code=302, data={
+            'course_' + str(self.c.id): 'selected',
+        })
+
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(len(selected), 1)
+        self.assertSequenceEqual(selected.keys(), [self.c.id])
+        self.assertSequenceEqual(selected.get(self.c.id), [85723, 86573])
+
+    def test_deselecting_course_via_course_list(self):
+        "Deselect a course using the course_list view."
+        self.set_selected()
+
+        response = self.post('select-courses', year=2011, month=9, status_code=302, data={})
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(len(selected), 0)
+        self.assertSequenceEqual(selected.keys(), [])
+
+    def test_deselecting_course_via_selected(self):
+        "Deselect a course using the selected courses view."
+        self.set_selected()
+
+        response = self.post('deselect-courses', year=2011, month=9, status_code=302, data={})
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(len(selected), 0)
+        self.assertSequenceEqual(selected.keys(), [])
+
+    def test_deselecting_section_via_selected(self):
+        "Deselect a course's section using the selected courses view."
+        self.set_selected()
+
+        response = self.post('deselect-courses', year=2011, month=9, status_code=302, data={
+            'selected_course_' + str(self.c.id): 'true',
+            'selected_course_' + str(self.c.id) + '_85723': 'true'
+        })
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(len(selected), 1)
+        self.assertSequenceEqual(selected.keys(), [self.c.id])
+        self.assertSequenceEqual(selected[self.c.id], [85723])
+
+class TestMultipleCourseSelecting(ShortcutTestCase):
+    fixtures = ['intro-to-cs.json', 'intro-to-algorithms.json', 'calc1.json']
+    urls = 'yacs.urls'
+
+    def setUp(self):
+        self.intro_cs_sections = [85723, 86573]
+        self.intro_algos_sections = [85065, 85066, 85468, 86693, 85411, 85488]
+        self.intro_algos_nonfull = [85065, 85468, 86693, 85411, 85488]
+        self.calc1_nonfull = (85138, 85141, 85143, 85391, 85299, 85417, 85418, 85419, 86274, 85808, 86270, 85668, 85669, 85670)
+        self.c, self.c2 = course('INTRO TO COMPUTER PROGRAMMING'), course('INTRODUCTION TO ALGORITHMS')
+        self.c3 = course('CALCULUS I')
+
+    def set_selected(self, calc=False):
+        result = {
+            self.c.id: self.intro_cs_sections,
+            self.c2.id: self.intro_algos_nonfull
+        }
+        if calc:
+            result[self.c3.id] = self.calc1_nonfull
+        return self.set_session({SELECTED_COURSES_SESSION_KEY: result})
+
+    def test_selecting_courses(self):
+        """Selecting a course should populate the selected courses with the cid => crns.
+        Also should avoid full sections.
+        """
+        self.assertFalse(self.client.session.get(SELECTED_COURSES_SESSION_KEY))
+
+        c, c2 = self.c, self.c2
+        response = self.post('select-courses', year=2011, month=9, status_code=302, data={
+            'course_' + str(c.id): 'selected',
+            'course_' + str(c2.id): 'selected',
+        })
+
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(len(selected), 2)
+        self.assertSequenceEqual(selected.keys(), [c.id, c2.id])
+        self.assertSequenceEqual(selected.get(c.id), self.intro_cs_sections)
+        self.assertSequenceEqual(selected.get(c2.id), self.intro_algos_nonfull)
+
+    def test_deselecting_all_courses_via_course_list(self):
+        "Deselect a course using the course_list view."
+        c = self.c
+        self.set_selected()
+
+        response = self.post('select-courses', year=2011, month=9, status_code=302, data={})
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(len(selected), 0)
+
+    def test_deselecting_courses_only_for_department(self):
+        "Deselect a course using the course_list view but don't deselect calculus."
+        self.set_selected(calc=True)
+
+        response = self.post('select-courses', year=2011, month=9, status_code=302, data={'dept': 'CSCI'})
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(type(selected), dict)
+        self.assertEqual(len(selected), 1)
+        self.assertSequenceEqual(selected.keys(), [self.c3.id])
+        self.assertSequenceEqual(selected[self.c3.id], self.calc1_nonfull)
+
+    def test_deselecting_course_via_selected(self):
+        "Deselect a course using the selected courses view."
+        self.set_selected()
+
+        response = self.post('deselect-courses', year=2011, month=9, status_code=302, data={
+            'selected_course_' + str(self.c.id): 'true',
+            'selected_course_' + str(self.c.id) + '_85723': 'true',
+            'selected_course_' + str(self.c.id) + '_86573': 'true',
+            'selected_course_' + str(self.c2.id) + '_85065': 'true',
+            'selected_course_' + str(self.c2.id) + '_85468': 'true',
+        })
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(len(selected), 1)
+        self.assertSequenceEqual(selected.keys(), [self.c.id])
+
+    def test_deselecting_courses_via_selected(self):
+        "Deselect a course using the selected courses view."
+        self.set_selected()
+
+        response = self.post('deselect-courses', year=2011, month=9, status_code=302, data={
+            'selected_course_' + str(self.c.id) + '_85723': 'true',
+            'selected_course_' + str(self.c.id) + '_86573': 'true',
+        })
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(len(selected), 0)
+
+    def test_deselecting_section_via_selected(self):
+        "Deselect a course's section using the selected courses view."
+        self.set_selected()
+
+        response = self.post('deselect-courses', year=2011, month=9, status_code=302, data={
+            'selected_course_' + str(self.c.id): 'true',
+            'selected_course_' + str(self.c.id) + '_85723': 'true',
+            'selected_course_' + str(self.c2.id): 'true',
+            'selected_course_' + str(self.c2.id) + '_85065': 'true',
+            'selected_course_' + str(self.c2.id) + '_85468': 'true',
+        })
+        selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
+        self.assertEqual(len(selected), 2)
+        self.assertSequenceEqual(selected.keys(), [self.c.id, self.c2.id])
+        self.assertSequenceEqual(selected[self.c.id], [85723])
+        self.assertSequenceEqual(selected[self.c2.id], [85065, 85468])
 
 class CapitalizationTest(TestCase):
     def test_capitalization_for_all_lowercase(self):

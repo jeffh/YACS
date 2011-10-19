@@ -1,4 +1,4 @@
-from django.db.models import Manager, Q
+from django.db.models import Manager, Q, F
 from django.db.models.query import QuerySet
 from yacs.courses.utils import dict_by_attr
 
@@ -85,6 +85,13 @@ class SectionQuerySet(SemesterBasedQuerySet):
             result.append(section)
 
         return result
+
+    def by_course_id(self, course_id):
+        return self.filter(course__id=course_id)
+
+    def by_availability(self):
+        "Filters out all sections that are unavailable. This means seats taken >= seats total."
+        return self.filter(seats_taken__lt=F('seats_total'))
 
 class CourseManager(SemesterBasedQuerySet):
     def _filter_types(self, query):

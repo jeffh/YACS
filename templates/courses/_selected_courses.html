@@ -8,7 +8,7 @@
 		{% csrf_token %}
 		<ul id="selected_courses">
 			{% for course in selected_courses %}
-			{% with seats_left_for_course=course|seats_left_for_course:selected_sections %}
+			{% with seats_left_for_course=course|seats_left_for_course:selected_course_sections %}
 			<li class="course">
 				<input type="checkbox" id="selected_course_{{ course.id }}" name="selected_course_{{ course.id }}" checked="checked" data-cid="{{ course.id }}" />
 				<label for="selected_course_{{ course.id }}">
@@ -27,12 +27,12 @@
 					</span>
 				</label>
 				<span class="sections">
-					{% with sections=selected_sections|sections_for:course %}
+					{% with sections=selected_course_sections|sections_for:course %}
 						{% if sections %}
 							<ul>
 								{% for section in sections %}
 									<li class="section{% if section.is_full %} full{% endif %}">
-										<input type="checkbox" id="selected_course_{{ course.id }}_{{ section.crn }}" name="selected_course_{{ course.id }}_{{ section.crn }}"{% if not section.is_full %} checked="checked"{% endif %} data-cid="{{ course.id }}" data-crn="{{ section.crn }}" />
+										<input type="checkbox" id="selected_course_{{ course.id }}_{{ section.crn }}" name="selected_course_{{ course.id }}_{{ section.crn }}"{% if section.crn in selected_section_ids %} checked="checked"{% endif %} data-cid="{{ course.id }}" data-crn="{{ section.crn }}" />
 										<label for="selected_course_{{ course.id }}_{{ section.crn }}">
 											<span class="section-number">
 												Section <span class="number">{{ section.number }}</span>
