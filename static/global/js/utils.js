@@ -37,15 +37,15 @@ $.extend(Utils, {
         var result = [];
         $.each(string.split(','), function(){
             if($.trim(this) !== '')
-                result.push(this);
+                result.push(parseInt(this, 10));
         });
         return result;
     },
     setDifference: function(arr1, arr2){
         var result = [];
-        $.each(arr1, function(){
-            if($.inArray(this, arr2) === -1)
-                result.push(this);
+        $.each(arr1, function(i, value){
+            if($.inArray(value, arr2) === -1)
+                result.push(value);
         });
         return result;
     },

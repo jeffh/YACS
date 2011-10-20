@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8000/" />
+<title>Test Selecting and Viewing Schedules</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Test Selecting and Viewing Schedules</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/2011/9/</td>
+	<td></td>
+</tr>
+<tr>
+	<td>deleteAllVisibleCookies</td>
+	<td></td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//div[@id='departments']/ul/li[13]/a</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=course_224</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=course_802</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=course_857</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=course_479</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>1000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Selected</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=selected_course_802_85062</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=selected_course_802_85063</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=selected_course_479_85488</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>1000</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Schedules</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>#85723</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>#85067</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>#85065</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>#86729</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>85488</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>85066</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>85063</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextNotPresent</td>
+	<td>85062</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
