@@ -53,6 +53,19 @@ DEPLOY_FILE = os.path.join('deployment', 'deploy.json')
 
 deploy_config = None
 
+__all__ = (
+    'staging',
+    'production',
+    'webfaction',
+    'scss',
+    'clean',
+    'loc',
+    'test',
+    'generate_fixtures',
+    'deploy',
+    'restart',
+)
+
 def staging():
     "Performs actions on the staging servers, as defined in deploy.json."
     global deploy_config
@@ -85,7 +98,7 @@ def clean():
     "Removes all pyc cache files."
     for root, dirs, files in os.walk('.'):
         for f in files:
-            if f.endswith('.pyc'):
+            if f.endswith('.pyc') or f.endswith('.pyo'):
                 print " FILE", os.path.join(root, f)[2:]
                 os.unlink(os.path.join(root, f))
         for d in dirs:
@@ -94,6 +107,7 @@ def clean():
                 shutil.rmtree(os.path.join(root, d))
 
 def generate_fixtures():
+    "Generates various fixtures from the current data in the database."
     # Set up the Django Enviroment
     django.project('yacs')
     import sys
@@ -279,5 +293,6 @@ def update_courses():
 
 @roles('webservers')
 def restart():
+    "Restarts the remote server's apache instance"
     run(*env.apache_restart)
 
