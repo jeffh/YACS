@@ -158,10 +158,7 @@ INSTALLED_APPS = (
     'yacs.newapi',
 )
 
-if DEBUG:
-    DJANGO_LOGGING = relative('logs', 'django.log')
-else:
-    DJANGO_LOGGING = os.path.join('var', 'log', 'timetable', 'django.log')
+#DJANGO_LOGGING = relative('django.log')
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
