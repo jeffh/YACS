@@ -83,7 +83,7 @@ Currently the project is laid out as follows:
 - **dev_requirements.txt**: All the required dependencies for development
 - **requirements.txt**: All the required dependencies for deployment. May be deprecated in favor of just using dev_requirements.txt
 - **fabfile.py**: Configuration for Fabric. Like a Makefile or Rakefile.
-- **management.py**: Django's CLI.
+- **manage.py**: Django's CLI.
 - **urls.py**: Where all the incoming URLs are routed to.
 
 ## Fabric Commands
