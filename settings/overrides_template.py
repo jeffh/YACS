@@ -18,18 +18,16 @@ DEBUG = {% if DEBUG %}True{% else %}False{% endif %}
 TEMPLATE_DEBUG = DEBUG
 
 # Things that require change when debug is changed
-DJANGO_LOGGING = relative('logs', 'django.log')
-
 # ==== Django Debug Toolbar ====
 INTERNAL_IPS = ('127.0.0.1',)
 
 def debug_toolbar_callback(request):
-    return (DEBUG and request.META['REMOTE_ADDR'] in INTERNAL_IPS) or request.user.is_staff
+    return request.user.is_staff
 
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
     'SHOW_TOOLBAR_CALLBACK': debug_toolbar_callback,
-    'HIDE_DJANGO_SQL': False,
+    'HIDE_DJANGO_SQL': not DEBUG,
 }
 
 STATIC_URL = '{{ STATIC_URL }}'

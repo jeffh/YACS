@@ -90,7 +90,7 @@ class SectionQuerySet(SemesterBasedQuerySet):
     def full_select(self, year=None, month=None):
         """Returns all Sections in the given queryset, plus SectionPeriod and Periods.
         """
-        select_related = tuple('section__' + x for x in reverse_select_related(self.query.select_related))
+        select_related = tuple('section__' + x for x in reverse_select_related(self.query.select_related or {}))
         from yacs.courses.models import SectionPeriod
         queryset = SectionPeriod.objects.by_sections(self, year, month).select_related('period', 'section', *select_related)
 

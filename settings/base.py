@@ -158,8 +158,6 @@ INSTALLED_APPS = (
     'yacs.newapi',
 )
 
-#DJANGO_LOGGING = relative('django.log')
-
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error.
@@ -186,7 +184,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': DJANGO_LOGGING,
+            'filename': relative('django.log'),
             'formatter': 'default',
         },
         'mail_admins': {
