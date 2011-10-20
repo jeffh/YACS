@@ -342,19 +342,19 @@ class Course(models.Model):
     @property
     def section_periods(self):
         if not hasattr(self, 'all_section_periods'):
-            return SectionPeriod.objects.filter_by_course(course=self)
+            return SectionPeriod.objects.by_course(course=self)
         return self.all_section_periods
 
     @property
     def crns(self):
         if not hasattr(self, 'all_section_periods'):
-            return SectionPeriod.objects.filter_by_course(course=self).values_list('section__crn', flat=True)
+            return SectionPeriod.objects.by_course(course=self).values_list('section__crn', flat=True)
         return set(sp.section.crn for sp in self.section_periods)
 
     @property
     def full_crns(self):
         if not hasattr(self, 'all_section_periods'):
-            return SectionPeriod.objects.filter_by_course(course=self).filter(section__seats_taken__lt=F('section__seats_total')).values_list('section__crn', flat=True)
+            return SectionPeriod.objects.by_course(course=self).filter(section__seats_taken__lt=F('section__seats_total')).values_list('section__crn', flat=True)
         return set(sp.section.crn for sp in self.section_periods if sp.section.seats_taken >= sp.section.seats_total)
 
     @property

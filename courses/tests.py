@@ -184,6 +184,16 @@ class TestMultipleCourseSelecting(ShortcutTestCase):
             result[self.c3.id] = self.calc1_nonfull
         return self.set_session({SELECTED_COURSES_SESSION_KEY: result})
 
+    def test_ajax_fetch_of_selected(self):
+        self.set_selected()
+        json = self.json_get('selected-courses', year=2011, month=9, status_code=200,
+            ajax_request=True, prefix='for(;;); ',
+        )
+        self.assertEqual(json, {
+            unicode(self.c.id): self.intro_cs_sections,
+            unicode(self.c2.id): self.intro_algos_nonfull
+        })
+
     def test_selecting_courses_via_ajax(self):
         "Simulate what a typical browser would hit when selecting courses."
         response = self.get('courses-by-dept', year=2011, month=9, code='CSCI', status_code=200)
@@ -243,6 +253,14 @@ class TestMultipleCourseSelecting(ShortcutTestCase):
         selected = self.client.session.get(SELECTED_COURSES_SESSION_KEY)
         self.assertEqual(len(selected), 1)
         self.assertSetEqual(set(selected.get(self.c2.id)), set([85065, 85468, 86693]))
+
+        # verify
+        json = self.json_get('selected-courses', year=2011, month=9, status_code=200,
+            ajax_request=True, prefix='for(;;); ',
+        )
+        self.assertEqual(json, {
+            unicode(self.c2.id): [85065, 85468, 86693]
+        })
 
     def test_selecting_courses(self):
         """Selecting a course should populate the selected courses with the cid => crns.
