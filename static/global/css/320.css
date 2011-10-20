@@ -686,10 +686,9 @@ header .alpha {
   float: right;
   position: relative;
   width: 76.5625%;
-  background: #d7b8b8;
   padding: 5px;
   font-size: 90%;
-  border: 1px solid #bc9393;
+  border: 1px solid transparent;
   border-radius: 3px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
@@ -698,6 +697,29 @@ header .alpha {
   -o-transition: width 0.2s ease-in-out;
   -ms-transition: width 0.2s ease-in-out;
   transition: width 0.2s ease-in-out; }
+  #schedules .class.color1 {
+    background: #d7b8b8;
+    border-color: #bc9393; }
+  #schedules .class.color2 {
+    background: #b8d7b8;
+    border-color: #93bc93; }
+  #schedules .class.color3 {
+    background: #b8b8d7;
+    border-color: #9393bc; }
+  #schedules .class.color4 {
+    background: #d7d6b7;
+    border-color: #bcb192; }
+  #schedules .class.color5 {
+    background: #bccbd7;
+    border-color: #97a6bc; }
+  #schedules .class.color6 {
+    background: #d7c2d5; }
+  #schedules .class.color7 {
+    background: #d0d7cd; }
+  #schedules .class.color8 {
+    background: #a7d7cb; }
+  #schedules .class.color9 {
+    background: #ffc37d; }
   #schedules .class .time {
     float: right;
     display: block; }
@@ -720,25 +742,29 @@ header .alpha {
   #schedules .class .location {
     float: right;
     padding-right: 0; }
-  #schedules .class.small {
-    /* approximately 1 hour time slot */ }
-    #schedules .class.small .name {
-      display: none; }
-    #schedules .class.small .location, #schedules .class.small .instructor, #schedules .class.small .kind {
-      padding-top: 0; }
-    #schedules .class.small.very {
-      /* approximately 30 min time slot */
-      padding: 6px 5px 5px 5px; }
-      #schedules .class.small.very .time, #schedules .class.small.very .kind, #schedules .class.small.very .location {
+  #schedules .class.medium {
+    /* approximately 1.5 hour time slot */ }
+    #schedules .class.medium .location, #schedules .class.medium .instructor, #schedules .class.medium .kind {
+      padding-top: 0.5em; }
+    #schedules .class.medium.small {
+      /* approximately 1 hour time slot */ }
+      #schedules .class.medium.small .name {
         display: none; }
-      #schedules .class.small.very .code {
-        float: left; }
-      #schedules .class.small.very .code {
-        padding-right: 0.3em; }
-      #schedules .class.small.very .instructor {
-        float: right; }
-      #schedules .class.small.very .location {
-        display: none; }
+      #schedules .class.medium.small .location, #schedules .class.medium.small .instructor, #schedules .class.medium.small .kind {
+        padding-top: 0; }
+      #schedules .class.medium.small.very {
+        /* approximately 30 min time slot */
+        padding: 6px 5px 5px 5px; }
+        #schedules .class.medium.small.very .time, #schedules .class.medium.small.very .kind, #schedules .class.medium.small.very .location {
+          display: none; }
+        #schedules .class.medium.small.very .code {
+          float: left; }
+        #schedules .class.medium.small.very .code {
+          padding-right: 0.3em; }
+        #schedules .class.medium.small.very .instructor {
+          float: right; }
+        #schedules .class.medium.small.very .location {
+          display: none; }
 
 /* END SCHEDULES */
 /* FOOTER */

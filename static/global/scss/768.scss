@@ -122,64 +122,97 @@ body {
                 padding: 5px 5px 0 0;
                 margin: 0;
             }
+            .instructor {
+                padding-top: 0.25em;
+            }
 
-            &.small {
-                font-size: 80%;
+            &.medium {
                 overflow: hidden;
 
                 @include transition(all $transition-fast $transition-type);
 
-                .kind {
-                    position: absolute;
-                    top: 5px;
-                    right: 0;
-                    font-size: 100%;
+                .location, .kind {
+                    padding-top: 0;
                 }
 
-                .name, .location, .instructor {
+                .name, .location {
                     /*display: none;*/
                     @include opacity(0.0);
                     @include transition(all $transition-normal $transition-type);
                 }
-                .name {
-                    display: none;
-                }
-                .instructor {
+                .location {
                     @include opacity(0.6);
                 }
 
                 &:hover, .selected {
-                    min-height: 70px;
+                    min-height: 85px;
                     box-shadow: 0 2px 10px #666;
 
-                    .location, .instructor, .name {
+                    .location, .name {
                         /*display: inline;*/
                         @include opacity(1.0);
                         @include transition(all $transition-normal $transition-type);
                     }
                 }
-                &.very {
+
+                &.small {
+                    font-size: 80%;
+                    overflow: hidden;
+
+                    @include transition(all $transition-fast $transition-type);
+
                     .kind {
-                        display: block;
+                        position: absolute;
+                        top: 5px;
+                        right: 0;
+                        font-size: 100%;
                     }
-                    .location, .instructor, .crn {
-                        float: none;
-                        display: inline;
+
+                    .name, .location, .instructor {
+                        /*display: none;*/
                         @include opacity(0.0);
                         @include transition(all $transition-normal $transition-type);
                     }
+                    .name {
+                        display: none;
+                    }
                     .instructor {
-                        display: block;
                         @include opacity(0.6);
                     }
-                    .crn {
-                        font-weight: bold;
-                        @include opacity(0.4);
-                    }
+
                     &:hover, .selected {
-                        .location, .crn, .instructor {
+                        min-height: 70px;
+                        box-shadow: 0 2px 10px #666;
+
+                        .location, .instructor, .name {
+                            /*display: inline;*/
                             @include opacity(1.0);
                             @include transition(all $transition-normal $transition-type);
+                        }
+                    }
+                    &.very {
+                        .kind {
+                            display: block;
+                        }
+                        .location, .instructor, .crn {
+                            float: none;
+                            display: inline;
+                            @include opacity(0.0);
+                            @include transition(all $transition-normal $transition-type);
+                        }
+                        .instructor {
+                            display: block;
+                            @include opacity(0.6);
+                        }
+                        .crn {
+                            font-weight: bold;
+                            @include opacity(0.4);
+                        }
+                        &:hover, .selected {
+                            .location, .crn, .instructor {
+                                @include opacity(1.0);
+                                @include transition(all $transition-normal $transition-type);
+                            }
                         }
                     }
                 }
