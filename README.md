@@ -20,36 +20,40 @@ Which will download code into a YACS folder where you run this command.
 1. Install [Postgres][postgres]. Last time I checked, SQLite was too slow even for development.
 2. Install [distribute][distribute] or [setuptools][setuptools] which PIP depends on. If you have the easy_install command, you have setuptools installed. To install distribute, do:
 
-```
-wget http://python-distribute.org/distribute_setup.py
-python distribute_setup.py
-rm distribute_setup.py
-```
+    ```
+    wget http://python-distribute.org/distribute_setup.py
+    python distribute_setup.py
+    rm distribute_setup.py
+    ```
 
 3. Install [pip][]:
-```
-wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py
-python get-pip.py
-rm get-pip.py
-```
 
-4. Using pip, you can automatically install all the other dependencies by doing: `pip install -r dev_requirements.txt`
+    ```
+    wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+    python get-pip.py
+    rm get-pip.py
+    ```
 
-And pip should do the rest! If you get errors for psycopg2, you can install that manually and remove it from dev_requirements.txt before re-running the command above.
+4. Using pip, you can automatically install all the other dependencies by doing:
+
+    `pip install -r dev_requirements.txt`
+
+    And pip should do the rest! If you get errors for psycopg2, you can install that manually and remove it from dev_requirements.txt before re-running the command above.
 
 5. Edit settings/overrides.py to point to your settings for your PostgreSQL database.
 
 5. CD into the project and run the following to set up the database:
-```
-python manage.py syncdb
-python manage.py migrate
-```
+
+    ```
+    python manage.py syncdb
+    python manage.py migrate
+    ```
 
 When calling syncdb, you'll be ask to create a superuser, it is purely optional, only the debug-toolbar is visible for logged in super-users.
 
 6. Run this command to import the course data from RPI:
 
-`python manage.py import_course_data`
+    `python manage.py import_course_data`
 
 7. Run the dev server using: `python manage.py runserver`
 
