@@ -4,7 +4,6 @@ Sane Course Scheduling.
 YACS is a web-based course schedule with an emphasis on usability. It is also flexible enough to work with other school course data.
 
 by Jeff Hui.
-
 Send questions and comments to [@jeffhui][] / huij@rpi.edu.
 
 [@jeffhui]: http://twitter.com/jeffhui "Twitter: @jeffhui"
@@ -19,21 +18,25 @@ You can download an archive from the top-right of the github page or clone the r
 Which will download code into a YACS folder where you run this command.
 
 1. Install [Postgres][postgres]. Last time I checked, SQLite was too slow even for development.
-2. Install [distribute][distribute] or [setuptools][setuptools] which [PIP][pip] depends on. If you have the easy_install command, you have setuptools installed. To install distribute, do:
+2. Install [distribute][distribute] or [setuptools][setuptools] which PIP depends on. If you have the easy_install command, you have setuptools installed. To install distribute, do:
 
-    wget http://python-distribute.org/distribute_setup.py
-    python distribute_setup.py
-    rm distribute_setup.py
+```
+wget http://python-distribute.org/distribute_setup.py
+python distribute_setup.py
+rm distribute_setup.py
+```
 
-3. Install [PIP][pip]:
+3. Install [pip][]:
 
-    wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py
-    python get-pip.py
-    rm get-pip.py
+```
+wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+python get-pip.py
+rm get-pip.py
+```
 
-4. Using [pip][pip], you can automatically install all the other dependencies by doing:
+4. Using pip, you can automatically install all the other dependencies by doing:
 
-    pip install -r dev_requirements.txt
+`pip install -r dev_requirements.txt`
 
 And pip should do the rest! If you get errors for psycopg2, you can install that manually and remove it from dev_requirements.txt before re-running the command above.
 
@@ -41,18 +44,20 @@ And pip should do the rest! If you get errors for psycopg2, you can install that
 
 5. CD into the project and run the following to set up the database:
 
-    python manage.py syncdb
-    python manage.py migrate
+```python
+python manage.py syncdb
+python manage.py migrate
+```
 
 When calling syncdb, you'll be ask to create a superuser, it is purely optional, only the debug-toolbar is visible for logged in super-users.
 
 6. Run this command to import the course data from RPI:
 
-    python manage.py import_course_data
+`python manage.py import_course_data`
 
 7. Run the dev server using:
 
-    python manage.py runserver
+`python manage.py runserver`
 
 8. Point your browser to http://localhost:8000/ and viola!
 9. ???
