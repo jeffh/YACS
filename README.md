@@ -27,24 +27,20 @@ rm distribute_setup.py
 ```
 
 3. Install [pip][]:
-
 ```
 wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py
 python get-pip.py
 rm get-pip.py
 ```
 
-4. Using pip, you can automatically install all the other dependencies by doing:
-
-`pip install -r dev_requirements.txt`
+4. Using pip, you can automatically install all the other dependencies by doing: `pip install -r dev_requirements.txt`
 
 And pip should do the rest! If you get errors for psycopg2, you can install that manually and remove it from dev_requirements.txt before re-running the command above.
 
 5. Edit settings/overrides.py to point to your settings for your PostgreSQL database.
 
 5. CD into the project and run the following to set up the database:
-
-```python
+```
 python manage.py syncdb
 python manage.py migrate
 ```
@@ -55,11 +51,9 @@ When calling syncdb, you'll be ask to create a superuser, it is purely optional,
 
 `python manage.py import_course_data`
 
-7. Run the dev server using:
+7. Run the dev server using: `python manage.py runserver`
 
-`python manage.py runserver`
-
-8. Point your browser to http://localhost:8000/ and viola!
+8. Point your browser to [http://localhost:8000/][local] and viola!
 9. ???
 10. Profit?
 
@@ -67,6 +61,7 @@ When calling syncdb, you'll be ask to create a superuser, it is purely optional,
 [pip]: http://www.pip-installer.org/en/latest/index.html
 [distribute]: http://pypi.python.org/pypi/distribute
 [setuptools]: http://pypi.python.org/pypi/setuptools
+[local]: http://localhost:8000/
 
 ## Project layout
 Currently the project is laid out as follows:
