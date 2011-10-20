@@ -10,43 +10,49 @@
 {% endblock header %}
 
 {% block content %}
+{% if schedules %}
 <div id="schedules">
 {% for i, schedule in schedules|enumerate %}
-	<h1>
-		<a href="#schedule{% if not forloop.first %}{{ i|add:'-1' }}{% else %}{{ i }}{% endif %}" class="prev-schedule{% if forloop.first %} disabled{% endif %}"></a>
-		<a name="schedule{{ i }}">Schedule {{ i }}</a>
-		<a href="#schedule{% if not forloop.last %}{{ i|add:'1' }}{% else %}{{ i }}{% endif %}" class="next-schedule{% if forloop.last %} disabled{% endif %}"></a>
-	</h1>
-	<p class="share" style="display: none;">
-	<a href="#facebook">Facebook</a>
-	<a href="#link">Permalink</a>
-	<a href="#ics">iCal</a>
-	</p>
-	<div class="schedule">
-		{# monday - friday #}
-		{% for dow in dows %}
-		<div class="dayview">
-			<h2 class="dow">{{ dow }}</h2>
-			{% if forloop.first %}
-				<p class="schedule-crns">
-					{% for section in schedule.values %}
-						{{ section.crn }}{% if forloop.revcounter0 > 1 %}, {% endif %}
-						{% if forloop.revcounter0 == 1 %}
-						&amp;
-						{% endif %}
-					{% endfor %}
-				</p>
-			{% endif %}
+	<div id="schedule{{ i }}" class="schedule_wrapper">
+		<h1>
+			<a href="#schedule{% if not forloop.first %}{{ i|add:'-1' }}{% else %}{{ i }}{% endif %}" class="prev-schedule{% if forloop.first %} disabled{% endif %}"></a>
+			<a name="schedule{{ i }}">Schedule {{ i }}</a>
+			<a href="#schedule{% if not forloop.last %}{{ i|add:'1' }}{% else %}{{ i }}{% endif %}" class="next-schedule{% if forloop.last %} disabled{% endif %}"></a>
+		</h1>
+		<p class="share" style="display: none;">
+		<a href="#facebook">Facebook</a>
+		<a href="#link">Permalink</a>
+		<a href="#ics">iCal</a>
+		</p>
+		<div class="schedule">
+			{# monday - friday #}
+			{% for dow in dows %}
+			<div class="dayview">
+				<h2 class="dow">{{ dow }}</h2>
+				{% if forloop.first %}
+					<p class="schedule-crns">
+						{% for section in schedule.values %}
+							{{ section.crn }}{% if forloop.revcounter0 > 1 %}, {% endif %}
+							{% if forloop.revcounter0 == 1 %}
+							&amp;
+							{% endif %}
+						{% endfor %}
+					</p>
+				{% endif %}
 
-			<div class="hourview">
-				{% for hour in time_range %}
-					<div class="row">
-						<span class="hour">{{ hour|humanize_hour }}</span>
-						{% for course, section in schedule.items %}
-							{% with section|for_dayofweek:dow|for_hour:hour as section_period %}
+				<div class="hourview">
+
+					{% for hour in time_range %}
+						<div class="row">
+							<span class="hour">{{ hour|humanize_hour }}</span>
+							{% with section_period=sections|get:i|get:dow|get:hour %}
 								{% if section_period %}
-									{% with section_period.period as period %}
-									<span class="class{% if 35 >= period|period_height:50 %} very{% endif %}{% if 60 >= period|period_height:50 %} small{% endif %}" style="height: {{ period|period_height:50 }}px">
+									{% with period=section_period.period height=section_period.period|period_height:50 section=section_period.section course=section_period.section.course %}
+									<span style="height: {{ height }}px" class="class
+									color{{ color_mapping|get:course }}
+									{% if 35 >= height %} very{% endif %}
+									{% if 60 >= height %} small{% endif %}
+									{% if 80 >= height %} medium{% endif %}">
 										<span class="time">
 											<span class="start">{{ period.start|normal_time }}</span>
 											<span class="sep">-</span>
@@ -72,16 +78,19 @@
 									{% endwith %}
 								{% endif %}
 							{% endwith %}
-						{% endfor %}
-					</div>
+						</div>
 
-				{% endfor %}
+					{% endfor %}
+				</div>
 			</div>
+			{% endfor %}
 		</div>
-		{% endfor %}
 	</div>
 {% endfor %}
 </div>
+{% else %}
+<p style="text-align: center">No possible schedules :(</p>
+{% endif %}
 
 {% comment %}
 {% for s in schedules %}

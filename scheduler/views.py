@@ -47,43 +47,49 @@ def take(amount, generator):
             break
     return result
 
+def build_section_mapping(schedules):
+    "Build a data structure specifically for the template to hammer away at."
+    sections = {} # [schedule-index][dow][starting-hour]
+    for i, schedule in enumerate(schedules):
+        dows = sections[i+1] = {}
+        for secs in schedule.values():
+            for sp in secs.all_section_periods:
+                for dow in sp.period.days_of_week:
+                    dows[dow] = dows.get(dow, {})
+                    dows[dow][sp.period.start.hour] = sp
+    return sections
+
+def build_color_mapping(courses, max=9):
+    colors = {}
+    for i, course in enumerate(courses):
+        colors[course] = (i % max) + 1
+    return colors
+
 def force_compute_schedules(request, year, month):
     selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
     crns = [crn for sections in selected_courses.values() for crn in sections]
 
-    #sections = Section.objects.filter(
-    #    crn__in=crns, semesters__year__contains=year, semesters__month__contains=month
-    #).select_related('course').distinct()
-
-    #sections_and_periods = SectionPeriod.objects.filter(
-    #    semester__year__contains=year,
-    #    semester__month__contains=month,
-    #    section__crn__in=crns,
-    #    #section__seats_taken__lt=F('section__seats_total'),
-    #).select_related('section', 'period', 'section__course', 'section__course__department')
-
-    #sid_to_periods = section_ids_to_periods(sections_and_periods)
-
-    print 'crns', crns
     sections = Section.objects.filter(crn__in=crns).select_related('course', 'course__department').full_select(year, month)
 
     selected_courses = dict_by_attr(sections, 'course')
 
     periods = set(p for s in sections for p in s.all_periods)
-    print periods
 
-    #selected_courses = {}
-    #for section in sections:
-    #    section.all_section_periods = sid_to_periods[section.id]
-    #    selected_courses[section.course] = selected_courses.get(section.course, []) + [section]
-
-    schedules = take(20, compute_schedules(selected_courses, return_generator=True))
-
+    # we should probably set some upper bound of computation....
+    #schedules = take(20, compute_schedules(selected_courses, return_generator=True))
+    schedules = compute_schedules(selected_courses)
     timerange, dows = period_stats(periods)
+    sections_mapping = build_section_mapping(schedules)
+    color_mapping = build_color_mapping(selected_courses)
+
+    print color_mapping
 
     return render_to_response('scheduler/schedule_list.html', {
         'schedules': schedules,
+        'sections':sections_mapping,
         'time_range': timerange,
+        'selected_courses': selected_courses,
+        'color_mapping': color_mapping,
         'dows': dows,
         'sem_year': year,
         'sem_month': month,

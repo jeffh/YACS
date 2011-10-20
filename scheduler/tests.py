@@ -31,7 +31,7 @@ class TestScheduleViews(ShortcutTestCase):
 
     def setUp(self):
         semester = get(models.Semester, year=2011, month=1)
-        
+
         course1 = get(models.Course, id=1, min_credits=4, max_credits=4, semesters=[semester])
         course2 = get(models.Course, id=2, min_credits=4, max_credits=4, semesters=[semester])
 
@@ -89,10 +89,7 @@ class TestScheduleViews(ShortcutTestCase):
         session[SELECTED_COURSES_SESSION_KEY] = value
         return session
 
-    #def test_get_schedules(self):
-    #    self.set_selected({1: [1000, 1001], 2: [1003]})
-    #    response = self.get('schedules', year=2011, month=1)
-    #    print response.content
-    #    self.assertTemplateUsed(response, 'scheduler/schedule_list.html')
-    #    self.assertEqual(response.status_code, 200)
-    
+    def test_get_schedules(self):
+        self.set_selected({1: [1000, 1001], 2: [1003]})
+        response = self.get('schedules', year=2011, month=1, status_code=200)
+

@@ -3,6 +3,12 @@ from django import template
 register = template.Library()
 
 @register.filter
+def get(item, key):
+    if item:
+        return item.get(key)
+    return None
+
+@register.filter
 def enumerate(iterable):
     i = 1
     for item in iterable:
@@ -10,33 +16,15 @@ def enumerate(iterable):
         i += 1
 
 @register.filter
-def for_dayofweek(section, dayofweek):
-	if not section:
-		return None
-	for sp in section.all_section_periods:
-		if dayofweek in sp.period.days_of_week:
-			return section
-	return None
-
-@register.filter
-def for_hour(section, hour):
-	if not section:
-		return None
-	for sp in section.all_section_periods:
-		if hour == sp.period.start.hour:
-			return sp
-	return None
-
-@register.filter
 def humanize_hour(hour):
-	apm = 'am'
-	if hour == 0:
-		hour = 12
-	if hour >= 12:
-		apm = 'pm'
-	if hour > 12:
-		hour = hour - 12
-	return "%d %s" % (hour, apm)
+    apm = 'am'
+    if hour == 0:
+        hour = 12
+    if hour >= 12:
+        apm = 'pm'
+    if hour > 12:
+        hour = hour - 12
+    return "%d %s" % (hour, apm)
 
 def seconds(time):
     return time.hour * 3600 + time.minute * 60 + time.second
@@ -70,6 +58,11 @@ def display_period(period):
         remove_zero_prefix(period.start.strftime('%I:%M %p')),
         remove_zero_prefix(period.end.strftime('%I:%M %p')),
     )
+
+@register.simple_tag
+def debug(value):
+    print value
+    return ''
 
 
 

@@ -79,12 +79,20 @@ class SectionPeriodQuerySet(SemesterBasedQuerySet):
     def select_kinds(self, course):
         return self.by_course(course).values_list('kind', flat=True).distinct().order_by('kind')
 
+def reverse_select_related(dict):
+    params = []
+    for key, value in dict.items():
+        params.append(key)
+        params.extend("%s__%s" % (key, x) for x in reverse_select_related(value))
+    return params
+
 class SectionQuerySet(SemesterBasedQuerySet):
     def full_select(self, year=None, month=None):
         """Returns all Sections in the given queryset, plus SectionPeriod and Periods.
         """
+        select_related = tuple('section__' + x for x in reverse_select_related(self.query.select_related))
         from yacs.courses.models import SectionPeriod
-        queryset = SectionPeriod.objects.by_sections(self, year, month).select_related('period', 'section')
+        queryset = SectionPeriod.objects.by_sections(self, year, month).select_related('period', 'section', *select_related)
 
         sid2sps = dict_by_attr(queryset, 'section.id')
         sid2periods = dict_by_attr(queryset, 'section.id', value_attrname='period')
