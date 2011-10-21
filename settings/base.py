@@ -216,9 +216,8 @@ LOGGING = {
 API_RETURN_QUERIES = True
 
 # ==== Courses App ====
-COURSES_COLLEGE_NAME = 'Rensselaer Polytechnic Institute'  # the full name of the school
-COURSES_COLLEGE_SHORT_NAME = 'RPI'  # short-hand name of the school
-COURSES_COLLEGE_PARSER = 'yacs.courses.bridge.rpi.import_rpi'  # full path to the function that does all the importing
+# full module path to the function that does all the importing
+COURSES_COLLEGE_PARSER = 'yacs.courses.bridge.rpi.import_data'
 
 # ==== Scheduler App ====
 SCHEDULER_ICAL_PRODUCT_ID = '-//Jeff Hui//YACS Export 1.0//EN'

@@ -74,8 +74,23 @@ class TestLatestAPI(ShortcutTestCase):
     def test_get_course_sections_by_code(self):
         json = self.json_get('sections', code='CSCI', number=1010, status_code=200)
 
+    # TODO: make more comprehensive
+    def test_get_course_sections_by_course_id(self):
+        json = self.json_get('sections', cid=224, status_code=200)
+
     def test_get_section_through_code(self):
         json = self.json_get('section', code='CSCI', number=1010, secnum=1, status_code=200)
+        self.assertEqual(json['status'], 'OK')
+        obj = json['payload']
+        self.assertEqual(obj['number'], 1)
+        self.assertEqual(obj['seats_taken'], 48)
+        self.assertEqual(obj['seats_left'], 2)
+        self.assertEqual(obj['seats_total'], 50)
+        self.assertEqual(obj['crn'], 85723)
+        # TODO: self.assertEqual(obj['periods'], ...)
+
+    def test_get_section_through_cid(self):
+        json = self.json_get('section', cid=224, secnum=1, status_code=200)
         self.assertEqual(json['status'], 'OK')
         obj = json['payload']
         self.assertEqual(obj['number'], 1)

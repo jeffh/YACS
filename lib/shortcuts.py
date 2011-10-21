@@ -23,7 +23,11 @@ class ShortcutTestCase(TestCase):
         prefix = kwargs.pop('prefix', '')
         response = self.get(*args, **kwargs)
         self.assertTrue(response.content.startswith(prefix))
-        return loads(response.content[len(prefix):])
+        try:
+            return loads(response.content[len(prefix):])
+        except:
+            print "Got:", response
+            raise
 
     def post(self, url_name, *args, **kwargs):
         status = kwargs.pop('status_code', None)
@@ -44,7 +48,12 @@ class ShortcutTestCase(TestCase):
         prefix = kwargs.pop('prefix', '')
         response = self.post(*args, **kwargs)
         self.assertTrue(response.content.startswith(prefix))
-        return loads(response.content[len(prefix):])
+        try:
+            return loads(response.content[len(prefix):])
+        except:
+            print "Got:", response
+            raise
+
 
     def _process_headers(self, kwargs):
         headers = {}

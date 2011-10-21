@@ -2,7 +2,7 @@
 
 $border-color: #d0d0d0;
 $highlight: #940000;
-$nav-width: 300px;
+$nav-width: 295px;
 
 /* GENERAL */
 html {
@@ -18,7 +18,7 @@ body {
 	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 	min-width: 315px;
 
-    @include transition(all $transition-fast $transition-type);
+    /* @include transition(all $transition-fast $transition-type); */
 }
 .touch body {
 	width: 100%;
@@ -32,6 +32,9 @@ h2 {
 	margin: 0;
 	font-weight: normal;
 }
+img {
+	max-width: 100%;
+}
 
 a:link, a:visited {
 	color: #000094;
@@ -44,6 +47,9 @@ p {
 	padding: 0 5px;
 }
 .clear { clear: both; }
+.text-center {
+	text-align: center;
+}
 .button {
 	color: #eee;
 	text-shadow: 1px 1px 0 #111;
@@ -197,21 +203,22 @@ header {
 	padding: 0;
 	text-align: center;
 
-	#d {
+    #d {
         float: left;
-        display: none;
+		font-size: 100%;
+        display: block;
+        width: 65px;
+        /* UI behavior is weird in FF, cut.
+        @include transition(all $transition-normal $transition-type);
+        */
+    }
+    .searchbox {
+		width: $nav-width - 75px;
+		padding: 0;
+		margin: 0 0 0 10px;
 		font-size: 100%;
 
-        /* FF has an internal min-width, cut.
-        width: 0px;
-	    @include transition(all $transition-fast $transition-type $transition-fast);
-        */
-	}
-	.searchbox {
-		width: $nav-width;
-		padding: 0;
-		margin: 0;
-		font-size: 100%;
+        @include transition(none $transition-fast $transition-type);
 
 	    @include transition(all $transition-normal $transition-type);
 	}

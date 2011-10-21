@@ -63,6 +63,17 @@ class SearchTest(BasicSchema):
 
         self.course1, self.course2, self.course3 = course, course2, course3
 
+    def test_searching_with_textfield_only_returning_partial(self):
+        "/2011/1/search/?q=4230&partial=1"
+        response = self.get('search-all-courses', year=2011, month=1, get='?q=4230&partial=1', status_code=200)
+        templates = [t.name for t in response.template]
+        self.assertIn('courses/_course_list.html', templates)
+        self.assertNotIn('courses/base.html', templates)
+        courses = response.context['courses']
+        self.assertIn(self.course1, courses)
+        self.assertIn(self.course3, courses)
+        self.assertNotIn(self.course2, courses)
+
     def test_searching_with_textfield_only(self):
         "/2011/1/search/?q=4230"
         response = self.get('search-all-courses', year=2011, month=1, get='?q=4230', status_code=200)

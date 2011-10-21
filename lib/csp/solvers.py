@@ -252,14 +252,14 @@ class BacktrackingSolver(BruteForceSolver):
 
         self._solutions_seen += int(is_complete)
 
-        if is_complete and self.satisfies_constraints(possible_solution):
-            yield dict(possible_solution)
-
-        # find all
-        if not is_complete and self.is_feasible(possible_solution):
-            for s in self.derived_solutions(possible_solution):
-                for solution in self._next(s):
-                    yield solution
+        if is_complete:
+            if self.satisfies_constraints(possible_solution):
+                yield dict(possible_solution)
+        else:
+            if self.is_feasible(possible_solution):
+                for s in self.derived_solutions(possible_solution):
+                    for solution in self._next(s):
+                        yield solution
 
     # public interface to _next()
     def __iter__(self):

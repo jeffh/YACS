@@ -75,9 +75,9 @@ def force_compute_schedules(request, year, month):
 
     periods = set(p for s in sections for p in s.all_periods)
 
-    # we should probably set some upper bound of computation....
-    #schedules = take(20, compute_schedules(selected_courses, return_generator=True))
-    schedules = compute_schedules(selected_courses)
+    # we should probably set some upper bound of computation and restrict number of sections used.
+    schedules = take(100, compute_schedules(selected_courses, return_generator=True))
+    #schedules = compute_schedules(selected_courses)
     timerange, dows = period_stats(periods)
     sections_mapping = build_section_mapping(schedules)
     color_mapping = build_color_mapping(selected_courses)

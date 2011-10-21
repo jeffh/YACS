@@ -124,17 +124,31 @@ class SectionListView(APIMixin, views.SemesterBasedMixin, ListView):
     def get_queryset(self):
         year, month = self.get_year_and_month()
         dept, num = self.kwargs.get('code'), self.kwargs.get('number')
-        return models.Section.objects.by_semester(year, month).by_course_code(dept, num).full_select(year, month)
+        course_id = self.kwargs.get('cid')
+
+        queryset = models.Section.objects.by_semester(year, month)
+        if None not in (dept, num):
+            queryset = queryset.by_course_code(dept, num)
+        if course_id is not None:
+            queryset = queryset.by_course_id(course_id)
+        return queryset.full_select(year, month)
 
 class SectionDetailView(APIMixin, views.SemesterBasedMixin, DetailView):
     def get_queryset(self):
         year, month = self.get_year_and_month()
         dept, num, crn, secnum = self.kwargs.get('code'), self.kwargs.get('number'), self.kwargs.get('crn'), self.kwargs.get('secnum')
+        course_id = self.kwargs.get('cid')
+
         qs = models.Section.objects.by_semester(year, month).by_course_code(dept, num)
         if crn is not None:
             qs = qs.filter(crn=crn)
         if secnum is not None:
+            if secnum == 'study-abroad':
+                secnum = -1
             qs = qs.filter(number=secnum)
+        if course_id is not None:
+            qs = qs.by_course_id(course_id)
+
         return qs.full_select(year, month)
 
     def get_object(self):

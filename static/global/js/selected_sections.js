@@ -4,7 +4,7 @@ var selectedCourses = {}; // course_id => crns
 window.selectedCourses = selectedCourses;
 
 var updateFuse = new Utils.Fuse({
-    delay: 250,
+    delay: 150,
     execute: function(){
         var parameters = {};
         $.each(selectedCourses, function(cid, crns){
@@ -18,6 +18,7 @@ var updateFuse = new Utils.Fuse({
             type: "post",
             data: $.param(parameters),
             complete: function(){
+                // TODO
             }
         });
     }

@@ -3,7 +3,7 @@
 body {
     min-width: 768px;
     max-width: 992px; /* TODO: remove me after 992 is implemented */
-    @include transition(all $transition-fast $transition-type);
+    /* @include transition(all $transition-fast $transition-type);*/
 }
 
 #departments {

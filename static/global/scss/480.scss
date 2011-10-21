@@ -3,7 +3,7 @@
 body {
     min-width: 470px;
 
-    @include transition(all $transition-fast $transition-type);
+    /* @include transition(all $transition-fast $transition-type); */
 }
 
 .listview {

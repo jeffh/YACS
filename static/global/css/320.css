@@ -26,11 +26,7 @@ body {
   width: 90%;
   font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   min-width: 315px;
-  -webkit-transition: all 0.2s ease-in-out;
-  -moz-transition: all 0.2s ease-in-out;
-  -o-transition: all 0.2s ease-in-out;
-  -ms-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out; }
+  /* @include transition(all $transition-fast $transition-type); */ }
 
 .touch body {
   width: 100%;
@@ -43,6 +39,9 @@ h2 {
   margin: 0;
   font-weight: normal; }
 
+img {
+  max-width: 100%; }
+
 a:link, a:visited {
   color: #000094; }
 
@@ -54,6 +53,9 @@ p {
 
 .clear {
   clear: both; }
+
+.text-center {
+  text-align: center; }
 
 .button {
   color: #eee;
@@ -253,23 +255,28 @@ header .alpha {
 /* END HEADER */
 /* SEARCHBOX */
 .searchform {
-  width: 300px;
+  width: 295px;
   margin: 7px auto;
   padding: 0;
   text-align: center; }
   .searchform #d {
     float: left;
-    display: none;
     font-size: 100%;
-        /* FF has an internal min-width, cut.
-        width: 0px;
-	    @include transition(all $transition-fast $transition-type $transition-fast);
-        */ }
+    display: block;
+    width: 65px;
+    /* UI behavior is weird in FF, cut.
+    @include transition(all $transition-normal $transition-type);
+    */ }
   .searchform .searchbox {
-    width: 300px;
+    width: 220px;
     padding: 0;
-    margin: 0;
+    margin: 0 0 0 10px;
     font-size: 100%;
+    -webkit-transition: none 0.2s ease-in-out;
+    -moz-transition: none 0.2s ease-in-out;
+    -o-transition: none 0.2s ease-in-out;
+    -ms-transition: none 0.2s ease-in-out;
+    transition: none 0.2s ease-in-out;
     -webkit-transition: all 0.3s ease-in-out;
     -moz-transition: all 0.3s ease-in-out;
     -o-transition: all 0.3s ease-in-out;
@@ -607,7 +614,7 @@ header .alpha {
   font-weight: 200;
   margin: auto;
   text-shadow: 1px 1px 0 #fff;
-  width: 290px; }
+  width: 285px; }
   #schedules h1 .prev-schedule, #schedules h1 .next-schedule {
     text-decoration: none;
     font-size: 150%;

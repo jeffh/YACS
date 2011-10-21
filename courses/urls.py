@@ -15,7 +15,6 @@ urlpatterns = patterns('',
     # actions
     url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/select/$', views.SelectCoursesView.as_view(), name='select-courses'),
     url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/deselect/$', views.DeselectCoursesView.as_view(), name='deselect-courses'),
-
     # other possible urls to have:
     # /semesters/ => view all past semesters
     # /<year>/ => view semesters for a given year

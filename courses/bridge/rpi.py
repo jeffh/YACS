@@ -220,7 +220,7 @@ class RPIImporter(object):
             Section.objects.filter(crn__in=crosslisting.crns).update(crosslisted=crosslisting_obj)
 
 
-def import_rpi():
+def import_data():
     "Imports RPI data into the database."
     importer = RPIImporter()
     importer.sync()

@@ -143,9 +143,29 @@ class SearchMixin(object):
         data['departments'] = models.Department.objects.all()
         return data
 
-class SearchCoursesListView(SearchMixin, SelectedCoursesMixin, ListView):
+class PartialResponseMixin(object):
+    partial_template_name = None
+    partial_parameter_name = 'partial'
+
+    def get_partial_parameter_name(self):
+        return self.partial_parameter_name
+
+    def get_use_partial(self):
+        return self.request.GET.get(self.get_partial_parameter_name())
+
+    def get_partial_template_name(self):
+        return self.partial_template_name
+
+    def get_template_names(self):
+        templates = super(PartialResponseMixin, self).get_template_names()
+        if self.get_use_partial():
+            templates.insert(0, self.get_partial_template_name())
+        return templates
+
+class SearchCoursesListView(PartialResponseMixin, SearchMixin, SelectedCoursesMixin, ListView):
     context_object_name = 'courses'
     template_name = 'courses/course_list.html'
+    partial_template_name = 'courses/_course_list.html'
 
     def get_queryset(self, full_select=True):
         year, month = self.get_year_and_month()

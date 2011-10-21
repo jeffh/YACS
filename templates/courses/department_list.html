@@ -9,42 +9,35 @@
 
 {% block content %}
 {% include "courses/_search_courses.html" %}
-<div id="departments" class="listview">
-<ul>
-	{% for department in departments %}
-	<li>
-		<a href="{% url courses-by-dept sem_year,sem_month,department.code %}">
-			<span class="disclosure">&gt;</span>
-			<span class="deptcode">{{ department.code }}</span>
-			<span class="deptname">{{ department.name }}</span>
-			<span class="num-courses">
-			</span>
-		</a>
-	</li>
-	{% endfor %}
-</ul>
-</div>
+<div id="replacable-with-search">
+	<div id="departments" class="listview">
+	<ul>
+		{% for department in departments %}
+		<li>
+			<a href="{% url courses-by-dept sem_year,sem_month,department.code %}">
+				<span class="disclosure">&gt;</span>
+				<span class="deptcode">{{ department.code }}</span>
+				<span class="deptname">{{ department.name }}</span>
+				<span class="num-courses">
+				</span>
+			</a>
+		</li>
+		{% endfor %}
+	</ul>
+	</div>
 
-<div id="courses" class="listview">
-
-
-<script type="text/template" id="department-template">
-<a href="<%- url %>">
-	<span class="disclosure">&gt;</span>
-	<span class="deptcode"><%- code %></span>
-	<span class="deptname"><%- name %></span>
-	<span class="num-courses"></span>
-</a>
-</script>
+	<div id="courses" class="listview">
 
 
-<!--
-<div class="empty">
-<p>
-Select a department from the left.
-</p>
-</div>
--->
+	<script type="text/template" id="department-template">
+	<a href="<%- url %>">
+		<span class="disclosure">&gt;</span>
+		<span class="deptcode"><%- code %></span>
+		<span class="deptname"><%- name %></span>
+		<span class="num-courses"></span>
+	</a>
+	</script>
+	</div>
 </div>
 {% endblock content %}
 

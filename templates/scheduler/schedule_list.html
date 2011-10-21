@@ -89,7 +89,11 @@
 {% endfor %}
 </div>
 {% else %}
-<p style="text-align: center">No possible schedules :(</p>
+<p class="text-center">No possible schedules :(<br />Don't make the kitty mad...</p>
+<p class="text-center">
+	<img src="{{ STATIC_URL }}img/no-schedules.jpg" alt="No Schedules" />
+</p>
+<p class="text-center">Photo by <a href="http://www.flickr.com/photos/poenaru/1304953088/">Hannibal Poenaru</a></p>
 {% endif %}
 
 {% comment %}

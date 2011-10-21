@@ -1,0 +1,70 @@
+{% load courses %}
+
+<div id="courses" class="listview {% if search_results %}search-results {% if query_department == 'all' %}all-dept{% else %}specific-dept{% endif %}{% endif %}">
+
+{% if not search_results %}
+<h2>{% firstof department.name department.code %}</h2>
+{% endif %}
+
+{% if courses %}
+    <form action="{% url select-courses sem_year,sem_month %}" method="post">
+        {% csrf_token %}
+        <ul>
+            {% for course in courses %}
+            {% with seats_left_for_course=course|seats_left_for_course:sections %}
+                <li class="{% if seats_left_for_course < 1 %}no-seats{% endif %}">
+                    <input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}"{% if course in selected_courses %} checked="checked"{% endif %} data-cid="{{ course.id }}" data-crns="{{ course.crns|join }}" data-crns-full="{{ course.full_crns|join }}" />
+                    <label class="padded" for="course_{{ course.id }}">
+                        <span class="name">{{ course.name }}</span>
+                        <span class="disclosure">&gt;</span>
+                        <span class="secondary">
+                            <span class="code">
+                                <span class="dept">{{ course.department.code }}</span>
+                                <span class="number">{{ course.number }}</span>
+                            </span>
+                            <span class="credits">
+                                {% if course.credits != 4 %}
+                                {{ course.credits_display }}
+                                {% endif %}
+                            </span>
+                            <span class="seats-left">
+                                {% if seats_left_for_course < 30 %}
+                                {{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
+                                {% endif %}
+                            </span>
+                            <div class="instructors">
+                                <ul>
+                                    {% for instructor in course.instructors %}
+                                    <li>
+                                        {{ instructor }}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="kinds">
+                                <ul>
+                                    {% for kind in course.kinds %}
+                                    <li>
+                                        {{ kind }}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </span>
+                    </label>
+                    <div class="clear"></div>
+                </li>
+            {% endwith %}
+            {% endfor %}
+        </ul>
+        <p class="actions">
+            <input type="hidden" name="redirect_to" value="{{ request.get_full_path }}" />
+            <input type="submit" value="Add Selected" />
+        </p>
+    </form>
+{% else %}
+    <p class="text-center" style="margin-bottom: -5px">No courses matched your criteria :(<br/>Here's a picture instead.</p>
+    <p class="text-center"><img src="{{ STATIC_URL }}/img/no-results.jpg" alt="No Results" /></p>
+    <p class="text-center">Photo by <a href="http://www.flickr.com/photos/mizmak/3947476335/">Alexandra MacKenzie</a></p>
+{% endif %}
+</div>

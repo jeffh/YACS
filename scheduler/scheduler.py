@@ -1,5 +1,5 @@
 
-from csp import Problem, is_nil, BruteForceSolver
+from csp import Problem, is_nil, BacktrackingSolver
 
 __all__ = ['compute_schedules', 'TimeRange', 'Scheduler']
 
@@ -131,6 +131,6 @@ def compute_schedules(courses=None, excluded_times=(), free_sections_only=True, 
     """
     Returns all possible schedules for the given courses.
     """
-    s = Scheduler(free_sections_only, problem)
+    s = Scheduler(free_sections_only, problem or Problem(BacktrackingSolver()))
     s.exclude_times(*tuple(excluded_times))
     return s.find_schedules(courses, return_generator)
