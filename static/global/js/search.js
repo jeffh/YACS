@@ -50,6 +50,7 @@ function performSearch(){
     }
     fuse.stop();
     fuse.start();
+    return false;
 }
 
 $(function(){
