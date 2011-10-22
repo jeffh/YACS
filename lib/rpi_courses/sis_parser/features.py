@@ -159,7 +159,7 @@ def parse_tables(node):
             course['dept'], course['num'], section['num'] = parts[1].split('-', 2)
             # course name
             course['name'] = G(cells, 'Course Title').text.strip()
-            existing_obj = cache.get(course['name'])
+            existing_obj = cache.get(course['name'] + course['dept'] + course['num'])
             if existing_obj:
                 course = existing_obj
 
@@ -196,13 +196,15 @@ def parse_tables(node):
         else: # process a new period type
             course, section = last_course, last_section
 
-            period = last_period # we already froze it when adding, so it's safe to mutate
+            period = last_period.copy()
             extract_period(cells, period, G)
+            section['periods'].append(period)
+            continue
         # link up
         section['periods'].append(period)
         course['sections'].append(section)
         courses.append(course)
-        cache[course['name']] = course
+        cache[course['name'] + course['dept'] + course['num']] = course
 
         last_course, last_section, last_period = course, section, period
 

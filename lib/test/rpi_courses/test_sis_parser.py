@@ -74,6 +74,137 @@ class TestCatalog(TestCaseForModel):
         )
         self.assertCourseEquals(course, expected_course)
 
+    def test_crosslisted_courses(self):
+        course = self.catalog.find_courses('INTRO TO COG NEUROSCIENCE')[1]
+        expected_course = models.Course(
+            'INTRO TO COG NEUROSCIENCE', 'PSYC', num=4968, credmin=4, credmax=4,
+            grade_type='', sections=[models.Section(
+                crn=98083, num='01', taken=0, total=10,
+                periods=[models.Period(
+                    type='LEC', instructor='Walf',
+                    start=1400, end=1550, location='',
+                    int_days=(1,4),
+                )],
+                notes=['MEETS WITH COGS 4967']
+            )]
+        )
+        self.assertCourseEquals(course, expected_course)
+
+    def test_courses_with_multiple_periods(self):
+        course = self.catalog.find_courses('DATA STRUCTURES')[0]
+        print course.sections[0].periods
+        expected_course = models.Course(
+            'DATA STRUCTURES', 'CSCI', num=1200, credmin=4, credmax=4,
+            grade_type='', sections=[
+                models.Section(
+                    crn=95551, num='01', taken=0, total=33, notes=[],
+                    periods=[
+                        models.Period(
+                            type='LEC', instructor='Stewart',
+                            start=1200, end=1350, location='',
+                            int_days=(0, 3)
+                        ),
+                        models.Period(
+                            type='LAB', instructor='Staff',
+                            start=1000, end=1150, location='',
+                            int_days=(2,)
+                        ),
+                    ]
+                ),
+                models.Section(
+                    crn=95552, num='02', taken=0, total=33, notes=[],
+                    periods=[
+                        models.Period(
+                            type='LEC', instructor='Stewart',
+                            start=1200, end=1350, location='',
+                            int_days=(0, 3)
+                        ),
+                        models.Period(
+                            type='LAB', instructor='Staff',
+                            start=1000, end=1150, location='',
+                            int_days=(2,)
+                        ),
+                    ]
+                ),
+                models.Section(
+                    crn=95553, num='03', taken=0, total=33, notes=[],
+                    periods=[
+                        models.Period(
+                            type='LEC', instructor='Stewart',
+                            start=1200, end=1350, location='',
+                            int_days=(0, 3)
+                        ),
+                        models.Period(
+                            type='LAB', instructor='Staff',
+                            start=1200, end=1350, location='',
+                            int_days=(2,)
+                        ),
+                    ]
+                ),
+                models.Section(
+                    crn=95554, num='04', taken=0, total=33, notes=[],
+                    periods=[
+                        models.Period(
+                            type='LEC', instructor='Stewart',
+                            start=1200, end=1350, location='',
+                            int_days=(0, 3)
+                        ),
+                        models.Period(
+                            type='LAB', instructor='Staff',
+                            start=1400, end=1550, location='',
+                            int_days=(2,)
+                        ),
+                    ]
+                ),
+                models.Section(
+                    crn=95555, num='05', taken=0, total=33, notes=[],
+                    periods=[
+                        models.Period(
+                            type='LEC', instructor='Stewart',
+                            start=1200, end=1350, location='',
+                            int_days=(0, 3)
+                        ),
+                        models.Period(
+                            type='LAB', instructor='Staff',
+                            start=1600, end=1750, location='',
+                            int_days=(2,)
+                        ),
+                    ]
+                ),
+                models.Section(
+                    crn=95556, num='06', taken=0, total=33, notes=[],
+                    periods=[
+                        models.Period(
+                            type='LEC', instructor='Stewart',
+                            start=1200, end=1350, location='',
+                            int_days=(0, 3)
+                        ),
+                        models.Period(
+                            type='LAB', instructor='Staff',
+                            start=1800, end=1950, location='',
+                            int_days=(2,)
+                        ),
+                    ]
+                ),
+                models.Section(
+                    crn=95557, num='07', taken=0, total=33, notes=[],
+                    periods=[
+                        models.Period(
+                            type='LEC', instructor='Stewart',
+                            start=1200, end=1350, location='',
+                            int_days=(0, 3)
+                        ),
+                        models.Period(
+                            type='LAB', instructor='Staff',
+                            start=1200, end=1350, location='',
+                            int_days=(2,)
+                        ),
+                    ]
+                ),
+            ]
+        )
+        self.assertCourseEquals(course, expected_course)
+
     def test_get_intro_to_phil_with_three_sections(self):
         course = self.catalog.find_courses('INTRO TO PHILOSOPHY')[0]
         expected_course = models.Course(
