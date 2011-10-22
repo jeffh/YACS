@@ -219,7 +219,7 @@ class Section(ReadOnly):
     @property
     def is_valid(self):
         """Returns True if the given data for this section is valid."""
-        return type(self.num) in (int, long) and self.seats_total > 0
+        return self.seats_total > 0
 
     @property
     def is_filled(self):
@@ -234,13 +234,12 @@ class Section(ReadOnly):
         return self.seats_total - self.seats_taken
 
     def __repr__(self):
-        #return "<Section: crn=%(crn)r num=%(num)r seats=%(used)r/%(total)r>" % {
-        #    'crn': self.crn,
-        #    'num': self.num,
-        #    'used': self.seats_taken,
-        #    'total': self.seats_total,
-        #}
-        return "%d" % self.num
+        return "<Section: crn=%(crn)r num=%(num)r seats=%(used)r/%(total)r>" % {
+            'crn': self.crn,
+            'num': self.num,
+            'used': self.seats_taken,
+            'total': self.seats_total,
+        }
 
     def __eq__(self, other):
         if isinstance(other, Section):
@@ -292,16 +291,15 @@ class Course(ReadOnly):
         }
 
     def __repr__(self):
-        #return "<Course: %(name)r, %(dept)r, %(num)r, %(mincred)r, %(maxcred)r, %(grade_type)r, section_count=%(section_count)s>" % {
-        #    'name': self.name,
-        #    'dept': self.dept,
-        #    'num': self.num,
-        #    'mincred': self.cred[0],
-        #    'maxcred': self.cred[1],
-        #    'grade_type': self.grade_type,
-        #    'section_count': len(self.sections)
-        #}
-        return "%s" % self.name
+        return "<Course: %(name)r, %(dept)r, %(num)r, %(mincred)r, %(maxcred)r, %(grade_type)r, section_count=%(section_count)s>" % {
+            'name': self.name,
+            'dept': self.dept,
+            'num': self.num,
+            'mincred': self.cred[0],
+            'maxcred': self.cred[1],
+            'grade_type': self.grade_type,
+            'section_count': len(self.sections)
+        }
 
     @property
     def available_sections(self):

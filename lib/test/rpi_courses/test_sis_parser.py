@@ -11,13 +11,16 @@ from constants import SIS_FILE
 
 with open(SIS_FILE) as f:
     CONTENTS = f.read()
-catalog = CourseCatalog.from_string(CONTENTS)
+catalog = None
 
 # from BeautifulSoup import BeautifulSoup; soup = BeautifulSoup(open('lib/test/rpi_courses/test_data/sis_courses.html').read())
 # from rpi_courses.sis_parser import CourseCatalog; catalog = CourseCatalog.from_file('lib/test/rpi_courses/test_data/sis_courses.html')
 
 class TestCatalog(TestCaseForModel):
     def setUp(self):
+        global catalog
+        if catalog is None:
+            catalog = CourseCatalog.from_string(CONTENTS)
         self.catalog = catalog
 
 #    def test_crosslisting(self):
@@ -44,7 +47,7 @@ class TestCatalog(TestCaseForModel):
             'TA TRAINING SEMINAR', 'ADMN', num=6800, credmin=0, credmax=0,
             grade_type='Satisfactory/Unsatisfactory',
             sections=[models.Section(
-                crn=97989, num=1, taken=0, total=200,
+                crn=97989, num='01', taken=0, total=200,
                 periods=[models.Period(
                     type='LEC', instructor='Gornic',
                     start='** TBA **', end='** TBA **',
@@ -57,11 +60,10 @@ class TestCatalog(TestCaseForModel):
 
     def test_get_intro_to_hci(self):
         course = self.catalog.find_courses('INTRODUCTION TO HCI')[0]
-        print [s.notes for s in course.sections]
         expected_course = models.Course(
             'INTRODUCTION TO HCI', 'ITWS', num=2210, credmin=4, credmax=4,
             grade_type='', sections=[models.Section(
-                crn=97772, num=1, taken=0, total=40,
+                crn=97772, num='01', taken=0, total=40,
                 notes=('RESTRICTED TO COMM, EMAC, ITWS MAJORS',),
                 periods=[models.Period(
                     type='LEC', instructor='Grice',
@@ -78,7 +80,7 @@ class TestCatalog(TestCaseForModel):
             'INTRO TO PHILOSOPHY', 'PHIL', num=1110, credmin=4, credmax=4,
             grade_type='', sections=[
                 models.Section(
-                    crn=96407, num=1, taken=0, total=35,
+                    crn=96407, num='01', taken=0, total=35,
                     periods=[models.Period(
                         type='LEC', instructor='Fahey',
                         start=1000, end=1150, location='',
@@ -87,7 +89,7 @@ class TestCatalog(TestCaseForModel):
                     notes=[]
                 ),
                 models.Section(
-                    crn=95481, num=2, taken=0, total=35,
+                    crn=95481, num='02', taken=0, total=35,
                     periods=[models.Period(
                         type='LEC', instructor='Carcasole',
                         start=1000, end=1150, location='',
@@ -96,7 +98,7 @@ class TestCatalog(TestCaseForModel):
                     notes=[]
                 ),
                 models.Section(
-                    crn=98420, num=3, taken=0, total=27,
+                    crn=98420, num='03', taken=0, total=27,
                     periods=[models.Period(
                         type='LEC', instructor='Thero',
                         start=1200, end=1350, location='',

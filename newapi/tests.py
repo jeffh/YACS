@@ -82,7 +82,7 @@ class TestLatestAPI(ShortcutTestCase):
         json = self.json_get('section', code='CSCI', number=1010, secnum=1, status_code=200)
         self.assertEqual(json['status'], 'OK')
         obj = json['payload']
-        self.assertEqual(obj['number'], 1)
+        self.assertEqual(obj['number'], '1')
         self.assertEqual(obj['seats_taken'], 48)
         self.assertEqual(obj['seats_left'], 2)
         self.assertEqual(obj['seats_total'], 50)
@@ -93,7 +93,7 @@ class TestLatestAPI(ShortcutTestCase):
         json = self.json_get('section', cid=224, secnum=1, status_code=200)
         self.assertEqual(json['status'], 'OK')
         obj = json['payload']
-        self.assertEqual(obj['number'], 1)
+        self.assertEqual(obj['number'], '1')
         self.assertEqual(obj['seats_taken'], 48)
         self.assertEqual(obj['seats_left'], 2)
         self.assertEqual(obj['seats_total'], 50)
@@ -108,7 +108,7 @@ class TestLatestAPI(ShortcutTestCase):
         json = self.json_get('section', crn=85723, status_code=200)
         self.assertEqual(json['status'], 'OK')
         obj = json['payload']
-        self.assertEqual(obj['number'], 1)
+        self.assertEqual(obj['number'], '1')
         self.assertEqual(obj['seats_taken'], 48)
         self.assertEqual(obj['seats_left'], 2)
         self.assertEqual(obj['seats_total'], 50)

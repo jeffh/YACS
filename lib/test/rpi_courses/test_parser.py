@@ -46,7 +46,7 @@ class TestCatalog(TestCaseForModel):
             'TA TRAINING SEMINAR', 'ADMN', num=6800, credmin=0, credmax=0,
             grade_type='Satisfactory/Unsatisfactory',
             sections=[models.Section(
-                crn=76285, num=1, taken=0, total=200,
+                crn=76285, num='01', taken=0, total=200,
                 periods=[models.Period(
                     type='LEC', instructor='Gornic',
                     start='** TBA **', end='** TBA **',
@@ -65,7 +65,7 @@ class TestCatalog(TestCaseForModel):
         expected_course = models.Course(
             'INTRODUCTION TO HCI', 'ITWS', num=2210, credmin=4, credmax=4,
             grade_type='', sections=[models.Section(
-                crn=76041, num=1, taken=26, total=40,
+                crn=76041, num='01', taken=26, total=40,
                 periods=[models.Period(
                     type='LEC', instructor='Grice',
                     start=1200, end=1350, location='LALLY 102',
@@ -82,7 +82,7 @@ class TestCatalog(TestCaseForModel):
             'INTRO TO PHILOSOPHY', 'PHIL', num=1110, credmin=4, credmax=4,
             grade_type='', sections=[
                 models.Section(
-                    crn=74447, num=1, taken=35, total=35,
+                    crn=74447, num='01', taken=35, total=35,
                     periods=[models.Period(
                         type='LEC', instructor='Fahey',
                         start=1000, end=1150, location='CARNEG 206',
@@ -91,7 +91,7 @@ class TestCatalog(TestCaseForModel):
                     notes=[]
                 ),
                 models.Section(
-                    crn=73498, num=2, taken=35, total=35,
+                    crn=73498, num='02', taken=35, total=35,
                     periods=[models.Period(
                         type='LEC', instructor='Carcasole',
                         start=1000, end=1150, location='CARNEG 101',
