@@ -1,7 +1,7 @@
 
 from django.utils.importlib import import_module
 
-def import_courses():
+def import_courses(force=True):
     "Runs the course importer specified in settings.py"
     from django.db import transaction
 
@@ -10,4 +10,4 @@ def import_courses():
 
         module, funcname = settings.COURSES_COLLEGE_PARSER.rsplit('.', 1)
         mod = import_module(module)
-        getattr(mod, funcname)()
+        getattr(mod, funcname)(force=force)

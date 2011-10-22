@@ -224,7 +224,7 @@ class SISRPIImporter(ROCSRPIImporter):
         # we don't support this for now....
         pass
 
-    def sync(self, get_files=None, get_catalog=None):
+    def sync(self, get_files=None, get_catalog=None, force=False):
         if get_files is None:
             from rpi_courses import list_sis_files
             get_files = list_sis_files
@@ -233,16 +233,16 @@ class SISRPIImporter(ROCSRPIImporter):
             from rpi_courses import CourseCatalog
             get_catalog = CourseCatalog.from_string
 
-        for filename in get_files([s.ref for s in self.semesters.values() if '/zs' in s.ref]):
+        for filename in get_files([s.date_updated for s in self.semesters.values() if '/zs' in s.ref]):
             semester = self.semesters.get(filename)
             # if latest semester or newer semester
             if (not semester) or semester == self.latest_semester:
                 try:
                     with closing(urllib2.urlopen(filename)) as page:
                         print "OPEN", filename
-                        if semester and semester.date_updated is not None:
-                            last_mod = dateutil.parser.parse(dict(page.info())['last-modified'])
-                            if last_mod <= semester.date_updated:
+                        if force or (semester and semester.date_updated is not None):
+                            last_mod = dateutil.parser.parse(dict(page.info())['last-modified']).replace(tzinfo=None)
+                            if not force and last_mod <= semester.date_updated:
                                 print "Skipping b/c of mod date:", last_mod, "<=", semester.date_updated
                                 continue
                         catalog = get_catalog(page.read())
@@ -263,7 +263,7 @@ class SISRPIImporter(ROCSRPIImporter):
                 #self.create_crosslistings(semester_obj, set(catalog.crosslistings.values()))
                 semester_obj.save()  # => update date_updated property
 
-def import_data():
+def import_data(force=False):
     "Imports RPI data into the database."
     importer = SISRPIImporter()
-    importer.sync()
+    importer.sync(force=force)
