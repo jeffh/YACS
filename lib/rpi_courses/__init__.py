@@ -1,3 +1,4 @@
-from parser import CourseCatalog
-from web import get, list_files, list_xml_files, is_xml
+from parser import CourseCatalog as ROCSCourseCatalog
+from sis_parser import CourseCatalog
+from web import *
 from scheduler import *

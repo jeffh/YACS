@@ -15,33 +15,33 @@ class TestListUnits(unittest.TestCase):
             '201101.xml',
             'testrocs.txt',
         ])
-        
+
     @patch.object(web, 'get')
-    def test_list_files(self, mock):
+    def test_list_rocs_files(self, mock):
         """Lists files to read from a given url page.
         Expects an apache file listing page.
         """
         mock.return_value = HTML
-        
-        files = web.list_files(self.url)
-        
+
+        files = web.list_rocs_files(self.url)
+
         mock.assert_called_with(self.url)
-        
+
         self.assertEqual(files, self.expected_files)
-    
+
     @patch.object(web, 'get')
-    def test_list_xml_files(self, mock):
+    def test_list_rocs_xml_files(self, mock):
         """Lists all the files ending with '.xml'.
         Expects an apache file listing page.
         """
         mock.return_value = HTML
-        files = web.list_xml_files(self.url)
-        
+        files = web.list_rocs_xml_files(self.url)
+
         mock.assert_called()
-        
+
         self.expected_files.remove(self.url+'201009.xml_old')
         self.expected_files.remove(self.url+'testrocs.txt')
-        
+
         self.assertEqual(files, self.expected_files)
 
 if __name__ == '__main__':

@@ -190,7 +190,8 @@ class SectionCrosslisting(models.Model):
 class Section(models.Model):
     """Represents a particular course a student can sign up for."""
     STUDY_ABROAD = -1
-    number = models.IntegerField()
+    OFF_CAMPUS = -2
+    number = models.CharField(max_length=5)
 
     crn = models.IntegerField(unique=True)
     course = models.ForeignKey('Course', related_name='sections')

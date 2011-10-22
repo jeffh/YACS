@@ -1,6 +1,9 @@
 """All the data-importing functions are listed here for various colleges.
 """
 import re
+import urllib2
+import dateutil.parser
+from contextlib import closing
 from yacs.courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment,
     SemesterSection)
@@ -58,7 +61,7 @@ DEPARTMENTS = dict(
     WRIT="Writing",
 )
 
-class RPIImporter(object):
+class ROCSRPIImporter(object):
     """Handles the importation of RPI course data into the database."""
 
     FILE_RE = re.compile(r'(\d+)\.xml')
@@ -78,8 +81,8 @@ class RPIImporter(object):
             get_files = list_xml_files
 
         if get_catalog is None:
-            from rpi_courses import CourseCatalog
-            get_catalog = CourseCatalog.from_url
+            from rpi_courses import ROCSCourseCatalog
+            get_catalog = ROCSCourseCatalog.from_url
 
         for filename in get_files():
             name = self.FILE_RE.finditer(filename).next().groups()[0]
@@ -127,14 +130,11 @@ class RPIImporter(object):
         "Inserts all section data, including time period information, into the database from the catalog."
         for section in course.sections:
             # TODO: encode prereqs / notes
-            number = section.num
-            if section.is_study_abroad:
-                number = Section.STUDY_ABROAD
             section_obj, created = Section.objects.get_or_create(
                 crn=section.crn,
                 course=course_obj,
                 defaults=dict(
-                    number=number,
+                    number=section.num,
                     seats_taken=section.seats_taken,
                     seats_total=section.seats_total,
                 )
@@ -145,7 +145,7 @@ class RPIImporter(object):
             )
 
             if not created:
-                section_obj.number = number
+                section_obj.number = section.num
                 section_obj.seats_taken = section.seats_taken
                 section_obj.seats_total = section.seats_total
                 section_obj.save()
@@ -219,8 +219,51 @@ class RPIImporter(object):
             crosslisting_obj, created = SectionCrosslisting.objects.get_or_create(semester=semester_obj, ref=refid)
             Section.objects.filter(crn__in=crosslisting.crns).update(crosslisted=crosslisting_obj)
 
+class SISRPIImporter(ROCSRPIImporter):
+    def create_crosslistings(self, semester_obj, crosslistings):
+        # we don't support this for now....
+        pass
+
+    def sync(self, get_files=None, get_catalog=None):
+        if get_files is None:
+            from rpi_courses import list_sis_files
+            get_files = list_sis_files
+
+        if get_catalog is None:
+            from rpi_courses import CourseCatalog
+            get_catalog = CourseCatalog.from_string
+
+        for filename in get_files([s.ref for s in self.semesters.values() if '/zs' in s.ref]):
+            semester = self.semesters.get(filename)
+            # if latest semester or newer semester
+            if (not semester) or semester == self.latest_semester:
+                try:
+                    with closing(urllib2.urlopen(filename)) as page:
+                        print "OPEN", filename
+                        if semester and semester.date_updated is not None:
+                            last_mod = dateutil.parser.parse(dict(page.info())['last-modified'])
+                            if last_mod <= semester.date_updated:
+                                print "Skipping b/c of mod date:", last_mod, "<=", semester.date_updated
+                                continue
+                        catalog = get_catalog(page.read())
+                except urllib2.URLError:
+                    continue
+
+                if self.latest_semester and semester == self.latest_semester: # and catalog.datetime <= self.latest_semester.date_updated:
+                    continue # already up-to-date
+
+                semester_obj, created = Semester.objects.get_or_create(
+                    year=catalog.year,
+                    month=catalog.month,
+                    ref=filename,
+                    defaults={
+                        'name': catalog.name
+                    })
+                self.create_courses(catalog, semester_obj)
+                #self.create_crosslistings(semester_obj, set(catalog.crosslistings.values()))
+                semester_obj.save()  # => update date_updated property
 
 def import_data():
     "Imports RPI data into the database."
-    importer = RPIImporter()
+    importer = SISRPIImporter()
     importer.sync()

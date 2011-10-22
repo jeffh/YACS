@@ -1,4 +1,4 @@
-from BeautifulSoup import BeautifulStoneSoup
+from BeautifulSoup import BeautifulSoup
 
 import datetime
 import urllib2
@@ -9,7 +9,7 @@ from features import * # all object postfixed with '_feature' will get used.
 class CourseCatalog(object):
     """Represents the RPI course catalog.
 
-    This takes a BeautifulSoup instance (usually a BeautifulStoneSoup instance)
+    This takes a BeautifulSoup instance
     allows an object-oriented method of accessing the data.
     """
 
@@ -25,10 +25,10 @@ class CourseCatalog(object):
             self.parse(soup)
 
     @staticmethod
-    def from_string(xml_str):
+    def from_string(html_str):
         "Creates a new CourseCatalog instance from an string containing xml."
-        return CourseCatalog(BeautifulStoneSoup(xml_str,
-            convertEntities=BeautifulStoneSoup.XML_ENTITIES
+        return CourseCatalog(BeautifulSoup(html_str,
+            convertEntities=BeautifulSoup.HTML_ENTITIES
         ))
 
     @staticmethod

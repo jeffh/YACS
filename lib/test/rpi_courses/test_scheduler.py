@@ -29,7 +29,7 @@ class TestMakeSchedules(unittest.TestCase):
     "Scheduler from XML fixture"
     # TODO: make instances themselves instead of using this XML files.
     def setUp(self):
-        catalog = CourseCatalog.from_xml_str(SCHEDULE_CONTENTS)
+        catalog = CourseCatalog.from_string(SCHEDULE_CONTENTS)
         course_names = (
             'graph theory math',
             'learning',
@@ -99,7 +99,7 @@ class TestMakeSchedules(unittest.TestCase):
 class TestMakeConflictableSchedules(unittest.TestCase):
     # TODO: make instances themselves instead of using this XML files.
     def setUp(self):
-        catalog = CourseCatalog.from_xml_str(CONFLICT_CONTENTS)
+        catalog = CourseCatalog.from_string(CONFLICT_CONTENTS)
         course_names = (
             'BEGINNING PROG FOR ENG',
             'COMPUTER SCIENCE I',

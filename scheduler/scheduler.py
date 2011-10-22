@@ -131,6 +131,6 @@ def compute_schedules(courses=None, excluded_times=(), free_sections_only=True, 
     """
     Returns all possible schedules for the given courses.
     """
-    s = Scheduler(free_sections_only, problem or Problem(BacktrackingSolver()))
+    s = Scheduler(free_sections_only, problem)
     s.exclude_times(*tuple(excluded_times))
     return s.find_schedules(courses, return_generator)

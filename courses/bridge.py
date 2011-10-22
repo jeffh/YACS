@@ -15,7 +15,7 @@ class RPIImporter(object):
         self.semesters = {}  # semester.ref: semester obj
         for semester in Semester.objects.all():
             self.semesters[semester.ref] = semester
-        
+
         self.latest_semester = None
         if len(self.semesters) > 0:
             self.latest_semester = max(self.semesters.values())
@@ -25,7 +25,7 @@ class RPIImporter(object):
         if get_files is None:
             from rpi_courses import list_xml_files
             get_files = list_xml_files
-        
+
         if get_catalog is None:
             from rpi_courses import CourseCatalog
             get_catalog = CourseCatalog.from_url
@@ -79,6 +79,8 @@ class RPIImporter(object):
             number = section.num
             if section.is_study_abroad:
                 number = Section.STUDY_ABROAD
+            if section.is_off_campus:
+                number = Section.OFF_CAMPUS
             section_obj, created = Section.objects.get_or_create(
                 crn=section.crn,
                 course=course_obj,

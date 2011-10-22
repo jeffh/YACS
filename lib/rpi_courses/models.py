@@ -3,7 +3,7 @@
 Generally, all instances should be read only.
 """
 from datetime import time
-from ..utils import safeInt, FrozenDict
+from rpi_courses.utils import safeInt, FrozenDict
 
 class ReadOnly(object):
     """All attributes that are prefixed with a single underscore will have
@@ -162,16 +162,10 @@ class Section(ReadOnly):
     It is uniquely represented in SIS via CRN. The CRN is used for
     registration.
     """
-    STUDY_ABROAD = -1
     def __init__(self, crn, num, taken, total, periods, notes):
         self._crn, self._seats_taken, self._seats_total = \
             safeInt(crn), int(taken), int(total)
-        try:
-            self._num = int(num)
-        except ValueError:
-            self._num = num
-            if num == 'SA':
-                self._num = self.STUDY_ABROAD
+        self._num = num
         self._periods = tuple(periods)
         self._notes = tuple(set(notes))
         self.__hash = None
@@ -216,7 +210,11 @@ class Section(ReadOnly):
 
     @property
     def is_study_abroad(self):
-        return self.num == self.STUDY_ABROAD
+        return self.num in ('SA', 'EXC')
+
+    @property
+    def is_off_campus(self):
+        return self.num.startswith('OC')
 
     @property
     def is_valid(self):
@@ -258,7 +256,7 @@ class Course(ReadOnly):
     """
     def __init__(self, name, dept, num, credmin, credmax, grade_type, sections):
         self._name, self._dept, self._num, self._cred, self._grade_type = \
-            name.strip(), dept.strip(), safeInt(num), \
+            name.strip(), dept.strip(), safeInt(num, warn_only=True), \
             (int(credmin), int(credmax)), grade_type.strip()
         self._sections = tuple(sections)
         self.__free_sections = None
