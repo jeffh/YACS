@@ -64,6 +64,7 @@ __all__ = (
     'generate_fixtures',
     'deploy',
     'restart',
+    'update_courses',
 )
 
 def staging():
@@ -172,7 +173,7 @@ def test(apps=None):
         print
         print "=" * 50, "TESTING LIB"
         with lcd('lib'):
-            local('nosetests')
+            local('nosetests -x')
     for app in apps:
         if app == 'lib':
             continue
@@ -283,13 +284,13 @@ def update_environment(use_pip=False):
             manage_py.collectstatic('--noinput')
 
 @roles('webservers')
-def update_courses():
+def update_courses(args):
     with cd(deploy_config.project_root):
         if env.use_virtualenv:
             with prefix(activate_virtualenv_cmd()):
-                run('python', 'manage.py', 'import_course_data')
+                run('python', 'manage.py', 'import_course_data', args)
         else:
-            python.extend(['manage.py']).import_course_data()
+            python.extend(['manage.py']).import_course_data(args)
 
 @roles('webservers')
 def restart():
