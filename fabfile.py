@@ -58,6 +58,7 @@ __all__ = (
     'production',
     'webfaction',
     'scss',
+    'docs',
     'clean',
     'loc',
     'test',
@@ -106,6 +107,11 @@ def clean():
             if d == '__pycache__':
                 print " DIR ", os.path.join(root, d)[2:]
                 shutil.rmtree(os.path.join(root, d))
+
+def docs():
+    "Generates documentation."
+    with lcd(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'docs')):
+        local('make html')
 
 def generate_fixtures():
     "Generates various fixtures from the current data in the database."
