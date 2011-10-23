@@ -11,6 +11,7 @@ from constants import SIS_FILE
 
 with open(SIS_FILE) as f:
     CONTENTS = f.read()
+catalog = None
 
 # from BeautifulSoup import BeautifulSoup; soup = BeautifulSoup(open('lib/test/rpi_courses/test_data/sis_courses.html').read())
 # from rpi_courses.sis_parser import CourseCatalog; catalog = CourseCatalog.from_file('lib/test/rpi_courses/test_data/sis_courses.html')
@@ -18,9 +19,9 @@ with open(SIS_FILE) as f:
 class TestCatalog(TestCaseForModel):
     def setUp(self):
         global catalog
-        #if catalog is None:
-        #    catalog = CourseCatalog.from_string(CONTENTS)
-        self.catalog = CourseCatalog.from_string(CONTENTS)
+        if catalog is None:
+            catalog = CourseCatalog.from_string(CONTENTS)
+        self.catalog = catalog#CourseCatalog.from_string(CONTENTS)
 
 #    def test_crosslisting(self):
 #        crns = self.catalog.crosslisted_with(76093)
@@ -40,6 +41,26 @@ class TestCatalog(TestCaseForModel):
     def test_get_semester(self):
         self.assertEquals(self.catalog.semester, 'Spring')
 
+    def get_section_by_crn(self, crn):
+        for course in self.catalog.get_courses():
+            for section in course.sections:
+                if crn == section.crn:
+                    return section
+        raise KeyError("Section with CRN of " + str(crn) + " does not exist.")
+
+    def test_time_period_from_11_to_1pm(self):
+        "When period lists 11 - 1:50pm..."
+        section = self.get_section_by_crn(96688)
+        expected_section = models.Section(
+            crn=96688, num='03', taken=0, total=23, notes=[],
+            periods=[models.Period(
+                type='LAB', instructor='Morris',
+                start=1100, end=1250,
+                location='', int_days=(3,)
+            )]
+        )
+        self.assertSectionEquals(section, expected_section)
+
     def test_get_ta_training_seminar_with_no_time_periods(self):
         course = self.catalog.find_courses('TA TRAINING SEMINAR')[0]
         expected_course = models.Course(
@@ -50,7 +71,7 @@ class TestCatalog(TestCaseForModel):
                 periods=[models.Period(
                     type='LEC', instructor='Gornic',
                     start='** TBA **', end='** TBA **',
-                    location=' ', int_days=(),
+                    location='', int_days=(),
                 )],
                 notes=[]
             )]

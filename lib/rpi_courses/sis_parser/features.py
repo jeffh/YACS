@@ -117,13 +117,18 @@ def extract_period(cells, period, G):
             if period['end'] >= 2400:
                 period['end'] -= 1200
 
+            # this covers the case of getting 11:00 - 1:50PM
+            # we're assuming there's no classes from the evening that go beyond midnight.
+            if period['start'] > period['end']:
+                period['start'] -= 1200
+
         period['start'], period['end'] = str(period['start']), str(period['end'])
     # instructor
     node = G(cells, 'Instructor')
-    period['instructor'] = node.text if node else ''
+    period['instructor'] = node.text.strip() if node else ''
     # location
     node = G(cells, 'Building/Room')
-    period['location'] = node.text if node else ''
+    period['location'] = node.text.strip() if node else ''
 
 
 def parse_tables(node):
