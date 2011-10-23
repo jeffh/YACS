@@ -6,6 +6,22 @@ import urllib2
 from ..web import get
 from features import * # all object postfixed with '_feature' will get used.
 
+import re
+RE_DIV = re.compile(r'</?div[^>]*?>', re.I)
+def _remove_divs(string):
+    # Some of the DIV formatting even breaks beautiful soup!
+    # like this snippet:
+    #  <TD>
+    #  </div>
+    #  </div>
+    #  <div id="m126">
+    #  <a class="a p" id="PAGE126" name="PAGE126"></a>
+    #  <div id="pp126" class="r1">
+    #  <span class="f0" style="top: 79.8pt; left: 0.0pt;">95208 PSYC-4450-01</span>
+    #  </TD>
+    # when we actually want all TR > TD, the soup misses this... because of the invalid closing DIV tags...
+    return RE_DIV.sub('', string)
+
 class CourseCatalog(object):
     """Represents the RPI course catalog.
 
@@ -27,7 +43,7 @@ class CourseCatalog(object):
     @staticmethod
     def from_string(html_str):
         "Creates a new CourseCatalog instance from an string containing xml."
-        return CourseCatalog(BeautifulSoup(html_str,
+        return CourseCatalog(BeautifulSoup(_remove_divs(html_str),
             convertEntities=BeautifulSoup.HTML_ENTITIES
         ))
 
@@ -56,6 +72,7 @@ class CourseCatalog(object):
         """Returns all the CRN courses crosslisted with the given crn.
         The returned crosslisting does not include the original CRN.
         """
+        raise NotImplemented
         return tuple([c for c in self.crosslistings[crn].crns if c != crn])
 
     def find_courses(self, partial):

@@ -8,6 +8,15 @@ from yacs.courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment,
     SemesterSection)
 
+import logging
+import logging.handlers
+
+logger = logging.getLogger(__file__)
+logger.setLevel(logging.DEBUG)
+
+# fallback, so there's no warning of no handlers
+logger.addHandler(logging.NullHandler())
+
 # it would be best to get this data from a reliable data source:
 # like the course catalog: http://catalog.rpi.edu/content.php?catoid=10&navoid=232
 # instead of manually entering this data.
@@ -104,6 +113,8 @@ class ROCSRPIImporter(object):
                 self.create_courses(catalog, semester_obj)
                 self.create_crosslistings(semester_obj, set(catalog.crosslistings.values()))
                 semester_obj.save()  # => update date_updated property
+                if created:
+                    logger.debug(' CREATE SEMESTER ' + repr(sectionperiod_obj))
 
     def create_courses(self, catalog, semester_obj):
         "Inserts all the course data, including section information, into the database from the catalog."
@@ -123,6 +134,9 @@ class ROCSRPIImporter(object):
                 course_obj.min_credits, course_obj.max_credits = course.cred
                 course_obj.grade_type = course.grade_type
                 course_obj.save()
+                logger.debug(' EXISTS COURSE ' + course_obj.name)
+            else:
+                logger.debug(' CREATE COURSE ' + repr(course_obj))
             OfferedFor.objects.get_or_create(course=course_obj, semester=semester_obj)
             self.create_sections(course, course_obj, semester_obj)
 
@@ -132,11 +146,11 @@ class ROCSRPIImporter(object):
             # TODO: encode prereqs / notes
             section_obj, created = Section.objects.get_or_create(
                 crn=section.crn,
-                course=course_obj,
                 defaults=dict(
                     number=section.num,
                     seats_taken=section.seats_taken,
                     seats_total=section.seats_total,
+                    course=course_obj,
                 )
             )
             SemesterSection.objects.get_or_create(
@@ -148,7 +162,11 @@ class ROCSRPIImporter(object):
                 section_obj.number = section.num
                 section_obj.seats_taken = section.seats_taken
                 section_obj.seats_total = section.seats_total
+                section_obj.course = course_obj
                 section_obj.save()
+            else:
+                logger.debug(' CREATE SECTION ' + repr(section_obj))
+
 
             self.create_timeperiods(semester_obj, section, section_obj)
 
@@ -198,6 +216,8 @@ class ROCSRPIImporter(object):
                 sectionperiod_obj.location = period.location
                 sectionperiod_obj.kind = period.type
                 sectionperiod_obj.save()
+            else:
+                logger.debug(' CREATE SECTION_PERIOD ' + repr(sectionperiod_obj))
 
     def get_or_create_department(self, semester_obj, code, name=None):
         dept, created = Department.objects.get_or_create(
@@ -249,7 +269,7 @@ class SISRPIImporter(ROCSRPIImporter):
                 except urllib2.URLError:
                     continue
 
-                if self.latest_semester and semester == self.latest_semester: # and catalog.datetime <= self.latest_semester.date_updated:
+                if not force and self.latest_semester and semester == self.latest_semester: # and catalog.datetime <= self.latest_semester.date_updated:
                     continue # already up-to-date
 
                 semester_obj, created = Semester.objects.get_or_create(
@@ -262,6 +282,8 @@ class SISRPIImporter(ROCSRPIImporter):
                 self.create_courses(catalog, semester_obj)
                 #self.create_crosslistings(semester_obj, set(catalog.crosslistings.values()))
                 semester_obj.save()  # => update date_updated property
+                if created:
+                    logger.debug(' CREATE SEMESTER ' + repr(sectionperiod_obj))
 
 def import_data(force=False):
     "Imports RPI data into the database."

@@ -11,7 +11,6 @@ from constants import SIS_FILE
 
 with open(SIS_FILE) as f:
     CONTENTS = f.read()
-catalog = None
 
 # from BeautifulSoup import BeautifulSoup; soup = BeautifulSoup(open('lib/test/rpi_courses/test_data/sis_courses.html').read())
 # from rpi_courses.sis_parser import CourseCatalog; catalog = CourseCatalog.from_file('lib/test/rpi_courses/test_data/sis_courses.html')
@@ -19,9 +18,9 @@ catalog = None
 class TestCatalog(TestCaseForModel):
     def setUp(self):
         global catalog
-        if catalog is None:
-            catalog = CourseCatalog.from_string(CONTENTS)
-        self.catalog = catalog
+        #if catalog is None:
+        #    catalog = CourseCatalog.from_string(CONTENTS)
+        self.catalog = CourseCatalog.from_string(CONTENTS)
 
 #    def test_crosslisting(self):
 #        crns = self.catalog.crosslisted_with(76093)
@@ -89,6 +88,40 @@ class TestCatalog(TestCaseForModel):
             )]
         )
         self.assertCourseEquals(course, expected_course)
+
+    def test_get_psych_course_count(self):
+        courses = self.catalog.find_courses('PSYC')
+        expected_names = (
+            'GENERAL PSYCHOLOGY',
+            'CRITICAL THINKING',
+            'INTRO. TO COGNITIVE SCIEN',
+            'HUMAN FACTORS IN DESIGN',
+            'SOCIAL PSYCHOLOGY',
+            'THINKING',
+            'DEMOCRACY: SOCIAL VS POLI',
+            'HEROES OF THE HUDSON VALL',
+            'ANARCHISM: ETHICAL SOCIET',
+            'MOTIVATION & PERFORMANCE',
+            'PROFESSIONAL DEVELOPMENT',
+            'ORGANIZATIONAL PSYCHOLOGY',
+            'ADV EXPER METHODS & STATI',
+            'BEHAVIORAL NEUROSCIENCE',
+            'COGNITIVE PSYCHOLOGY',
+            'PERSONALITY',
+            'LEARNING',
+            'DRUGS SOCIETY & BEHAVIOR',
+            'ABNORMAL PSYCHOLOGY',
+            'FORENSIC PSYCHOLOGY',
+            'PSYCHOPHARM & BEH TOXICO',
+            'SPORTS PSYCHOLOGY SEMINAR',
+            'READINGS IN PSYC',
+            'ADVANCED TOPICS IN MOTIVA',
+            'COG SCI & ECONOMICS',
+            'INTRO TO COG NEUROSCIENCE',
+            'STRESS & THE BRAIN',
+            'UNDERGRADUATE THESIS',
+        )
+        self.assertEqual(set(c.name for c in courses), set(expected_names))
 
     def test_courses_with_multiple_periods(self):
         course = self.catalog.find_courses('DATA STRUCTURES')[0]

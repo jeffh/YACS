@@ -33,10 +33,13 @@ class CrossListing(ReadOnly):
     This is immutable once created.
     """
     def __init__(self, crns, seats):
-        self._crns, self._seats = set(crns), seats
+        self._crns, self._seats = frozenset(crns), seats
 
     def __eq__(self, other):
         return self.crns == other.crns and self.seats == other.seats
+
+    def __add__(self, other_crosslisting):
+        return self.__class__(self._crns + other_crosslisting._crns, self._seats + other_crosslisting._seats)
 
 DAY_MAPPER = {
     0: 'Monday',

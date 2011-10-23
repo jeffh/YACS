@@ -52,15 +52,19 @@ def course_feature(catalog, soup):
     """Parses all the courses (AKA, the most important part).
     """
     courses = {}
-    course_crns = {}
     count = 0
     for course_data in parse_tables(soup):
         c = create_course(course_data)
         count += 1
         courses[str(c)] = c
-    catalog.courses = courses
+    catalog.courses = FrozenDict(courses)
     logger.info('Catalog has %d courses (manual: %d)' % (len(courses), count))
 
+
+
+
+
+# INTERNAL FUNCTIONS
 
 def create_period(period_data):
     return Period(**period_data)
@@ -188,10 +192,19 @@ def parse_tables(node):
             # section['textbook_link'] = cells[12].find('a')['href']
             extract_period(cells, period, G)
 
+            # link up
+            section['periods'].append(period)
+            course['sections'].append(section)
+            cache[course['name'] + course['dept'] + course['num']] = course
+
+            if not existing_obj:
+                courses.append(course)
+
+            last_course, last_section, last_period = course, section, period
+
         elif 'NOTE:' in cells[1].text.strip(): # process note
             course, section = last_course, last_section
             section['notes'].add(cells[2].text.strip())
-            continue
 
         else: # process a new period type
             course, section = last_course, last_section
@@ -199,14 +212,6 @@ def parse_tables(node):
             period = last_period.copy()
             extract_period(cells, period, G)
             section['periods'].append(period)
-            continue
-        # link up
-        section['periods'].append(period)
-        course['sections'].append(section)
-        courses.append(course)
-        cache[course['name'] + course['dept'] + course['num']] = course
-
-        last_course, last_section, last_period = course, section, period
 
     return courses
 
