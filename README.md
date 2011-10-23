@@ -23,7 +23,6 @@ Which will download code into a YACS folder where you run this command.
     ```
     wget http://python-distribute.org/distribute_setup.py
     python distribute_setup.py
-    rm distribute_setup.py
     ```
 
 3. Install [pip][]:
@@ -31,7 +30,6 @@ Which will download code into a YACS folder where you run this command.
     ```
     wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py
     python get-pip.py
-    rm get-pip.py
     ```
 
 4. Using pip, you can automatically install all the other dependencies by doing:
