@@ -10,12 +10,14 @@ from yacs.courses.models import (Semester, Course, Department, Section,
 
 import logging
 import logging.handlers
+import sys
 
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.DEBUG)
 
 # fallback, so there's no warning of no handlers
 logger.addHandler(logging.NullHandler())
+logger.addHandler(logging.StreamHandler(sys.stdout))
 
 # it would be best to get this data from a reliable data source:
 # like the course catalog: http://catalog.rpi.edu/content.php?catoid=10&navoid=232
@@ -76,7 +78,7 @@ class ROCSRPIImporter(object):
     FILE_RE = re.compile(r'(\d+)\.xml')
     def __init__(self):
         self.semesters = {}  # semester.ref: semester obj
-        for semester in Semester.objects.all():
+        for semester in Semester.objects.filter(ref__startswith='http://sis.rpi.edu/reg/rocs/'):
             self.semesters[semester.ref] = semester
 
         self.latest_semester = None
@@ -86,8 +88,8 @@ class ROCSRPIImporter(object):
     def sync(self, get_files=None, get_catalog=None):
         "Performs the updating of the database data from RPI's SIS"
         if get_files is None:
-            from rpi_courses import list_xml_files
-            get_files = list_xml_files
+            from rpi_courses import list_rocs_xml_files
+            get_files = list_rocs_xml_files
 
         if get_catalog is None:
             from rpi_courses import ROCSCourseCatalog
@@ -103,18 +105,22 @@ class ROCSRPIImporter(object):
                 if self.latest_semester and semester == self.latest_semester and catalog.datetime <= self.latest_semester.date_updated:
                     continue # already up-to-date
 
+                print 'found catalog for:', catalog.year, catalog.month
+
                 semester_obj, created = Semester.objects.get_or_create(
                     year=catalog.year,
                     month=catalog.month,
-                    ref=name + '.xml',
                     defaults={
-                        'name': catalog.name
+                        'name': catalog.name,
+                        'ref': name + '.xml',
                     })
                 self.create_courses(catalog, semester_obj)
                 self.create_crosslistings(semester_obj, set(catalog.crosslistings.values()))
                 semester_obj.save()  # => update date_updated property
                 if created:
-                    logger.debug(' CREATE SEMESTER ' + repr(sectionperiod_obj))
+                    logger.debug(' CREATE SEMESTER ' + repr(semester_obj))
+                else:
+                    logger.debug(' EXISTS SEMESTER ' + repr(semester_obj))
 
     def create_courses(self, catalog, semester_obj):
         "Inserts all the course data, including section information, into the database from the catalog."
@@ -134,11 +140,10 @@ class ROCSRPIImporter(object):
                 course_obj.min_credits, course_obj.max_credits = course.cred
                 course_obj.grade_type = course.grade_type
                 course_obj.save()
-                logger.debug(' EXISTS COURSE ' + course_obj.name)
-            else:
-                logger.debug(' CREATE COURSE ' + repr(course_obj))
             OfferedFor.objects.get_or_create(course=course_obj, semester=semester_obj)
             self.create_sections(course, course_obj, semester_obj)
+            logger.debug((' + ' if created else '   ' ) + course.name)
+
 
     def create_sections(self, course, course_obj, semester_obj):
         "Inserts all section data, including time period information, into the database from the catalog."
@@ -164,9 +169,10 @@ class ROCSRPIImporter(object):
                 section_obj.seats_total = section.seats_total
                 section_obj.course = course_obj
                 section_obj.save()
-            else:
-                logger.debug(' CREATE SECTION ' + repr(section_obj))
-
+                c = section_obj.periods.count()
+                if c:
+                    logger.debug('      |-> Deleting %d period(s) from Section %s' % (c, section_obj.number))
+                    section_obj.periods.all().delete()
 
             self.create_timeperiods(semester_obj, section, section_obj)
 
@@ -216,8 +222,6 @@ class ROCSRPIImporter(object):
                 sectionperiod_obj.location = period.location
                 sectionperiod_obj.kind = period.type
                 sectionperiod_obj.save()
-            else:
-                logger.debug(' CREATE SECTION_PERIOD ' + repr(sectionperiod_obj))
 
     def get_or_create_department(self, semester_obj, code, name=None):
         dept, created = Department.objects.get_or_create(
@@ -240,9 +244,6 @@ class ROCSRPIImporter(object):
             Section.objects.filter(crn__in=crosslisting.crns).update(crosslisted=crosslisting_obj)
 
 class SISRPIImporter(ROCSRPIImporter):
-    def create_crosslistings(self, semester_obj, crosslistings):
-        # we don't support this for now....
-        pass
 
     def sync(self, get_files=None, get_catalog=None, force=False):
         if get_files is None:
@@ -280,12 +281,16 @@ class SISRPIImporter(ROCSRPIImporter):
                         'name': catalog.name
                     })
                 self.create_courses(catalog, semester_obj)
+                # catalog doesn't support this for now.
                 #self.create_crosslistings(semester_obj, set(catalog.crosslistings.values()))
                 semester_obj.save()  # => update date_updated property
                 if created:
-                    logger.debug(' CREATE SEMESTER ' + repr(sectionperiod_obj))
+                    logger.debug(' CREATE SEMESTER ' + repr(semester_obj))
+                else:
+                    logger.debug(' EXISTS SEMESTER ' + repr(semester_obj))
+
 
 def import_data(force=False):
     "Imports RPI data into the database."
-    importer = SISRPIImporter()
-    importer.sync(force=force)
+    #ROCSRPIImporter().sync() # slower.. someone manually updates this I think?
+    SISRPIImporter().sync(force=force)

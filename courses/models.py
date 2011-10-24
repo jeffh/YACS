@@ -30,6 +30,9 @@ class Semester(models.Model):
     def __unicode__(self):
         return self.name
 
+    def __repr__(self):
+        return "<Semester: %d-%d @ %r>" % (self.year, self.month, self.ref)
+
     def toJSON(self, select_related=()):
         json = {
             'year': self.year,
@@ -399,7 +402,9 @@ class SectionPeriod(models.Model):
     objects = managers.QuerySetManager(managers.SectionPeriodQuerySet)
 
     class Meta:
-        unique_together = ('period', 'section', 'semester')
+        unique_together = (
+            ('period', 'section', 'semester'),
+        )
         verbose_name = 'Section Period'
         verbose_name_plural = 'Section Periods'
 
@@ -431,5 +436,8 @@ class SemesterSection(models.Model):
     "M2M model of semesters and sections."
     semester = models.ForeignKey('Semester', related_name='+')
     section = models.ForeignKey('Section', related_name='+')
+
+    class Meta:
+        unique_together = ('semester', 'section')
 
 ### END RELATED MODELS ###
