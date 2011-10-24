@@ -6,3 +6,4 @@
 /build/
 /deployment/deploy.json
 *.log
+docs/_build/
