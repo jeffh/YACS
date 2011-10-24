@@ -1,57 +1,225 @@
-/* 
+@import "mixins";
 
-_____________________________________________________
+$border-color: #d0d0d0;
 
-320 and Up boilerplate extension
+* {
+    text-shadow : none !important;
+    filter : none !important;
+    -ms-filter : none !important;
+}
 
-Author: Andy Clarke
-Version: 0.9b
-URL: http://stuffandnonsense.co.uk/projects/320andup/
-License: http://creativecommons.org/licenses/MIT/
+a:link, a:visited {
+    color : #444 !important;
+    text-decoration : underline;
+}
 
-Sources: 
-http://html5boilerplate.com/#rc10
-_____________________________________________________
+a[href]:after {
+    content : " (" attr(href) ")";
+}
 
-*/
+abbr[title]:after {
+    content : " (" attr(title) ")";
+}
 
-* { 
-background : transparent !important; 
-color : black !important; 
-text-shadow : none !important; 
-filter : none !important;
--ms-filter : none !important; } 
+a[href^="javascript:"]:after,
+a[href^="#"]:after {
+    content : "";
+}
 
-a, a:visited { 
-color : #444 !important; 
-text-decoration : underline; }
+pre, blockquote {
+    border : 1px solid #999;
+    page-break-inside : avoid;
+}
 
-a[href]:after { 
-content : " (" attr(href) ")"; }
+thead {
+    display : table-header-group;
+}
 
-abbr[title]:after { 
-content : " (" attr(title) ")"; }
+tr, img {
+    page-break-inside : avoid;
+}
 
-a[href^="javascript:"]:after, 
-a[href^="#"]:after { 
-content : ""; }
-  
-pre, blockquote { 
-border : 1px solid #999; 
-page-break-inside : avoid; }
+@page {
+    margin : .5cm;
+}
 
-thead { 
-display : table-header-group; }
+p, h2, h3 {
+    orphans : 3;
+    widows : 3;
+}
 
-tr, img { 
-page-break-inside : avoid; }
+h2, h3 {
+    page-break-after : avoid;
+}
 
-@page { 
-margin : .5cm; }
+/* CUSTOM */
+h1, h2 {
+    text-align: center;
+}
 
-p, h2, h3 { 
-orphans : 3; 
-widows : 3; }
+#header {
+    * {
+        background : transparent !important;
+        color : black !important;
+    }
+}
 
-h2, h3 { 
-page-break-after : avoid; }
+body {
+    font-size: 16px;
+}
+
+.nav, .alpha, .listview .disclosure, .searchform, .view-schedules {
+    display: none;
+}
+
+#departments {
+    a:link {
+        text-decoration: none;
+    }
+    a[href]:after {
+        content: '';
+    }
+}
+
+#selected_courses {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+#courses {
+    .code, .credits {
+        float: none;
+    }
+    .code {
+        margin-right: 5px;
+    }
+    ul {
+        list-style: none;
+        padding-left: 0;
+        margin-left: 0;
+    }
+    li {
+        position: relative;
+        border-bottom: 1px solid #ccc;
+        margin-bottom: 5px;
+        padding-bottom: 5px;
+    }
+    .code {
+        background: #ddd;
+        padding: 5px;
+
+        @include border-radius(3px);
+    }
+    .credits, .seats-left {
+        display: inline;
+    }
+}
+
+footer {
+    clear: both;
+    color: #222;
+    text-align: center;
+    padding-top: 10px;
+}
+
+#schedules {
+    h1 {
+        padding: 0;
+        margin: 0;
+    }
+    .schedule-crns {
+        text-align: center;
+        padding-bottom: 5px;
+    }
+    .row {
+        display: block;
+        clear: left;
+        width: 100%;
+        height: 60px;
+        border-bottom: 1px solid $border-color;
+
+        &:first-child {
+            color: $border-color - #444;
+        }
+        &:last-child {
+            color: $border-color - #444;
+        }
+    }
+    .dayview {
+        .dow {
+            padding: 5px 0;
+            margin: -36px 0 3px 0;
+            display: block;
+            clear: left;
+            text-align: center;
+            font-size: 130%;
+            font-weight: 200;
+            border-bottom: 1px solid $border-color;
+            text-shadow: 1px 1px 0 #fff;
+        }
+        &:first-child .dow {
+            padding-left: 25%;
+        }
+
+        .class {
+            margin: -1px 5px 0 0;
+            clear: left;
+            display: block;
+            float: right;
+            position: relative;
+            width: 115px;
+            padding: 5px;
+            font-size: 90%;
+
+            border: 1px solid transparent;
+
+            @include border-radius(3px);
+
+            &.color1 {
+                background: #d7b8b8;
+                border-color: #bc9393;
+            }
+            &.color2 {
+                background: #b8d7b8;
+                border-color: #93bc93;
+            }
+            &.color3 {
+                background: #b8b8d7;
+                border-color: #9393bc;
+            }
+            &.color4 {
+                background: #d7d6b7;
+                border-color: #bcb192;
+            }
+            &.color5 {
+                background: #bccbd7;
+                border-color: #97a6bc;
+            }
+            &.color6 {
+                background: #d7c2d5;
+            }
+            &.color7 {
+                background: #d0d7cd;
+            }
+            &.color8 {
+                background: #a7d7cb;
+            }
+            &.color9 {
+                background: #ffc37d;
+            }
+        }
+
+
+        &:first-child {
+            width: 185px;
+            .hour {
+                display: block;
+            }
+            .class {
+                margin: -19px 3px 0 0;
+            }
+        }
+    }
+}
+

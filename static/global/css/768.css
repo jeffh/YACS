@@ -50,7 +50,7 @@ body {
   float: right;
   position: relative;
   left: -50%; }
-  #schedules h1, #schedules .schedule, #schedules .share {
+  #schedules h1, #schedules .schedule, #schedules .share, #schedules .schedule-crns {
     position: relative;
     left: 50%; }
   #schedules h1 {

@@ -648,12 +648,10 @@ header .alpha {
 #schedules .share {
   text-align: center; }
 #schedules .schedule-crns {
-  padding: 0;
-  margin: -30px 0 5px 0;
-  text-align: right;
-  font-size: 95%;
-  /* too noisy, remove for now */
-  display: none; }
+  padding: 5px 0 0 0;
+  margin: 0;
+  text-align: center;
+  font-size: 95%; }
 #schedules .dayview .dow {
   padding: 5px 0;
   margin: -36px 0 3px 0;

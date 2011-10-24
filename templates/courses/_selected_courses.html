@@ -2,7 +2,6 @@
 {% load courses %}
 
 <div id="selected" class="tableview">
-<h2><a name="selected">Selected Courses</a></h2>
 {% if selected_courses %}
 	<form action="{% url deselect-courses sem_year,sem_month %}" method="post">
 		{% csrf_token %}
@@ -64,51 +63,10 @@
 		<p class="actions">
 			<input type="hidden" name="redirect_to" value="{{ request.get_full_path }}" />
 			<input type="submit" class="save-selected" value="Save" />
-			<a href="{% url schedules sem_year,sem_month %}" class="button">View Schedules</a>
+			<a href="{% url schedules sem_year,sem_month %}" class="button view-schedules">View Schedules</a>
 		</p>
 	</form>
 {% else %}
 	<p>No selected courses</p>
 {% endif %}
 </div>
-
-<script type="text/template" id="selected-course-template">
-	<input type="checkbox" id="selected_course_<%- id %>" name="selected_course_<%- id %>" checked="checked" />
-	<label for="selected_course_<%- id %>">
-		<span class="name"><%- name %></span>
-		<span class="code">
-			<span class="department"><%- department.get('code') %></span>
-			<span class="course_number"><%- number %></span>
-		</span>
-		<span class="credits">
-			<%- (credits !== '4 credits') ? '' : credits %>
-		</span>
-		<span class="seats-left">
-			<span class="number"><%- seats_left %></span> seat<%- (seats_left === 1) ? '' : 's' %> left
-		</span>
-	</label>
-	<span class="sections">
-	<ul>
-	</ul>
-	</span>
-</script>
-
-<script type="text/template" id="selected-section-template">
-	<input type="checkbox" id="selected_course_<%- course.id %>_<%- crn %>" name="selected_course_<%- course.id %>_<%- crn %>" <%= marked ? 'checked="checked"' : '' %> />
-	<label for="selected_course_<%- course.id %>_<%- crn %>">
-		<span class="section-number">
-			Section <span class="number"><%- number %></span>
-		</span>
-		(<span class="crn"><%- crn %></span>) -
-		<% if (seats_left > 0) { %>
-		<span class="section-seats-left">
-			<span class="number"><%- seats_left %></span>
-			seat<%- seats_left !== 1 ? 's' : '' %> left
-		</span>
-		<% } else { %>
-		<span class="section-seats-left none">
-		No seats lefts
-		</span>
-		<% } %>
-	</label>
-</script>

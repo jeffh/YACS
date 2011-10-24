@@ -19,7 +19,6 @@
 <!-- For all browsers -->
 <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/style.css?v=1">
 <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/320.css?v=1">
-<link rel="stylesheet" media="print" href="{{ STATIC_URL }}css/print.css?v=1">
 <!-- For progressively larger displays -->
 <link rel="stylesheet" media="only screen and (min-width: 480px)" href="{{ STATIC_URL }}css/480.css?v=1">
 <link rel="stylesheet" media="only screen and (min-width: 768px)" href="{{ STATIC_URL }}css/768.css?v=1">
@@ -27,6 +26,8 @@
 <link rel="stylesheet" media="only screen and (min-width: 1382px)" href="{{ STATIC_URL }}css/1382.css?v=1">
 <!-- For Retina displays -->
 <link rel="stylesheet" media="only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2)" href="{{ STATIC_URL }}css/2x.css?v=1">
+<!-- so print gets higher priority -->
+<link rel="stylesheet" media="print" href="{{ STATIC_URL }}css/print.css?v=1">
 
 <!-- JavaScript at bottom except for Modernizr -->
 <script src="{{ STATIC_URL }}js/libs/modernizr-1.7.min.js"></script>

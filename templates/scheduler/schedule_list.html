@@ -19,27 +19,21 @@
 			<a name="schedule{{ i }}">Schedule {{ i }}</a>
 			<a href="#schedule{% if not forloop.last %}{{ i|add:'1' }}{% else %}{{ i }}{% endif %}" class="next-schedule{% if forloop.last %} disabled{% endif %}"></a>
 		</h1>
+		<p class="schedule-crns">
+			{% for section in schedule.values %}
+				{{ section.crn }}{% if not forloop.last %}, {% endif %}
+			{% endfor %}
+		</p>
 		<p class="share" style="display: none;">
-		<a href="#facebook">Facebook</a>
-		<a href="#link">Permalink</a>
-		<a href="#ics">iCal</a>
+			<a href="#facebook">Facebook</a>
+			<a href="#link">Permalink</a>
+			<a href="#ics">iCal</a>
 		</p>
 		<div class="schedule">
 			{# monday - friday #}
 			{% for dow in dows %}
 			<div class="dayview">
 				<h2 class="dow">{{ dow }}</h2>
-				{% if forloop.first %}
-					<p class="schedule-crns">
-						{% for section in schedule.values %}
-							{{ section.crn }}{% if forloop.revcounter0 > 1 %}, {% endif %}
-							{% if forloop.revcounter0 == 1 %}
-							&amp;
-							{% endif %}
-						{% endfor %}
-					</p>
-				{% endif %}
-
 				<div class="hourview">
 
 					{% for hour in time_range %}
