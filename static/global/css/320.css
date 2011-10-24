@@ -447,8 +447,7 @@ header .alpha {
     padding: 0; }
   #selected .name {
     padding-left: 2px;
-    font-size: 110%;
-    text-transform: lowercase; }
+    font-size: 110%; }
   #selected .credits {
     display: none; }
   #selected .seats-left {
