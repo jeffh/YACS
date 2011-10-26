@@ -20,7 +20,7 @@ class BulkInsert(object):
             placeholder = ['(' + row_ph + ')' for v in values]
         else:
             placeholder = ['(' + row_ph + ')']
-        
+
         query = "INSERT INTO %s (%s) VALUES %s" % (
             table,
             ','.join(columns),
@@ -54,14 +54,13 @@ class BulkInsert(object):
 
         transaction.commit_unless_managed()
         return new_ids
-    
+
     def bulk_insert_backend_method(self, engine):
         supported_engines = {
             'django.db.backends.postgresql_psycopg2': self.postgres_bulk_insert,
             'django.db.backends.sqlite3': self.sqlite_bulk_insert,
         }
         return supported_engines[engine]
-    
 
 class ScheduleManager(Manager):
     def create_all_from_crns(self, crns, semester):
@@ -80,9 +79,9 @@ class ScheduleManager(Manager):
         for snp in sections_and_periods:
             snp.section.all_periods = secid_to_periods[snp.section_id]
             selected_courses[snp.section.course] = selected_courses.get(snp.section.course, []) + [snp.section]
-        
+
         schedules = compute_schedules(selected_courses)
-        
+
         return self._create_from_schedules(schedules, semester)
 
     def create_all_from_course_ids(self, course_ids, semester):
@@ -128,7 +127,7 @@ class ScheduleManager(Manager):
                     course.id,
                     semester.id
                 ]
-        
+
         bulk_insert = BulkInsert()
 
         latest_ids = bulk_insert(
