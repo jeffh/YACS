@@ -216,6 +216,9 @@ class Section(models.Model):
     def __unicode__(self):
         return "%s (%s) Seats: %d / %d" % (self.number, self.crn, self.seats_taken, self.seats_total)
 
+    def __hash__(self):
+        return hash(self.id)
+
     def toJSON(self, select_related=()):
         values = {
             'number': self.number,
@@ -257,6 +260,12 @@ class Section(models.Model):
         "Returns True if the given section conflicts with another provided section."
         if self == section:
             return True
+        # START --- this should really be a proxy in scheduler.models.SectionProxy
+        # but there seems to be a django bug with Proxy models!
+        # self.conflicts has to be set by the view....
+        if hasattr(self, 'conflicts'):
+            return section.id in self.conflicts
+        # END
         periods = section.get_periods()
         for period1 in self.get_periods():
             for period2 in periods:

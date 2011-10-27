@@ -16,7 +16,7 @@ class BaseConstraint(object):
         defaults = self._vardefaults if use_defaults else {}
         values = list(self._template)
         for i, var in enumerate(self._vars):
-            values[i] = possible_solution.get(var) or defaults.get(var) or NilObject()
+            values[i] = possible_solution.get(var, defaults.get(var, NilObject()))
         return values
 
     def __len__(self):

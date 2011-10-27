@@ -4,18 +4,20 @@ from yacs.courses import managers as courses_managers
 from yacs.courses.utils import dict_by_attr
 import itertools
 
-class SectionProxy(courses.Section):
-    class Meta:
-        proxy = True
-
-    objects = courses_managers.QuerySetManager(courses_managers.SectionQuerySet)
-
-    def __hash__(self):
-        return hash(self.id)
-
-    def conflicts_with(self, section):
-        # self.conflicts has to be set by the view....
-        return section.id in self.conflicts
+# Django bug? Using a proxy causes tests to fail (looking for database NAME).
+SectionProxy = courses.Section
+#class SectionProxy(courses.Section):
+#    class Meta:
+#        proxy = True
+#
+#    objects = courses_managers.QuerySetManager(courses_managers.SectionQuerySet)
+#
+#    def __hash__(self):
+#        return hash(self.id)
+#
+#    def conflicts_with(self, section):
+#        # self.conflicts has to be set by the view....
+#        return section.id in self.conflicts
 
 class SectionConflict(models.Model):
     """The relationship where a section conflicts with another section.
