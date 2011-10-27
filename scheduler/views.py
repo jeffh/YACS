@@ -136,7 +136,7 @@ def json_compute_schedules_via_cache(request, year, month):
 
     try:
         limit = int(request.GET.get('limit'))
-    except ValueError:
+    except (ValueError, TypeError):
         limit = 0
     if limit > 0:
         print "limiting by", limit

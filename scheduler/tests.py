@@ -85,11 +85,14 @@ class TestScheduleViews(ShortcutTestCase):
         models.Semester.objects.filter(id__gt=semester.id).delete()
 
     def set_selected(self, value):
-        session = self.client.session
-        session[SELECTED_COURSES_SESSION_KEY] = value
-        return session
+        return self.set_session({SELECTED_COURSES_SESSION_KEY: value})
 
     def test_get_schedules(self):
         self.set_selected({1: [1000, 1001], 2: [1003]})
-        response = self.get('schedules', year=2011, month=1, status_code=200)
+        response = self.get('schedules', year=2011, month=1)
+        self.assertEqual(response.status_code, 302)
 
+    def test_get_ajax_schedules(self):
+        crns = [1000, 1001, 1003]
+        response = self.get('ajax-schedules', year=2011, month=1, get='?crns=' + '&crns='.join(map(str, crns)))
+        self.assertEqual(response.status_code, 200)
