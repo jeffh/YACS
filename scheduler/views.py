@@ -6,7 +6,7 @@ import urllib
 from django.db.models import F, Q
 from django.views.generic import ListView
 from django.http import HttpResponse, Http404, HttpResponseNotFound
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.conf import settings
 from django.core.cache import cache
@@ -54,7 +54,7 @@ def take(amount, generator):
     for i, g in enumerate(generator):
         result.append(g)
         if i + 1 >= amount:
-            break
+            return result
     return result
 
 def build_section_mapping(schedules):
@@ -85,11 +85,21 @@ def build_conflict_mapping(conflicts):
     return result
 
 def schedules_bootloader(request, year, month):
-    selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
+    crns = request.GET.get('crns', '')
+    if crns != '':
+        crns = [c for c in crns.split('-') if c.strip() != '']
+    if not crns:
+        selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
+        return redirect(reverse('schedules', kwargs=dict(year=year, month=month)) + '?crns=' + urllib.quote('-'.join(str(crn) for sections in selected_courses.values() for crn in sections)))
     prefix = 'crn='
-    crns = prefix + ('&'+prefix).join(urllib.quote(str(crn)) for sections in selected_courses.values() for crn in sections)
+    crns = prefix + ('&'+prefix).join(urllib.quote(str(crn)) for crn in crns)
+
+    single_schedule = ''
+    schedule_offset = request.GET.get('at', '')
+    if schedule_offset:
+        single_schedule = "&from=%s&limit=1" % urllib.quote(schedule_offset)
     return render_to_response('scheduler/placeholder_schedule_list.html', {
-        'ajax_url': reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?' + crns,
+        'ajax_url': reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?' + crns + single_schedule,
         'sem_year': year,
         'sem_month': month,
     }, RequestContext(request))
@@ -122,11 +132,17 @@ def json_compute_schedules_via_cache(request, year, month):
         for schedule in compute_schedules(selected_courses, generator=True):
             return HttpResponse('ok')
         return HttpResponseNotFound('conflicts')
-    schedules = compute_schedules(selected_courses, start=savepoint)
+    schedules = compute_schedules(selected_courses, start=savepoint, generator=True)
 
-    limit = request.GET.get('limit')
+    try:
+        limit = int(request.GET.get('limit'))
+    except ValueError:
+        limit = 0
     if limit > 0:
+        print "limiting by", limit
         schedules = take(limit, schedules)
+    else:
+        schedules = list(schedules)
 
     periods = set(p for s in sections for p in s.all_periods)
     timerange, dows = period_stats(periods)
