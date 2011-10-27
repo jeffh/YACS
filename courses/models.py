@@ -261,11 +261,11 @@ class Section(models.Model):
         if self == section:
             return True
         # START --- this should really be a proxy in scheduler.models.SectionProxy
-        # but there seems to be a django bug with Proxy models!
+        # but there seems to be a django bug with Proxy models causing tests to fail.
         # self.conflicts has to be set by the view....
         if hasattr(self, 'conflicts'):
             return section.id in self.conflicts
-        # END
+        # END ---
         periods = section.get_periods()
         for period1 in self.get_periods():
             for period2 in periods:
