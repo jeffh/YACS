@@ -2,7 +2,7 @@ from constraints import Constraint, NilObject
 from itertools import product
 from abc import ABCMeta, abstractproperty, abstractmethod
 
-__all__ = ['BruteForceSolver', 'BacktrackingSolver', 'DefaultSolver']
+__all__ = ['BruteForceSolver', 'DefaultSolver']
 
 class SolverInterface(object):
     """Purely a reference class to understand the interface the Problem class expects."""
