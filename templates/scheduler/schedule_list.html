@@ -16,7 +16,7 @@
 	<div id="schedule{{ i }}" class="schedule_wrapper">
 		<h1>
 			<a href="#schedule{% if not forloop.first %}{{ i|add:'-1' }}{% else %}{{ i }}{% endif %}" class="prev-schedule{% if forloop.first %} disabled{% endif %}"></a>
-			<a name="schedule{{ i }}">Schedule {{ i }}</a>
+			<a name="schedule{{ i }}">Schedule {{ i }} / {{ schedules|length }}</a>
 			<a href="#schedule{% if not forloop.last %}{{ i|add:'1' }}{% else %}{{ i }}{% endif %}" class="next-schedule{% if forloop.last %} disabled{% endif %}"></a>
 		</h1>
 		<p class="schedule-crns">

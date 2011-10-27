@@ -9,6 +9,7 @@ class Problem(object):
         if solver_instance is None:
             solver_instance = DefaultSolver()
         self._solver_instance = solver_instance
+        self._restore_point = None
         self.reset()
 
     @property
@@ -40,6 +41,7 @@ class Problem(object):
 
     def setup(self):
         self._solver_instance.set_conditions(dict(self._variables), list(self._constraints))
+        self._solver_instance.restore_point(self._restore_point)
 
     def iter_solutions(self):
         "Returns a generator of solutions to the given constraints problem."
@@ -50,10 +52,12 @@ class Problem(object):
         "Returns a tuple of all the solutions to the given constraints problem."
         return tuple(self.iter_solutions())
 
-    def get_all_possible_solutions(self):
-        "Returns all possible solutions (but may not be valid solutions according to the constraints)."
-        self.setup()
-        return self._solver_instance.combinations()
+    def restore_point(self, start):
+        self._restore_point = start
+        return self
+
+    def save_point(self):
+        return self._solver.save_point()
 
     def __repr__(self):
         return "<Problem(variables=%(v)r, constraints=%(c)r), solver=%(s)r>" % {

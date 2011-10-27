@@ -71,7 +71,7 @@ body {
     position: relative;
     left: -50%;
 
-    h1, .schedule, .share, .schedule-crns {
+    h1, .schedule, .share, .schedule-crns, p {
         position: relative;
         left: 50%;
     }
@@ -113,20 +113,30 @@ body {
             .crn {
                 display: block;
             }
+            .code {
+                font-size: 12px;
+                .crn {
+                    font-size: 125%;
+                }
+            }
             .kind {
                 position: absolute;
                 display: block;
                 top: 0;
                 right: 0;
                 font-size: 90%;
-                padding: 5px 5px 0 0;
+                padding: 0 5px 0 0;
                 margin: 0;
+                top: 5px;
+                right: 0;
+                font-size: 100%;
             }
             .instructor {
                 padding-top: 0.25em;
             }
 
             &.medium {
+                font-size: 80%;
                 overflow: hidden;
 
                 @include transition(all $transition-fast $transition-type);
@@ -156,17 +166,9 @@ body {
                 }
 
                 &.small {
-                    font-size: 80%;
                     overflow: hidden;
 
                     @include transition(all $transition-fast $transition-type);
-
-                    .kind {
-                        position: absolute;
-                        top: 5px;
-                        right: 0;
-                        font-size: 100%;
-                    }
 
                     .name, .location, .instructor {
                         /*display: none;*/

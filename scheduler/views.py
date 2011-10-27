@@ -1,18 +1,28 @@
 from icalendar import Calendar, Event, UTC, vText
 from datetime import datetime
+from json import dumps
+import urllib
 
-from django.db.models import F
+from django.db.models import F, Q
 from django.views.generic import ListView
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404, HttpResponseNotFound
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.conf import settings
+from django.core.cache import cache
+from django.core.urlresolvers import reverse
 
 from yacs.courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY
-from yacs.courses.models import Semester, SectionPeriod, Course, Section
-from yacs.courses.utils import dict_by_attr
+from yacs.courses.models import Semester, SectionPeriod, Course, Section, Department
+from yacs.courses.utils import dict_by_attr, ObjectJSONEncoder
 from yacs.scheduler import models
 from yacs.scheduler.scheduler import compute_schedules
+
+import time
+
+class Timer():
+   def __enter__(self): self.start = time.time()
+   def __exit__(self, *args): print time.time() - self.start
 
 ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')
 
@@ -65,35 +75,179 @@ def build_color_mapping(courses, max=9):
         colors[course] = (i % max) + 1
     return colors
 
-def force_compute_schedules(request, year, month):
+def build_conflict_mapping(conflicts):
+    result = {} # section_id => [section_ids]
+    for conflict in conflicts:
+        s = result[conflict.section1.id] = result.get(conflict.section1.id, set())
+        s.add(conflict.section2.id)
+        s = result[conflict.section2.id] = result.get(conflict.section2.id, set())
+        s.add(conflict.section1.id)
+    return result
+
+def schedules_bootloader(request, year, month):
     selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
-    crns = [crn for sections in selected_courses.values() for crn in sections]
-
-    sections = Section.objects.filter(crn__in=crns).select_related('course', 'course__department').full_select(year, month)
-
-    selected_courses = dict_by_attr(sections, 'course')
-
-    periods = set(p for s in sections for p in s.all_periods)
-
-    # we should probably set some upper bound of computation and restrict number of sections used.
-    schedules = take(100, compute_schedules(selected_courses, return_generator=True))
-    #schedules = compute_schedules(selected_courses)
-    timerange, dows = period_stats(periods)
-    sections_mapping = build_section_mapping(schedules)
-    color_mapping = build_color_mapping(selected_courses)
-
-    print color_mapping
-
-    return render_to_response('scheduler/schedule_list.html', {
-        'schedules': schedules,
-        'sections':sections_mapping,
-        'time_range': timerange,
-        'selected_courses': selected_courses,
-        'color_mapping': color_mapping,
-        'dows': dows,
+    prefix = 'crn='
+    crns = prefix + ('&'+prefix).join(urllib.quote(str(crn)) for sections in selected_courses.values() for crn in sections)
+    return render_to_response('scheduler/placeholder_schedule_list.html', {
+        'ajax_url': reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?' + crns,
         'sem_year': year,
         'sem_month': month,
     }, RequestContext(request))
+
+def json_compute_schedules_via_cache(request, year, month):
+    requested_crns = request.GET.getlist('crn')
+    savepoint = int(request.GET.get('from', 0))
+    crns = []
+    for crn in requested_crns:
+        try:
+            crns.append(int(crn))
+        except (ValueError, TypeError):
+            pass
+    if len(crns) > 50:
+        raise Http404
+
+    sections = models.SectionProxy.objects.by_semester(year, month).filter(crn__in=crns).select_related('course', 'course__department').full_select(year, month)
+    selected_courses = dict_by_attr(sections, 'course')
+    section_ids = set(s.id for s in sections)
+    conflicts = models.SectionConflict.objects.filter(
+        section1__id__in=section_ids, section2__id__in=section_ids
+    ).select_related('section1', 'section2')
+    conflict_mapping = build_conflict_mapping(conflicts)
+    for section in sections:
+        section.conflicts = conflict_mapping.get(section.id) or set()
+
+    # we should probably set some upper bound of computation and restrict number of sections used.
+    #schedules = take(100, compute_schedules(selected_courses, generator=True))
+    if request.GET.get('check'):
+        for schedule in compute_schedules(selected_courses, generator=True):
+            return HttpResponse('ok')
+        return HttpResponseNotFound('conflicts')
+    schedules = compute_schedules(selected_courses, start=savepoint)
+
+    limit = request.GET.get('limit')
+    if limit > 0:
+        schedules = take(limit, schedules)
+
+    periods = set(p for s in sections for p in s.all_periods)
+    timerange, dows = period_stats(periods)
+    section_mapping = {} # [schedule-index][dow][starting-hour]
+    for i, schedule in enumerate(schedules):
+        the_dows = section_mapping[i+1] = {}
+        for secs in schedule.values():
+            for j, sp in enumerate(secs.all_section_periods):
+                for dow in sp.period.days_of_week:
+                    the_dows[dow] = the_dows.get(dow, {})
+                    the_dows[dow][sp.period.start.hour] = {
+                        'cid': sp.section.course.id,
+                        'crn': sp.section.crn,
+                        'pindex': j,
+                    }
+    #color_mapping = build_color_mapping(selected_courses)
+
+    courses_output, sections_output = {}, {}
+    for course, sections in selected_courses.items():
+        courses_output[course.id] = course.toJSON(select_related=((Department._meta.db_table, 'code'),))
+        for section in sections:
+            sections_output[section.crn] = section.toJSON()
+
+    schedules_output = [{ str(course.id): section.crn for course, section in schedule.items() } for schedule in schedules]
+
+    if len(schedules_output):
+        context = {
+            'schedules': schedules_output,
+            'courses': courses_output,
+            'sections': sections_output,
+            'section_mapping': section_mapping,
+            'time_range': timerange,
+            'dows': dows,
+            'sem_year': year,
+            'sem_month': month,
+        }
+    else:
+        context = {
+            'schedules': [],
+            'sem_year': year,
+            'sem_month': month,
+        }
+
+    return HttpResponse(ObjectJSONEncoder(indent=4).encode(context))
+
+def compute_schedules_via_cache(request, year, month):
+    with Timer():
+        selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
+        crns = [crn for sections in selected_courses.values() for crn in sections]
+        savepoint = int(request.GET.get('from', 0))
+
+        sections = models.SectionProxy.objects.filter(crn__in=crns).select_related('course', 'course__department').full_select(year, month)
+        selected_courses = dict_by_attr(sections, 'course')
+        section_ids = set(s.id for s in sections)
+        conflicts = models.SectionConflict.objects.filter(
+            section1__id__in=section_ids, section2__id__in=section_ids
+        ).select_related('section1', 'section2')
+        conflict_mapping = build_conflict_mapping(conflicts)
+        for section in sections:
+            section.conflicts = conflict_mapping.get(section.id) or set()
+
+        periods = set(p for s in sections for p in s.all_periods)
+
+        # we should probably set some upper bound of computation and restrict number of sections used.
+        #schedules = take(100, compute_schedules(selected_courses, generator=True))
+        schedules = compute_schedules(selected_courses, start=savepoint)
+        timerange, dows = period_stats(periods)
+        sections_mapping = build_section_mapping(schedules)
+        color_mapping = build_color_mapping(selected_courses)
+
+        context = {
+            'schedules': schedules,
+            'sections':sections_mapping,
+            'time_range': timerange,
+            'selected_courses': selected_courses,
+            'color_mapping': color_mapping,
+            'dows': dows,
+            'sem_year': year,
+            'sem_month': month,
+        }
+
+        if request.GET.get('ajax'):
+            return HttpResponse(dumps([{ course.id: section.crn for course, section in schedule.items() } for schedule in schedules]))
+
+        return render_to_response('scheduler/schedule_list.html', context, RequestContext(request))
+
+def force_compute_schedules(request, year, month):
+    with Timer():
+        selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
+        crns = [crn for sections in selected_courses.values() for crn in sections]
+        savepoint = int(request.GET.get('from', 0))
+
+        sections = Section.objects.filter(crn__in=crns).select_related('course', 'course__department').full_select(year, month)
+
+        selected_courses = dict_by_attr(sections, 'course')
+
+        periods = set(p for s in sections for p in s.all_periods)
+
+        # we should probably set some upper bound of computation and restrict number of sections used.
+        #schedules = take(100, compute_schedules(selected_courses, return_generator=True))
+        schedules = compute_schedules(selected_courses, start=savepoint)
+        timerange, dows = period_stats(periods)
+        sections_mapping = build_section_mapping(schedules)
+        color_mapping = build_color_mapping(selected_courses)
+
+
+        context = {
+            'schedules': schedules,
+            'sections':sections_mapping,
+            'time_range': timerange,
+            'selected_courses': selected_courses,
+            'color_mapping': color_mapping,
+            'dows': dows,
+            'sem_year': year,
+            'sem_month': month,
+        }
+
+        if request.GET.get('ajax'):
+            return HttpResponse(dumps([{ course.id: section.crn for course, section in schedule.items() } for schedule in schedules]))
+
+        return render_to_response('scheduler/schedule_list.html', context, RequestContext(request))
 
 
 def icalendar(request, year, month, crns):

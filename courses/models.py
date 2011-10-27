@@ -286,6 +286,9 @@ class Course(models.Model):
     def __unicode__(self):
         return "%s (%s %s)" % (self.name, self.department.code, self.number)
 
+    def __hash__(self):
+        return hash(self.id)
+
     def conflicts_with(self, course):
         "Returns True if the provided course conflicts with this one on time periods."
         sections = course.sections.all()

@@ -4,23 +4,25 @@ from yacs.courses.utils import dict_by_attr
 
 # using the fancy queryset manager technique, as describe:
 # http://adam.gomaa.us/blog/2009/feb/16/subclassing-django-querysets/index.html
-#
-# the one flaw is using abstract models. But we're not using that right?
 
 class QuerySetManager(Manager):
     use_for_related_fields = True
     def __init__(self, queryset_class=QuerySet):
         super(QuerySetManager, self).__init__()
         self.queryset_class = queryset_class
+        # this is technically a private API, we need to be certain we're overriding.
+        assert hasattr(super(QuerySetManager, self), '_copy_to_model'), "Copy manager method no longer exists :("
 
     def get_query_set(self):
         return self.queryset_class(self.model, using=self.db)
 
+    def _copy_to_model(self, model):
+        "Fixes problems with model inheritance."
+        mgr = super(QuerySetManager, self)._copy_to_model(model)
+        mgr.queryset_class = self.queryset_class
+
     def __getattr__(self, attr):
-        try:
-            return super(QuerySetManager, self).__getattr__(attr)
-        except AttributeError:
-            return getattr(self.get_query_set(), attr)
+        return getattr(self.get_query_set(), attr)
 
 class SerializableQuerySet(QuerySet):
 

@@ -50,7 +50,7 @@ body {
   float: right;
   position: relative;
   left: -50%; }
-  #schedules h1, #schedules .schedule, #schedules .share, #schedules .schedule-crns {
+  #schedules h1, #schedules .schedule, #schedules .share, #schedules .schedule-crns, #schedules p {
     position: relative;
     left: 50%; }
   #schedules h1 {
@@ -85,17 +85,25 @@ body {
         display: none; }
       #schedules .dayview .class .crn {
         display: block; }
+      #schedules .dayview .class .code {
+        font-size: 12px; }
+        #schedules .dayview .class .code .crn {
+          font-size: 125%; }
       #schedules .dayview .class .kind {
         position: absolute;
         display: block;
         top: 0;
         right: 0;
         font-size: 90%;
-        padding: 5px 5px 0 0;
-        margin: 0; }
+        padding: 0 5px 0 0;
+        margin: 0;
+        top: 5px;
+        right: 0;
+        font-size: 100%; }
       #schedules .dayview .class .instructor {
         padding-top: 0.25em; }
       #schedules .dayview .class.medium {
+        font-size: 80%;
         overflow: hidden;
         -webkit-transition: all 0.2s ease-in-out;
         -moz-transition: all 0.2s ease-in-out;
@@ -132,18 +140,12 @@ body {
             -ms-transition: all 0.3s ease-in-out;
             transition: all 0.3s ease-in-out; }
         #schedules .dayview .class.medium.small {
-          font-size: 80%;
           overflow: hidden;
           -webkit-transition: all 0.2s ease-in-out;
           -moz-transition: all 0.2s ease-in-out;
           -o-transition: all 0.2s ease-in-out;
           -ms-transition: all 0.2s ease-in-out;
           transition: all 0.2s ease-in-out; }
-          #schedules .dayview .class.medium.small .kind {
-            position: absolute;
-            top: 5px;
-            right: 0;
-            font-size: 100%; }
           #schedules .dayview .class.medium.small .name, #schedules .dayview .class.medium.small .location, #schedules .dayview .class.medium.small .instructor {
             /*display: none;*/
             zoom: 1;

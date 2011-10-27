@@ -22,15 +22,31 @@ class SolverInterface(object):
         raise NotImplemented
 
     @abstractmethod
+    def restore_point(self, starting_point=None):
+        raise NotImplemented
+
+    @abstractmethod
+    def save_point(self):
+        raise NotImplemented
+
+    @abstractmethod
     def __iter__(self):
         raise NotImplemented
 
 class BaseSolver(SolverInterface):
     def __init__(self):
         self._solutions_seen = 0
+        self.restore_point()
 
     @property
     def solutions_seen(self):
+        return self._solutions_seen
+
+    def restore_point(self, start=None):
+        self._start = start or 0
+        return self
+
+    def save_point(self):
         return self._solutions_seen
 
 class BruteForceSolver(BaseSolver):
@@ -86,9 +102,12 @@ class BruteForceSolver(BaseSolver):
     def __iter__(self):
         """Provide all the possible solutions.
         """
-        self._solutions_seen = 0
+        self._solutions_seen = 0 # self._start
+        iterator = self.combinations()
+        for i in xrange(self._start):
+            iterator.next()
         # for each combination
-        for possible_solution in self.combinations():
+        for possible_solution in iterator:
             # "Solution:", possible_solution, '[valid]' if self.satisfies_constraints(possible_solution) else ''
             self._solutions_seen += 1
             # filter by all constraints
@@ -267,8 +286,11 @@ class BacktrackingSolver(BruteForceSolver):
         """
         self.keys = self._vars.keys()
         self.seen = set()
-        self._solutions_seen = 0
-        for s in self._next(Solution()):
+        self._solutions_seen = 0 #self._start
+        iterator = self._next(Solution())
+        for i in xrange(self._start):
+            iterator.next()
+        for s in iterator:
             yield s
         print "Visited", self.solutions_seen, "solutions"
 

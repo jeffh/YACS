@@ -79,7 +79,7 @@ class Scheduler(object):
                 self.exclude_time(*item)
         return self
 
-    def find_schedules(self, courses=None, return_generator=False):
+    def find_schedules(self, courses=None, generator=False, start=0):
         """Returns all the possible course combinations. Assumes no duplicate courses.
 
         ``return_generator``: If True, returns a generator instead of collection. Generators
@@ -89,7 +89,8 @@ class Scheduler(object):
         self.p.reset()
         self.create_variables(courses)
         self.create_constraints(courses)
-        if return_generator:
+        self.p.restore_point(start)
+        if generator:
             return self.p.iter_solutions()
         return self.p.get_solutions()
 
@@ -127,10 +128,11 @@ class Scheduler(object):
                 self.p.add_constraint(section_constraint, [course1, course2])
             self.p.add_constraint(self.time_conflict, [course1])
 
-def compute_schedules(courses=None, excluded_times=(), free_sections_only=True, problem=None, return_generator=False):
+def compute_schedules(courses=None, excluded_times=(), free_sections_only=True, problem=None, generator=False, start=0):
     """
     Returns all possible schedules for the given courses.
     """
     s = Scheduler(free_sections_only, problem)
     s.exclude_times(*tuple(excluded_times))
-    return s.find_schedules(courses, return_generator)
+    return s.find_schedules(courses, generator, start)
+
