@@ -13,8 +13,8 @@
 <div id="schedules" data-source="{{ ajax_url }}">
 </div>
 
-<!-- functions: humanize_time, period_height, get_crns -->
-<!-- defined: schedule, time_range, courses, sections, color_map, sid -->
+{# functions: humanize_time, period_height, get_crns #}
+{# defined: schedule, time_range, courses, sections, color_map, sid #}
 <script type="text/template" id="schedule-template" data-period-height="50">
 <% var first=(sid===1), last=(sid===schedules.length), secmap = section_mapping[sid]; %>
 <div id="schedule<%- sid %>" class="schedule_wrapper">
