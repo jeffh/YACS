@@ -59,6 +59,9 @@ class Problem(object):
     def save_point(self):
         return self._solver.save_point()
 
+    def known_solutions(self):
+        return self._solver_instance.solutions_at_points
+
     def __repr__(self):
         return "<Problem(variables=%(v)r, constraints=%(c)r), solver=%(s)r>" % {
             'v': self._variables,
