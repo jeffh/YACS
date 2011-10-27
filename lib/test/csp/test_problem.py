@@ -1,5 +1,4 @@
 from csp import Problem, BruteForceSolver
-from csp.solvers import Solution
 import unittest
 
 
