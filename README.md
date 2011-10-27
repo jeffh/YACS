@@ -47,7 +47,7 @@ Which will download code into a YACS folder where you run this command.
     python manage.py migrate
     ```
 
-When calling syncdb, you'll be ask to create a superuser, it is purely optional, only the debug-toolbar is visible for logged in super-users.
+   When calling syncdb, you'll be ask to create a superuser, it is purely optional, only the debug-toolbar is visible for logged in super-users.
 
 6. Run this command to import the course data from RPI:
 
