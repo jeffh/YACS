@@ -259,7 +259,7 @@ DEBUG_TOOLBAR_PANELS = (
 )
 
 DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': True,
+    'INTERCEPT_REDIRECTS': False,
     'SHOW_TOOLBAR_CALLBACK': debug_toolbar_callback,
     'HIDE_DJANGO_SQL': False,
 }
