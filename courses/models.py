@@ -199,7 +199,7 @@ class Section(models.Model):
     crn = models.IntegerField(unique=True)
     course = models.ForeignKey('Course', related_name='sections')
     semesters = models.ManyToManyField(Semester, through='SemesterSection', related_name='sections')
-    periods = models.ManyToManyField(Period, through='SectionPeriod', related_name='courses')
+    periods = models.ManyToManyField(Period, through='SectionPeriod', related_name='sections')
     crosslisted = models.ForeignKey(SectionCrosslisting, related_name='sections', null=True, blank=True)
 
     seats_taken = models.IntegerField()
