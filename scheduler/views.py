@@ -96,9 +96,10 @@ def schedules_bootloader(request, year, month):
     crns = prefix + ('&'+prefix).join(urllib.quote(str(crn)) for crn in crns)
 
     single_schedule = ''
-    schedule_offset = request.GET.get('at', '')
-    if schedule_offset:
-        single_schedule = "&from=%s&limit=1" % urllib.quote(schedule_offset)
+    # disabled for now... use JS
+    #schedule_offset = request.GET.get('at', '')
+    #if schedule_offset:
+    #    single_schedule = "&from=%s&limit=1" % urllib.quote(schedule_offset)
     return render_to_response('scheduler/placeholder_schedule_list.html', {
         'ajax_url': reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?' + crns + single_schedule,
         'sem_year': year,

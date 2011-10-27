@@ -1,5 +1,7 @@
 (function($, _, window, document, undefined){
 
+var History = window.History;
+
 var schedules_template, no_schedules_template, period_height;
 if ($('#schedule-template').length){
     schedules_template = _.template($('#schedule-template').html());
@@ -7,16 +9,33 @@ if ($('#schedule-template').length){
     period_height = parseInt($('#schedule-template').attr('data-period-height'), 10);
 }
 
+function url_with_sid(sid){
+    var url = window.location.href;
+    if(url.indexOf('&schedule=') >= 0 || url.indexOf('?schedule=') >= 0){
+        return url.replace(/([&?])schedule=(.*?)&/, "$1schedule=" + sid + '&');
+    }
+    if(url.indexOf('?') >= 0){
+        return url + '&schedule=' + sid;
+    }
+    return url + '?schedule=' + sid;
+}
+
 function next_schedule(){
     if($(this).hasClass('disabled'))
         return false;
-    $(this).closest('.schedule_wrapper').hide().next().show();
+    var sid = $(this).closest('.schedule_wrapper').hide().next().show().attr('data-sid');
+    if(History.enabled){
+        History.pushState({schedule: sid}, null, url_with_sid(sid));
+    }
     return false;
 }
 function prev_schedule(){
     if($(this).hasClass('disabled'))
         return false;
-    $(this).closest('.schedule_wrapper').hide().prev().show();
+    var sid = $(this).closest('.schedule_wrapper').hide().prev().show().attr('data-sid');
+    if(History.enabled){
+        History.pushState({schedule: sid}, null, url_with_sid(sid));
+    }
     return false;
 }
 
@@ -100,6 +119,15 @@ function show_schedules(context){
     _.forEach(renderers, function(timeout){
         clearTimeout(timeout);
     });
+
+    var selected_schedule = 0;
+    // history !!!!!!!! ^_^ ^_^ ^_^
+    if (History.enabled){
+        var state = History.getState();
+        console.log(state.data.schedule);
+        selected_schedule = (parseInt(state.data.schedule, 10) || 1) - 1;
+    }
+
     renderers = [];
     $('#schedules').html('');
     var create_renderer = function(schedule, i){
@@ -107,7 +135,7 @@ function show_schedules(context){
             context.sid = i + 1;
             context.schedule = schedule;
             var frag = $(schedules_template(context));
-            if (i !== 0) $(frag).hide();
+            if (i !== selected_schedule) $(frag).hide();
             $('#schedules').append(frag);
             console.log('rendering', i+1, 'of', context.schedules.length);
         };
@@ -149,6 +177,14 @@ function schedules_loaded(){
 $(function(){
     schedules_loaded();
     get_schedules();
+
+    History.Adapter.bind(window, 'statechange', function(){
+        var state = History.getState();
+        var selected_schedule = (parseInt(state.data.schedule, 10) || 1) - 1;
+        $($('.schedule_wrapper').hide().get(selected_schedule)).show();
+    });
+
+
 });
 
 })(jQuery, _, window, document);
