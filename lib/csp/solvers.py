@@ -12,6 +12,10 @@ class SolverInterface(object):
     def solutions_seen(self):
         return 0
 
+    @abstractproperty
+    def solutions_at_points(self):
+        return {}
+
     @abstractmethod
     def set_conditions(self, variables, constraints):
         """Problem provided data.
@@ -35,8 +39,22 @@ class SolverInterface(object):
 
 class BaseSolver(SolverInterface):
     def __init__(self):
-        self._solutions_seen = 0
         self.restore_point()
+        self._iter_reset()
+        self.record_solutions = True
+
+    def _iter_reset(self):
+        self._solutions_seen = 0 # self._start
+        self._found_solutions_at = {}
+
+    def _record_solution(self, solution):
+        if self.record_solutions:
+            self._found_solutions_at[self.save_point()] = solution
+        return solution
+
+    @property
+    def solutions_at_points(self):
+        return dict(self._found_solutions_at)
 
     @property
     def solutions_seen(self):
@@ -47,7 +65,7 @@ class BaseSolver(SolverInterface):
         return self
 
     def save_point(self):
-        return self._solutions_seen
+        return self._solutions_seen + self._start
 
 class BruteForceSolver(BaseSolver):
     """A naive solver that simply goes through every single possible combination
@@ -102,17 +120,19 @@ class BruteForceSolver(BaseSolver):
     def __iter__(self):
         """Provide all the possible solutions.
         """
-        self._solutions_seen = 0 # self._start
+        # TODO: write tests for iterator skipping
+        # TODO: write tests for solution recording
+        self._iter_reset()
         iterator = self.combinations()
         for i in xrange(self._start):
             iterator.next()
         # for each combination
         for possible_solution in iterator:
-            # "Solution:", possible_solution, '[valid]' if self.satisfies_constraints(possible_solution) else ''
+            # print "Solution:", possible_solution, '[valid]' if self.satisfies_constraints(possible_solution) else ''
             self._solutions_seen += 1
             # filter by all constraints
             if self.satisfies_constraints(possible_solution):
-                yield possible_solution
-        print "Visited", self.solutions_seen, "solutions"
+                yield self._record_solution(possible_solution)
+        #print "Visited", self.solutions_seen, "solutions"
 
 DefaultSolver = BruteForceSolver

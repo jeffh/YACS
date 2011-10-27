@@ -85,12 +85,13 @@ def build_conflict_mapping(conflicts):
     return result
 
 def schedules_bootloader(request, year, month):
-    crns = request.GET.get('crns', '')
-    if crns != '':
+    crns = request.GET.get('crns')
+    if crns is not None:
         crns = [c for c in crns.split('-') if c.strip() != '']
-    if not crns:
+    if crns is None:
         selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
         return redirect(reverse('schedules', kwargs=dict(year=year, month=month)) + '?crns=' + urllib.quote('-'.join(str(crn) for sections in selected_courses.values() for crn in sections)))
+
     prefix = 'crn='
     crns = prefix + ('&'+prefix).join(urllib.quote(str(crn)) for crn in crns)
 
