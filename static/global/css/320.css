@@ -415,6 +415,8 @@ header .alpha {
 #selected {
   color: #111;
   padding: 0 5px; }
+  #selected p {
+    text-align: center; }
   #selected h2 {
     clear: both;
     color: #333;
