@@ -7,7 +7,7 @@ XML_FILE = os.path.join(ROOT_TEST_DATA, 'rpi_courses.xml')
 XML_PARSER_FILE = os.path.join(ROOT_TEST_DATA, 'rpi_shorthand.xml')
 XML_SCHEDULE_TEST_FILE = os.path.join(ROOT_TEST_DATA, 'rpi_schedule_test.xml')
 XML_SCHEDULE_TEST_CONFLICT_FILE = os.path.join(ROOT_TEST_DATA, 'rpi_schedule_conflict_test.xml')
-SIS_FILE = os.path.join(ROOT_TEST_DATA, 'sis_courses.html')
+SIS_FILE = os.path.join(ROOT_TEST_DATA, 'sis_courses.htm')
 
 HTML = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <HTML>
