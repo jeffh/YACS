@@ -20,7 +20,10 @@
 <div id="schedule<%- sid %>" class="schedule_wrapper">
     <h1>
         <a href="#schedule<%- first ? '' : sid - 1 %>" class="prev-schedule<%= (first ? ' disabled' : '') %>"></a>
-        <a name="schedule<%- sid %>">Schedule <%- sid %> / <%- schedules.length %></a>
+        <a name="schedule<%- sid %>">
+            Schedule <%- sid %>
+            <%- (schedules.length > 1) ? '/ '+schedules.length : '' %>
+        </a>
         <a href="#schedule<%- last ? '' : sid + 1 %>" class="next-schedule<%= (last ? ' disabled' : '') %>"></a>
     </h1>
     <p class="schedule-crns">
