@@ -22,9 +22,18 @@ function prev_schedule(){
 
 // template rendering
 
-function time_to_seconds(timestr){
+function time_parts(timestr){
     var parts = timestr.split(':'); // hour:min:sec
-    return parseInt(parts[0], 10) * 3600 + parseInt(parts[1], 10) * 60 + parseInt(parts[2], 10);
+    return {
+        hour: parseInt(parts[0], 10),
+        minute: parseInt(parts[1], 10),
+        second: parseInt(parts[2], 10)
+    };
+}
+
+function time_to_seconds(timestr){
+    var parts = time_parts(timestr); // hour:min:sec
+    return parts.hour * 3600 + parts.minute * 60 + parts.second;
 }
 
 function get_crns(schedule){
@@ -56,6 +65,23 @@ function humanize_time(timestr){
     return hour + ":" + (minutes < 10 ? '0' : '') + minutes + " " + apm;
 }
 
+function humanize_hour(hour){
+    var apm = 'am'
+    if (hour == 0)
+        hour = 12
+    if (hour >= 12)
+        apm = 'pm'
+    if (hour > 12)
+        hour = hour - 12
+    return hour + " " + apm;
+}
+
+function get_period_offset(period){
+    var start = time_parts(period.start_time),
+        time = start.minute * 60 + start.second;
+    return time / 3600.0 * period_height;
+}
+
 function get_period_height(period){
     var time = time_to_seconds(period.end_time) - time_to_seconds(period.start_time);
     //return 25 // 30 min time block
@@ -67,8 +93,10 @@ var renderers = [];
 function show_schedules(context){
     context.humanize_time = humanize_time;
     context.get_period_height = get_period_height;
+    context.get_period_offset = get_period_offset;
     context.get_crns = get_crns;
     context.color_map = create_color_map(context);
+    context.humanize_hour = humanize_hour;
     _.forEach(renderers, function(timeout){
         clearTimeout(timeout);
     });

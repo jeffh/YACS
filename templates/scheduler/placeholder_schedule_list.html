@@ -13,7 +13,7 @@
 <div id="schedules" data-source="{{ ajax_url }}">
 </div>
 
-{# functions: humanize_time, period_height, get_crns #}
+{# functions: humanize_time, humanize_hour, get_period_height, get_crns, get_period_offset #}
 {# defined: schedule, time_range, courses, sections, color_map, sid #}
 <script type="text/template" id="schedule-template" data-period-height="50">
 <% var first=(sid===1), last=(sid===schedules.length), secmap = section_mapping[sid]; %>
@@ -41,10 +41,10 @@
             <div class="hourview">
                 <% for(var k=0, l3=time_range.length; k<l3; ++k) { var hour = time_range[k]; var entry = secsforday && secsforday[hour]; %>
                     <div class="row">
-                        <span class="hour"><%- hour %></span>
+                        <span class="hour"><%- humanize_hour(hour) %></span>
                         <% if(entry) { %>
                             <% var course = courses[entry.cid], section = sections[entry.crn], period = section.periods[entry.pindex], height = get_period_height(period); %>
-                            <span style="height: <%- height %>px" class="class
+                            <span style="height: <%- height %>px; margin-top: <%- get_period_offset(period) %>px" class="class
                             color<%- color_map[course.id] %>
                             <% if (height <= 35){ %>very<% } %>
                             <% if (height <= 60) { %>small<% } %>
