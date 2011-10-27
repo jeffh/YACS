@@ -1,5 +1,5 @@
 
-from csp import Problem, is_nil, BacktrackingSolver
+from csp import Problem, is_nil
 
 __all__ = ['compute_schedules', 'TimeRange', 'Scheduler']
 

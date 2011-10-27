@@ -1,4 +1,4 @@
-from csp import Problem, BacktrackingSolver, BruteForceSolver
+from csp import Problem, BruteForceSolver
 from csp.solvers import Solution
 import unittest
 
@@ -40,62 +40,6 @@ class PointConstraintProblem(unittest.TestCase):
         self.p.add_constraint(lambda x: x <= 1, ['x'], [0])
         assertEqualContents(self.p.get_solutions(), expected)
 
-class BacktrackingSolverInternal(unittest.TestCase):
-    def setUp(self):
-        self.solver = BacktrackingSolver()
-        self.p = Problem(self.solver)
-        self.p.add_variable('x', range(5))
-        self.p.add_variable('y', range(5))
-        self.p.add_variable('z', range(2))
-        self.p.add_constraint(lambda x, y: x != y, ['x', 'y'])
-        self.p.add_constraint(lambda x, y: x + y < 5, ['x', 'y'], [0, 0])
-        self.p.setup()
-
-    def test_feasibility(self):
-        s = Solution(dict(x=1, y=9))
-        self.assertFalse(self.solver.is_feasible(s))
-
-        s = Solution(dict(x=1, y=2))
-        self.assertTrue(self.solver.is_feasible(s))
-
-        s = Solution(dict(x=6))
-        self.assertFalse(self.solver.is_feasible(s))
-
-        s = Solution(dict(y=2))
-        self.assertTrue(self.solver.is_feasible(s))
-
-class PointConstrainProblemWithBacktrackingSolver(PointConstraintProblem):
-    def setUp(self):
-        self.solver = BacktrackingSolver()
-        self.p = Problem(self.solver)
-        self.p.add_variable('x', range(3))
-        self.p.add_variable('y', range(3))
-
-class ConstrainProblemWithBacktrackingSolver(unittest.TestCase):
-    def setUp(self):
-        self.solver = BacktrackingSolver()
-        self.p = self.setup_problem(Problem(self.solver))
-
-    def setup_problem(self, p):
-        p.add_variable('x', range(5))
-        p.add_variable('y', range(5))
-        p.add_constraint(lambda x, y: x + y < 3, ['x', 'y'], [0, 0])
-        return p
-
-    def result(self, *iter):
-        return tuple(dict(x=x, y=y) for x,y in iter)
-
-    def cmp(self, actual, expected):
-        for sol in actual:
-            assert sol in expected, 'actual %r not in expected %r' % (sol, expected)
-        for sol in expected:
-            assert sol in actual, 'expected %r not in actual %r' % (sol, actual)
-
-    def test_answers(self):
-        expected = self.result((0, 0), (0,1), (0, 2), (1, 0), (1, 1), (2,0))
-        assertEqualContents(self.p.get_solutions(), expected)
-        self.assertLess(self.p.solutions_seen, 25)
-
 class SmallSolverrAccuracyTest(unittest.TestCase):
     def setup_problem(self, p):
         p.add_variable('a', range(3))
@@ -118,11 +62,6 @@ class SmallSolverrAccuracyTest(unittest.TestCase):
         p = self.setup_problem(Problem(BruteForceSolver()))
         assertEqualContents(self.answer, p.get_solutions())
         self.assertEqual(p.solutions_seen, 27)
-
-    def test_backtracking_solver(self):
-        p = self.setup_problem(Problem(BacktrackingSolver()))
-        assertEqualContents(self.answer, p.get_solutions())
-        self.assertLess(p.solutions_seen, 27)
 
 
 class SolverAccuracy(unittest.TestCase):
@@ -195,11 +134,6 @@ class SolverAccuracy(unittest.TestCase):
         p = self.setup_problem(Problem(BruteForceSolver()))
         assertEqualContents(self.answer, p.get_solutions())
         self.assertEqual(p.solutions_seen, 300) # visited entire problem space
-
-    def test_backtracking_solver(self):
-        p = self.setup_problem(Problem(BacktrackingSolver()))
-        assertEqualContents(self.answer, p.get_solutions())
-        #self.assertLess(p.solutions_seen, 300)
 
 if __name__ == '__main__':
     unittest.main()
