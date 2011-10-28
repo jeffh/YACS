@@ -268,7 +268,7 @@ def force_compute_schedules(request, year, month):
         return render_to_response('scheduler/schedule_list.html', context, RequestContext(request))
 
 
-def icalendar(request, year, month, crns):
+def icalendar(request, year, month):
     "Exports a given calendar into ics format."
     # TODO: gather all courses for schedule
     cal = Calendar()
