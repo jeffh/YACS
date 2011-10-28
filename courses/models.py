@@ -26,6 +26,7 @@ class Semester(models.Model):
         unique_together = (
             ('year', 'month'),
         )
+        ordering = ['-year', '-month']
 
     def __unicode__(self):
         return self.name
