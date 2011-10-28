@@ -1,785 +1,113 @@
-/* GENERAL */
-html {
-  /*background: #8d0000 url('../img/320-bg.png') 0 0 repeat-x; */
-  /* @include background-gradient(#af0000, #8d0000); */
-  background: white;
-  /* Old browsers */
-  background: -moz-linear-gradient(top, white 0%, #e0e0e0 100%);
-  /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, white), color-stop(100%, #e0e0e0));
-  /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top, white 0%, #e0e0e0 100%);
-  /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top, white 0%, #e0e0e0 100%);
-  /* Opera11.10+ */
-  background: -ms-linear-gradient(top, white 0%, #e0e0e0 100%);
-  /* IE10+ */
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='white', endColorstr='#e0e0e0',GradientType=0 );
-  /* IE6-9 */
-  background: linear-gradient(top, white 0%, #e0e0e0 100%);
-  /* W3C */
-  background-attachment: fixed; }
+/*
+Syntax error: Undefined variable: "$this-color".
+        on line 538 of static/global/scss/320.scss
 
-body {
-  padding: 0;
-  color: #333;
-  width: 90%;
-  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  min-width: 315px;
-  /* @include transition(all $transition-fast $transition-type); */ }
+533: 			color: $the-color;
+534: 			.name {
+535: 				color: $the-color;
+536: 			}
+537: 			.credits {
+538: 				color: $this-color;
+539: 			}
+540: 			.seats-left {
+541: 				color: #555;
+542: 			}
+543: 			.code {
 
-.touch body {
-  width: 100%;
-  font-family: "Helvetica Neue", "Open Sans", Helvetica, Arial, sans-serif; }
-
-h2 {
-  font-size: 115%;
-  color: #000;
-  padding: 3px 5px;
-  margin: 0;
-  font-weight: normal; }
-
-img {
-  max-width: 100%; }
-
-a:link, a:visited {
-  color: #000094; }
-
-a:link:hover, a:visited:hover {
-  color: #a42020; }
-
-p {
-  padding: 0 5px; }
-
-.clear {
-  clear: both; }
-
-.text-center {
-  text-align: center; }
-
-.button {
-  color: #eee;
-  text-shadow: 1px 1px 0 #111;
-  text-decoration: none;
-  padding: 5px 10px;
-  display: block;
-  border: 1px solid #933;
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  background: #a42020;
-  /* Old browsers */
-  background: -moz-linear-gradient(top, #a42020 0%, #741010 100%);
-  /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #a42020), color-stop(100%, #741010));
-  /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top, #a42020 0%, #741010 100%);
-  /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top, #a42020 0%, #741010 100%);
-  /* Opera11.10+ */
-  background: -ms-linear-gradient(top, #a42020 0%, #741010 100%);
-  /* IE10+ */
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a42020', endColorstr='#741010',GradientType=0 );
-  /* IE6-9 */
-  background: linear-gradient(top, #a42020 0%, #741010 100%);
-  /* W3C */ }
-  .button:link, .button:visited {
-    color: #eee;
-    text-decoration: none; }
-  .button:hover, .button:visited:hover {
-    color: #fff;
-    border: 1px solid #c33;
-    background: #b42020;
-    /* Old browsers */
-    background: -moz-linear-gradient(top, #b42020 0%, #941010 100%);
-    /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #b42020), color-stop(100%, #941010));
-    /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #b42020 0%, #941010 100%);
-    /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #b42020 0%, #941010 100%);
-    /* Opera11.10+ */
-    background: -ms-linear-gradient(top, #b42020 0%, #941010 100%);
-    /* IE10+ */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b42020', endColorstr='#941010',GradientType=0 );
-    /* IE6-9 */
-    background: linear-gradient(top, #b42020 0%, #941010 100%);
-    /* W3C */ }
-  .button:active {
-    border: 1px solid #733;
-    background: #941010;
-    /* Old browsers */
-    background: -moz-linear-gradient(top, #941010 0%, #b42020 100%);
-    /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #941010), color-stop(100%, #b42020));
-    /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #941010 0%, #b42020 100%);
-    /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #941010 0%, #b42020 100%);
-    /* Opera11.10+ */
-    background: -ms-linear-gradient(top, #941010 0%, #b42020 100%);
-    /* IE10+ */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#941010', endColorstr='#b42020',GradientType=0 );
-    /* IE6-9 */
-    background: linear-gradient(top, #941010 0%, #b42020 100%);
-    /* W3C */ }
-
-a.button:hover, a.button:visited:hover {
-  color: #eee;
-  text-decoration: none; }
-
-/* END GENERAL */
-/* HEADER */
-header h1 {
-  padding: 0.5em 0;
-  margin: 0;
-  text-align: center;
-  font-size: 200%;
-  color: #333;
-  font-family: "Helvetica Neue", "Lato", Helvetica, Arial, sans-serif;
-  font-weight: 100; }
-header .alpha {
-  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #eee;
-  background: #940000;
-  padding: 5px;
-  position: absolute;
-  top: 22px;
-  right: 0;
-  border-radius: 4px 0 0 4px;
-  -moz-border-radius: 4px 0 0 4px;
-  -webkit-border-radius: 4px 0 0 4px; }
-  header .alpha a:link, header .alpha a:visited, header .alpha a:hover {
-    color: #eee; }
-  header .alpha:hover {
-    color: #fff;
-    background: #a51111; }
-    header .alpha:hover:after {
-      content: ' - Send comments to @jeffhui'; }
-
-.nav {
-  height: 3em;
-  text-align: center;
-  float: right;
-  position: relative;
-  left: -50%; }
-  .nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    position: relative;
-    left: 50%; }
-  .nav li {
-    float: left;
-    margin: 0;
-    padding: 0;
-    border: 1px solid #551111;
-    border-left: 0;
-    border-right: 0;
-    text-align: center; }
-    .nav li:first-child {
-      border-left: 1px solid #551111;
-      border-radius: 5px 0 0 5px;
-      -moz-border-radius: 5px 0 0 5px;
-      -webkit-border-radius: 5px 0 0 5px; }
-      .nav li:first-child a:link {
-        border-radius: 4px 0 0 4px;
-        -moz-border-radius: 4px 0 0 4px;
-        -webkit-border-radius: 4px 0 0 4px; }
-    .nav li:last-child {
-      border-right: 1px solid #551111;
-      border-radius: 0 5px 5px 0;
-      -moz-border-radius: 0 5px 5px 0;
-      -webkit-border-radius: 0 5px 5px 0; }
-      .nav li:last-child a:link, .nav li:last-child a:link:visited {
-        border-radius: 0 4px 4px 0;
-        -moz-border-radius: 0 4px 4px 0;
-        -webkit-border-radius: 0 4px 4px 0;
-        border-right: 0; }
-  .nav a:link, .nav a:visited {
-    float: left;
-    display: block;
-    padding: 8px;
-    color: #fff;
-    width: 80px;
-    border: 0;
-    border-left: 1px solid #943030;
-    border-right: 1px solid #560000;
-    border-radius: 0;
-    -moz-border-radius: 0;
-    -webkit-border-radius: 0; }
-    .nav a:link:hover, .nav a:visited:hover {
-      text-decoration: none;
-      border-left: 1px solid #943030;
-      border-right: 1px solid #560000; }
-  .nav a.selected:link, .nav a.selected:visited {
-    border: 0;
-    border-left: 1px solid #943030;
-    border-right: 1px solid #560000;
-    color: #f77;
-    background: #741010;
-    /* Old browsers */
-    background: -moz-linear-gradient(top, #741010 0%, #942020 100%);
-    /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #741010), color-stop(100%, #942020));
-    /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #741010 0%, #942020 100%);
-    /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #741010 0%, #942020 100%);
-    /* Opera11.10+ */
-    background: -ms-linear-gradient(top, #741010 0%, #942020 100%);
-    /* IE10+ */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#741010', endColorstr='#942020',GradientType=0 );
-    /* IE6-9 */
-    background: linear-gradient(top, #741010 0%, #942020 100%);
-    /* W3C */ }
-    .nav a.selected:link:hover, .nav a.selected:visited:hover {
-      color: #fff;
-      background: #741010;
-      /* Old browsers */
-      background: -moz-linear-gradient(top, #741010 0%, #b42020 100%);
-      /* FF3.6+ */
-      background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #741010), color-stop(100%, #b42020));
-      /* Chrome,Safari4+ */
-      background: -webkit-linear-gradient(top, #741010 0%, #b42020 100%);
-      /* Chrome10+,Safari5.1+ */
-      background: -o-linear-gradient(top, #741010 0%, #b42020 100%);
-      /* Opera11.10+ */
-      background: -ms-linear-gradient(top, #741010 0%, #b42020 100%);
-      /* IE10+ */
-      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#741010', endColorstr='#b42020',GradientType=0 );
-      /* IE6-9 */
-      background: linear-gradient(top, #741010 0%, #b42020 100%);
-      /* W3C */ }
-
-/* END HEADER */
-/* SEARCHBOX */
-.searchform {
-  width: 295px;
-  margin: 7px auto;
-  padding: 0;
-  text-align: center; }
-  .searchform #d {
-    float: left;
-    font-size: 100%;
-    display: block;
-    width: 65px;
-    /* UI behavior is weird in FF, cut.
-    @include transition(all $transition-normal $transition-type);
-    */ }
-  .searchform .searchbox {
-    width: 220px;
-    padding: 0;
-    margin: 0 0 0 10px;
-    font-size: 100%;
-    -webkit-transition: none 0.2s ease-in-out;
-    -moz-transition: none 0.2s ease-in-out;
-    -o-transition: none 0.2s ease-in-out;
-    -ms-transition: none 0.2s ease-in-out;
-    transition: none 0.2s ease-in-out;
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out; }
-
-/* END SEARCHBOX */
-/* LISTVIEW */
-.listview p {
-  padding: 5px; }
-.listview ul {
-  list-style: none; }
-.listview li {
-  margin: 0; }
-  .listview li a:link, .listview li a:visited {
-    padding: 3px 5px;
-    display: block;
-    text-decoration: none;
-    color: #222;
-    text-shadow: 1px 1px 0 #fff;
-    border-top: 1px solid #d0d0d0;
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out; }
-  .listview li:last-child a:link, .listview li:last-child a:visited {
-    border-bottom: 1px solid #d0d0d0; }
-  .listview li a:link:hover, .listview li a:visited:hover {
-    background: #fff;
-    background: -moz-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
-    /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(50%, white), color-stop(100%, rgba(255, 255, 255, 0)));
-    /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
-    /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
-    /* Opera11.10+ */
-    background: -ms-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
-    /* IE10+ */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#00ffffff',GradientType=1 );
-    /* IE6-9 */
-    background: linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
-    /* W3C */
-    text-decoration: none;
-    color: #940000;
-    text-shadow: 1px 1px 0 #fff; }
-    .listview li a:link:hover .disclosure, .listview li a:visited:hover .disclosure {
-      color: #940000; }
-  .listview li a:link:active, .listview li a:visited:active, .listview li a.selected {
-    color: #fff;
-    text-shadow: 0 0 0 transparent;
-    background: #b30505;
-    /* Old browsers */
-    background: -moz-linear-gradient(top, #b30505 0%, #960100 100%);
-    /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #b30505), color-stop(100%, #960100));
-    /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #b30505 0%, #960100 100%);
-    /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #b30505 0%, #960100 100%);
-    /* Opera11.10+ */
-    background: -ms-linear-gradient(top, #b30505 0%, #960100 100%);
-    /* IE10+ */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b30505', endColorstr='#960100',GradientType=0 );
-    /* IE6-9 */
-    background: linear-gradient(top, #b30505 0%, #960100 100%);
-    /* W3C */ }
-    .listview li a:link:active .disclosure, .listview li a:visited:active .disclosure, .listview li a.selected .disclosure {
-      color: #fff; }
-  .listview li .disclosure {
-    display: block;
-    float: right;
-    font-size: 140%;
-    color: #999;
-    position: relative;
-    top: -3px; }
-
-.touch .listview li a:link, .touch .listview li a:visited {
-  color: #000; }
-.touch .listview li a:link:hover, .touch .listview li a:visited:hover {
-  color: #fff;
-  text-shadow: 0 0 0 transparent;
-  background: #b30505;
-  /* Old browsers */
-  background: -moz-linear-gradient(top, #b30505 0%, #960100 100%);
-  /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #b30505), color-stop(100%, #960100));
-  /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top, #b30505 0%, #960100 100%);
-  /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top, #b30505 0%, #960100 100%);
-  /* Opera11.10+ */
-  background: -ms-linear-gradient(top, #b30505 0%, #960100 100%);
-  /* IE10+ */
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b30505', endColorstr='#960100',GradientType=0 );
-  /* IE6-9 */
-  background: linear-gradient(top, #b30505 0%, #960100 100%);
-  /* W3C */
-  -webkit-tap-highlight-color: -webkit-linear-gradient(top, #b30505 0%, #960100 100%); }
-  .touch .listview li a:link:hover .disclosure, .touch .listview li a:visited:hover .disclosure {
-    color: #fff; }
-
-/* END LISVIEW */
-/* TABLEVIEW */
-/* END TABLEVIEW */
-/* DEPARTMENTS */
-#departments {
-  margin-top: 1em; }
-  #departments .deptcode {
-    font-size: 110%; }
-  #departments .deptname {
-    display: block;
-    font-size: 90%;
-    color: #555;
-    text-shadow: 1px 1px 0 #fff;
-    white-space: nowrap;
-    width: 95%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: noclip; }
-  #departments a:link:hover .deptname, #departments a:visited:hover .deptname {
-    color: #940000; }
-  #departments a:link:active .deptname, #departments a:visited:active .deptname {
-    color: #fff;
-    text-shadow: 0 0 0 transparent; }
-
-.touch #departments .deptname {
-  color: #111; }
-.touch #departments a:link:hover .deptname, .touch #departments a:visited:hover .deptname {
-  color: #fff;
-  text-shadow: 0 0 0 transparent; }
-
-/* END DEPARTMENTS */
-/* SELECTED_COURSES */
-#selected {
-  color: #111;
-  padding: 0 5px; }
-  #selected p {
-    text-align: center; }
-  #selected h2 {
-    clear: both;
-    color: #333;
-    font-weight: 200;
-    letter-spacing: 1px;
-    padding: 0;
-    text-shadow: 1px 1px 0 #fff; }
-  #selected .course td {
-    border-bottom: 0; }
-  #selected .sections {
-    display: block;
-    font-size: 95%;
-    padding-left: 22px;
-    margin-top: 5px; }
-    #selected .sections td {
-      border-bottom: 1px solid #aaa; }
-    #selected .sections:last-child td {
-      border-bottom: 0; }
-  #selected .checkbox {
-    padding: 0 0 0 3px; }
-  #selected .code {
-    display: block;
-    padding-left: 20px;
-    margin-top: -3px;
-    color: #940000;
-    font-size: 95%; }
-  #selected .department {
-    padding: 0 0 0 2px; }
-  #selected .course_number {
-    padding: 0; }
-  #selected .name {
-    padding-left: 2px;
-    font-size: 110%; }
-  #selected .credits {
-    display: none; }
-  #selected .seats-left {
-    display: none; }
-  #selected ul {
-    list-style: none;
-    padding: 0;
-    margin: 0; }
-    #selected ul li {
-      padding: 5px 0;
-      border-top: 1px solid #d0d0d0; }
-      #selected ul li:first-child {
-        padding: 0 0 5px 0;
-        border-top: 0; }
-  #selected .crn {
-    color: #940000; }
-  #selected .section-seats-left {
-    font-weight: bold; }
-
-.total_credits {
-  float: left;
-  color: #333;
-  padding: 5px 10px 5px 0; }
-
-.touch .total_credits {
-  padding-left: 5px; }
-
-.actions {
-  float: right;
-  margin-right: -5px; }
-
-.touch .actions {
-  margin-right: 0; }
-
-/* END SELETED_COURSES */
-/* COURSES */
-#courses {
-  margin-top: 1em; }
-  #courses label {
-    vertical-align: middle; }
-  #courses input {
-    /* checkbox */
-    position: relative;
-    top: 8px;
-    float: left; }
-  #courses li {
-    position: relative;
-    border-bottom: 1px solid #d0d0d0; }
-    #courses li:first-child {
-      border-top: 1px solid #d0d0d0; }
-  #courses .padded {
-    padding: 4px 8px;
-    display: block; }
-  #courses a:link, #courses a:visited {
-    border: 0; }
-  #courses h2 {
-    text-align: center;
-    clear: none;
-    color: #333;
-    font-weight: 200;
-    letter-spacing: 1px;
-    padding: 0 0 5px 0;
-    text-shadow: 1px 1px 0 #fff; }
-  #courses .name {
-    padding-left: 2px;
-    width: 90%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: noclip; }
-  #courses .disclosure {
-    float: none;
-    position: absolute;
-    right: 0;
-    top: -1px;
-    /* TODO: add COURSE DETAIL */
-    display: none; }
-  #courses .code {
-    font-size: 85%;
-    color: #940000; }
-  #courses .credits, #courses .seats-left {
-    color: #222;
-    font-size: 90%;
-    padding-left: 3px; }
-  #courses .credits {
-    display: inline;
-    padding-right: 3px;
-    background: #e0e0e0;
-    border-radius: 2px;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px; }
-  #courses .seats-left {
-    float: right;
-    font-size: 85%;
-    position: absolute;
-    right: 17px;
-    top: 25px; }
-  #courses .secondary {
-    clear: left;
-    display: block;
-    margin-top: -2px;
-    padding-left: 13px;
-    text-shadow: 1px 1px 0 #fff; }
-  #courses .no-seats a:link, #courses .no-seats a:visited, #courses .no-seats .padded {
-    color: #777; }
-    #courses .no-seats a:link .name, #courses .no-seats a:visited .name, #courses .no-seats .padded .name {
-      color: #777; }
-    #courses .no-seats a:link .credits, #courses .no-seats a:visited .credits, #courses .no-seats .padded .credits {
-      color: #777; }
-    #courses .no-seats a:link .seats-left, #courses .no-seats a:visited .seats-left, #courses .no-seats .padded .seats-left {
-      color: #666; }
-    #courses .no-seats a:link .code, #courses .no-seats a:visited .code, #courses .no-seats .padded .code {
-      color: #766; }
-  #courses a:link:hover, #courses a:visited:hover {
-    background: #fff;
-    background: -moz-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
-    /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(50%, white), color-stop(100%, rgba(255, 255, 255, 0)));
-    /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
-    /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
-    /* Opera11.10+ */
-    background: -ms-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
-    /* IE10+ */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00ffffff', endColorstr='#00ffffff',GradientType=1 );
-    /* IE6-9 */
-    background: linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
-    /* W3C */
-    text-decoration: none;
-    color: #940000;
-    text-shadow: #fff 1px 1px 0; }
-    #courses a:link:hover .name, #courses a:link:hover .code, #courses a:visited:hover .name, #courses a:visited:hover .code {
-      color: #940000; }
-    #courses a:link:hover .credits, #courses a:visited:hover .credits {
-      background: transparent; }
-    #courses a:link:hover .disclosure, #courses a:visited:hover .disclosure {
-      color: #940000; }
-  #courses a:link:active, #courses a:visited:active, #courses a.selected {
-    color: #fff;
-    text-shadow: transparent 0 0 0; }
-  #courses .instructors, #courses .kinds {
-    display: none; }
-
-/* END COURSES */
-/* COURSE DETAIL */
-#course h1 {
-  font-size: 95%;
-  font-weight: 200;
-  padding: 0;
-  margin: 0; }
-#course h2 {
-  font-weight: 200; }
-#course .code {
-  color: #940000;
-  padding-left: 20px; }
-
-/* END COURSE DETAIL */
-/* SCHEDULES */
-#schedules h1 {
-  font-size: 130%;
-  padding: 20px 0 0 0;
-  text-align: center;
-  font-weight: 200;
-  margin: auto;
-  text-shadow: 1px 1px 0 #fff;
-  width: 285px; }
-  #schedules h1 .prev-schedule, #schedules h1 .next-schedule {
-    text-decoration: none;
-    font-size: 150%;
-    margin: 0;
-    padding: 2px 0 0 0;
-    color: #610000;
-    letter-spacing: -8px;
-    border: 10px solid #940000; }
-    #schedules h1 .prev-schedule:hover, #schedules h1 .next-schedule:hover {
-      color: #b42020; }
-    #schedules h1 .prev-schedule.disabled, #schedules h1 .next-schedule.disabled {
-      cursor: default;
-      color: #d0d0d0; }
-  #schedules h1 .prev-schedule {
-    float: left;
-    text-align: left;
-    border-color: transparent #940000 transparent transparent;
-    border-width: 10px 20px 10px 0; }
-    #schedules h1 .prev-schedule:hover {
-      border-color: transparent #b42020 transparent transparent; }
-    #schedules h1 .prev-schedule.disabled {
-      border-color: transparent #d0d0d0 transparent transparent; }
-  #schedules h1 .next-schedule {
-    float: right;
-    text-align: right;
-    border-color: transparent transparent transparent #940000;
-    border-width: 10px 0 10px 20px; }
-    #schedules h1 .next-schedule:hover {
-      border-color: transparent transparent transparent #b42020; }
-    #schedules h1 .next-schedule.disabled {
-      border-color: transparent transparent transparent #d0d0d0; }
-#schedules .share {
-  text-align: center; }
-#schedules .schedule-crns {
-  padding: 5px 0 0 0;
-  margin: 0;
-  text-align: center;
-  font-size: 95%; }
-#schedules .dayview .dow {
-  padding: 5px 0;
-  margin: -36px 0 3px 0;
-  display: block;
-  clear: left;
-  text-align: center;
-  font-size: 130%;
-  font-weight: 200;
-  border-bottom: 1px solid #d0d0d0;
-  text-shadow: 1px 1px 0 #fff; }
-#schedules .dayview:first-child .dow {
-  float: none;
-  padding: 0 0 5px 0;
-  margin: 0 0 3px 0; }
-#schedules .row {
-  display: block;
-  clear: left;
-  width: 100%;
-  height: 60px;
-  border-bottom: 1px solid #d0d0d0; }
-  #schedules .row:first-child {
-    color: #8c8c8c; }
-  #schedules .row:last-child {
-    color: #8c8c8c; }
-#schedules .hour {
-  padding: 0 5px 0 0;
-  display: block;
-  width: 50px;
-  text-align: right;
-  text-shadow: 1px 1px 0 #fff;
-  margin-bottom: -22px; }
-#schedules .class {
-  margin: -1px 5px 0 0;
-  clear: left;
-  display: block;
-  float: right;
-  position: relative;
-  width: 76.5625%;
-  padding: 5px;
-  font-size: 90%;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  -webkit-transition: width 0.2s ease-in-out;
-  -moz-transition: width 0.2s ease-in-out;
-  -o-transition: width 0.2s ease-in-out;
-  -ms-transition: width 0.2s ease-in-out;
-  transition: width 0.2s ease-in-out; }
-  #schedules .class.color1 {
-    background: #d7b8b8;
-    border-color: #bc9393; }
-  #schedules .class.color2 {
-    background: #b8d7b8;
-    border-color: #93bc93; }
-  #schedules .class.color3 {
-    background: #b8b8d7;
-    border-color: #9393bc; }
-  #schedules .class.color4 {
-    background: #d7d6b7;
-    border-color: #bcb192; }
-  #schedules .class.color5 {
-    background: #bccbd7;
-    border-color: #97a6bc; }
-  #schedules .class.color6 {
-    background: #d7c2d5; }
-  #schedules .class.color7 {
-    background: #d0d7cd; }
-  #schedules .class.color8 {
-    background: #a7d7cb; }
-  #schedules .class.color9 {
-    background: #ffc37d; }
-  #schedules .class .time {
-    float: right;
-    display: block; }
-  #schedules .class .code {
-    display: block; }
-  #schedules .class .name {
-    text-transform: lowercase;
-    padding: 0;
-    font-size: 110%;
-    display: block; }
-  #schedules .class .crn {
-    font-weight: bold; }
-  #schedules .class .location, #schedules .class .instructor, #schedules .class .kind {
-    display: block;
-    float: left;
-    padding-top: 1em;
-    padding-right: 5px; }
-  #schedules .class .kind {
-    color: #444; }
-  #schedules .class .location {
-    float: right;
-    padding-right: 0; }
-  #schedules .class.medium {
-    /* approximately 1.5 hour time slot */ }
-    #schedules .class.medium .location, #schedules .class.medium .instructor, #schedules .class.medium .kind {
-      padding-top: 0.5em; }
-    #schedules .class.medium.small {
-      /* approximately 1 hour time slot */ }
-      #schedules .class.medium.small .name {
-        display: none; }
-      #schedules .class.medium.small .location, #schedules .class.medium.small .instructor, #schedules .class.medium.small .kind {
-        padding-top: 0; }
-      #schedules .class.medium.small.very {
-        /* approximately 30 min time slot */
-        padding: 6px 5px 5px 5px; }
-        #schedules .class.medium.small.very .time, #schedules .class.medium.small.very .kind, #schedules .class.medium.small.very .location {
-          display: none; }
-        #schedules .class.medium.small.very .code {
-          float: left; }
-        #schedules .class.medium.small.very .code {
-          padding-right: 0.3em; }
-        #schedules .class.medium.small.very .instructor {
-          float: right; }
-        #schedules .class.medium.small.very .location {
-          display: none; }
-
-/* END SCHEDULES */
-/* FOOTER */
-footer {
-  font-size: 80%;
-  text-align: center;
-  color: #555;
-  margin-top: 1em;
-  text-shadow: 1px 1px 0 #fff;
-  padding-bottom: 2px; }
-
-/* END FOOTER */
+Backtrace:
+static/global/scss/320.scss:538
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/script/variable.rb:50:in `_perform'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/script/node.rb:40:in `perform'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:215:in `visit_prop'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:27:in `block in visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:39:in `with_environment'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:26:in `visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:235:in `visit_rule'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:27:in `block in visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:39:in `with_environment'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:26:in `visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:235:in `visit_rule'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:27:in `block in visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:39:in `with_environment'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:26:in `visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:235:in `visit_rule'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:27:in `block in visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:39:in `with_environment'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:26:in `visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:235:in `visit_rule'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `block in visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `map'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:53:in `visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:27:in `block in visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:39:in `with_environment'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:26:in `visit_children'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `block in visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:47:in `visit_root'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/base.rb:37:in `visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:18:in `visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/visitors/perform.rb:7:in `visit'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/tree/root_node.rb:20:in `render'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:293:in `_render'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:240:in `render'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:319:in `update_stylesheet'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:181:in `block (2 levels) in update_stylesheets'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:175:in `each'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:175:in `block in update_stylesheets'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:173:in `each'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:173:in `update_stylesheets'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:252:in `block (4 levels) in watch'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/path.rb:73:in `call'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/path.rb:73:in `run_callback'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/path.rb:55:in `callback_action'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/path.rb:35:in `update'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/state/directory.rb:39:in `block in modified'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/state/directory.rb:37:in `each'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/state/directory.rb:37:in `modified'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/state/directory.rb:18:in `refresh'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:17:in `block (2 levels) in run'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:17:in `each'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:17:in `block in run'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:15:in `loop'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:15:in `run'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/monitor.rb:26:in `run'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm.rb:20:in `monitor'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:245:in `watch'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin.rb:111:in `method_missing'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/exec.rb:408:in `watch_or_update'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/exec.rb:294:in `process_result'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/exec.rb:41:in `parse'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/exec.rb:21:in `parse!'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/bin/sass:8:in `<top (required)>'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/bin/sass:19:in `load'
+/Users/jeff/.rvm/gems/ruby-1.9.2-p290/bin/sass:19:in `<main>'
+*/
+body:before {
+  white-space: pre;
+  font-family: monospace;
+  content: "Syntax error: Undefined variable: \"$this-color\".\A         on line 538 of static/global/scss/320.scss\A \A 533: 			color: $the-color;\A 534: 			.name {\A 535: 				color: $the-color;\A 536: 			}\A 537: 			.credits {\A 538: 				color: $this-color;\A 539: 			}\A 540: 			.seats-left {\A 541: 				color: #555;\A 542: 			}\A 543: 			.code {"; }

@@ -529,18 +529,19 @@ header {
 	}
 	.no-seats {
 		a:link, a:visited, .padded {
-			color: #777;
+			$the-color: #555;
+			color: $the-color;
 			.name {
-				color: #777;
+				color: $the-color;
 			}
 			.credits {
-				color: #777;
+				color: $this-color;
 			}
 			.seats-left {
-				color: #666;
+				color: #555;
 			}
 			.code {
-				color: #766;
+				color: #544;
 			}
 		}
 	}
@@ -753,12 +754,16 @@ header {
 		.time {
 			float: right;
 			display: block;
+			.sep {
+				margin: 0 -2px 0 -2px;
+				padding: 0;
+			}
 		}
 		.code {
 			display: block;
+			font-size: 90%;
 		}
 		.name {
-			text-transform: lowercase;
 			padding: 0;
 			font-size: 110%;
 			display: block;
