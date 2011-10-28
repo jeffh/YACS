@@ -12,12 +12,15 @@ if ($('#schedule-template').length){
 function url_with_sid(sid){
     var url = window.location.href;
     if(url.indexOf('&schedule=') >= 0 || url.indexOf('?schedule=') >= 0){
-        return url.replace(/([&?])schedule=(.*)(&?)/, "$1schedule=" + sid + '$3');
+        url = url.replace(/([&?])schedule=(.*)(&?)/, "$1schedule=" + sid + '$3');
+        return url.replace(/#schedule(\d+)/, "#schedule=" + sid);
     }
     if(url.indexOf('?') >= 0){
-        return url + '&schedule=' + sid;
+        url += '&schedule=' + sid;
+        return url + '#schedule' + sid;
     }
-    return url + '?schedule=' + sid;
+    url += '?schedule=' + sid;
+    return url + '#schedule' + sid;
 }
 
 function next_schedule(){
@@ -108,6 +111,30 @@ function get_period_height(period){
     return time / 3600.0 * period_height;
 }
 
+function get_schedule_id_from_state(){
+
+    var selected_schedule = 0;
+    // history !!!!!!!! ^_^ ^_^ ^_^
+    if (History.enabled){
+        var state = History.getState(),
+            schedule = parseInt(state.data.schedule, 10);
+        console.log(History.getHash());
+        if(isNaN(schedule)){
+            var hash = History.getHash(),
+                i = hash.indexOf('schedule');
+            schedule = 1;
+            if(i >= 0){
+                var match = hash.match(/schedule(\d+)/);
+                if(match){
+                    schedule = parseInt(match[1], 10);
+                }
+            }
+        }
+        selected_schedule = (schedule || 1) - 1;
+    }
+    return selected_schedule;
+}
+
 var renderers = [];
 function show_schedules(context){
     context.humanize_time = humanize_time;
@@ -120,13 +147,7 @@ function show_schedules(context){
         clearTimeout(timeout);
     });
 
-    var selected_schedule = 0;
-    // history !!!!!!!! ^_^ ^_^ ^_^
-    if (History.enabled){
-        var state = History.getState();
-        console.log(state.data.schedule);
-        selected_schedule = (parseInt(state.data.schedule, 10) || 1) - 1;
-    }
+    var selected_schedule = get_schedule_id_from_state();
 
     renderers = [];
     $('#schedules').html('');
@@ -183,6 +204,8 @@ $(function(){
         var selected_schedule = (parseInt(state.data.schedule, 10) || 1) - 1;
         $($('.schedule_wrapper').hide().get(selected_schedule)).show();
     });
+
+    History.Adapter.trigger(window, 'statechange')
 
 
 });
