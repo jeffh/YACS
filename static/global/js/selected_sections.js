@@ -6,11 +6,12 @@ window.selectedCourses = selectedCourses;
 var updateFuse = new Utils.Fuse({
     delay: 150,
     execute: function(){
-        var parameters = {};
+        var parameters = {}, selected_crns = [];
         $.each(selectedCourses, function(cid, crns){
             parameters['selected_course_' + cid] = "checked";
             $.each(crns, function(i, crn){
                 parameters['selected_course_' + cid + '_' + crn] = "checked";
+                selected_crns.push(crn);
             });
         });
         console.log('post', parameters);
@@ -21,6 +22,16 @@ var updateFuse = new Utils.Fuse({
                 // TODO
             }
         });
+
+        $.ajax(Utils.checkScheduleURL() + '?check=1&crn=' + selected_crns.join('&crn='), {
+            type: "get",
+            success: function(){
+                console.log('ok');
+            },
+            error: function(){
+                alert('This course causes conflicts (no possible schedules).');
+            }
+        })
     }
 });
 
@@ -36,6 +47,7 @@ function addSectionToSelection(courseID, crn){
         return;
     selectedCourses[courseID].push(crn);
     updateFuse.start();
+    // TODO: see if schedules exist...
 }
 
 function removeSectionFromSelection(courseID, crn){

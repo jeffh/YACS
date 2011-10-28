@@ -19,8 +19,9 @@ URL: http://stuffandnonsense.co.uk/projects/320andup
 <meta charset="utf-8">
 {% if sem_year and sem_month %}
 <meta name="selection-url" content="{% url selected-courses sem_year,sem_month %}?ajax=1">
-{% endif %}
 <meta name="select-url" content="{% url deselect-courses sem_year,sem_month %}">
+<meta name="schedules-url" content="{% url ajax-schedules sem_year,sem_month %}">
+{% endif %}
 
 <title>{% block title %}{% endblock %}YACS - The fast way to pick your course schedule</title>
 {% block head %}{% endblock %}

@@ -28,6 +28,9 @@ $.extend(Utils, {
     selectURL: function(){
         return $.trim($('meta[name=select-url]').attr('content'));
     },
+    checkScheduleURL: function(){
+        return $.trim($('meta[name=schedules-url]').attr('content'));
+    },
     json: function(contents){
         contents = contents.substr('for(;;); '.length);
         return eval('(' + contents + ')');
