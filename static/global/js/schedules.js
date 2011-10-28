@@ -12,7 +12,7 @@ if ($('#schedule-template').length){
 function url_with_sid(sid){
     var url = window.location.href;
     if(url.indexOf('&schedule=') >= 0 || url.indexOf('?schedule=') >= 0){
-        return url.replace(/([&?])schedule=(.*?)&/, "$1schedule=" + sid + '&');
+        return url.replace(/([&?])schedule=(.*)(&?)/, "$1schedule=" + sid + '$3');
     }
     if(url.indexOf('?') >= 0){
         return url + '&schedule=' + sid;
@@ -20,12 +20,17 @@ function url_with_sid(sid){
     return url + '?schedule=' + sid;
 }
 
+function pass_through(value){
+    console.log(value);
+    return value;
+}
+
 function next_schedule(){
     if($(this).hasClass('disabled'))
         return false;
     var sid = $(this).closest('.schedule_wrapper').hide().next().show().attr('data-sid');
     if(History.enabled){
-        History.pushState({schedule: sid}, null, url_with_sid(sid));
+        History.pushState({schedule: sid}, null, pass_through(url_with_sid(sid)));
     }
     return false;
 }
@@ -34,7 +39,7 @@ function prev_schedule(){
         return false;
     var sid = $(this).closest('.schedule_wrapper').hide().prev().show().attr('data-sid');
     if(History.enabled){
-        History.pushState({schedule: sid}, null, url_with_sid(sid));
+        History.pushState({schedule: sid}, null, pass_through(url_with_sid(sid)));
     }
     return false;
 }
