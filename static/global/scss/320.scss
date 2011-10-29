@@ -284,21 +284,6 @@ header {
 		}
 	}
 }
-.touch .listview li {
-	a:link, a:visited {
-		color: #000;
-	}
-	a:link:hover, a:visited:hover {
-		color: #fff;
-		text-shadow: 0 0 0 transparent;
-		@include background-gradient(#b30505, #960100);
-		-webkit-tap-highlight-color: -webkit-linear-gradient(top, #b30505 0%, #960100 100%);
-
-		.disclosure {
-			color: #fff;
-		}
-	}
-}
 
 /* END LISVIEW */
 
@@ -825,3 +810,48 @@ footer {
 }
 
 /* END FOOTER */
+
+/* TOUCH */
+.touch {
+	.nav {
+		a:link, a:visited{
+			-webkit-tap-highlight-color: #999;
+		}
+	}
+	.listview li {
+		a:link, a:visited {
+			color: #000;
+			-webkit-tap-highlight-color: #b30505;
+		}
+		a:link:hover, a:visited:hover, a:link:active, a:visited:active, a.selected {
+			color: #000;
+			text-shadow: 0 0 0 transparent;
+			/*@include background-gradient(#b30505, #960100);*/
+			/* -webkit-tap-highlight-color: -webkit-linear-gradient(top, #b30505 0%, #960100 100%); */
+			@include background-gradient(transparent, transparent);
+
+			.disclosure {
+				color: #999;
+			}
+		}
+	}
+	.searchbox {
+		height: 2em;
+	}
+	#departments {
+		.deptname {
+			color: #000;
+		}
+		a:link:hover, a:visited:hover {
+			.deptname {
+				color: #000;
+			}
+		}
+		a:link:active, a:visited:active {
+			.deptname {
+				color: #000;
+			}
+		}
+	}
+}
+/* END TOUCH */

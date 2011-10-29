@@ -356,31 +356,6 @@ header .alpha {
     position: relative;
     top: -3px; }
 
-.touch .listview li a:link, .touch .listview li a:visited {
-  color: #000; }
-.touch .listview li a:link:hover, .touch .listview li a:visited:hover {
-  color: #fff;
-  text-shadow: 0 0 0 transparent;
-  background: #b30505;
-  /* Old browsers */
-  background: -moz-linear-gradient(top, #b30505 0%, #960100 100%);
-  /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #b30505), color-stop(100%, #960100));
-  /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(top, #b30505 0%, #960100 100%);
-  /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(top, #b30505 0%, #960100 100%);
-  /* Opera11.10+ */
-  background: -ms-linear-gradient(top, #b30505 0%, #960100 100%);
-  /* IE10+ */
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b30505', endColorstr='#960100',GradientType=0 );
-  /* IE6-9 */
-  background: linear-gradient(top, #b30505 0%, #960100 100%);
-  /* W3C */
-  -webkit-tap-highlight-color: -webkit-linear-gradient(top, #b30505 0%, #960100 100%); }
-  .touch .listview li a:link:hover .disclosure, .touch .listview li a:visited:hover .disclosure {
-    color: #fff; }
-
 /* END LISVIEW */
 /* TABLEVIEW */
 /* END TABLEVIEW */
@@ -787,3 +762,42 @@ footer {
   padding-bottom: 2px; }
 
 /* END FOOTER */
+/* TOUCH */
+.touch .nav a:link, .touch .nav a:visited {
+  -webkit-tap-highlight-color: #999; }
+.touch .listview li a:link, .touch .listview li a:visited {
+  color: #000;
+  -webkit-tap-highlight-color: #b30505; }
+.touch .listview li a:link:hover, .touch .listview li a:visited:hover, .touch .listview li a:link:active, .touch .listview li a:visited:active, .touch .listview li a.selected {
+  color: #000;
+  text-shadow: 0 0 0 transparent;
+  /*@include background-gradient(#b30505, #960100);*/
+  /* -webkit-tap-highlight-color: -webkit-linear-gradient(top, #b30505 0%, #960100 100%); */
+  background: transparent;
+  /* Old browsers */
+  background: -moz-linear-gradient(top, transparent 0%, transparent 100%);
+  /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, transparent), color-stop(100%, transparent));
+  /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, transparent 0%, transparent 100%);
+  /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, transparent 0%, transparent 100%);
+  /* Opera11.10+ */
+  background: -ms-linear-gradient(top, transparent 0%, transparent 100%);
+  /* IE10+ */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='transparent', endColorstr='transparent',GradientType=0 );
+  /* IE6-9 */
+  background: linear-gradient(top, transparent 0%, transparent 100%);
+  /* W3C */ }
+  .touch .listview li a:link:hover .disclosure, .touch .listview li a:visited:hover .disclosure, .touch .listview li a:link:active .disclosure, .touch .listview li a:visited:active .disclosure, .touch .listview li a.selected .disclosure {
+    color: #999; }
+.touch .searchbox {
+  height: 2em; }
+.touch #departments .deptname {
+  color: #000; }
+.touch #departments a:link:hover .deptname, .touch #departments a:visited:hover .deptname {
+  color: #000; }
+.touch #departments a:link:active .deptname, .touch #departments a:visited:active .deptname {
+  color: #000; }
+
+/* END TOUCH */
