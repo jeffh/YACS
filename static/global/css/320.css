@@ -584,6 +584,8 @@ header .alpha {
 
 /* END COURSE DETAIL */
 /* SCHEDULES */
+#schedules p {
+  text-align: center; }
 #schedules h1 {
   font-size: 130%;
   padding: 20px 0 0 0;
@@ -671,6 +673,7 @@ header .alpha {
   padding: 5px;
   font-size: 90%;
   border: 1px solid transparent;
+  overflow: hidden;
   border-radius: 3px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;

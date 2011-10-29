@@ -137,7 +137,6 @@ body {
 
             &.medium {
                 font-size: 80%;
-                overflow: hidden;
 
                 @include transition(all $transition-fast $transition-type);
 

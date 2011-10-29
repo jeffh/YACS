@@ -582,6 +582,9 @@ header {
 /* SCHEDULES */
 
 #schedules {
+	p {
+		text-align: center;
+	}
 	h1 {
 		font-size: 130%;
 		padding: 20px 0 0 0;
@@ -700,6 +703,7 @@ header {
 		font-size: 90%;
 
 		border: 1px solid transparent;
+        overflow: hidden;
 
 		&.color1 {
 			background: #d7b8b8;
