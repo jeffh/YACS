@@ -44,26 +44,35 @@ class SectionConflict(models.Model):
         return u"<SectionConflict: %r and %r for %r>" % (self.section1, self.section2, self.semester)
 
 # TODO: make into manager
-def cache_conflicts(semester_year, semester_month):
-    with transaction.commit_on_success():
-        # trash existing conflict data...
+def cache_conflicts(semester_year=None, semester_month=None, semester=None):
+    assert (semester_year and semester_month) or semester, "Semester year & month must be provided or the semester object."
+    import sys
+    # trash existing conflict data...
+    if not semester:
         semester = courses.Semester.objects.get(year=semester_year, month=semester_month)
-        SectionConflict.objects.filter(semester=semester)
+    SectionConflict.objects.filter(semester=semester).delete()
 
-        sections = courses.Section.objects.select_related('course').full_select(semester_year, semester_month)
-        section_courses = dict_by_attr(sections, 'course')
-        for course1, course2 in itertools.combinations(section_courses.keys(), 2):
-            for section1, section2 in itertools.product(section_courses[course1], section_courses[course2]):
-                if section1.conflicts_with(section2):
-                    if section1.id > section2.id:
-                        section1, section2 = section2, section1
+    sections = courses.Section.objects.select_related('course').full_select(semester_year, semester_month)
+    section_courses = dict_by_attr(sections, 'course')
+    count = 0
+    for course1, course2 in itertools.combinations(section_courses.keys(), 2):
+        for section1, section2 in itertools.product(section_courses[course1], section_courses[course2]):
+            if section1.conflicts_with(section2):
+                if section1.id > section2.id:
+                    section1, section2 = section2, section1
 
-                    print "  Conflict: %r and %r" % (section1, section2)
-                    SectionConflict.objects.create(
-                        section1=section1,
-                        section2=section2,
-                        semester=semester,
-                    )
+                #print "  Conflict: %r and %r" % (section1, section2)
+                count += 1
+                if count > 1000:
+                    sys.stdout.write('.')
+                    sys.stdout.flush()
+                    count = 0
+                SectionConflict.objects.create(
+                    section1=section1,
+                    section2=section2,
+                    semester=semester,
+                )
+    print
 
 #from yacs.scheduler import managers
 #from yacs.scheduler.fields import SetOfIntegersField
