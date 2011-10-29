@@ -40,24 +40,24 @@ Which will download code into a YACS folder where you run this command.
 
 5. Edit settings/overrides.py to point to your settings for your PostgreSQL database.
 
-5. CD into the project and run the following to set up the database:
+6. CD into the project and run the following to set up the database.
+   When calling syncdb, you'll be ask to create a superuser, it is purely optional, only
+   the debug-toolbar is visible for logged in super-users.
 
     ```
     python manage.py syncdb
     python manage.py migrate
     ```
 
-   When calling syncdb, you'll be ask to create a superuser, it is purely optional, only the debug-toolbar is visible for logged in super-users.
-
-6. Run this command to import the course data from RPI:
+7. Run this command to import the course data from RPI:
 
     `python manage.py import_course_data`
 
-7. Run the dev server using: `python manage.py runserver`
+8. Run the dev server using: `python manage.py runserver`
 
-8. Point your browser to [http://localhost:8000/][local] and viola!
-9. ???
-10. Profit?
+9. Point your browser to [http://localhost:8000/][local] and viola!
+10. ???
+11. Profit?
 
 [postgres]: http://www.postgresql.org/ "PostgreSQL"
 [pip]: http://www.pip-installer.org/en/latest/index.html
