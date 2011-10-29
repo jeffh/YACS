@@ -162,7 +162,8 @@ header .alpha {
   text-align: center;
   float: right;
   position: relative;
-  left: -50%; }
+  left: -50%;
+  margin-bottom: 10px; }
   .nav ul {
     list-style: none;
     margin: 0;
@@ -256,7 +257,7 @@ header .alpha {
 /* SEARCHBOX */
 .searchform {
   width: 295px;
-  margin: 7px auto;
+  margin: 0 auto 7px auto;
   padding: 0;
   text-align: center; }
   .searchform #d {

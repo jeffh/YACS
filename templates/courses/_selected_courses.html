@@ -67,6 +67,13 @@
 		</p>
 	</form>
 {% else %}
-	<p>No selected courses</p>
+	<div class="empty">
+		<p class="uhhh" style="font-size: 500%; margin: -50px 0 0 0; padding: 0">...</p>
+		<p>Here would be any courses you selected... <br/>if only you picked out some courses.</p>
+		<p>
+			Checking courses from the <a href="{% url departments sem_year,sem_month %}">catalog</a>
+			will show up here.
+		</p>
+	</div>
 {% endif %}
 </div>

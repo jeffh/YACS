@@ -124,6 +124,7 @@ header {
 	float: right;
 	position: relative;
 	left: -50%;
+	margin-bottom: 10px;
 
 	ul {
 		list-style: none;
@@ -199,7 +200,7 @@ header {
 /* SEARCHBOX */
 .searchform {
 	width: $nav-width;
-	margin: 7px auto;
+	margin: 0 auto 7px auto;
 	padding: 0;
 	text-align: center;
 
