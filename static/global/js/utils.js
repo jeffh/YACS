@@ -31,6 +31,9 @@ $.extend(Utils, {
     checkScheduleURL: function(){
         return $.trim($('meta[name=schedules-url]').attr('content'));
     },
+    spinnerURL: function(){
+        return $.trim($('meta[name=spinner-url]').attr('content'));
+    },
     json: function(contents){
         contents = contents.substr('for(;;); '.length);
         return eval('(' + contents + ')');

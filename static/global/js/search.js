@@ -15,6 +15,7 @@ var fuse = new Utils.Fuse({
 
         if(dept === 'all' && $.trim(query) === ''){
             target.html(original_page_content);
+            $('#search_spinner').slideUp({duration: 100});
             return;
         }
 
@@ -25,6 +26,7 @@ var fuse = new Utils.Fuse({
             dataType: 'text',
             complete: function(){
                 request = null;
+                $('#search_spinner').slideUp({duration: 100});
             },
             success: function(content, status, request){
                 target.html(content);
@@ -48,6 +50,12 @@ function performSearch(){
         console.log('#replacable-with-search not found');
         return; // we don't know what content we can destroy. ARGGH!!
     }
+    if($('#search_spinner').length === 0){
+        var url = Utils.spinnerURL();
+        $('#replacable-with-search').before('<p id="search_spinner" class="text-center"><img alt="Loading" src="' + url + '"></p>');
+        $('.spinner').hide();
+    }
+    $('#search_spinner').slideDown({duration: 100});
     fuse.stop();
     fuse.start();
     return false;
