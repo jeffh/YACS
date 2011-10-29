@@ -66,6 +66,7 @@ __all__ = (
     'deploy',
     'restart',
     'update_courses',
+    'update_cache',
 )
 
 def staging():
@@ -289,14 +290,36 @@ def update_environment(use_pip=False):
             manage_py.migrate()
             manage_py.collectstatic('--noinput')
 
+def run_manage_cmd(command, *args):
+    with cd(deploy_config.project_root):
+        if env.use_virtualenv:
+            with prefix(activate_virtualenv_cmd()):
+                run('python', 'manage.py', command, *args)
+        else:
+            python.extend(['manage.py'])(command, *args)
+
 @roles('webservers')
-def update_courses(args):
+def clear_course_data():
+    run_manage_cmd('reset', 'sessions', '--noinput')
+    run_manage_cmd('reset', 'courses', '--noinput')
+
+@roles('webservers')
+def update_courses(args=''):
     with cd(deploy_config.project_root):
         if env.use_virtualenv:
             with prefix(activate_virtualenv_cmd()):
                 run('python', 'manage.py', 'import_course_data', args)
         else:
             python.extend(['manage.py']).import_course_data(args)
+
+@roles('webservers')
+def update_cache(args=''):
+    with cd(deploy_config.project_root):
+        if env.use_virtualenv:
+            with prefix(activate_virtualenv_cmd()):
+                run('python', 'manage.py', 'create_section_cache', args)
+        else:
+            python.extend(['manage.py']).create_section_cache(args)
 
 @roles('webservers')
 def restart():
