@@ -168,7 +168,6 @@ function show_schedules(context){
 
 function get_schedules(){
     var url = $('#schedules').attr('data-source');
-    console.log(url);
     if(!url) return;
     $.ajax(url, {
         type: 'GET',
