@@ -1,12 +1,21 @@
 {% extends 'base.html' %}
+{% comment %}
+Site-specific customizations
+------------------------------
+
+Should assume as little as possible since 404.html & 500.html utilize these template.
+It would be bad if a 500 error page threw a 500 error when trying to render...
+
+{% endcomment %}
+
 
 {% block head %}
 <title>{% block title %}{% endblock %}YACS - The usable course scheduler for RPI</title>
 
-<meta name="description" content="The usable course scheduler for RPI.">
+<meta name="description" content="The usable course scheduler for Rensselaer Polytechnic Institute (RPI). Quickly and easily schedule courses for next semester!">
 <meta name="author" content="Jeff Hui">
 <meta name="copyright" content="(c)2011 Jeff Hui">
-<meta name="keywords" content="">
+<meta name="keywords" content="rpi courses, rpi course scheduler, course scheduling, yacs">
 
 <!-- http://t.co/dKP3o1e -->
 <meta name="HandheldFriendly" content="True">
