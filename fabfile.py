@@ -301,9 +301,8 @@ def run_manage_cmd(command, *args):
         else:
             python.extend(['manage.py'])(command, *args)
 
-@roles('webserver')
+@roles('webservers')
 def refresh_data():
-    clear_course_data()
     update_courses()
     update_cache()
     create_robotstxt()
