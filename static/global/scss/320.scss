@@ -81,6 +81,14 @@ a.button:hover, a.button:visited:hover {
 	color: #eee;
 	text-decoration: none;
 }
+.empty {
+	h3 {
+		font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		font-size: 500%;
+		margin: -50px 0 0 0;
+		padding: 0;
+	}
+}
 /* END GENERAL */
 
 /* HEADER */
@@ -742,8 +750,11 @@ header {
         @include transition(width $transition-fast $transition-type);
 
 		.time {
-			float: right;
+			position: absolute;
+			top: 5px;
+			right: 0;
 			display: block;
+			font-size: 90%;
 			.sep {
 				margin: 0 -2px 0 -2px;
 				padding: 0;
