@@ -1,6 +1,8 @@
 {# this template is also reused for search results #}
 {% extends 'site_base.html' %}
 
+{% block title %}{{ department.code }} ({{ semester.name }}) | {% endblock %}
+
 {% block header %}
 {{ block.super }}
 {% include '_nav.html' with selected='catalog' %}

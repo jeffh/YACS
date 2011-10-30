@@ -58,6 +58,7 @@ class TemplateBaseOverride(object):
         return data
 
 class SemesterBasedMixin(TemplateBaseOverride):
+    fetch_semester = False
     def get_year_and_month(self):
         year, month = self.kwargs.get('year'), self.kwargs.get('month')
         if year or month:
@@ -77,6 +78,8 @@ class SemesterBasedMixin(TemplateBaseOverride):
     def get_context_data(self, **kwargs):
         data = super(SemesterBasedMixin, self).get_context_data(**kwargs)
         data['sem_year'], data['sem_month'] = self.get_year_and_month()
+        if self.fetch_semester:
+            data['semester'] = self.get_semester()
         return data
 
 class SemesterListView(ListView):
@@ -131,15 +134,11 @@ class SelectedCoursesListView(AjaxJsonResponseMixin, SelectedCoursesMixin, ListV
 class DepartmentListView(SelectedCoursesMixin, ListView):
     "Provides all departments."
     context_object_name = 'departments'
+    fetch_semester = True
 
     def get_queryset(self):
         year, month = self.get_year_and_month()
         return models.Department.objects.by_semester(year, month)
-
-    def get_context_data(self, **kwargs):
-        data = super(DepartmentListView, self).get_context_data(**kwargs)
-        data['semester'] = self.get_semester()
-        return data
 
 class SearchMixin(object):
 
@@ -203,6 +202,7 @@ class SearchCoursesListView(PartialResponseMixin, SearchMixin, SelectedCoursesMi
 class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
     context_object_name = 'courses'
     template_name = 'courses/course_list.html'
+    fetch_semester = True
 
     def get_queryset(self, select_related=True, full_select=True):
         year, month = self.get_year_and_month()
