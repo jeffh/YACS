@@ -22,11 +22,11 @@
                                 <span class="dept">{{ course.department.code }}</span>
                                 <span class="number">{{ course.number }}</span>
                             </span>
+                            {% if course.credits != 4 %}
                             <span class="credits">
-                                {% if course.credits != 4 %}
                                 {{ course.credits_display }}
-                                {% endif %}
                             </span>
+                            {% endif %}
                             <span class="seats-left">
                                 {% if seats_left_for_course < 30 %}
                                 {{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
