@@ -67,6 +67,9 @@ __all__ = (
     'restart',
     'update_courses',
     'update_cache',
+    'update_cache',
+    'create_robotstxt',
+    'refresh_data',
 )
 
 def staging():
@@ -298,6 +301,13 @@ def run_manage_cmd(command, *args):
         else:
             python.extend(['manage.py'])(command, *args)
 
+@roles('webserver')
+def refresh_data():
+    clear_course_data()
+    update_courses()
+    update_cache()
+    create_robotstxt()
+
 @roles('webservers')
 def clear_course_data():
     run_manage_cmd('reset', 'sessions', '--noinput')
@@ -305,21 +315,15 @@ def clear_course_data():
 
 @roles('webservers')
 def update_courses(args=''):
-    with cd(deploy_config.project_root):
-        if env.use_virtualenv:
-            with prefix(activate_virtualenv_cmd()):
-                run('python', 'manage.py', 'import_course_data', args)
-        else:
-            python.extend(['manage.py']).import_course_data(args)
+    run_manage_cmd('import_course_data', args)
 
 @roles('webservers')
 def update_cache(args=''):
-    with cd(deploy_config.project_root):
-        if env.use_virtualenv:
-            with prefix(activate_virtualenv_cmd()):
-                run('python', 'manage.py', 'create_section_cache', args)
-        else:
-            python.extend(['manage.py']).create_section_cache(args)
+    run_manage_cmd('create_section_cache', args)
+
+@roles('webservers')
+def create_robotstxt():
+    run_manage_cmd('sync_robots_data')
 
 @roles('webservers')
 def restart():
