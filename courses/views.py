@@ -1,7 +1,7 @@
 from django.views.generic import ListView, RedirectView, DetailView, View
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseBadRequest, HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.conf import settings
@@ -63,7 +63,7 @@ class SemesterBasedMixin(TemplateBaseOverride):
         year, month = self.kwargs.get('year'), self.kwargs.get('month')
         if year or month:
             return year, month
-        self.semester = getattr(self, 'semester', None) or models.Semester.objects.all().order_by('-year', '-month')[0]
+        self.semester = getattr(self, 'semester', None) or models.Semester.objects.order_by('-year', '-month')[0]
         return self.semester.year, self.semester.month
 
     def get_semester(self):
@@ -71,7 +71,7 @@ class SemesterBasedMixin(TemplateBaseOverride):
         if sem is None:
             year, month = self.get_year_and_month()
             if getattr(self, 'semester', None) is None:
-                self.semester = models.Semester.objects.get(year=year, month=month)
+                self.semester = get_object_or_404(models.Semester.objects, year=year, month=month)
             sem = self.semester
         return sem
 
@@ -206,7 +206,7 @@ class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
 
     def get_queryset(self, select_related=True, full_select=True):
         year, month = self.get_year_and_month()
-        self.department = models.Department.objects.get(code=self.kwargs['code'])
+        self.department = get_object_or_404(models.Department, code=self.kwargs['code'])
         courses = models.Course.objects.by_semester(year, month).by_department(self.department)
 
         query = self.request.GET.get('q')
