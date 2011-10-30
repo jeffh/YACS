@@ -44,8 +44,10 @@ function addSectionToSelection(courseID, crn){
     updateFuse.stop();
     if(!selected_courses[courseID])
         selected_courses[courseID] = [];
-    if($.inArray(crn, selected_courses[courseID]) !== -1)
+    if($.inArray(crn, selected_courses[courseID]) !== -1){
+        $('.tinyspinner').fadeOut({duration:animation_duration});
         return;
+    }
     selected_courses[courseID].push(crn);
     updateFuse.start();
     // TODO: see if schedules exist...
@@ -56,11 +58,13 @@ function removeSectionFromSelection(courseID, crn){
     crn = parseInt(crn, 10);
     if(!selected_courses[courseID]){
         console.log('no sections were selected in course ' + courseID);
+        $('.tinyspinner').fadeOut({duration: animation_duration});
         return;
     }
     updateFuse.stop();
     if($.inArray(crn, selected_courses[courseID]) === -1){
         console.log(crn, 'not in', courseID);
+        $('.tinyspinner').fadeOut({duration: animation_duration});
         return;
     }
     selected_courses[courseID].removeItem(crn);
@@ -131,6 +135,11 @@ function addToSelected($course){
     $.each(availableCrns, function(){
         addSectionToSelection(courseID, this);
     });
+
+    if(availableCrns.length === 0){
+        console.log('no CRNs');
+        $('.tinyspinner').fadeOut({duration: animation_duration});
+    }
 }
 
 function removeFromSelected($course){
@@ -158,6 +167,15 @@ function courseSelected(evt){
     addToSelected($el);
 }
 
+function labelize(evt){
+    var $el = $(evt.target), $forel = $('#'+$el.attr('for'));
+    if($forel.is('input[type=radio], input[type=checkbox]')){
+        $forel.attr('selected', !$forel.attr('selected'));
+        return;
+    }
+    $forel.focus();
+}
+
 // initialization
 $(function(){
     $('#selected .course > input[type=checkbox]').live('change', courseChanged);
@@ -167,6 +185,11 @@ $(function(){
     // hide add to selection button... autoadd on check
     $('#courses').live('change', courseSelected);
     $('#courses input[type=submit]').hide();
+
+    // iOS doesn't support label touch... so we have to simulate it
+    if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/iPad/i)) {
+        $('label').click(labelize);
+    }
 
     syncSelection();
 });

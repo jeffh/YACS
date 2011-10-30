@@ -432,14 +432,14 @@ header .alpha {
     padding-left: 20px;
     margin-top: -3px;
     color: #940000;
-    font-size: 95%; }
+    font-size: 90%; }
   #selected .department {
     padding: 0 0 0 2px; }
   #selected .course_number {
     padding: 0; }
   #selected .name {
     padding-left: 2px;
-    font-size: 110%; }
+    font-size: 100%; }
   #selected .credits {
     display: none; }
   #selected .seats-left {
@@ -584,7 +584,7 @@ header .alpha {
     display: none; }
   #courses .tinyspinner {
     position: absolute;
-    bottom: 10px;
+    top: 30px;
     left: 0; }
 
 /* END COURSES */

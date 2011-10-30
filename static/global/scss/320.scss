@@ -394,7 +394,7 @@ header {
 		padding-left: 20px;
 		margin-top: -3px;
 		color: $highlight;
-		font-size: 95%;
+		font-size: 90%;
 	}
 	.department {
 		padding: 0 0 0 2px;
@@ -404,7 +404,7 @@ header {
 	}
 	.name {
 		padding-left: 2px;
-		font-size: 110%;
+		font-size: 100%;
 	}
 	.credits {
 		display: none;
@@ -576,7 +576,7 @@ header {
 
 	.tinyspinner {
 		position: absolute;
-		bottom: 10px;
+		top: 30px;
 		left: 0;
 	}
 }
