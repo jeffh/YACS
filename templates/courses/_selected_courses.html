@@ -10,6 +10,7 @@
 			{% with seats_left_for_course=course|seats_left_for_course:selected_course_sections %}
 			<li class="course">
 				<input type="checkbox" id="selected_course_{{ course.id }}" name="selected_course_{{ course.id }}" checked="checked" data-cid="{{ course.id }}" />
+                <img src="{{ STATIC_URL }}img/tinyspinner.gif" class="tinyspinner" alt="" style="display: none" />
 				<label for="selected_course_{{ course.id }}">
 					<span class="name">{{ course.name }}</span>
 					<span class="code">

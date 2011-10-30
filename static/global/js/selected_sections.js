@@ -1,13 +1,13 @@
 (function($, window, document, undefined){
 
-var selectedCourses = {}; // course_id => crns
-window.selectedCourses = selectedCourses;
+var animation_duration = 250;
+var selected_courses = {}; // course_id => crns
 
 var updateFuse = new Utils.Fuse({
     delay: 150,
     execute: function(){
         var parameters = {}, selected_crns = [];
-        $.each(selectedCourses, function(cid, crns){
+        $.each(selected_courses, function(cid, crns){
             parameters['selected_course_' + cid] = "checked";
             $.each(crns, function(i, crn){
                 parameters['selected_course_' + cid + '_' + crn] = "checked";
@@ -19,7 +19,8 @@ var updateFuse = new Utils.Fuse({
             type: "post",
             data: $.param(parameters),
             complete: function(){
-                // TODO
+                $('.tinyspinner').fadeOut({duration:animation_duration});
+                // should we show an error???
             }
         });
 
@@ -41,11 +42,11 @@ function addSectionToSelection(courseID, crn){
     courseID = parseInt(courseID, 10);
     crn = parseInt(crn, 10);
     updateFuse.stop();
-    if(!selectedCourses[courseID])
-        selectedCourses[courseID] = [];
-    if($.inArray(crn, selectedCourses[courseID]) !== -1)
+    if(!selected_courses[courseID])
+        selected_courses[courseID] = [];
+    if($.inArray(crn, selected_courses[courseID]) !== -1)
         return;
-    selectedCourses[courseID].push(crn);
+    selected_courses[courseID].push(crn);
     updateFuse.start();
     // TODO: see if schedules exist...
 }
@@ -53,18 +54,18 @@ function addSectionToSelection(courseID, crn){
 function removeSectionFromSelection(courseID, crn){
     courseID = String(courseID);
     crn = parseInt(crn, 10);
-    if(!selectedCourses[courseID]){
+    if(!selected_courses[courseID]){
         console.log('no sections were selected in course ' + courseID);
         return;
     }
     updateFuse.stop();
-    if($.inArray(crn, selectedCourses[courseID]) === -1){
+    if($.inArray(crn, selected_courses[courseID]) === -1){
         console.log(crn, 'not in', courseID);
         return;
     }
-    selectedCourses[courseID].removeItem(crn);
-    if(selectedCourses[courseID].length === 0)
-        delete selectedCourses[courseID];
+    selected_courses[courseID].removeItem(crn);
+    if(selected_courses[courseID].length === 0)
+        delete selected_courses[courseID];
     updateFuse.start();
 }
 
@@ -95,11 +96,13 @@ function syncSelection(){
 function sectionChanged(evt){
     // update selection via ajax ???
     var crn = $(this).attr('data-crn'), courseID = $(this).attr('data-cid');
+    console.log($(this).parents('.course').length);
+    $(this).parents('.course').find('.tinyspinner').fadeIn({duration:animation_duration});
 
     if (this.checked){
         addSectionToSelection(courseID, crn);
         // check parent if not done so
-        $(this).parent('.course').find('input[type=checkbox]:first').attr('checked', 'checked');
+        $(this).parents('.course').find('input[type=checkbox]:first').attr('checked', 'checked');
         return;
     }
 
@@ -145,6 +148,7 @@ function courseSelected(evt){
     if (!$el.is('input[type=checkbox]'))
         return;
 
+    $el.parents('.course').find('.tinyspinner').fadeIn({duration:animation_duration});
     if (!el.checked){
         removeFromSelected($el);
         // remove from selected

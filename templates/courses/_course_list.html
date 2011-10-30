@@ -12,8 +12,9 @@
         <ul>
             {% for course in courses %}
             {% with seats_left_for_course=course|seats_left_for_course:sections %}
-                <li class="{% if seats_left_for_course < 1 %}no-seats{% endif %}">
+                <li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}">
                     <input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}"{% if course in selected_courses %} checked="checked"{% endif %} data-cid="{{ course.id }}" data-crns="{{ course.crns|join }}" data-crns-full="{{ course.full_crns|join }}" />
+                    <img src="{{ STATIC_URL }}img/tinyspinner.gif" class="tinyspinner" alt="" style="display: none" />
                     <label class="padded" for="course_{{ course.id }}">
                         <span class="name">{{ course.name }}</span>
                         <span class="disclosure">&gt;</span>

@@ -397,6 +397,14 @@ header .alpha {
 #selected {
   color: #111;
   padding: 0 5px; }
+  #selected li {
+    position: relative; }
+    #selected li .tinyspinner {
+      position: absolute;
+      top: 30px;
+      left: 0; }
+    #selected li:first-child .tinyspinner {
+      top: 25px; }
   #selected p {
     text-align: center; }
   #selected h2 {
@@ -466,7 +474,7 @@ header .alpha {
 .touch .actions {
   margin-right: 0; }
 
-/* END SELETED_COURSES */
+/* END SELECTED_COURSES */
 /* COURSES */
 #courses {
   margin-top: 1em; }
@@ -574,6 +582,10 @@ header .alpha {
     text-shadow: transparent 0 0 0; }
   #courses .instructors, #courses .kinds {
     display: none; }
+  #courses .tinyspinner {
+    position: absolute;
+    bottom: 10px;
+    left: 0; }
 
 /* END COURSES */
 /* COURSE DETAIL */
