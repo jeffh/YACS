@@ -150,12 +150,14 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     # django admin
     'django.contrib.admin',
     'django.contrib.admindocs',
     # third-party apps
     'south',
     'django_extensions',
+    'robots',
     #'djcelery',
     #'djkombu',
     'debug_toolbar',
@@ -263,4 +265,7 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': debug_toolbar_callback,
     'HIDE_DJANGO_SQL': False,
 }
+
+# ==== Django-Robots App ====
+ROBOTS_CACHE_TIMEOUT = 60*60*24 # 24-hour cache of robots file
 

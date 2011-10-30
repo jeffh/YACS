@@ -1,4 +1,5 @@
 from django.db import models, transaction
+from yacs.courses.signals import robots_signal
 from yacs.courses import models as courses
 from yacs.courses import managers as courses_managers
 from yacs.courses.utils import dict_by_attr
@@ -111,3 +112,10 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None):
 #    semester = models.ForeignKey(Semester, related_name='+')
 #    schedules = models.ManyToManyField(Schedule, related_name='input_combinations')
 #
+
+# attach to signals
+def sitemap_for_scheduler(sender, semester, rule, **kwargs):
+    url = sender.get_or_create_url('schedules', year=semester.year, month=semester.month)
+    rule.disallowed.add(url)
+robots_signal.connect(sitemap_for_scheduler, dispatch_uid='yacs.scheduler.sitemap_for_scheduler')
+

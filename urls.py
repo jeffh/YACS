@@ -1,9 +1,13 @@
 from django.conf.urls.defaults import patterns, include, url
-
 from django.contrib import admin
 admin.autodiscover()
 
+from yacs.courses.sitemaps import sitemaps
+
 urlpatterns = patterns('',
+    url(r'^robots\.txt$', include('robots.urls'), name='robots'),
+    url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}, name='sitemap'),
+
     url(r'^', include('yacs.courses.urls')),
     url(r'^', include('yacs.scheduler.urls')),
     url(r'^api/', include('yacs.newapi.urls', namespace='api')),
