@@ -84,7 +84,9 @@ function humanize_time(timestr){
         apm = 'pm';
         hour = hour - 12;
     }
-    return hour + ":" + (minutes < 10 ? '0' : '') + minutes + " " + apm;
+    if (minutes !== 0)
+        return hour + ":" + (minutes < 10 ? '0' : '') + minutes + apm;
+    return hour + apm;
 }
 
 function humanize_hour(hour){
