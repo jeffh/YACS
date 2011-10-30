@@ -136,6 +136,11 @@ class DepartmentListView(SelectedCoursesMixin, ListView):
         year, month = self.get_year_and_month()
         return models.Department.objects.by_semester(year, month)
 
+    def get_context_data(self, **kwargs):
+        data = super(DepartmentListView, self).get_context_data(**kwargs)
+        data['semester'] = self.get_semester()
+        return data
+
 class SearchMixin(object):
 
     def get_context_data(self, **kwargs):

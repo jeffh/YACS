@@ -2,6 +2,8 @@
 
 {% block body-id %}departments-page{% endblock %}
 
+{% block title %}{{ semester.name }} | {% endblock %}
+
 {% block header %}
 {{ block.super }}
 {% include '_nav.html' with selected='catalog' %}
