@@ -21,7 +21,8 @@ def timestamp_feature(catalog, soup):
 def semester_feature(catalog, soup):
     """The year and semester information that this xml file hold courses for.
     """
-    catalog.name = raw = soup.find('h3').text.split(' Session ')
+    catalog.name = soup.find('h3').text.strip()
+    raw = soup.find('h3').text.split(' Session ')
     catalog.year = int(raw[1])
 
     month_mapping = {'Spring': 1, 'Summer': 5, 'Fall': 9}
