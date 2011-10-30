@@ -2,6 +2,11 @@
 
 {% load courses %}
 
+{% block head %}
+<meta name="robots" content="NOINDEX, FOLLOW">
+{{ block.super }}
+{% endblock %}
+
 {% block header %}
 {{ block.super }}
 {% include '_nav.html' with selected='selected' %}

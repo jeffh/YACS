@@ -2,6 +2,11 @@
 
 {% load scheduler %}
 
+{% block head %}
+<meta name="robots" content="NOINDEX, FOLLOW">
+{{ block.super }}
+{% endblock %}
+
 {% block body-id %}schedules-page{% endblock %}
 
 {% block header %}
@@ -12,6 +17,9 @@
 {% block content %}
 <div id="schedules" data-source="{{ ajax_url }}">
 <p><img src="{{ STATIC_URL }}img/spinner.gif" alt="Loading" style="margin: 20px 0 20px 0"></p>
+<noscript>
+    Sorry, javascript is required to view schedules :(
+</noscript>
 </div>
 
 {# functions: humanize_time, humanize_hour, get_period_height, get_crns, get_period_offset #}

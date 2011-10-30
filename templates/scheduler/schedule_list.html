@@ -2,6 +2,11 @@
 
 {% load scheduler %}
 
+{% block head %}
+<meta name="robots" content="NOINDEX, FOLLOW">
+{{ block.super }}
+{% endblock %}
+
 {% block body-id %}schedules-page{% endblock %}
 
 {% block header %}
