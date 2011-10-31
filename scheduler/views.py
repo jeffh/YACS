@@ -28,7 +28,7 @@ ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS 
 SECTION_LIMIT = getattr(settings, 'SECTION_LIMIT', 60)
 
 
-DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']#, 'Saturday', 'Sunday']
 def sorted_daysofweek(dow):
     "Sorts list of days of the week to what we're expected."
     return [d for d in DAYS if d in dow]
@@ -181,7 +181,7 @@ def json_compute_schedules_via_cache(request, year, month):
             'sections': sections_output,
             'section_mapping': section_mapping,
             'time_range': timerange,
-            'dows': dows,
+            'dows': DAYS,
             'sem_year': year,
             'sem_month': month,
         }

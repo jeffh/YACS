@@ -35,10 +35,6 @@ body {
     }
 }
 
-#selected {
-    padding: 0 10px;
-}
-
 #courses {
     .seats-left {
         top: 30px;
@@ -96,6 +92,11 @@ body {
             li {
                 color: #777;
             }
+        }
+    }
+    .notes {
+        ul {
+            padding: 0 0 0 15px;
         }
     }
 }

@@ -28,9 +28,6 @@ body {
     -ms-transition: none 0.2s ease-in-out;
     transition: none 0.2s ease-in-out; }
 
-#selected {
-  padding: 0 10px; }
-
 #courses .seats-left {
   top: 30px; }
 #courses .instructors {
@@ -76,6 +73,8 @@ body {
     -webkit-border-radius: 0 0 2px 2px; }
 #courses .no-seats .instructors li, #courses .no-seats .kinds li {
   color: #777; }
+#courses .notes ul {
+  padding: 0 0 0 15px; }
 
 #schedules .class {
   width: 83.3333333%;

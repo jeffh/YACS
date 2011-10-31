@@ -394,70 +394,28 @@ header .alpha {
 
 /* END DEPARTMENTS */
 /* SELECTED_COURSES */
-#selected {
-  color: #111;
-  padding: 0 5px; }
-  #selected li {
-    position: relative; }
-    #selected li .tinyspinner {
-      position: absolute;
-      top: 30px;
-      left: 0; }
-    #selected li:first-child .tinyspinner {
-      top: 25px; }
-  #selected p {
-    text-align: center; }
-  #selected h2 {
-    clear: both;
-    color: #333;
-    font-weight: 200;
-    letter-spacing: 1px;
-    padding: 0;
-    text-shadow: 1px 1px 0 #fff; }
-  #selected .course td {
+#selected_courses label.padded {
+  padding-bottom: 0;
+  margin-bottom: 0; }
+#selected_courses .sections {
+  clear: left;
+  display: block;
+  font-size: 95%;
+  margin-left: -5px;
+  margin-top: -5px; }
+  #selected_courses .sections td {
+    border-bottom: 1px solid #aaa; }
+  #selected_courses .sections:last-child td {
     border-bottom: 0; }
-  #selected .sections {
-    display: block;
-    font-size: 95%;
-    padding-left: 22px;
-    margin-top: 5px; }
-    #selected .sections td {
-      border-bottom: 1px solid #aaa; }
-    #selected .sections:last-child td {
-      border-bottom: 0; }
-  #selected .checkbox {
-    padding: 0 0 0 3px; }
-  #selected .code {
-    display: block;
-    padding-left: 20px;
-    margin-top: -3px;
-    color: #940000;
-    font-size: 90%; }
-  #selected .department {
-    padding: 0 0 0 2px; }
-  #selected .course_number {
-    padding: 0; }
-  #selected .name {
-    padding-left: 2px;
-    font-size: 100%; }
-  #selected .credits {
-    display: none; }
-  #selected .seats-left {
-    display: none; }
-  #selected ul {
-    list-style: none;
-    padding: 0;
-    margin: 0; }
-    #selected ul li {
-      padding: 5px 0;
-      border-top: 1px solid #d0d0d0; }
-      #selected ul li:first-child {
-        padding: 0 0 5px 0;
-        border-top: 0; }
-  #selected .crn {
-    color: #940000; }
-  #selected .section-seats-left {
-    font-weight: bold; }
+  #selected_courses .sections ul {
+    margin-bottom: 10px; }
+    #selected_courses .sections ul li {
+      border: 0;
+      padding: 2px 0; }
+#selected_courses .crn {
+  color: #940000; }
+#selected_courses .section-seats-left {
+  font-weight: bold; }
 
 .total_credits {
   float: left;
@@ -582,6 +540,12 @@ header .alpha {
     text-shadow: transparent 0 0 0; }
   #courses .instructors, #courses .kinds {
     display: none; }
+  #courses .notes {
+    color: #444; }
+    #courses .notes ul {
+      padding: 0 0 0 0; }
+      #courses .notes ul li {
+        border: 0; }
   #courses .tinyspinner {
     position: absolute;
     top: 30px;

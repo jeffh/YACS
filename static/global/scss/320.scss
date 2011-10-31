@@ -343,41 +343,17 @@ header {
 /* END DEPARTMENTS */
 
 /* SELECTED_COURSES */
-#selected {
-	color: #111;
-	padding: 0 5px;
-	li {
-		position: relative;
-		.tinyspinner {
-			position: absolute;
-			top: 30px;
-			left: 0;
-		}
-		&:first-child .tinyspinner {
-			top: 25px;
-		}
-	}
-
-	p {
-		text-align: center;
-	}
-
-	h2 {
-		clear: both;
-		color: #333;
-		font-weight: 200;
-		letter-spacing: 1px;
-		padding: 0;
-		text-shadow: 1px 1px 0 #fff;
-	}
-	.course td {
-		border-bottom: 0;
+#selected_courses {
+	label.padded {
+		padding-bottom: 0;
+		margin-bottom: 0;
 	}
 	.sections {
+		clear: left;
 		display: block;
 		font-size: 95%;
-		padding-left: 22px;
-		margin-top: 5px;
+		margin-left: -5px;
+		margin-top: -5px;
 
 		td {
 			border-bottom: 1px solid #aaa;
@@ -385,45 +361,11 @@ header {
 		&:last-child td {
 			border-bottom: 0;
 		}
-	}
-	.checkbox {
-		padding: 0 0 0 3px;
-	}
-	.code {
-		display: block;
-		padding-left: 20px;
-		margin-top: -3px;
-		color: $highlight;
-		font-size: 90%;
-	}
-	.department {
-		padding: 0 0 0 2px;
-	}
-	.course_number {
-		padding: 0;
-	}
-	.name {
-		padding-left: 2px;
-		font-size: 100%;
-	}
-	.credits {
-		display: none;
-	}
-	.seats-left {
-		display: none;
-	}
-	ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-
-		li {
-			padding: 5px 0;
-			border-top: 1px solid $border-color;
-
-			&:first-child {
-				padding: 0 0 5px 0;
-				border-top: 0;
+		ul {
+			margin-bottom: 10px;
+			li {
+				border: 0;
+				padding: 2px 0;
 			}
 		}
 	}
@@ -572,6 +514,15 @@ header {
 	}
     .instructors, .kinds {
     	display: none;
+    }
+    .notes {
+    	color: #444;
+    	ul {
+    		padding: 0 0 0 0;
+	    	li {
+    			border: 0;
+    		}
+    	}
     }
 
 	.tinyspinner {

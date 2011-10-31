@@ -220,8 +220,8 @@ function labelize(evt){
 
 // initialization
 $(function(){
-    $('#selected .course > input[type=checkbox]').live('change', courseChanged);
-    $('#selected .section input[type=checkbox]').live('change', sectionChanged);
+    $('#selected_courses .course > input[type=checkbox]').live('change', courseChanged);
+    $('#selected_courses .section input[type=checkbox]').live('change', sectionChanged);
     $('.save-selected').hide(); // selected courses save button
 
     // hide add to selection button... autoadd on check

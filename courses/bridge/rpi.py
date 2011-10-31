@@ -152,6 +152,7 @@ class ROCSRPIImporter(object):
             section_obj, created = Section.objects.get_or_create(
                 crn=section.crn,
                 defaults=dict(
+                    notes='\n'.join(section.notes),
                     number=section.num,
                     seats_taken=section.seats_taken,
                     seats_total=section.seats_total,
@@ -168,6 +169,7 @@ class ROCSRPIImporter(object):
                 section_obj.seats_taken = section.seats_taken
                 section_obj.seats_total = section.seats_total
                 section_obj.course = course_obj
+                section_obj.notes = '\n'.join(section.notes)
                 section_obj.save()
                 c = section_obj.periods.count()
                 if c:

@@ -206,6 +206,9 @@ class Section(models.Model):
     seats_taken = models.IntegerField()
     seats_total = models.IntegerField()
 
+    # TODO: RPI Specific; provide alternative
+    notes = models.TextField(blank=True)
+
     objects = managers.QuerySetManager(managers.SectionQuerySet)
 
     class Meta:
@@ -361,6 +364,16 @@ class Course(models.Model):
         if not hasattr(self, 'all_section_periods'):
             return SectionPeriod.objects.by_course(course=self)
         return self.all_section_periods
+
+    # TODO: RPI specific... remove
+    @property
+    def notes(self):
+        def _process(notes):
+            lines = set([line for note in notes for line in note.split('\n')])
+            return lines
+        if not hasattr(self, 'all_section_periods'):
+            return _process(SectionPeriod.objects.by_course(course=self).values_list('section__notes', flat=True))
+        return _process(set(sp.section.notes for sp in self.section_periods))
 
     @property
     def crns(self):

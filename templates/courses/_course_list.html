@@ -59,6 +59,15 @@
                                     {% endfor %}
                                 </ul>
                             </div>
+                            <div class="notes">
+                                <ul>
+                                    {% for note in course.notes %}
+                                    <li>
+                                        {{ note }}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
                         </span>
                     </label>
                     <div class="clear"></div>
