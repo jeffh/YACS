@@ -401,7 +401,6 @@ header .alpha {
   clear: left;
   display: block;
   font-size: 95%;
-  margin-left: -5px;
   margin-top: -5px; }
   #selected_courses .sections td {
     border-bottom: 1px solid #aaa; }
@@ -541,6 +540,8 @@ header .alpha {
   #courses .instructors, #courses .kinds {
     display: none; }
   #courses .notes {
+    display: block;
+    clear: left;
     color: #444; }
     #courses .notes ul {
       padding: 0 0 0 0; }

@@ -352,7 +352,6 @@ header {
 		clear: left;
 		display: block;
 		font-size: 95%;
-		margin-left: -5px;
 		margin-top: -5px;
 
 		td {
@@ -516,6 +515,8 @@ header {
     	display: none;
     }
     .notes {
+    	display: block;
+    	clear: left;
     	color: #444;
     	ul {
     		padding: 0 0 0 0;

@@ -106,7 +106,7 @@ class SelectedCoursesMixin(SemesterBasedMixin):
         year, month = self.get_year_and_month()
         course_ids = self.request.session.get(SELECTED_COURSES_SESSION_KEY, {})
         queryset = models.Course.objects.by_semester(year, month)
-        courses = queryset.filter(id__in=course_ids.keys()).select_related('department')
+        courses = queryset.filter(id__in=course_ids.keys()).select_related('department').full_select(year, month)
 
         return courses, self.get_sections(courses, year, month)
 
