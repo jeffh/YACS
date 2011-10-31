@@ -395,7 +395,6 @@ header .alpha {
 /* END DEPARTMENTS */
 /* SELECTED_COURSES */
 #selected_courses label.padded {
-  padding-bottom: 0;
   margin-bottom: 0; }
 #selected_courses .sections {
   clear: left;
