@@ -67,7 +67,6 @@ __all__ = (
     'restart',
     'update_courses',
     'update_cache',
-    'update_cache',
     'create_robotstxt',
     'refresh_data',
 )
