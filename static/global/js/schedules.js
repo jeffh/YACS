@@ -2,10 +2,11 @@
 
 var History = window.History;
 
-var schedules_template, no_schedules_template, period_height;
+var schedules_template, no_schedules_template, too_many_crns_template, period_height;
 if ($('#schedule-template').length){
     schedules_template = _.template($('#schedule-template').html());
     no_schedules_template = _.template($('#no-schedules-template').html());
+    too_many_crns_template = _.template($('#too-many-crns-template').html());
     period_height = parseInt($('#schedule-template').attr('data-period-height'), 10);
 }
 
@@ -66,7 +67,6 @@ function create_color_map(context, maxcolors){
     var color_map = {},
         schedule = context.schedules[0],
         maxcolors = maxcolors || 9;
-    ++maxcolors;
     _.forEach(_.keys(schedule), function(cid, i){
         color_map[cid] = (i % maxcolors) + 1;
     });
@@ -149,6 +149,8 @@ function show_schedules(context){
         clearTimeout(timeout);
     });
 
+    console.log(context);
+
     var selected_schedule = get_schedule_id_from_state();
 
     renderers = [];
@@ -160,7 +162,7 @@ function show_schedules(context){
             var frag = $(schedules_template(context));
             if (i !== selected_schedule) $(frag).hide();
             $('#schedules').append(frag);
-            console.log('rendering', i+1, 'of', context.schedules.length);
+            console.log('rendering ' + (i+1) + ' of ' + context.schedules.length);
         };
     }
     _.forEach(context.schedules, function(schedule, i){
@@ -182,9 +184,12 @@ function get_schedules(){
             // ERROR
             $('#schedules').html(no_schedules_template({}));
         },
-        error: function(){
+        error: function(xhr, status){
             // TODO: show a custom error page
-            alert('Failed to get schedules... (are you connected to the internet?)');
+            if(xhr.status === 403){
+                $('#schedules').html(too_many_crns_template({}));
+            } else
+                alert('Failed to get schedules... (are you connected to the internet?)');
         }
     });
 }

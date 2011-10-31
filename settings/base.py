@@ -234,6 +234,10 @@ COURSES_COLLEGE_PARSER = 'yacs.courses.bridge.rpi.import_data'
 
 # ==== Scheduler App ====
 SCHEDULER_ICAL_PRODUCT_ID = '-//Jeff Hui//YACS Export 1.0//EN'
+# maximum number of sections to compute schedules for.
+# more sections means it takes longer to compute. Until we have
+# a good caching strategy, this is a hard upper bound. Default is 60.
+SCHEDULER_SECTION_LIMIT = 60
 
 # ==== Django BCrypt ====
 # The number of rounds determines the complexity of the bcrypt algorithm.

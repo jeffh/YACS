@@ -716,13 +716,17 @@ header .alpha {
     background: #bccbd7;
     border-color: #97a6bc; }
   #schedules .class.color6 {
-    background: #d7c2d5; }
+    background: #d7c2d5;
+    border-color: #bc9db0; }
   #schedules .class.color7 {
-    background: #d0d7cd; }
+    background: #d0d7cd;
+    border-color: #b5b2a8; }
   #schedules .class.color8 {
-    background: #a7d7cb; }
+    background: #a7d7cb;
+    border-color: #8cb2a6; }
   #schedules .class.color9 {
-    background: #ffc37d; }
+    background: #ffc37d;
+    border-color: #e49e58; }
   #schedules .class .time {
     position: absolute;
     top: 5px;

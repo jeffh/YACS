@@ -751,15 +751,19 @@ header {
 		}
 		&.color6 {
 			background: #d7c2d5;
+			border-color: #bc9db0;
 		}
 		&.color7 {
 			background: #d0d7cd;
+			border-color: #b5b2a8;
 		}
 		&.color8 {
 			background: #a7d7cb;
+			border-color: #8cb2a6;
 		}
 		&.color9 {
 			background: #ffc37d;
+			border-color: #e49e58;
 		}
 
 		@include border-radius(3px);

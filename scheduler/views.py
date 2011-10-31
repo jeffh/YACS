@@ -5,7 +5,7 @@ import urllib
 
 from django.db.models import F, Q
 from django.views.generic import ListView
-from django.http import HttpResponse, Http404, HttpResponseNotFound
+from django.http import HttpResponse, Http404, HttpResponseNotFound, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.conf import settings
@@ -25,6 +25,8 @@ class Timer():
    def __exit__(self, *args): print time.time() - self.start
 
 ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')
+SECTION_LIMIT = getattr(settings, 'SECTION_LIMIT', 60)
+
 
 DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 def sorted_daysofweek(dow):
@@ -115,11 +117,13 @@ def json_compute_schedules_via_cache(request, year, month):
             crns.append(int(crn))
         except (ValueError, TypeError):
             pass
-    if len(crns) > 50:
-        raise Http404
 
     sections = models.SectionProxy.objects.by_semester(year, month).filter(crn__in=crns).select_related('course', 'course__department').full_select(year, month)
     selected_courses = dict_by_attr(sections, 'course')
+
+    if len(sections) > SECTION_LIMIT:
+        return HttpResponseForbidden('invalid')
+
     section_ids = set(s.id for s in sections)
     conflicts = models.SectionConflict.objects.filter(
         section1__id__in=section_ids, section2__id__in=section_ids
