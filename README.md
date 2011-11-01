@@ -6,7 +6,10 @@ YACS is a web-based course schedule with an emphasis on usability. It is also fl
 by Jeff Hui.
 Send questions and comments to [@jeffhui][] / huij@rpi.edu.
 
+If you're an RPI student and just want to use it. Go to [yacs.me][yacsme]
+
 [@jeffhui]: http://twitter.com/jeffhui "Twitter: @jeffhui"
+[yacsme]: http://yacs.me/ "YACS - The usable online course scheduler"
 
 ## Setup
 YACS is actively developed on Python 2.7. So go get that installed first. As good python practice, you should put this project inside a virtualenv, but that's not covered here.
