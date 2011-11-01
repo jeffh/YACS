@@ -128,7 +128,7 @@ class SelectedCoursesListView(AjaxJsonResponseMixin, SelectedCoursesMixin, ListV
         return self.json_encoder.encode(self.request.session.get(SELECTED_COURSES_SESSION_KEY, {}))
 
     def get_queryset(self):
-        return self.get_selected_courses()[1]
+        return []#self.get_selected_courses()[1]
 
 
 class DepartmentListView(SelectedCoursesMixin, ListView):
