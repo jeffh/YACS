@@ -4,7 +4,7 @@ Sane Course Scheduling.
 YACS is a web-based course schedule with an emphasis on usability. It is also flexible enough to work with other school course data.
 
 by Jeff Hui.
-Send questions and comments to [@jeffhui][] / huij@rpi.edu.
+Send questions and comments to [@jeffhui][] or huij@rpi.edu.
 
 If you're an RPI student and just want to use it. Go to [yacs.me][yacsme]
 
@@ -12,7 +12,7 @@ If you're an RPI student and just want to use it. Go to [yacs.me][yacsme]
 [yacsme]: http://yacs.me/ "YACS - The usable online course scheduler"
 
 ## Setup
-YACS is actively developed on Python 2.7. So go get that installed first. As good python practice, you should put this project inside a virtualenv, but that's not covered here.
+YACS is actively developed on [Python][] 2.7. So go get that installed first. As good python practice, you should put this project inside a virtualenv, but that's not covered here.
 
 You can download an archive from the top-right of the github page or clone the repo:
 
@@ -62,6 +62,7 @@ Which will download code into a YACS folder where you run this command.
 10. ???
 11. Profit?
 
+[Python]: http://python.org/
 [postgres]: http://www.postgresql.org/ "PostgreSQL"
 [pip]: http://www.pip-installer.org/en/latest/index.html
 [distribute]: http://pypi.python.org/pypi/distribute
