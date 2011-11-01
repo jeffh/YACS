@@ -128,11 +128,13 @@ a.button:hover, a.button:visited:hover {
   color: #eee;
   text-decoration: none; }
 
-.empty h3 {
-  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: 500%;
-  margin: -50px 0 0 0;
-  padding: 0; }
+.empty {
+  text-align: center; }
+  .empty h3 {
+    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 500%;
+    margin: -50px 0 0 0;
+    padding: 0; }
 
 /* END GENERAL */
 /* HEADER */
