@@ -471,7 +471,27 @@ header {
 		padding-left: 13px;
 		text-shadow: 1px 1px 0 #fff;
 	}
+	/*
 	.no-seats {
+		$the-color: #555;
+		a:link, a:visited, .padded {
+			color: $the-color;
+			.name {
+				color: $the-color;
+			}
+			.credits {
+				color: $the-color;
+			}
+			.seats-left {
+				color: #555;
+			}
+			.code {
+				color: #544;
+			}
+		}
+	}
+	*/
+	.no-sections {
 		$the-color: #555;
 		a:link, a:visited, .padded {
 			color: $the-color;

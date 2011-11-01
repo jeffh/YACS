@@ -12,7 +12,7 @@
         <ul>
             {% for course in courses %}
             {% with seats_left_for_course=course|seats_left_for_course:sections %}
-                <li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}">
+                <li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}{% if course.crns|length < 1 %} no-sections{% endif %}">
                     {% if course.crns|length > 0 %}
                     <input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}"{% if course in selected_courses %} checked="checked"{% endif %} data-cid="{{ course.id }}" data-crns="{{ course.crns|join }}" data-crns-full="{{ course.full_crns|join }}" />
                     {% else %}

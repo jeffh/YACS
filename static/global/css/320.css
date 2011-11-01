@@ -433,7 +433,27 @@ header .alpha {
 /* END SELECTED_COURSES */
 /* COURSES */
 #courses {
-  margin-top: 1em; }
+  margin-top: 1em;
+  /*
+  .no-seats {
+  	$the-color: #555;
+  	a:link, a:visited, .padded {
+  		color: $the-color;
+  		.name {
+  			color: $the-color;
+  		}
+  		.credits {
+  			color: $the-color;
+  		}
+  		.seats-left {
+  			color: #555;
+  		}
+  		.code {
+  			color: #544;
+  		}
+  	}
+  }
+  */ }
   #courses label {
     vertical-align: middle; }
   #courses input {
@@ -498,15 +518,15 @@ header .alpha {
     margin-top: -2px;
     padding-left: 13px;
     text-shadow: 1px 1px 0 #fff; }
-  #courses .no-seats a:link, #courses .no-seats a:visited, #courses .no-seats .padded {
+  #courses .no-sections a:link, #courses .no-sections a:visited, #courses .no-sections .padded {
     color: #555555; }
-    #courses .no-seats a:link .name, #courses .no-seats a:visited .name, #courses .no-seats .padded .name {
+    #courses .no-sections a:link .name, #courses .no-sections a:visited .name, #courses .no-sections .padded .name {
       color: #555555; }
-    #courses .no-seats a:link .credits, #courses .no-seats a:visited .credits, #courses .no-seats .padded .credits {
+    #courses .no-sections a:link .credits, #courses .no-sections a:visited .credits, #courses .no-sections .padded .credits {
       color: #555555; }
-    #courses .no-seats a:link .seats-left, #courses .no-seats a:visited .seats-left, #courses .no-seats .padded .seats-left {
+    #courses .no-sections a:link .seats-left, #courses .no-sections a:visited .seats-left, #courses .no-sections .padded .seats-left {
       color: #555; }
-    #courses .no-seats a:link .code, #courses .no-seats a:visited .code, #courses .no-seats .padded .code {
+    #courses .no-sections a:link .code, #courses .no-sections a:visited .code, #courses .no-sections .padded .code {
       color: #544; }
   #courses a:link:hover, #courses a:visited:hover {
     background: #fff;
