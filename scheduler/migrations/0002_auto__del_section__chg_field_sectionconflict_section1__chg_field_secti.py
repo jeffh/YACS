@@ -7,9 +7,6 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Deleting model 'Section'
-        db.delete_table('scheduler_section')
 
         # Changing field 'SectionConflict.section1'
         db.alter_column('scheduler_sectionconflict', 'section1_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.Section']))
@@ -17,9 +14,12 @@ class Migration(SchemaMigration):
         # Changing field 'SectionConflict.section2'
         db.alter_column('scheduler_sectionconflict', 'section2_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['courses.Section']))
 
+        # Deleting model 'Section'
+        db.delete_table('scheduler_section')
+
 
     def backwards(self, orm):
-        
+
         # Adding model 'Section'
         db.create_table('scheduler_section', (
             ('section_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['courses.Section'], unique=True, primary_key=True)),
