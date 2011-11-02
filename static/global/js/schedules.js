@@ -205,6 +205,10 @@ $(function(){
     schedules_loaded();
     get_schedules();
 
+    if(!(History && History.Adapter)){
+        return;
+    }
+
     History.Adapter.bind(window, 'statechange', function(){
         var state = History.getState();
         var selected_schedule = (parseInt(state.data.schedule, 10) || 1) - 1;

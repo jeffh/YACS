@@ -5,6 +5,7 @@ var selected_courses = {}; // course_id => crns
 window.selected_courses = selected_courses;
 var undoHistory = [];
 
+var saveRequest = undefined;
 function saveSelection(){
     var parameters = {}, selected_crns = [];
     $.each(selected_courses, function(cid, crns){
@@ -15,25 +16,36 @@ function saveSelection(){
         });
     });
 
-    $.ajax(Utils.selectURL(), {
+    if (saveRequest)
+        saveRequest.abort();
+
+    saveRequest = $.ajax(Utils.selectURL(), {
+        cache: false,
         type: "post",
         data: $.param(parameters),
         complete: function(){
             // should we show an error???
+            saveRequest = undefined;
         }
     });
     return selected_crns;
 }
 
+var updateRequest = undefined;
 var updateFuse = new Utils.Fuse({
-    delay: 150,
+    delay: 50,
     execute: function(){
         var selected_crns = saveSelection();
 
-        $.ajax(Utils.checkScheduleURL() + '?check=1&crn=' + selected_crns.join('&crn='), {
+        if(updateRequest)
+            updateRequest.abort();
+
+        updateRequest = $.ajax(Utils.checkScheduleURL() + '?check=1&crn=' + selected_crns.join('&crn='), {
+            cache: false,
             type: "get",
             complete: function(){
                 $('.tinyspinner').fadeOut({duration:animation_duration});
+                updateRequest = undefined;
             },
             error: function(xhr, status){
                 if(xhr.status === 403){
@@ -91,6 +103,7 @@ function removeSectionFromSelection(courseID, crn){
 
 function getSelection(){
     $.ajax(Utils.selectionURL(), {
+        cache: false,
         type: 'GET',
         dataType: 'text',
         success: function(content, status, request){

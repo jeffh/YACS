@@ -223,7 +223,7 @@ class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
         data = super(CourseByDeptListView, self).get_context_data(**kwargs)
         data['department'] = self.department
         data['query'] = self.request.GET.get('q', '')
-        data['sections'] = self.get_sections(data['courses'], *self.get_year_and_month())
+        #data['sections'] = self.get_sections(data['courses'], *self.get_year_and_month())
         return data
 
 class CourseDetailView(SemesterBasedMixin, DetailView):
