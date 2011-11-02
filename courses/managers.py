@@ -142,16 +142,21 @@ class CourseQuerySet(SemesterBasedQuerySet):
             'period', 'section', 'section__course'
         )
 
+        # TODO: optimize into one loop
         sid2sps = dict_by_attr(sps, 'section_id')
+        #sid2periods = dict_by_attr(sps, 'section_id', 'period')
         cid2sections = dict_by_attr([sp.section for sp in sps], 'course.id')
         cid2sps = dict_by_attr(sps, 'section.course.id')
 
         for sp in sps:
-            sp.section.all_periods = sid2sps.get(sp.section.id, [])
+            sp.section.all_section_periods = sid2sps.get(sp.section.id, [])
+
+        def section_key(section):
+            return section.number
 
         result = []
         for course in self:
-            course.all_sections = cid2sections.get(course.id, [])
+            course.all_sections = sorted(set(cid2sections.get(course.id, [])), key=section_key)
             course.all_section_periods = cid2sps.get(course.id, [])
             result.append(course)
         return result

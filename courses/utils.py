@@ -1,6 +1,12 @@
 from json import dumps, JSONEncoder
 import datetime
 
+DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']#, 'Saturday', 'Sunday']
+def sorted_daysofweek(dow, days=DAYS):
+    "Sorts list of days of the week to what we're expected."
+    dow = set(dow)
+    return [d for d in days if d in dow]
+
 class ObjectJSONEncoder(JSONEncoder):
     def default(self, o):
         if callable(getattr(o, 'toJSON', None)):

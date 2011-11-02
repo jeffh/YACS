@@ -353,6 +353,7 @@ header {
 		display: block;
 		font-size: 95%;
 		margin-top: -5px;
+		padding-bottom: 10px;
 
 		td {
 			border-bottom: 1px solid #aaa;
@@ -361,10 +362,53 @@ header {
 			border-bottom: 0;
 		}
 		ul {
-			margin-bottom: 10px;
 			li {
 				border: 0;
 				padding: 2px 0;
+				clear: both;
+			}
+		}
+		input {
+			top: 4px;
+		}
+		.section {
+			padding: 0;
+			padding-top: 4px;
+		}
+		.days {
+			font-size: 85%;
+			margin: 0;
+			display: inline;
+			li {
+				clear: both;
+				margin: 0 0 0 17px;
+				padding: 0;
+				border-top: 1px solid #ddd;
+				&:first-child {
+					border-top: 0;
+				}
+			}
+		}
+		.time {
+			margin: 0;
+			display: inline;
+			li {
+				float: right;
+				text-align: right;
+				border-top: 0;
+				margin: 0;
+			}
+		}
+		.instructors {
+			float: right;
+			font-weight: bold;
+			li {
+				&:last-child:after {
+					content: '';
+				}
+				&:after {
+					content: ', ';
+				}
 			}
 		}
 	}

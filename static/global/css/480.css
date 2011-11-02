@@ -90,3 +90,6 @@ body {
       float: left;
       padding-right: 0.3em;
       font-size: 100%; }
+
+#selected_courses .sections {
+  padding-right: 25px; }

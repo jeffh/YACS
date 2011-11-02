@@ -1,61 +1,62 @@
 {# This template partial was originally supposed to be used in course_list and department_list #}
 {% load courses %}
+{% load scheduler %}
 
 <div id="courses" class="listview">
 {% if selected_courses %}
 	<form action="{% url deselect-courses sem_year,sem_month %}" method="post">
 		{% csrf_token %}
-        <ul id="selected_courses">
-            {% for course in selected_courses %}
-            {% with seats_left_for_course=course|seats_left_for_course:selected_course_sections %}
-                <li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}{% if course.crns|length < 1 %} no-sections{% endif %}">
-                    {% if course.crns|length > 0 %}
-                    <input type="checkbox" id="selected_course_{{ course.id }}" name="course_{{ course.id }}" checked="checked" data-cid="{{ course.id }}" data-crns="{{ course.crns|join }}" data-crns-full="{{ course.full_crns|join }}" />
-                    {% else %}
-                    <p style="float:left; width: 15px; height: 10px; margin: 0; padding: 0;"></p>
-                    {% endif %}
-                    <img src="{{ STATIC_URL }}img/tinyspinner.gif" class="tinyspinner" alt="" style="display: none" />
-                    <label class="padded" for="selected_course_{{ course.id }}">
-                        <span class="name">{{ course.name }}</span>
-                        <span class="secondary">
-                            <span class="code">
-                                <span class="dept">{{ course.department.code }}</span>
-                                <span class="number">{{ course.number }}</span>
-                            </span>
-                            <span class="credits">
-                                {{ course.credits_display }}
-                            </span>
-                            <span class="seats-left">
-                                {% if course.crns|length > 0 %}
-                                    {% if seats_left_for_course < 30 %}
-                                    {{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
-                                    {% endif %}
-                                {% else %}
-                                    No Sections
-                                {% endif %}
-                            </span>
-                            <div class="kinds">
-                                <ul>
-                                    {% for kind in course.kinds %}
-                                    <li>
-                                        {{ kind }}
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="notes">
-                                <ul>
-                                    {% for note in course.notes %}
-                                    <li>
-                                        {{ note }}
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </span>
-                    </label>
+		<ul id="selected_courses">
+			{% for course in selected_courses %}
+			{% with seats_left_for_course=course.all_sections|seats_left %}
+				<li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}{% if course.crns|length < 1 %} no-sections{% endif %}">
+					{% if course.crns|length > 0 %}
+					<input type="checkbox" id="selected_course_{{ course.id }}" name="course_{{ course.id }}" checked="checked" data-cid="{{ course.id }}" data-crns="{{ course.crns|join }}" data-crns-full="{{ course.full_crns|join }}" />
+					{% else %}
+					<p style="float:left; width: 15px; height: 10px; margin: 0; padding: 0;"></p>
+					{% endif %}
+					<img src="{{ STATIC_URL }}img/tinyspinner.gif" class="tinyspinner" alt="" style="display: none" />
+					<label class="padded" for="selected_course_{{ course.id }}">
+						<span class="name">{{ course.name }}</span>
+						<span class="secondary">
+							<span class="code">
+								<span class="dept">{{ course.department.code }}</span>
+								<span class="number">{{ course.number }}</span>
+							</span>
+							<span class="credits">
+								{{ course.credits_display }}
+							</span>
+							<span class="seats-left">
+								{% if course.crns|length > 0 %}
+									{% if seats_left_for_course < 30 %}
+									{{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
+									{% endif %}
+								{% else %}
+									No Sections
+								{% endif %}
+							</span>
+							<div class="kinds">
+								<ul>
+									{% for kind in course.kinds %}
+									<li>
+										{{ kind }}
+									</li>
+									{% endfor %}
+								</ul>
+							</div>
+							<div class="notes">
+								<ul>
+									{% for note in course.notes %}
+									<li>
+										{{ note }}
+									</li>
+									{% endfor %}
+								</ul>
+							</div>
+						</span>
+					</label>
 					<span class="sections">
-						{% with sections=selected_course_sections|sections_for:course %}
+						{% with sections=course.all_sections%}
 							{% if sections %}
 								<ul>
 									{% for section in sections %}
@@ -75,7 +76,34 @@
 												No seats left
 												</span>
 												{% endif %}
+					                            <div class="instructors">
+					                                <ul>
+					                                	{% for instructor in section.instructors %}
+														<li>{{ instructor }}</li>
+														{% endfor %}
+													</ul>
+												</div>
 											</label>
+											<ul class="days">
+												{% with times=section.get_periods|prepare_periods %}
+													{% for dow in dows %}
+														{% with slot=times|get:dow %}
+														{% for daysofweek, periods in slot.items %}
+															{% if periods %}
+															<li>
+																{{ daysofweek|join }}
+																<ul class="time">
+																{% for period in periods|sort %}
+																	<li>{{ period|display_period }}</li>
+																{% endfor %}
+																</ul>
+															</li>
+															{% endif %}
+														{% endfor %}
+														{% endwith %}
+													{% endfor %}
+												{% endwith %}
+											</ul>
 										</li>
 									{% endfor %}
 								</ul>
@@ -84,18 +112,18 @@
 							{% endif %}
 						{% endwith %}
 					</span>
-                    <div class="clear"></div>
-                </li>
-            {% endwith %}
-            {% endfor %}
-        </ul>
-        {% comment %}
+					<div class="clear"></div>
+				</li>
+			{% endwith %}
+			{% endfor %}
+		</ul>
+		{% comment %}
 		<ul id="selected_courses">
 			{% for course in selected_courses %}
 			{% with seats_left_for_course=course|seats_left_for_course:selected_course_sections %}
 			<li class="course">
 				<input type="checkbox" id="selected_course_{{ course.id }}" name="selected_course_{{ course.id }}" checked="checked" data-cid="{{ course.id }}" />
-                <img src="{{ STATIC_URL }}img/tinyspinner.gif" class="tinyspinner" alt="" style="display: none" />
+				<img src="{{ STATIC_URL }}img/tinyspinner.gif" class="tinyspinner" alt="" style="display: none" />
 				<label for="selected_course_{{ course.id }}">
 					<span class="name">{{ course.name }}</span>
 					<span class="code">

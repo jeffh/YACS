@@ -402,16 +402,47 @@ header .alpha {
   clear: left;
   display: block;
   font-size: 95%;
-  margin-top: -5px; }
+  margin-top: -5px;
+  padding-bottom: 10px; }
   #selected_courses .sections td {
     border-bottom: 1px solid #aaa; }
   #selected_courses .sections:last-child td {
     border-bottom: 0; }
-  #selected_courses .sections ul {
-    margin-bottom: 10px; }
-    #selected_courses .sections ul li {
-      border: 0;
-      padding: 2px 0; }
+  #selected_courses .sections ul li {
+    border: 0;
+    padding: 2px 0;
+    clear: both; }
+  #selected_courses .sections input {
+    top: 4px; }
+  #selected_courses .sections .section {
+    padding: 0;
+    padding-top: 4px; }
+  #selected_courses .sections .days {
+    font-size: 85%;
+    margin: 0;
+    display: inline; }
+    #selected_courses .sections .days li {
+      clear: both;
+      margin: 0 0 0 17px;
+      padding: 0;
+      border-top: 1px solid #ddd; }
+      #selected_courses .sections .days li:first-child {
+        border-top: 0; }
+  #selected_courses .sections .time {
+    margin: 0;
+    display: inline; }
+    #selected_courses .sections .time li {
+      float: right;
+      text-align: right;
+      border-top: 0;
+      margin: 0; }
+  #selected_courses .sections .instructors {
+    float: right;
+    font-weight: bold; }
+    #selected_courses .sections .instructors li:last-child:after {
+      content: ''; }
+    #selected_courses .sections .instructors li:after {
+      content: ', '; }
 #selected_courses .crn {
   color: #940000; }
 #selected_courses .section-seats-left {

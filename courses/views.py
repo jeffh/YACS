@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.conf import settings
 from yacs.courses import models
-from yacs.courses.utils import ObjectJSONEncoder
+from yacs.courses.utils import ObjectJSONEncoder, DAYS
 from json import dumps
 
 import re
@@ -108,15 +108,16 @@ class SelectedCoursesMixin(SemesterBasedMixin):
         queryset = models.Course.objects.by_semester(year, month)
         courses = queryset.filter(id__in=course_ids.keys()).select_related('department').full_select(year, month)
 
-        return courses, self.get_sections(courses, year, month)
+        return courses
 
     def get_selected_section_ids(self):
         return set(s for sections in self.request.session.get(SELECTED_COURSES_SESSION_KEY, {}).values() for s in sections)
 
     def get_context_data(self, **kwargs):
         data = super(SelectedCoursesMixin, self).get_context_data(**kwargs)
-        data['selected_courses'], data['selected_course_sections'] = self.get_selected_courses()
+        data['selected_courses'] = self.get_selected_courses()
         data['selected_section_ids'] = self.get_selected_section_ids()
+        data['dows'] = DAYS
         return data
 
 class SelectedCoursesListView(AjaxJsonResponseMixin, SelectedCoursesMixin, ListView):

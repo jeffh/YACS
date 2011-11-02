@@ -1,6 +1,40 @@
 from django import template
 
+from yacs.courses.utils import DAYS
+
 register = template.Library()
+
+@register.filter
+def sort(iterable):
+	return sorted(iterable)
+
+@register.filter
+def dow_short(dow):
+	if isinstance(dow, list) or isinstance(dow, tuple):
+		return tuple(map(dow_short, dow))
+	return {
+		'Monday': 'Mo',
+		'Tuesday': 'Tu',
+		'Wednesday': 'We',
+		'Thursday': 'Th',
+		'Friday': 'Fr',
+		'Saturday': 'Sa',
+		'Sunday': 'Su',
+	}.get(dow)
+
+@register.filter
+def prepare_periods(periods):
+	slots = {}
+	for period in periods:
+		dows = tuple(period.days_of_week)
+		slots[dows[0]] = slots.get(dows[0], {})
+		slots[dows[0]][dows] = slots[dows[0]].get(dows, []) + [period]
+		#for dow in period.days_of_week:
+		#	slots[dow] = slots.get(dow, []) + [period]
+	for slot in slots.values():
+		for periods in slot.values():
+			periods.sort(key=lambda p: p.start)
+	return slots
 
 @register.filter
 def sections_for(sections, course):
@@ -17,18 +51,9 @@ def sum_credits(courses):
 	return "%d - %d credits" % (min_creds, max_creds)
 
 @register.filter
-def seats_left_for_course(course, sections=None):
-	if sections is None:
-		sections = course.sections.all()
-	else:
-		sections = [s for s in sections if course.id == s.course_id]
-
-	seats_left = 0
-	for section in sections:
-		seats_left += section.seats_left
-
-	return seats_left
+def seats_left(sections):
+	return sum(s.seats_left for s in sections)
 
 @register.filter
-def join(collection, sep=','):
+def join(collection, sep=', '):
 	return unicode(sep).join(map(unicode, collection))

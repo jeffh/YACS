@@ -1,7 +1,7 @@
 from django.utils.importlib import import_module
 from django.db import models
 from yacs.courses import managers
-from yacs.courses.utils import options, capitalized
+from yacs.courses.utils import options, capitalized, sorted_daysofweek
 from django.core.exceptions import ValidationError
 from django.db.models import F
 
@@ -249,16 +249,33 @@ class Section(models.Model):
     def seats_left(self):
         return max(self.seats_total - self.seats_taken, 0)
 
+    @property
+    def days_of_week(self):
+        dows = set()
+        for period in self.get_periods():
+            print period
+            dows.update(period.days_of_week)
+        return sorted_daysofweek(dows)
+
+    @property
+    def instructors(self):
+        return set([ps.instructor for ps in self.get_period_sections()])
+
     def periods_for_semester(self, **semester_filter_options):
         options = {}
         for name, value in semester_filter_options.items():
             options['semester__'+name] = value
         return self.course_times.filter().select_related('period')
 
+    def get_period_sections(self):
+        #if getattr(self, 'all_period_sections', None) is None:
+        #    self.all_period_sections = self.section_times.all()
+        return set(self.all_section_periods)
+
     def get_periods(self):
-        if getattr(self, 'all_periods', None) is None:
-            self.all_periods = self.periods.all()
-        return self.all_periods
+        #if getattr(self, 'all_periods', None) is None:
+        #    self.all_periods = self.periods.all()
+        return set(sp.period for sp in self.get_period_sections())
 
     def conflicts_with(self, section):
         "Returns True if the given section conflicts with another provided section."

@@ -220,3 +220,25 @@ body {
       padding: 0; }
     #schedules .dayview .instructor {
       padding-top: 0.5em; }
+
+/* SELECTED COURSES */
+#selected_courses .sections .section {
+  padding-top: 7px; }
+#selected_courses .sections .days {
+  font-size: 100%;
+  margin: 0;
+  display: block;
+  clear: both; }
+  #selected_courses .sections .days li {
+    clear: right;
+    margin: 0; }
+    #selected_courses .sections .days li:last-child {
+      padding-right: 0; }
+#selected_courses .sections .time {
+  margin: 0;
+  display: inline; }
+  #selected_courses .sections .time li {
+    float: right;
+    width: 120px; }
+
+/* END SELECTED COURSES */

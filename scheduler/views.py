@@ -14,7 +14,7 @@ from django.core.urlresolvers import reverse
 
 from yacs.courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY
 from yacs.courses.models import Semester, SectionPeriod, Course, Section, Department
-from yacs.courses.utils import dict_by_attr, ObjectJSONEncoder
+from yacs.courses.utils import dict_by_attr, ObjectJSONEncoder, sorted_daysofweek, DAYS
 from yacs.scheduler import models
 from yacs.scheduler.scheduler import compute_schedules
 
@@ -27,11 +27,6 @@ class Timer():
 ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')
 SECTION_LIMIT = getattr(settings, 'SECTION_LIMIT', 60)
 
-
-DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']#, 'Saturday', 'Sunday']
-def sorted_daysofweek(dow):
-    "Sorts list of days of the week to what we're expected."
-    return [d for d in DAYS if d in dow]
 
 def period_stats(periods):
     if len(periods) < 1:

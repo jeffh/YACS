@@ -242,3 +242,34 @@ body {
         }
     }
 }
+
+/* SELECTED COURSES */
+#selected_courses {
+    .sections {
+        .section {
+            padding-top: 7px;
+        }
+        .days {
+            font-size: 100%;
+            margin: 0;
+            display: block;
+            clear: both;
+            li {
+                clear: right;
+                margin: 0;
+                &:last-child {
+                    padding-right: 0;
+                }
+            }
+        }
+        .time {
+            margin: 0;
+            display: inline;
+            li {
+                float: right;
+                width: 120px;
+            }
+        }
+    }
+}
+/* END SELECTED COURSES */
