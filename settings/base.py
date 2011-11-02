@@ -31,15 +31,15 @@ MANAGERS = ADMINS
 #        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
 #    }
 #}
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'yacs.locmemcache'
-    }
-}
-
-if DEBUG:
-    CACHES['default']['BACKEND'] = 'django.core.cache.backends.dummy.DummyCache'
+#CACHES = {
+#    'default': {
+#        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#        'LOCATION': 'yacs.locmemcache'
+#    }
+#}
+#
+#if DEBUG:
+#    CACHES['default']['BACKEND'] = 'django.core.cache.backends.dummy.DummyCache'
 
 
 # Local time zone for this installation. Choices can be found here:
@@ -272,5 +272,5 @@ DEBUG_TOOLBAR_CONFIG = {
 }
 
 # ==== Django-Robots App ====
-ROBOTS_CACHE_TIMEOUT = 60*60*24 # 24-hour cache of robots file
+#ROBOTS_CACHE_TIMEOUT = 60*60*24 # 24-hour cache of robots file
 
