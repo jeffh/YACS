@@ -227,6 +227,7 @@ body {
 #selected_courses .sections .days {
   font-size: 100%;
   margin: 0;
+  padding-left: 17px;
   display: block;
   clear: both; }
   #selected_courses .sections .days li {
