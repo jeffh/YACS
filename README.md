@@ -78,7 +78,6 @@ Currently the project is laid out as follows:
 - **lib**: Contains library code that can, be potentially, separated into an independent project. To enforce this separability, this folder is added to the sys.path for absolute imports
 - **newapi**: This new api application is here. Piggy-backs the majority of its code from courses to generate the API output.
 - **scheduler**: This app handles course scheduling. Relies on the courses app for all the course data.
-- **selenium_tests**: Where all selenium tests reside
 - **settings**: Project settings folder (unlike normal Django projects). Partitioned into separate files for easier deployments.
 - **static**: Where all static media resides (js, css, imgs, sass, etc.)
 - **templates**: Where all the templates are for this project. This is used for displaying all the pages.
