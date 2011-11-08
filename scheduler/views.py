@@ -5,7 +5,7 @@ import urllib
 
 from django.db.models import F, Q
 from django.views.generic import ListView, TemplateView, View
-from django.http import HttpResponse, Http404, HttpResponseNotFound, HttpResponseForbidden
+from django.http import HttpResponse, Http404, HttpResponseNotFound, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.conf import settings
@@ -176,37 +176,27 @@ class JsonComputeSchedules(AjaxJsonResponseMixin, ComputeSchedules):
     def render_to_response(self, context):
         return self.get_json_response(self.get_json_content_prefix() + self.convert_context_to_json(context))
 
-class SchedulesBootloader(SemesterBasedMixin, TemplateView):
-    template_name = 'scheduler/placeholder_schedule_list.html'
-    def get_crns_parameter(self):
-        crns = self.request.GET.get('crns')
-        if crns is not None:
-            crns = [c for c in crns.split('-') if c.strip() != '']
-        if crns is None:
-            selected_courses = self.request.session.get(SELECTED_COURSES_SESSION_KEY, {})
-        prefix = 'crn='
-        crns = prefix + ('&'+prefix).join(urllib.quote(str(crn)) for crn in crns)
-        return crns
-
-    def get_ajax_url(self):
-        single_schedule = ''
-        # disabled for now... use JS
-        #schedule_offset = request.GET.get('at', '')
-        #if schedule_offset:
-        #    single_schedule = "&from=%s&limit=1" % urllib.quote(schedule_offset)
-        year, month = self.get_year_and_month()
-        crns = self.get_crns_parameter()
-        return reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?' + crns + single_schedule
-
-    def get_context_data(self, **kwargs):
-        data = super(SchedulesBootloader, self).get_context_data(**kwargs)
-        year, month = self.get_year_and_month()
-        data.update({
-            'ajax_url': self.get_ajax_url(),
-            'sem_year': year,
-            'sem_month': month,
-        })
-        return data
+def schedules_bootloader(request, year, month):
+    crns = request.GET.get('crns')
+    if crns is not None:
+        crns = [c for c in crns.split('-') if c.strip() != '']
+    if crns is None:
+        selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
+        return redirect(reverse('schedules', kwargs=dict(year=year, month=month)) + '?crns=' + urllib.quote('-'.join(str(crn) for sections in selected_courses.values() for crn in sections)))
+ 
+    prefix = 'crn='
+    crns = prefix + ('&'+prefix).join(urllib.quote(str(crn)) for crn in crns)
+ 
+    single_schedule = ''
+    # disabled for now... use JS
+    #schedule_offset = request.GET.get('at', '')
+    #if schedule_offset:
+    #    single_schedule = "&from=%s&limit=1" % urllib.quote(schedule_offset)
+    return render_to_response('scheduler/placeholder_schedule_list.html', {
+        'ajax_url': reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?' + crns + single_schedule,
+        'sem_year': year,
+        'sem_month': month,
+    }, RequestContext(request))
 
 ## OBSOLETE -- should verify and remove all below this
 class Timer():
