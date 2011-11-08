@@ -41,8 +41,11 @@ class AjaxJsonResponseMixin(object):
             return "%s(%s)" % (name, obj)
         return obj
 
+    def get_is_ajax(self):
+        return self.request.is_ajax()
+
     def render_to_response(self, context):
-        if self.request.is_ajax():
+        if self.get_is_ajax():
             return self.get_json_response(self.get_json_content_prefix() + self.convert_context_to_json(context))
         return super(AjaxJsonResponseMixin, self).render_to_response(context)
 
