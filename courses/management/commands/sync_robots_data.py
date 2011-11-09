@@ -17,6 +17,7 @@ class Command(BaseCommand):
         return url
 
     def handle(self, *args, **options):
+        from robots.models import Url
         try:
             from robots.models import Rule
         except ImportError:
@@ -29,6 +30,8 @@ class Command(BaseCommand):
                 robot='*',
             )
             rule.sites.add(site)
+            root_url, _ = Url.objects.get_or_create(pattern='/')
+            rule.allowed.add(root_url)
             for semester in models.Semester.objects.all():
                 url = self.get_or_create_url('departments', year=semester.year, month=semester.month)
                 rule.allowed.add(url)
