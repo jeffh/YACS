@@ -177,22 +177,18 @@ def test(apps=None):
         apps = 'newapi courses scheduler lib'
     apps = apps.split(' ')
     test_lib = 'lib' in apps
+    apps = [a for a in apps if a != 'lib']
 
     if test_lib:
-        print
-        print "=" * 50, "TESTING LIB"
         with lcd('lib'):
             local('nosetests -x')
-    for app in apps:
-        if app == 'lib':
-            continue
-        print
-        print "=" * 50, "TESTING", app.upper()
-        local('python manage.py test --failfast ' + app)
+
+    if apps:
+        local('python manage.py test --failfast ' + ' '.join(apps))
 
 def loc():
     "Returns the number of lines of all source files, excluding migrations."
-    local('find -E . -iregex ".+/[^0][^/]+\.(py|html|js|scss|txt)$" | xargs wc -l')
+    local('find -E . -iregex ".+/[^0][^/]+\.(py|html|js|scss|txt)$" -not -iregex ".+/_build/.+" -not -name "manage.py" | xargs wc -l')
 
 @roles('webservers')
 def new_deploy():
