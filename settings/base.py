@@ -159,15 +159,12 @@ INSTALLED_APPS = (
     'south',
     'django_extensions',
     'robots',
-    #'djcelery',
-    #'djkombu',
     'debug_toolbar',
     'django_bcrypt',
     'test_utils',
     # local apps
     'yacs.courses',
     'yacs.scheduler',
-    #'yacs.api',
     'yacs.newapi',
 )
 
