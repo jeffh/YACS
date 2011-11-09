@@ -247,7 +247,7 @@ BCRYPT_LOG_ROUNDS = 12
 INTERNAL_IPS = ('127.0.0.1',)
 
 def debug_toolbar_callback(request):
-    return request.user.is_staff
+    return 'test' not in sys.argv and request.user.is_staff
 
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.version.VersionDebugPanel',
