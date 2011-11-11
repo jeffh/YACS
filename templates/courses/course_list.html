@@ -1,7 +1,14 @@
 {# this template is also reused for search results #}
 {% extends 'site_base.html' %}
 
-{% block title %}{{ department.code }} ({{ semester.name }}) | {% endblock %}
+{% block title %}
+	{% if search_results %}
+		Search Results for '{{ query }}'' {% if query_department != 'all' %}in {{ query_department }}{% endif %}
+	{% else %}
+		{{ department.code }} ({{ semester.name }})
+	{% endif %}
+	|
+{% endblock title%}
 
 {% block header %}
 {{ block.super }}
