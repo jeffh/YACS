@@ -54,7 +54,7 @@ class ComputeSchedules(SemesterBasedMixin, TemplateView):
         crns = self.get_crns()
         queryset = models.SectionProxy.objects.by_semester(year, month).filter(crn__in=crns)
         queryset = queryset.select_related('course', 'course__department')
-        sections =  queryset.full_select(year, month)
+        sections = queryset.full_select(year, month)
 
         if len(sections) > SECTION_LIMIT:
             raise HttpResponseForbidden('invalid')
@@ -66,7 +66,7 @@ class ComputeSchedules(SemesterBasedMixin, TemplateView):
         conflict_mapping = self.conflict_mapping(conflicts)
         for section in sections:
             section.conflicts = conflict_mapping.get(section.id) or set()
-        
+
         return sections
 
     def get_savepoint(self):
