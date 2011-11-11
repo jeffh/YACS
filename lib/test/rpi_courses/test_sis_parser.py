@@ -296,5 +296,43 @@ class TestCatalog(TestCaseForModel):
 
         self.assertCourseEquals(course, expected_course)
 
+    def test_digital_control_systems(self):
+        course = self.catalog.find_courses('DIGITAL CONTROL SYSTEMS')[0]
+        expected_course = models.Course(
+            'DIGITAL CONTROL SYSTEMS', 'ECSE', num=4510, credmin=3, credmax=3,
+            grade_type='', sections=[
+                models.Section(
+                    crn=95474, num='01', taken=0, total=40,
+                    periods=[models.Period(
+                        type='LEC', instructor='Chow',
+                        start=1200, end=1320, location='',
+                        int_days=(1,4)
+                    )],
+                    notes=[]
+                )
+            ]
+        )
+
+        self.assertCourseEquals(course, expected_course)
+
+    def test_digital_communications(self):
+        course = self.catalog.find_courses('DIGITAL COMMUNICATIONS')[0]
+        expected_course = models.Course(
+            'DIGITAL COMMUNICATIONS', 'ECSE', num=4560, credmin=3, credmax=3,
+            grade_type='', sections=[
+                models.Section(
+                    crn=97975, num='01', taken=0, total=40,
+                    periods=[models.Period(
+                        type='LEC', instructor='Saulnier',
+                        start=1600, end=1720, location='',
+                        int_days=(0,3)
+                    )],
+                    notes=['MEETS WITH ECSE 6560']
+                )
+            ]
+        )
+
+        self.assertCourseEquals(course, expected_course)
+
 if __name__ == '__main__':
     unittest.main()
