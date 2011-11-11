@@ -1,18 +1,20 @@
 from django.core.urlresolvers import reverse
 from django_dynamic_fixture import new, get, DynamicFixture as F
 from yacs.courses import models
+from yacs.scheduler.models import cache_conflicts
 from yacs.scheduler.views import SELECTED_COURSES_SESSION_KEY
 from shortcuts import ShortcutTestCase
 from datetime import time
+from json import loads
 
 def create_section(**kwargs):
     semesters = kwargs.pop('semesters', [])
     periods = kwargs.pop('periods', [])
-    section = get(models.Section, **kwargs)
+    section = models.Section.objects.create(**kwargs)
     for semester in semesters:
-        get(models.SemesterSection, semester=semester, section=section)
+        models.SemesterSection.objects.create(semester=semester, section=section)
     for period in periods:
-        get(models.SectionPeriod, section=section, **period)
+        models.SectionPeriod.objects.create(section=section, **period)
     return section
 
 def create_periods(*ranges):
@@ -30,12 +32,12 @@ class TestScheduleViews(ShortcutTestCase):
     urls = 'yacs.urls'
 
     def setUp(self):
-        semester = get(models.Semester, year=2011, month=1)
+        self.semester = get(models.Semester, year=2011, month=1)
 
-        course1 = get(models.Course, id=1, min_credits=4, max_credits=4, semesters=[semester])
-        course2 = get(models.Course, id=2, min_credits=4, max_credits=4, semesters=[semester])
+        self.course1 = get(models.Course, id=1, min_credits=4, max_credits=4, semesters=[self.semester])
+        self.course2 = get(models.Course, id=2, min_credits=4, max_credits=4, semesters=[self.semester])
 
-        periods = create_periods(
+        self.periods = create_periods(
             ((10, 0), (11, 50), models.Period.MONDAY | models.Period.THURSDAY),  # 0
             ((10, 0), (10, 50), models.Period.MONDAY | models.Period.THURSDAY),  # 1
             ((11, 0), (11, 50), models.Period.TUESDAY | models.Period.FRIDAY),  # 2
@@ -46,46 +48,70 @@ class TestScheduleViews(ShortcutTestCase):
         )
         # conflicts: (0, 1), (2, 3), (5, 6)
 
-        section1 = create_section(
-            course=course1,
+        self.section1 = create_section(
+            course=self.course1,
             crn=1000,
             number=1,
             seats_taken=3,
             seats_total=10,
+            semesters=[self.semester],
             periods=[
-                dict(period=periods[0], semester=semester),
-                dict(period=periods[4], semester=semester),
+                dict(period=self.periods[0], semester=self.semester),
+                dict(period=self.periods[4], semester=self.semester),
             ],
-            semesters=[semester],
         )
-        section2 = create_section(
-            course=course1,
+        self.section2 = create_section(
+            course=self.course1,
             crn=1001,
             number=2,
             seats_taken=4,
             seats_total=5,
+            semesters=[self.semester],
             periods=[
-                dict(period=periods[1], semester=semester),
+                dict(period=self.periods[1], semester=self.semester),
             ],
-            semesters=[semester],
         )
-        section3 = create_section(
-            course=course2,
+        self.section3 = create_section(
+            course=self.course2,
             crn=1003,
             number=1,
             seats_taken=4,
             seats_total=6,
+            semesters=[self.semester],
             periods=[
-                dict(period=periods[4], semester=semester),
+                dict(period=self.periods[4], semester=self.semester),
             ],
-            semesters=[semester],
+        )
+        self.section4 = create_section(
+            course=self.course2,
+            crn=1004,
+            number=2,
+            seats_taken=7,
+            seats_total=6,
+            semesters=[self.semester],
+            periods=[
+                dict(period=self.periods[5], semester=self.semester),
+            ]
         )
         # can't figure out where the other semester objects get created
         # its do to get(models.Section, ...) but not sure where
-        models.Semester.objects.filter(id__gt=semester.id).delete()
+        #models.Semester.objects.filter(id__gt=self.semester.id).delete()
+        cache_conflicts(semester=self.semester)
 
     def set_selected(self, value):
         return self.set_session({SELECTED_COURSES_SESSION_KEY: value})
+
+    def get_ajax_schedules_from_crns(self, crns):
+        return self.get('ajax-schedules', year=2011, month=1, get='?crn=' + '&crn='.join(map(str, crns)))
+
+    def test_get_ajax_schedules_for_full_sections(self):
+        response = self.get_ajax_schedules_from_crns([1004])
+        self.assertEqual(response.status_code, 200)
+        
+        obj = loads(response.content)
+        schedules = obj['schedules']
+        self.assertEqual(len(schedules), 1)
+        self.assertEqual(schedules[0], {'2': 1004})
 
     def test_get_schedules(self):
         self.set_selected({1: [1000, 1001], 2: [1003]})
@@ -93,6 +119,11 @@ class TestScheduleViews(ShortcutTestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_get_ajax_schedules(self):
-        crns = [1000, 1001, 1003]
-        response = self.get('ajax-schedules', year=2011, month=1, get='?crns=' + '&crns='.join(map(str, crns)))
+        response = self.get_ajax_schedules_from_crns([1000, 1001, 1003])
         self.assertEqual(response.status_code, 200)
+        
+        obj = loads(response.content)
+        schedules = obj['schedules']
+        self.assertEqual(len(schedules), 1)
+        self.assertEqual(schedules[0], {'1': 1001, '2': 1003})
+

@@ -79,10 +79,10 @@ class ComputeSchedules(SemesterBasedMixin, TemplateView):
         # we should probably set some upper bound of computation and restrict number of sections used.
         #schedules = take(100, compute_schedules(selected_courses, generator=True))
         if self.request.GET.get('check'):
-            for schedule in compute_schedules(selected_courses, generator=True):
+            for schedule in compute_schedules(selected_courses, free_sections_only=False, generator=True):
                 raise HttpResponse('ok')
             raise HttpResponseNotFound('conflicts')
-        schedules = compute_schedules(selected_courses, start=self.get_savepoint(), generator=True)
+        schedules = compute_schedules(selected_courses, start=self.get_savepoint(), free_sections_only=False, generator=True)
 
         try:
             limit = int(self.request.GET.get('limit'))

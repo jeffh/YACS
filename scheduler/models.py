@@ -73,7 +73,6 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None):
                     section2=section2,
                     semester=semester,
                 )
-    print
 
 # attach to signals
 def sitemap_for_scheduler(sender, semester, rule, **kwargs):
