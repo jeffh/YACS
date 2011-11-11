@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.db import transaction
 from yacs.courses.bridge import import_courses
 from optparse import make_option
 
@@ -12,4 +13,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options.get('force'):
             print "Forcing update..."
+        #with transaction.commit_on_success():
+        #    import_courses(force=options.get('force', False))
         import_courses(force=options.get('force', False))

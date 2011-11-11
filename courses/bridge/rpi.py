@@ -11,6 +11,7 @@ from yacs.courses.models import (Semester, Course, Department, Section,
 import logging
 import logging.handlers
 import sys
+import datetime
 
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.DEBUG)
@@ -85,6 +86,8 @@ class ROCSRPIImporter(object):
         if len(self.semesters) > 0:
             self.latest_semester = max(self.semesters.values())
 
+        self.pid = None
+
     def sync(self, get_files=None, get_catalog=None):
         "Performs the updating of the database data from RPI's SIS"
         if get_files is None:
@@ -105,7 +108,7 @@ class ROCSRPIImporter(object):
                 if self.latest_semester and semester == self.latest_semester and catalog.datetime <= self.latest_semester.date_updated:
                     continue # already up-to-date
 
-                print 'found catalog for:', catalog.year, catalog.month
+                logger.debug('found catalog for: %r %r' % (catalog.year, catalog.month))
 
                 semester_obj, created = Semester.objects.get_or_create(
                     year=catalog.year,
@@ -143,6 +146,7 @@ class ROCSRPIImporter(object):
             OfferedFor.objects.get_or_create(course=course_obj, semester=semester_obj)
             self.create_sections(course, course_obj, semester_obj)
             logger.debug((' + ' if created else '   ' ) + course.name)
+            self._validate()
 
 
     def create_sections(self, course, course_obj, semester_obj):
@@ -171,12 +175,8 @@ class ROCSRPIImporter(object):
                 section_obj.course = course_obj
                 section_obj.notes = '\n'.join(section.notes)
                 section_obj.save()
-                c = section_obj.periods.count()
-                if c:
-                    logger.debug('      |-> Deleting %d period(s) from Section %s' % (c, section_obj.number))
-                    section_obj.periods.all().delete()
 
-            self.create_timeperiods(semester_obj, section, section_obj)
+            self.create_timeperiods(semester_obj, section, section_obj, p=(course_obj.name == 'DIGITAL COMMUNICATIONS'))
 
     # maps from catalog data to database representation
     DOW_MAPPER = {
@@ -196,7 +196,11 @@ class ROCSRPIImporter(object):
            value = value | self.DOW_MAPPER.get(dow, 0)
         return value
 
-    def create_timeperiods(self, semester_obj, section, section_obj):
+    def _validate(self):
+        if self.pid is not None:
+            assert SectionPeriod.objects.filter(id=self.pid).exists(), 'SectionPeriod.id == %r' % self.pid
+
+    def create_timeperiods(self, semester_obj, section, section_obj, p=False):
         """Creates all the SectionPeriod and Period instances for the given section object from
         the catalog and the section_obj database equivalent to refer to.
         """
@@ -204,7 +208,7 @@ class ROCSRPIImporter(object):
             if None in (period.start, period.end):
                 continue  # invalid period for all we care about... ignore.
             day = 0
-            period_obj, created = Period.objects.get_or_create(
+            period_obj, pcreated = Period.objects.get_or_create(
                 start=period.start_time,
                 end=period.end_time,
                 days_of_week_flag=self.compute_dow(period.days),
@@ -219,6 +223,10 @@ class ROCSRPIImporter(object):
                     kind=period.type,
                 )
             )
+            if p:
+                print '---------------------------', (sectionperiod_obj.id, created)
+                self.pid = sectionperiod_obj.id
+                self._validate()
             if not created:
                 sectionperiod_obj.instructor = period.instructor
                 sectionperiod_obj.location = period.location
@@ -262,11 +270,11 @@ class SISRPIImporter(ROCSRPIImporter):
             if (not semester) or semester == self.latest_semester:
                 try:
                     with closing(urllib2.urlopen(filename)) as page:
-                        print "OPEN", filename
+                        logger.debug("OPEN " + filename)
                         if force or (semester and semester.date_updated is not None):
                             last_mod = dateutil.parser.parse(dict(page.info())['last-modified']).replace(tzinfo=None)
                             if not force and last_mod <= semester.date_updated:
-                                print "Skipping b/c of mod date:", last_mod, "<=", semester.date_updated
+                                logger.debug("Skipping b/c of mod date: %r <= %r" % (last_mod, semester.date_updated))
                                 continue
                         catalog = get_catalog(page.read())
                 except urllib2.URLError:
@@ -294,5 +302,9 @@ class SISRPIImporter(ROCSRPIImporter):
 
 def import_data(force=False):
     "Imports RPI data into the database."
+    logger.debug('Update Time: %r' % datetime.datetime.now())
+    period_count = Period.objects.count()
+    Period.objects.all().delete()
+    logger.debug('Removed %r periods!' % period_count)
     #ROCSRPIImporter().sync() # slower.. someone manually updates this I think?
     SISRPIImporter().sync(force=force)
