@@ -97,7 +97,14 @@ class ComputeSchedules(SemesterBasedMixin, TemplateView):
         return schedules
 
     def prep_schedules_for_context(self, schedules):
-        return [{ str(course.id): section.crn for course, section in schedule.items() } for schedule in schedules]
+        results = []
+        for schedule in schedules:
+            s = {}
+            for course, section in schedule.items():
+                s[str(course.id)] = section.crn
+            results.append(s)
+        return results
+        #return [{ str(course.id): section.crn for course, section in schedule.items() } for schedule in schedules]
         
     def period_stats(self, periods):
         if len(periods) < 1:

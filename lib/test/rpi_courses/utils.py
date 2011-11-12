@@ -11,6 +11,9 @@ class TestCaseForModel(unittest.TestCase):
         self.assertEquals(period1.start, period2.start)
         self.assertEquals(period1.end, period2.end)
         self.assertEquals(period1.int_days, period2.int_days)
+
+    def assertIn(self, item, collection):
+        assert item in collection
     
     def assertPeriodEqual(self, period1, period2):
         self.assertPeriodEquals(period1, period2)

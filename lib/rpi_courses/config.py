@@ -8,8 +8,15 @@ LOG_FILENAME = 'logging'
 logger = logging.getLogger('rpi_courses')
 logger.setLevel(logging.DEBUG)
 
+if hasattr(logging, 'NullHandler'):
+	NullHandler = logging.NullHandler
+else:
+	class NullHandler(logging.Handler):
+	    def emit(self, record):
+	        pass
+
 # fallback, so there's no warning of no handlers
-logger.addHandler(logging.NullHandler())
+logger.addHandler(NullHandler())
 
 if DEBUG:
     # stdout
