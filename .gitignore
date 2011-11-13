@@ -7,3 +7,5 @@
 /deployment/deploy.json
 *.log
 docs/_build/
+test_reports/
+.coverage

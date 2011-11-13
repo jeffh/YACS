@@ -1,0 +1,15 @@
+[run]
+omit =
+	*migrations*
+	*tests*
+	manage.py
+branch = True
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    def __unicode__
+
+[html]
+directory = test_reports

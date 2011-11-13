@@ -179,12 +179,14 @@ def test(apps=None):
     test_lib = 'lib' in apps
     apps = [a for a in apps if a != 'lib']
 
+    local('coverage erase')
+
     if test_lib:
-        with lcd('lib'):
-            local('nosetests -x')
+        local('coverage run -a `which nosetests` -x -w lib')
 
     if apps:
-        local('python manage.py test --failfast ' + ' '.join(apps))
+        local('coverage run -a manage.py test --failfast %s' % (' '.join(apps), ))
+    local('coverage html')
 
 def loc():
     "Returns the number of lines of all source files, excluding migrations."
