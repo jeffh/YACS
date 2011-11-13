@@ -11,6 +11,8 @@ from shortcuts import ShortcutTestCase
 from yacs.courses import models
 from yacs.courses import utils
 from yacs.courses.views import SELECTED_COURSES_SESSION_KEY
+from collections import namedtuple
+import datetime
 
 # utils
 def course(name):
@@ -61,7 +63,20 @@ class SearchTest(BasicSchema):
         course3 = get(models.Course, department=self.ecse_dept, number=4230, name='Imaginary Power')
         get(models.OfferedFor, course=course3, semester=self.semester)
 
+        section = get(models.Section, course=course)
+        get(models.SemesterSection, semester=self.semester, section=section)
+        period = get(models.Period, start=datetime.time(hour=12), end=datetime.time(hour=13), days_of_week_flag=1)
+        get(models.SectionPeriod, section=section, period=period, instructor='Moorthy', semester=self.semester)
+
         self.course1, self.course2, self.course3 = course, course2, course3
+
+    def test_search_by_professor(self):
+        "/2011/1/search/?q=moorthy"
+        response = self.get('search-all-courses', year=2011, month=1, get='?q=moor', status_code=200)
+        courses = response.context['courses']
+        self.assertIn(self.course1, courses)
+        self.assertNotIn(self.course2, courses)
+        self.assertNotIn(self.course3, courses)
 
     def test_searching_with_textfield_only_returning_partial(self):
         "/2011/1/search/?q=4230&partial=1"
@@ -385,4 +400,90 @@ class OptionsTest(TestCase):
     def test_returning_a_list(self):
         g = utils.options(6)
         self.assertEqual(g, [1, 2, 4, 8, 16, 32])
+
+class ExtendedGetAttrTest(TestCase):
+    SampleObject = namedtuple('SampleObject', ('a', 'b'))
+    NestedSampleObject = namedtuple('NestedSampleObject', ('c', 'd'))
+    def test_single_attr(self):
+        o = self.SampleObject(1, 2)
+        self.assertEqual(utils.extended_getattr(o, 'a'), 1)
+        self.assertEqual(utils.extended_getattr(o, 'b'), 2)
+        
+    def test_nested_attr(self):
+        o = self.SampleObject(self.NestedSampleObject(1, 2), 3)
+        self.assertEqual(utils.extended_getattr(o, 'a.c'), 1)
+        self.assertEqual(utils.extended_getattr(o, 'a.d'), 2)
+        self.assertEqual(utils.extended_getattr(o, 'b'), 3)
+        
+    def test_attribute_error_on_invalid_attr(self):
+        o = self.SampleObject(1, 2)
+        self.assertRaises(utils.ExtendedAttributeError, utils.extended_getattr, o, 'f')
+        
+    def test_attribute_error_on_invalid_nested_attr(self):
+        o = self.SampleObject(self.NestedSampleObject(1, 2), 3)
+        self.assertRaises(utils.ExtendedAttributeError, utils.extended_getattr, o, 'a.f')
+        
+    def test_defaults_on_invalid_attr(self):
+        o = self.SampleObject(1, 2)
+        self.assertEqual(utils.extended_getattr(o, 'f', 3), 3)
+        
+    def test_defaults_on_invalid_nested_attr(self):
+        o = self.SampleObject(self.NestedSampleObject(1, 2), 3)
+        self.assertEqual(utils.extended_getattr(o, 'a.f', 9), 9)
+
+class DictByAttrTest(TestCase):
+    SampleObject = namedtuple('SampleObject', ('a', 'b', 'c'))
+    def test_mapping(self):
+        items = [self.SampleObject(i, i+1, i+2) for i in range(10)]
+        ordered = utils.dict_by_attr(items, 'a')
+        self.assertEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], ordered.keys())
+        self.assertEqual([(0, 1, 2)], ordered[0])
+        self.assertEqual([(1, 2, 3)], ordered[1])
+        self.assertEqual([(2, 3, 4)], ordered[2])
+        self.assertEqual([(3, 4, 5)], ordered[3])
+        self.assertEqual([(4, 5, 6)], ordered[4])
+        self.assertEqual([(5, 6, 7)], ordered[5])
+        self.assertEqual([(6, 7, 8)], ordered[6])
+        self.assertEqual([(7, 8, 9)], ordered[7])
+        self.assertEqual([(8, 9, 10)], ordered[8])
+        self.assertEqual([(9, 10, 11)], ordered[9])
+
+    def test_mapping_in_groups(self):
+        items = [self.SampleObject(i % 3, i+1, i+2) for i in range(10)]
+        ordered = utils.dict_by_attr(items, 'a')
+        self.assertEqual([0, 1, 2], ordered.keys())
+        self.assertEqual([(0, 1, 2), (0, 4, 5), (0, 7, 8), (0, 10, 11)], ordered[0])
+        self.assertEqual([(1, 2, 3), (1, 5, 6), (1, 8, 9), ], ordered[1])
+        self.assertEqual([(2, 3, 4), (2, 6, 7), (2, 9, 10), ], ordered[2])
+
+    def test_mapping_with_lambda(self):
+        items = [self.SampleObject(i, i+1, i+2) for i in range(10)]
+        ordered = utils.dict_by_attr(items, lambda o: o.a)
+        self.assertEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], ordered.keys())
+        self.assertEqual([(0, 1, 2)], ordered[0])
+        self.assertEqual([(1, 2, 3)], ordered[1])
+        self.assertEqual([(2, 3, 4)], ordered[2])
+        self.assertEqual([(3, 4, 5)], ordered[3])
+        self.assertEqual([(4, 5, 6)], ordered[4])
+        self.assertEqual([(5, 6, 7)], ordered[5])
+        self.assertEqual([(6, 7, 8)], ordered[6])
+        self.assertEqual([(7, 8, 9)], ordered[7])
+        self.assertEqual([(8, 9, 10)], ordered[8])
+        self.assertEqual([(9, 10, 11)], ordered[9])
+
+    def test_mapping_with_value(self):
+        items = [self.SampleObject(i, i+1, i+2) for i in range(10)]
+        ordered = utils.dict_by_attr(items, 'a', 'b')
+        self.assertEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], ordered.keys())
+        self.assertEqual([1], ordered[0])
+        self.assertEqual([2], ordered[1])
+        self.assertEqual([3], ordered[2])
+        self.assertEqual([4], ordered[3])
+        self.assertEqual([5], ordered[4])
+        self.assertEqual([6], ordered[5])
+        self.assertEqual([7], ordered[6])
+        self.assertEqual([8], ordered[7])
+        self.assertEqual([9], ordered[8])
+        self.assertEqual([10], ordered[9])
+
 

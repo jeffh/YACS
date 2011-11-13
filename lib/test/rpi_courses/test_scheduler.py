@@ -18,10 +18,16 @@ class TestTimeRange(unittest.TestCase):
         self.tr = s.TimeRange(start=1200, end=1300, dow=(0,))
 
     def assertIn(self, item, collection):
-        assert item in collection
+        if hasattr(super(TestTimeRange, self), 'assertIn'):
+            super(TestTimeRange, self).assertIn(item, collection)
+        else:
+            assert item in collection
 
     def assertNotIn(self, item, collection):
-        assert item not in collection
+        if hasattr(super(TestTimeRange, self), 'assertNotIn'):
+            super(TestTimeRange, self).assertNotIn(item, collection)
+        else:
+            assert item not in collection
 
     def test_time_range_does_contain(self):
         "should contain time range of [1100, 1250]."
@@ -48,7 +54,10 @@ class TestMakeSchedules(unittest.TestCase):
             self.courses[n] = catalog.find_courses(n)[0]
 
     def assertIn(self, item, collection):
-        assert item in collection
+        if hasattr(super(TestMakeSchedules, self), 'assertIn'):
+            super(TestMakeSchedules, self).assertIn(item, collection)
+        else:
+            assert item in collection
 
     def dump(self, schedules):
         results = []
@@ -118,7 +127,10 @@ class TestMakeConflictableSchedules(unittest.TestCase):
             self.courses[n] = catalog.find_courses(n)[0]
 
     def assertIn(self, item, collection):
-        assert item in collection
+        if hasattr(super(TestMakeConflictableSchedules, self), 'assertIn'):
+            super(TestMakeConflictableSchedules, self).assertIn(item, collection)
+        else:
+            assert item in collection
 
     def test_schedules_with_conflicts(self):
         "Should schedule courses with some conflicts."

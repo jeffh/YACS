@@ -35,8 +35,8 @@ def extended_getattr(obj, attrpath, default=_NONE):
     path = str(attrpath).split('.')
     value = obj
     for name in path:
-        value = getattr(value, name, _NONE)
-        if value == _NONE:
+        value = getattr(value, name, default)
+        if value is _NONE:
             raise ExtendedAttributeError("%(obj)r does not have attribute %(error_attr)r when trying to walk %(full_attr)r", value, attrpath, name)
     return value
 

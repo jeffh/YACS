@@ -110,27 +110,6 @@ class Period(models.Model):
             #'is_to_be_announced': self.is_to_be_announced,
         }
 
-    def _validate_time(self, value, name):
-        s = str(value)
-        hour, minute = (int(s[:-2]), int(s[-2:]))
-        if not (0 <= hour < 24):
-            raise ValidationError("%s's hour should be greater than or equal to 0 and less than 24" % name)
-        if not (0 <= minute < 60):
-            raise ValidationError("%s's minute should be greater than or equal to 0 and less than 60" % name)
-
-    def clean(self):
-        "Ensures time ranges follow integer format of HHMM."
-        self._validate_time(self.start, 'start')
-        self._validate_time(self.end, 'end')
-
-    @property
-    def start_time(self):
-        return self.start.strftime("%H:%M")
-
-    @property
-    def end_time(self):
-        return self.end.strftime("%H:%M")
-
     @property
     def is_to_be_announced(self):
         return None in (self.start, self.end)
