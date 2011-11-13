@@ -275,7 +275,7 @@ def update_environment(use_pip=False):
     with cd(deploy_config.project_root):
         if env.use_virtualenv:
             if use_pip:
-                pip.install(r='requirements.txt', E=deploy_config.virtualenv_name)
+                pip.install(r='requirements/deployment.txt', E=deploy_config.virtualenv_name)
 
             with prefix(activate_virtualenv_cmd()):
                 run('python', 'manage.py', 'syncdb')
