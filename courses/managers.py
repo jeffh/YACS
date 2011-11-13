@@ -127,7 +127,8 @@ class CourseQuerySet(SemesterBasedQuerySet):
         if not query:
             return Q()
         return Q(department__name__icontains=query) | Q(department__code__icontains=query) | \
-            Q(name__icontains=query) | Q(number__contains=query)
+            Q(name__icontains=query) | Q(number__contains=query) | \
+            Q(sections__section_times__instructor__icontains=query)
 
     def full_select(self, year=None, month=None):
         """Returns all courses in the given queryset, plus Sections, Periods, and SectionPeriod data.
