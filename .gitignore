@@ -9,3 +9,4 @@
 docs/_build/
 test_reports/
 .coverage
+.ropeproject/
