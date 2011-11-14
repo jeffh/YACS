@@ -23,9 +23,21 @@ import time
 ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')
 SECTION_LIMIT = getattr(settings, 'SECTION_LIMIT', 60)
 
+class ResponsePayloadException(Exception):
+    def __init__(self, response):
+        self.response = response
+        super(ResponsePayloadException, self).__init__('')
+
+class ExceptionResponseMixin(object):
+    def dispatch(self, *args, **kwargs):
+        try:
+            return super(ExceptionResponseMixin, self).dispatch(*args, **kwargs)
+        except ResponsePayloadException as e:
+            return e.response
+
 # warning: this view doesn't actually work by itself...
 # mostly because the template doesn't expect the same context
-class ComputeSchedules(SemesterBasedMixin, TemplateView):
+class ComputeSchedules(SemesterBasedMixin, ExceptionResponseMixin, TemplateView):
     template_name = 'scheduler/schedule_list.html'
     object_name = 'schedules'
 
@@ -57,7 +69,7 @@ class ComputeSchedules(SemesterBasedMixin, TemplateView):
         sections = queryset.full_select(year, month)
 
         if len(sections) > SECTION_LIMIT:
-            raise HttpResponseForbidden('invalid')
+            raise ResponsePayloadException(HttpResponseForbidden('invalid'))
 
         section_ids = set(s.id for s in sections)
         conflicts = models.SectionConflict.objects.filter(
@@ -80,8 +92,8 @@ class ComputeSchedules(SemesterBasedMixin, TemplateView):
         #schedules = take(100, compute_schedules(selected_courses, generator=True))
         if self.request.GET.get('check'):
             for schedule in compute_schedules(selected_courses, free_sections_only=False, generator=True):
-                raise HttpResponse('ok')
-            raise HttpResponseNotFound('conflicts')
+                raise ResponsePayloadException(HttpResponse('ok'))
+            raise ResponsePayloadException(HttpResponseNotFound('conflicts'))
         schedules = compute_schedules(selected_courses, start=self.get_savepoint(), free_sections_only=False, generator=True)
 
         try:
