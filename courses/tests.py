@@ -71,7 +71,7 @@ class SearchTest(BasicSchema):
         self.course1, self.course2, self.course3 = course, course2, course3
 
     def test_search_by_professor(self):
-        "/2011/1/search/?q=moorthy"
+        "/2011/1/search/?q=moor"
         response = self.get('search-all-courses', year=2011, month=1, get='?q=moor', status_code=200)
         courses = response.context['courses']
         self.assertIn(self.course1, courses)
