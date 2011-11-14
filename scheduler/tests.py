@@ -104,6 +104,10 @@ class TestScheduleViews(ShortcutTestCase):
     def get_ajax_schedules_from_crns(self, crns):
         return self.get('ajax-schedules', year=2011, month=1, get='?crn=' + '&crn='.join(map(str, crns)))
 
+    def test_get_ajax_check(self):
+        "/2012/1/schedules/ajax/?check=1&crn=95069&_=132124919995"
+        pass # TODO
+
     def test_get_ajax_schedules_for_full_sections(self):
         response = self.get_ajax_schedules_from_crns([1004])
         self.assertEqual(response.status_code, 200)
