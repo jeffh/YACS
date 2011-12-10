@@ -130,23 +130,58 @@ class ComputeSchedules(SemesterBasedMixin, ExceptionResponseMixin, TemplateView)
         timerange = range(min_time.hour -1 , max_time.hour + 2)
         return timerange, sorted_daysofweek(dow_used)
 
+    def get_is_thumbnail(self):
+        return self.request.GET.get('thumbnail')
+
     def section_mapping(self, selected_courses, schedules, periods):
         "Preps the data for display in the context"
         timerange, dows = self.period_stats(periods)
         section_mapping = {} # [schedule-index][dow][starting-hour]
+        dow_mapping = dict((d, i) for i, d in enumerate(DAYS))
         for i, schedule in enumerate(schedules):
             the_dows = section_mapping[i+1] = {}
             for secs in schedule.values():
                 for j, sp in enumerate(secs.all_section_periods):
                     for dow in sp.period.days_of_week:
-                        the_dows[dow] = the_dows.get(dow, {})
-                        the_dows[dow][sp.period.start.hour] = {
-                            'cid': sp.section.course.id,
-                            'crn': sp.section.crn,
-                            'pindex': j,
-                        }
-        
+                        dowi = dow_mapping.get(dow)
+                        the_dows[dowi] = the_dows.get(dowi, {})
+                        the_dows[dowi][sp.period.start.hour] = (
+                            sp.section.course.id,
+                            sp.section.crn,
+                            j,
+                        )
+                        # can cut 50% of response size by reducing reduncy
+                        #the_dows[dow][sp.period.start.hour] = {
+                        #    'cid': sp.section.course.id,
+                        #    'crn': sp.section.crn,
+                        #    'pid': j,
+                        #}
         return section_mapping
+    
+    def section_mapping_for_thumbnails(self, selected_courses, schedules, periods):
+        timerange, dows = self.period_stats(periods)
+        section_mapping = {} # [schedule-index][hour][starting-hour]
+        dow_mapping = dict((d, i) for i, d in enumerate(DAYS))
+        # TODO: fixme -- change to new section_mapping
+        for i, schedule in enumerate(schedules):
+            the_dows = section_mapping[i+1] = {}
+            for secs in schedule.values():
+                for j, sp in enumerate(secs.all_section_periods):
+                    for dow in sp.period.days_of_week:
+                        dowi = dow_mapping.get(dow)
+                        the_dows[dowi] = the_dows.get(dowi, {})
+                        the_dows[dowi][sp.period.start.hour] = (
+                            sp.section.course.id,
+                            sp.section.crn,
+                            j,
+                        )
+        return section_mapping
+
+    def get_section_mapping(self, selected_courses, schedules, periods):
+        if self.get_is_thumbnail():
+            return self.section_mapping_for_thumbnails(selected_courses, schedules, periods)
+        else:
+            return self.section_mapping(selected_courses, schedules, periods)
     
     def prep_courses_and_sections_for_context(self, selected_courses):
         courses_output, sections_output = {}, {}
@@ -176,7 +211,7 @@ class ComputeSchedules(SemesterBasedMixin, ExceptionResponseMixin, TemplateView)
                 'sem_month': month,
                 'courses': courses_output,
                 'sections': sections_output,
-                'section_mapping': self.section_mapping(selected_courses, schedules, periods),
+                'section_mapping': self.get_section_mapping(selected_courses, schedules, periods),
             }
         else:
             context = {
@@ -193,6 +228,7 @@ class JsonComputeSchedules(AjaxJsonResponseMixin, ComputeSchedules):
         return True
         
     def render_to_response(self, context):
+        del context['template_base']
         return self.get_json_response(self.get_json_content_prefix() + self.convert_context_to_json(context))
 
 def schedules_bootloader(request, year, month):

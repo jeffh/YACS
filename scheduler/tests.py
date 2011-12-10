@@ -1,12 +1,15 @@
 from django.core.urlresolvers import reverse
-from django_dynamic_fixture import new, get, DynamicFixture as F
 from yacs.courses import models
+from yacs.courses.tests.factories import (SemesterFactory, CourseFactory, PeriodFactory,
+        SemesterSectionFactory, SectionFactory, SectionPeriodFactory, OfferedForFactory)
 from yacs.scheduler.models import cache_conflicts
 from yacs.scheduler.views import SELECTED_COURSES_SESSION_KEY
 from shortcuts import ShortcutTestCase
 from datetime import time
 from json import loads
 
+
+# TODO: convert this (and the tests that use this) to use factories
 def create_section(**kwargs):
     semesters = kwargs.pop('semesters', [])
     periods = kwargs.pop('periods', [])
@@ -20,8 +23,7 @@ def create_section(**kwargs):
 def create_periods(*ranges):
     periods = []
     for start, end, dow in ranges:
-        periods.append(get(
-            models.Period,
+        periods.append(PeriodFactory.create(
             start=time(*start),
             end=time(*end),
             days_of_week_flag=dow,
@@ -32,10 +34,12 @@ class TestScheduleViews(ShortcutTestCase):
     urls = 'yacs.urls'
 
     def setUp(self):
-        self.semester = get(models.Semester, year=2011, month=1)
+        self.semester = SemesterFactory.create(year=2011, month=1)
 
-        self.course1 = get(models.Course, id=1, min_credits=4, max_credits=4, semesters=[self.semester])
-        self.course2 = get(models.Course, id=2, min_credits=4, max_credits=4, semesters=[self.semester])
+        self.course1 = CourseFactory.create(id=1, min_credits=4, max_credits=4)
+        OfferedForFactory.create(course=self.course1, semester=self.semester)
+        self.course2 = CourseFactory.create(id=2, min_credits=4, max_credits=4)
+        OfferedForFactory.create(course=self.course2, semester=self.semester)
 
         self.periods = create_periods(
             ((10, 0), (11, 50), models.Period.MONDAY | models.Period.THURSDAY),  # 0
@@ -111,7 +115,7 @@ class TestScheduleViews(ShortcutTestCase):
     def test_get_ajax_schedules_for_full_sections(self):
         response = self.get_ajax_schedules_from_crns([1004])
         self.assertEqual(response.status_code, 200)
-        
+
         obj = loads(response.content)
         schedules = obj['schedules']
         self.assertEqual(len(schedules), 1)
@@ -125,7 +129,7 @@ class TestScheduleViews(ShortcutTestCase):
     def test_get_ajax_schedules(self):
         response = self.get_ajax_schedules_from_crns([1000, 1001, 1003])
         self.assertEqual(response.status_code, 200)
-        
+
         obj = loads(response.content)
         schedules = obj['schedules']
         self.assertEqual(len(schedules), 1)

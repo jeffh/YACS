@@ -2,12 +2,14 @@
 
 var History = window.History;
 
-var schedules_template, no_schedules_template, too_many_crns_template, period_height;
+var schedules_template, no_schedules_template, too_many_crns_template, period_height, thumbnail_template;
 if ($('#schedule-template').length){
     schedules_template = _.template($('#schedule-template').html());
     no_schedules_template = _.template($('#no-schedules-template').html());
     too_many_crns_template = _.template($('#too-many-crns-template').html());
-    period_height = parseInt($('#schedule-template').attr('data-period-height'), 10);
+    thumbnail_template = _.template($('#thumbnail-template').html());
+    period_height = parseInt($('#schedule-template').attr('data-period-height'), 10)
+    thumbnail_period_height = parseInt($('#thumbnail-template').attr('data-period-height'), 10);
 }
 
 function url_with_sid(sid){
@@ -41,6 +43,26 @@ function prev_schedule(){
         History.pushState({schedule: sid}, null, url_with_sid(sid));
     }
     return false;
+}
+function load_schedule(){
+  var sid = $(this).closest('.schedule_wrapper').attr('data-sid');
+  $('#schedules .schedule_wrapper').hide(); // hide all schedules
+  $('#schedule' + sid).show(); // show specific one
+  $('#thumbnails').slideUp({duration: 250});
+  $('#thumbnails .schedule_wrapper').removeClass('selected');
+  $('#schedule_thumbnail' + sid).addClass('selected');
+  if(History.enabled){
+    History.pushState({schedule: sid}, null, url_with_sid(sid));
+  }
+  return false;
+}
+function toggle_thumbnails(){
+  if($('#thumbnails').is(':visible')){
+    $('#thumbnails').slideUp({duration: 250});
+  } else {
+    $('#thumbnails').slideDown({duration: 250}); // show thumbnails
+  }
+  return false;
 }
 
 // template rendering
@@ -100,17 +122,17 @@ function humanize_hour(hour){
     return hour + " " + apm;
 }
 
-function get_period_offset(period){
+function get_period_offset(period, height){
     var start = time_parts(period.start_time),
         time = start.minute * 60 + start.second;
-    return time / 3600.0 * period_height;
+    return time / 3600.0 * height;
 }
 
-function get_period_height(period){
+function get_period_height(period, height){
     var time = time_to_seconds(period.end_time) - time_to_seconds(period.start_time);
     //return 25 // 30 min time block
     //return 41.666666667 // 50 min time block
-    return time / 3600.0 * period_height;
+    return time / 3600.0 * height;
 }
 
 function get_schedule_id_from_state(){
@@ -140,8 +162,12 @@ function get_schedule_id_from_state(){
 var renderers = [];
 function show_schedules(context){
     context.humanize_time = humanize_time;
-    context.get_period_height = get_period_height;
-    context.get_period_offset = get_period_offset;
+    context.get_period_height = function(period){
+        return get_period_height(period, context.is_thumbnail ? thumbnail_period_height : period_height);
+    };
+    context.get_period_offset = function(period){
+        return get_period_offset(period, context.is_thumbnail ? thumbnail_period_height : period_height);
+    };
     context.get_crns = get_crns;
     context.color_map = create_color_map(context);
     context.humanize_hour = humanize_hour;
@@ -159,9 +185,18 @@ function show_schedules(context){
         return function(){
             context.sid = i + 1;
             context.schedule = schedule;
+            context.is_thumbnail = false;
             var frag = $(schedules_template(context));
-            if (i !== selected_schedule) $(frag).hide();
+            context.is_thumbnail = true;
+            var thumb = $(thumbnail_template(context));
+            if (i !== selected_schedule) {
+                frag.hide();
+                //thumb.hide(); // TOOD: show if thumbnail mode
+            } else {
+              thumb.addClass('selected');
+            }
             $('#schedules').append(frag);
+            $('#thumbnails').append(thumb);
             console.log('rendering ' + (i+1) + ' of ' + context.schedules.length);
         };
     }
@@ -188,8 +223,11 @@ function get_schedules(){
             // TODO: show a custom error page
             if(xhr.status === 403){
                 $('#schedules').html(too_many_crns_template({}));
-            } else
-                alert('Failed to get schedules... (are you connected to the internet?)');
+            } else {
+                //alert('Failed to get schedules... (are you connected to the internet?)');
+                // TODO: log to the server (if we can)
+                console.error('Failed to save to schedules: ' + xhr.status);
+            }
         }
     });
 }
@@ -197,11 +235,16 @@ function get_schedules(){
 function schedules_loaded(){
     $('.schedule_wrapper').hide();
     $('.schedule_wrapper:first').show();
+    /*
     $('.prev-schedule').live('click', prev_schedule);
     $('.next-schedule').live('click', next_schedule);
+    */
+    $('.select-schedule').live('click', load_schedule);
+    $('.show-thumbnails').live('click', toggle_thumbnails);
 }
 
 $(function(){
+    $('#thumbnails').hide();
     schedules_loaded();
     get_schedules();
 

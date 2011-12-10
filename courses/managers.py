@@ -185,5 +185,5 @@ class CourseQuerySet(SemesterBasedQuerySet):
         return self.filter(department=department)
 
     def search(self, query=None, dept=None):
-        return self.filter(self._search_Q(query, dept))
+        return self.filter(self._search_Q(query or '', dept))
 

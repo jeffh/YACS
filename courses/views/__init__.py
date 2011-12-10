@@ -2,91 +2,18 @@ from django.views.generic import ListView, RedirectView, DetailView, View
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import redirect, get_object_or_404
-from django.db.models import Q
-from django.db.models.query import QuerySet
 from django.conf import settings
 from yacs.courses import models
 from yacs.courses.utils import ObjectJSONEncoder, DAYS
-from json import dumps
+from yacs.courses.views.mixins import (SemesterBasedMixin, AjaxJsonResponseMixin, SelectedCoursesMixin,
+        PartialResponseMixin, SearchMixin, SELECTED_COURSES_SESSION_KEY)
 
 import re
 
-SELECTED_COURSES_SESSION_KEY = 'selected'
-
-class AjaxJsonResponseMixin(object):
-    json_content_prefix = 'for(;;); '
-    json_allow_callback = False
-    json_callback_parameter = 'callback'
-    json_encoder = ObjectJSONEncoder(indent=4 if settings.DEBUG else None)
-
-    def get_json_response(self, content, **httpresponse_kwargs):
-        return HttpResponse(content, content_type='application/json', **httpresponse_kwargs)
-
-    def get_json_allow_callback(self):
-        return self.json_allow_callback
-
-    def get_json_callback_parameter(self):
-        return self.json_callback_parameter
-
-    def get_json_content_prefix(self):
-        return self.json_content_prefix
-
-    def get_json_callback_parameter_name(self):
-        return self.request.GET.get(self.get_json_callback_parameter(), '')
-
-    def convert_context_to_json(self, context):
-        name = self.get_json_callback_parameter_name()
-        obj = self.json_encoder.encode(context)
-        if name:
-            return "%s(%s)" % (name, obj)
-        return obj
-
-    def get_is_ajax(self):
-        return self.request.is_ajax()
-
-    def render_to_response(self, context):
-        if self.get_is_ajax():
-            return self.get_json_response(self.get_json_content_prefix() + self.convert_context_to_json(context))
-        return super(AjaxJsonResponseMixin, self).render_to_response(context)
-
-class TemplateBaseOverride(object):
-    template_base = 'site_base.html'
-
-    def get_template_base(self):
-        return self.template_base
-
-    def get_context_data(self, **kwargs):
-        data = super(TemplateBaseOverride, self).get_context_data(**kwargs)
-        data['template_base'] = self.get_template_base()
-        return data
-
-class SemesterBasedMixin(TemplateBaseOverride):
-    fetch_semester = False
-    def get_year_and_month(self):
-        year, month = self.kwargs.get('year'), self.kwargs.get('month')
-        if year or month:
-            return year, month
-        self.semester = getattr(self, 'semester', None) or models.Semester.objects.order_by('-year', '-month')[0]
-        return self.semester.year, self.semester.month
-
-    def get_semester(self):
-        sem = getattr(self, 'semester', None)
-        if sem is None:
-            year, month = self.get_year_and_month()
-            if getattr(self, 'semester', None) is None:
-                self.semester = get_object_or_404(models.Semester.objects, year=year, month=month)
-            sem = self.semester
-        return sem
-
-    def get_context_data(self, **kwargs):
-        data = super(SemesterBasedMixin, self).get_context_data(**kwargs)
-        data['sem_year'], data['sem_month'] = self.get_year_and_month()
-        if self.fetch_semester:
-            data['semester'] = self.get_semester()
-        return data
-
 class SemesterListView(ListView):
+    "Displays a list of semesters to be selected."
     def get_queryset(self):
+        "Returns all semesters. Optionally can be filtered by the year."
         qs = models.Semester.objects.all()
         year = self.kwargs.get('year')
         if year:
@@ -94,49 +21,25 @@ class SemesterListView(ListView):
         return qs
 
 class SemesterDetailView(SemesterBasedMixin, DetailView):
+    "Displays a specific semester."
     def get_object(self):
+        "Returns a specific semester, given year and month."
         return self.get_semester()
 
-class SelectedCoursesMixin(SemesterBasedMixin):
-    def get_sections(self, courses, year, month):
-        course_ids = [c.id for c in courses]
-        queryset = models.Section.objects.by_semester(year, month)
-        sections = queryset.filter(course__id__in=course_ids)
-
-        return sections
-
-    def get_selected_courses(self):
-        year, month = self.get_year_and_month()
-        course_ids = self.request.session.get(SELECTED_COURSES_SESSION_KEY, {})
-        queryset = models.Course.objects.by_semester(year, month)
-        courses = queryset.filter(id__in=course_ids.keys()).select_related('department').full_select(year, month)
-
-        return courses
-
-    def get_selected_section_ids(self):
-        return set(s for sections in self.request.session.get(SELECTED_COURSES_SESSION_KEY, {}).values() for s in sections)
-
-    def get_context_data(self, **kwargs):
-        data = super(SelectedCoursesMixin, self).get_context_data(**kwargs)
-        data['selected_courses'] = self.get_selected_courses()
-        data['selected_section_ids'] = self.get_selected_section_ids()
-        data['dows'] = DAYS
-        return data
-
 class SelectedCoursesListView(AjaxJsonResponseMixin, SelectedCoursesMixin, ListView):
+    "Lists all user selected courses & sections."
     template_name = 'courses/selected_courses_list.html'
 
     def convert_context_to_json(self, context):
-        #queryset = context['selected_course_sections'].select_related('course')
-        #result = self.json_encoder.encode(queryset)
-        return self.json_encoder.encode(self.request.session.get(SELECTED_COURSES_SESSION_KEY, {}))
+        "Returns the user's selection as JSON."
+        return self.json_encoder.encode(self.get_user_selection())
 
     def get_queryset(self):
-        return []#self.get_selected_courses()[1]
+        return []  # perform no db operations, see convert_context_to_json()
 
 
 class DepartmentListView(SelectedCoursesMixin, ListView):
-    "Provides all departments."
+    "List all departments for a particular semester."
     context_object_name = 'departments'
     fetch_semester = True
 
@@ -144,37 +47,14 @@ class DepartmentListView(SelectedCoursesMixin, ListView):
         year, month = self.get_year_and_month()
         return models.Department.objects.by_semester(year, month)
 
-class SearchMixin(object):
-
-    def get_context_data(self, **kwargs):
-        data = super(SearchMixin, self).get_context_data(**kwargs)
-        data['departments'] = models.Department.objects.all()
-        return data
-
-class PartialResponseMixin(object):
-    partial_template_name = None
-    partial_parameter_name = 'partial'
-
-    def get_partial_parameter_name(self):
-        return self.partial_parameter_name
-
-    def get_use_partial(self):
-        return self.request.GET.get(self.get_partial_parameter_name())
-
-    def get_partial_template_name(self):
-        return self.partial_template_name
-
-    def get_template_names(self):
-        templates = super(PartialResponseMixin, self).get_template_names()
-        if self.get_use_partial():
-            templates.insert(0, self.get_partial_template_name())
-        return templates
-
 class SearchCoursesListView(PartialResponseMixin, SearchMixin, SelectedCoursesMixin, ListView):
+    "Show search results from a given query."
     context_object_name = 'courses'
     template_name = 'courses/course_list.html'
+    # returns HTML partials. See PartialResponseMixin
     partial_template_name = 'courses/_course_list.html'
 
+    # optional parameters used by newapi
     def get_queryset(self, full_select=True):
         year, month = self.get_year_and_month()
         query = self.request.GET.get('q', '')
@@ -204,11 +84,13 @@ class SearchCoursesListView(PartialResponseMixin, SearchMixin, SelectedCoursesMi
         return data
 
 class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
+    "Shows all courses for a given department."
     context_object_name = 'courses'
     template_name = 'courses/course_list.html'
     fetch_semester = True
 
-    def get_queryset(self, select_related=True, full_select=True):
+    # optional parameters used by newapi
+    def get_queryset(self, prefetch_department=True, full_select=True):
         year, month = self.get_year_and_month()
         self.department = get_object_or_404(models.Department, code=self.kwargs['code'])
         courses = models.Course.objects.by_semester(year, month).by_department(self.department)
@@ -216,7 +98,7 @@ class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
         query = self.request.GET.get('q')
         if query:
             courses = courses.search(query, self.department)
-        if select_related:
+        if prefetch_department:
             courses = courses.select_related('department')
         if full_select:
             courses = courses.full_select(year, month)
@@ -233,8 +115,11 @@ class CourseDetailView(SemesterBasedMixin, DetailView):
     "Shows gruesome amount of detail for a course"
     context_object_name = 'course'
 
-    def get_queryset(self):
-        return models.Course.objects.all().select_related()
+    def get_queryset(self, select_related=True):
+        qs = models.Course.objects.all()
+        if select_related:
+            qs = qs.select_related()
+        return qs
 
     def get_object(self):
         deptcode, number = self.kwargs.get('code'), self.kwargs.get('number')
@@ -249,6 +134,7 @@ class CourseDetailView(SemesterBasedMixin, DetailView):
         return obj
 
     def get_sections(self, course):
+        "Fetches all sections for a given course."
         year, month = self.get_year_and_month()
         section_periods = models.SectionPeriod.objects.by_course(course, year, month).select_related()
 
@@ -274,7 +160,9 @@ class RedirectToLatestSemesterRedirectView(SemesterBasedMixin, RedirectView):
         return reverse(self.url_name, kwargs=dict(year=semester.year, month=semester.month))
 
 class DeselectCoursesView(AjaxJsonResponseMixin, SemesterBasedMixin, View):
+    "Performs the operation of deselecting courses. This is also used by javascript to update the selected courses."
     def get_redirect_url(self):
+        "Returns the URL to redirect to after this view completes its work."
         redirect_url = self.request.POST.get('redirect_to')
         if redirect_url:
             year, month = self.get_year_and_month()
@@ -282,6 +170,7 @@ class DeselectCoursesView(AjaxJsonResponseMixin, SemesterBasedMixin, View):
         return redirect('index')
 
     def render_to_response(self, context):
+        "Perform the redirect unless this is an ajax request."
         if self.request.is_ajax():
             return super(DeselectCoursesView, self).render_to_response(context)
         return self.get_redirect_url()
@@ -320,6 +209,7 @@ class DeselectCoursesView(AjaxJsonResponseMixin, SemesterBasedMixin, View):
         return course_ids
 
 
+    # we only accept POST requests
     def post(self, request, *args, **kwargs):
         self.request, self.args, self.kwargs = request, args, kwargs
         selection = self.update_selected()
@@ -327,6 +217,7 @@ class DeselectCoursesView(AjaxJsonResponseMixin, SemesterBasedMixin, View):
         return self.render_to_response(self.get_context_data(selection=selection))
 
 class SelectCoursesView(DeselectCoursesView):
+    "Selects a given course. This is used for non-javascript clients."
     def update_selected(self):
         if not isinstance(self.request.session.get(SELECTED_COURSES_SESSION_KEY, {}), dict):
             self.request.session[SELECTED_COURSES_SESSION_KEY] = {}

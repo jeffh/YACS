@@ -4,6 +4,7 @@ from yacs.courses import managers
 from yacs.courses.utils import options, capitalized, sorted_daysofweek
 from django.core.exceptions import ValidationError
 from django.db.models import F
+from itertools import product
 
 __all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting',
     'Course', 'OfferedFor', 'SectionPeriod']
@@ -100,7 +101,7 @@ class Period(models.Model):
         unique_together = ('start', 'end', 'days_of_week_flag')
 
     def __unicode__(self):
-        return u"%s to %s on %s" % (self.start_time, self.end_time, ', '.join(self.days_of_week))
+        return u"%s to %s on %s" % (self.start, self.end, ', '.join(self.days_of_week))
 
     def toJSON(self, select_related=()):
         return {
@@ -232,7 +233,6 @@ class Section(models.Model):
     def days_of_week(self):
         dows = set()
         for period in self.get_periods():
-            print period
             dows.update(period.days_of_week)
         return sorted_daysofweek(dows)
 
@@ -240,20 +240,13 @@ class Section(models.Model):
     def instructors(self):
         return set([ps.instructor for ps in self.get_period_sections()])
 
-    def periods_for_semester(self, **semester_filter_options):
-        options = {}
-        for name, value in semester_filter_options.items():
-            options['semester__'+name] = value
-        return self.course_times.filter().select_related('period')
-
     def get_period_sections(self):
-        #if getattr(self, 'all_period_sections', None) is None:
-        #    self.all_period_sections = self.section_times.all()
+        if getattr(self, 'all_section_periods', None) is None:
+            print "WARN: performing DB call. You should be using full_select."
+            self.all_section_periods = self.section_times.all()
         return set(self.all_section_periods)
 
     def get_periods(self):
-        #if getattr(self, 'all_periods', None) is None:
-        #    self.all_periods = self.periods.all()
         return set(sp.period for sp in self.get_period_sections())
 
     def conflicts_with(self, section):
@@ -266,11 +259,9 @@ class Section(models.Model):
         if hasattr(self, 'conflicts'):
             return section.id in self.conflicts
         # END ---
-        periods = section.get_periods()
-        for period1 in self.get_periods():
-            for period2 in periods:
-                if period1.conflicts_with(period2):
-                    return True
+        for period1, period2 in product(self.get_periods(), section.get_periods()):
+            if period1 == period2 or period1.conflicts_with(period2):
+                return True
         return False
 
 class Course(models.Model):
@@ -327,32 +318,21 @@ class Course(models.Model):
         return '%s %s' % (self.department.code, self.number)
 
     @property
-    def credits(self):
-        "Returns the number of credits the course is. If there is a range, returns the average."
-        if self.min_credits == self.max_credits:
-            return self.min_credits
-        return (self.min_credits + self.max_credits) / 2.0
-
-    @property
     def credits_display(self):
         "Returns the number of credits the course for those needy humans."
         if self.min_credits == self.max_credits:
             return "%d credit%s" % (self.min_credits, '' if self.min_credits == 1 else 's')
         return "%d - %d credits" % (self.min_credits, self.max_credits)
 
-    @credits.setter
-    def credits(self, value):
-        self.min_credits = self.max_credits = int(value)
-
     @property
     def available_sections(self):
         return self.sections.by_availability()
 
-    def sections_by_semester(self, semester):
-        return self.sections.filter(semesters__contains=semester)
+    #def sections_by_semester(self, semester):
+    #    return self.sections.filter(semesters__contains=semester)
 
-    def available_sections_by_semester(self, semester):
-        return self.available_sections.filter(semesters__contains=semester)
+    #def available_sections_by_semester(self, semester):
+    #    return self.available_sections.filter(semesters__contains=semester)
 
     # TODO: These few properties should be moved into a manager for query optimization
     @property

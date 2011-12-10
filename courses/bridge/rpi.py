@@ -7,17 +7,27 @@ from contextlib import closing
 from yacs.courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment,
     SemesterSection)
+from yacs.courses.signals import sections_modified
 
 import logging
 import logging.handlers
 import sys
 import datetime
 
+
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.DEBUG)
 
+try:
+    NullHandler = logging.NullHandler
+except AttributeError:
+    class NullHandler(object):
+        def emit(self, record):
+            pass
+        handle = emit
+
 # fallback, so there's no warning of no handlers
-logger.addHandler(logging.NullHandler())
+logger.addHandler(NullHandler())
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 # it would be best to get this data from a reliable data source:
@@ -86,9 +96,9 @@ class ROCSRPIImporter(object):
         if len(self.semesters) > 0:
             self.latest_semester = max(self.semesters.values())
 
-        self.pid = None
+        self.sections_changed = False
 
-    def sync(self, get_files=None, get_catalog=None):
+    def sync(self, get_files=None, get_catalog=None, foo=234234):
         "Performs the updating of the database data from RPI's SIS"
         if get_files is None:
             from rpi_courses import list_rocs_xml_files
@@ -124,6 +134,8 @@ class ROCSRPIImporter(object):
                     logger.debug(' CREATE SEMESTER ' + repr(semester_obj))
                 else:
                     logger.debug(' EXISTS SEMESTER ' + repr(semester_obj))
+                if self.sections_changed:
+                    sections_modified.send(sender=self, semester=semester_obj)
 
     def create_courses(self, catalog, semester_obj):
         "Inserts all the course data, including section information, into the database from the catalog."
@@ -146,8 +158,6 @@ class ROCSRPIImporter(object):
             OfferedFor.objects.get_or_create(course=course_obj, semester=semester_obj)
             self.create_sections(course, course_obj, semester_obj)
             logger.debug((' + ' if created else '   ' ) + course.name)
-            self._validate()
-
 
     def create_sections(self, course, course_obj, semester_obj):
         "Inserts all section data, including time period information, into the database from the catalog."
@@ -175,8 +185,10 @@ class ROCSRPIImporter(object):
                 section_obj.course = course_obj
                 section_obj.notes = '\n'.join(section.notes)
                 section_obj.save()
+            else:
+                self.sections_changed = False
 
-            self.create_timeperiods(semester_obj, section, section_obj, p=(course_obj.name == 'DIGITAL COMMUNICATIONS'))
+            self.create_timeperiods(semester_obj, section, section_obj)
 
     # maps from catalog data to database representation
     DOW_MAPPER = {
@@ -196,11 +208,7 @@ class ROCSRPIImporter(object):
            value = value | self.DOW_MAPPER.get(dow, 0)
         return value
 
-    def _validate(self):
-        if self.pid is not None:
-            assert SectionPeriod.objects.filter(id=self.pid).exists(), 'SectionPeriod.id == %r' % self.pid
-
-    def create_timeperiods(self, semester_obj, section, section_obj, p=False):
+    def create_timeperiods(self, semester_obj, section, section_obj):
         """Creates all the SectionPeriod and Period instances for the given section object from
         the catalog and the section_obj database equivalent to refer to.
         """
@@ -223,10 +231,6 @@ class ROCSRPIImporter(object):
                     kind=period.type,
                 )
             )
-            if p:
-                print '---------------------------', (sectionperiod_obj.id, created)
-                self.pid = sectionperiod_obj.id
-                self._validate()
             if not created:
                 sectionperiod_obj.instructor = period.instructor
                 sectionperiod_obj.location = period.location
@@ -298,6 +302,8 @@ class SISRPIImporter(ROCSRPIImporter):
                     logger.debug(' CREATE SEMESTER ' + repr(semester_obj))
                 else:
                     logger.debug(' EXISTS SEMESTER ' + repr(semester_obj))
+                if self.sections_changed:
+                    sections_modified.send(sender=self, semester=semester_obj)
 
 
 def import_data(force=False):

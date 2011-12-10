@@ -636,6 +636,22 @@ header {
 		$arrow-height: 10px;
 		$arrow-width: 20px;
 
+		.view-schedules {
+            display: block;
+            float: left;
+			height: 5px;
+			width: 7px;
+			border: 10px solid $highlight;
+            background: $highlight;
+
+			@include border-radius(4px);
+
+            &:hover {
+				background: #b42020;
+                border-color: #b42020;
+            }
+		}
+
 		.prev-schedule, .next-schedule {
 			text-decoration: none;
 			font-size: 150%;
@@ -846,7 +862,147 @@ header {
 		}
 	}
 }
+#thumbnails {
+	h1 {
+		text-align: center;
+		font-size: 130%;
+	}
+	.thumbnail {
+		height: 130px;
+		width: 110px;
+		float: left;
+        &.selected {
+            .day {
+                background: #e0e0e0;
+            }
+        }
+		&:hover {
+			cursor: pointer;
+			.day {
+				background: #822;
+			}
+			.row {
+				border-bottom: 1px solid #b55;
+				&:first-child {
+					border-top: 1px solid #b55;
+				}
+				/*
+				&.noon {
+					background: #a44;
+				}
+				*/
+			}
+			.class {
+				$adjust: #000;
 
+				&.color1 {
+					background: #d7b8b8 - $adjust;
+					border-color: #bc9393 - $adjust;
+				}
+				&.color2 {
+					background: #b8d7b8 - $adjust;
+					border-color: #93bc93 - $adjust;
+				}
+				&.color3 {
+					background: #b8b8d7 - $adjust;
+					border-color: #9393bc - $adjust;
+				}
+				&.color4 {
+					background: #d7d6b7 - $adjust;
+					border-color: #bcb192 - $adjust;
+				}
+				&.color5 {
+					background: #bccbd7 - $adjust;
+					border-color: #97a6bc - $adjust;
+				}
+				&.color6 {
+					background: #d7c2d5 - $adjust;
+					border-color: #bc9db0 - $adjust;
+				}
+				&.color7 {
+					background: #d0d7cd - $adjust;
+					border-color: #b5b2a8 - $adjust;
+				}
+				&.color8 {
+					background: #a7d7cb - $adjust;
+					border-color: #8cb2a6 - $adjust;
+				}
+				&.color9 {
+					background: #ffc37d - $adjust;
+					border-color: #e49e58 - $adjust;
+				}
+			}
+		}
+	}
+	.day {
+		float: left;
+		width: 20px;
+		padding: 1px;
+	}
+	.row {
+		height: 8px;
+		border-bottom: 1px solid $border-color;
+		&:first-child {
+			border-top: 1px solid $border-color;
+			border-bottom: 1px solid $border-color;
+			height: 9px;
+		}
+		&:last-child {
+			border-bottom: 1px solid $border-color;
+		}
+		/*
+		&.noon {
+			background: #d0d0d0;
+		}
+		*/
+
+	}
+	.class {
+		display: block;
+		position: relative;
+		z-index: 1000;
+
+		@include border-radius(2px);
+		$darken: #222;
+
+		&.color1 {
+			background: #d7b8b8 - $darken;
+			border-color: #bc9393 - $darken;
+		}
+		&.color2 {
+			background: #b8d7b8 - $darken;
+			border-color: #93bc93 - $darken;
+		}
+		&.color3 {
+			background: #b8b8d7 - $darken;
+			border-color: #9393bc - $darken;
+		}
+		&.color4 {
+			background: #d7d6b7 - $darken;
+			border-color: #bcb192 - $darken;
+		}
+		&.color5 {
+			background: #bccbd7 - $darken;
+			border-color: #97a6bc - $darken;
+		}
+		&.color6 {
+			background: #d7c2d5 - $darken;
+			border-color: #bc9db0 - $darken;
+		}
+		&.color7 {
+			background: #d0d7cd - $darken;
+			border-color: #b5b2a8 - $darken;
+		}
+		&.color8 {
+			background: #a7d7cb - $darken;
+			border-color: #8cb2a6 - $darken;
+		}
+		&.color9 {
+			background: #ffc37d - $darken;
+			border-color: #e49e58 - $darken;
+		}
+	}
+}
 /* END SCHEDULES */
 
 /* FOOTER */

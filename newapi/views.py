@@ -103,7 +103,7 @@ class SearchCoursesListView(APIMixin, views.SearchCoursesListView):
 
 class CourseByDeptListView(APIMixin, views.CourseByDeptListView):
     def get_api_payload(self):
-        queryset = self.get_queryset(select_related=False, full_select=False)
+        queryset = self.get_queryset(prefetch_department=False, full_select=False)
         json = self.department.toJSON()
         json['courses'] = queryset.toJSON()
         return json
