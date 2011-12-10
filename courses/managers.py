@@ -63,6 +63,9 @@ class SectionPeriodQuerySet(SemesterBasedQuerySet):
 
         return qs
 
+    def by_crns(self, crns, year=None, month=None):
+        return self.by_semester(year, month).filter(crn__in=crns)
+
     def by_course_code(self, code, number, year=None, month=None):
         return self.by_semester(year, month).filter(section__course__department__code=code, section__course__number=number)
 

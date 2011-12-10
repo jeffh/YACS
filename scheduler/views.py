@@ -35,9 +35,26 @@ class ExceptionResponseMixin(object):
         except ResponsePayloadException as e:
             return e.response
 
+class ConflictMixin(SemesterBasedMixin):
+    def conflict_mapping(self, conflicts):
+        result = {} # section_id => [section_ids]
+        for conflict in conflicts:
+            s = result[conflict.section1.id] = result.get(conflict.section1.id, set())
+            s.add(conflict.section2.id)
+            s = result[conflict.section2.id] = result.get(conflict.section2.id, set())
+            s.add(conflict.section1.id)
+        return result
+
+    def get_sections_by_crns(self, crns):
+        year, month = self.get_year_and_month()
+        queryset = models.SectionProxy.objects.by_crns(crns, year=year, month=month)
+        queryset = queryset.select_related('course', 'course__department')
+        return queryset.full_select(year, month)
+
+
 # warning: this view doesn't actually work by itself...
 # mostly because the template doesn't expect the same context
-class ComputeSchedules(SemesterBasedMixin, ExceptionResponseMixin, TemplateView):
+class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
     template_name = 'scheduler/schedule_list.html'
     object_name = 'schedules'
 
@@ -52,15 +69,6 @@ class ComputeSchedules(SemesterBasedMixin, ExceptionResponseMixin, TemplateView)
                 pass
         return crns
 
-    def conflict_mapping(sef, conflicts):
-        result = {} # section_id => [section_ids]
-        for conflict in conflicts:
-            s = result[conflict.section1.id] = result.get(conflict.section1.id, set())
-            s.add(conflict.section2.id)
-            s = result[conflict.section2.id] = result.get(conflict.section2.id, set())
-            s.add(conflict.section1.id)
-        return result
-
     def get_sections(self):
         year, month = self.get_year_and_month()
         crns = self.get_crns()
@@ -72,9 +80,10 @@ class ComputeSchedules(SemesterBasedMixin, ExceptionResponseMixin, TemplateView)
             raise ResponsePayloadException(HttpResponseForbidden('invalid'))
 
         section_ids = set(s.id for s in sections)
-        conflicts = models.SectionConflict.objects.filter(
-            section1__id__in=section_ids, section2__id__in=section_ids
-        ).select_related('section1', 'section2')
+        #conflicts = models.SectionConflict.objects.filter(
+        #    section1__id__in=section_ids, section2__id__in=section_ids
+        #).select_related('section1', 'section2')
+        conflicts = models.SectionConflict.objects.by_sections(section_ids)
         conflict_mapping = self.conflict_mapping(conflicts)
         for section in sections:
             section.conflicts = conflict_mapping.get(section.id) or set()
@@ -117,7 +126,7 @@ class ComputeSchedules(SemesterBasedMixin, ExceptionResponseMixin, TemplateView)
             results.append(s)
         return results
         #return [{ str(course.id): section.crn for course, section in schedule.items() } for schedule in schedules]
-        
+
     def period_stats(self, periods):
         if len(periods) < 1:
             return range(8, 20), DAYS[:5]
@@ -157,7 +166,7 @@ class ComputeSchedules(SemesterBasedMixin, ExceptionResponseMixin, TemplateView)
                         #    'pid': j,
                         #}
         return section_mapping
-    
+
     def section_mapping_for_thumbnails(self, selected_courses, schedules, periods):
         timerange, dows = self.period_stats(periods)
         section_mapping = {} # [schedule-index][hour][starting-hour]
@@ -182,7 +191,7 @@ class ComputeSchedules(SemesterBasedMixin, ExceptionResponseMixin, TemplateView)
             return self.section_mapping_for_thumbnails(selected_courses, schedules, periods)
         else:
             return self.section_mapping(selected_courses, schedules, periods)
-    
+
     def prep_courses_and_sections_for_context(self, selected_courses):
         courses_output, sections_output = {}, {}
         for course, sections in selected_courses.items():
@@ -226,7 +235,7 @@ class JsonComputeSchedules(AjaxJsonResponseMixin, ComputeSchedules):
     json_content_prefix = ''
     def get_is_ajax(self):
         return True
-        
+
     def render_to_response(self, context):
         del context['template_base']
         return self.get_json_response(self.get_json_content_prefix() + self.convert_context_to_json(context))
@@ -238,10 +247,10 @@ def schedules_bootloader(request, year, month):
     if crns is None:
         selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
         return redirect(reverse('schedules', kwargs=dict(year=year, month=month)) + '?crns=' + urllib.quote('-'.join(str(crn) for sections in selected_courses.values() for crn in sections)))
- 
+
     prefix = 'crn='
     crns = prefix + ('&'+prefix).join(urllib.quote(str(crn)) for crn in crns)
- 
+
     single_schedule = ''
     # disabled for now... use JS
     #schedule_offset = request.GET.get('at', '')

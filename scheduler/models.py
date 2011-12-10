@@ -3,6 +3,7 @@ from yacs.courses.signals import robots_signal
 from yacs.courses import models as courses
 from yacs.courses import managers as courses_managers
 from yacs.courses.utils import dict_by_attr
+from yacs.scheduler import managers
 import itertools
 
 # Django bug? Using a proxy causes tests to fail (looking for database NAME).
@@ -33,6 +34,8 @@ class SectionConflict(models.Model):
     section1 = models.ForeignKey(courses.Section, related_name='+')
     section2 = models.ForeignKey(courses.Section, related_name='+')
     semester = models.ForeignKey(courses.Semester, related_name='section_conflicts')
+
+    objects = managers.SectionConflictManager()
 
     def save(self, *args, **kwargs):
         assert self.section1.id < self.section2.id, "Section1.id should be less than section2.id."
