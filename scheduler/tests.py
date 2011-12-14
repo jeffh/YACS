@@ -30,7 +30,7 @@ def create_periods(*ranges):
         ))
     return periods
 
-class TestScheduleViews(ShortcutTestCase):
+class ScheduleViewsSmokeTests(ShortcutTestCase):
     urls = 'yacs.urls'
 
     def setUp(self):
@@ -113,6 +113,7 @@ class TestScheduleViews(ShortcutTestCase):
         pass # TODO
 
     def test_get_ajax_schedules_for_full_sections(self):
+        "/2011/1/schedules/ajax/?crn=1004"
         response = self.get_ajax_schedules_from_crns([1004])
         self.assertEqual(response.status_code, 200)
 
@@ -122,11 +123,13 @@ class TestScheduleViews(ShortcutTestCase):
         self.assertEqual(schedules[0], {'2': 1004})
 
     def test_get_schedules(self):
+        "/2011/1/schedules/"
         self.set_selected({1: [1000, 1001], 2: [1003]})
         response = self.get('schedules', year=2011, month=1)
         self.assertEqual(response.status_code, 302)
 
     def test_get_ajax_schedules(self):
+        "/2011/1/schedules/ajax/?crn=1000&crn=1001&crn=1003"
         response = self.get_ajax_schedules_from_crns([1000, 1001, 1003])
         self.assertEqual(response.status_code, 200)
 

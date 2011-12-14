@@ -47,7 +47,7 @@ class SectionConflict(models.Model):
     def __unicode__(self):
         return u"<SectionConflict: %r and %r for %r>" % (self.section1, self.section2, self.semester)
 
-# TODO: make into manager
+# TODO: move into manager
 def cache_conflicts(semester_year=None, semester_month=None, semester=None):
     assert (semester_year and semester_month) or semester, "Semester year & month must be provided or the semester object."
     import sys
