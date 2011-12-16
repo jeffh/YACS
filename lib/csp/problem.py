@@ -9,7 +9,6 @@ class Problem(object):
         if solver_instance is None:
             solver_instance = DefaultSolver()
         self._solver_instance = solver_instance
-        self._restore_point = None
         self.reset()
 
     @property
@@ -22,6 +21,7 @@ class Problem(object):
     def reset(self):
         self._variables = {} # variable: list-domain-of-variable
         self._constraints = [] # (constraint_function, variables)
+        self._restore_point = None
 
     def add_variable(self, variable, domain):
         """Adds a variable that needs a value to be determined in the given problem.
@@ -57,7 +57,7 @@ class Problem(object):
         return self
 
     def save_point(self):
-        return self._solver.save_point()
+        return self._solver_instance.save_point()
 
     def known_solutions(self):
         return self._solver_instance.solutions_at_points
