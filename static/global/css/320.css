@@ -813,7 +813,7 @@ header .alpha {
   text-align: center;
   font-size: 130%; }
 #thumbnails .thumbnail {
-  height: 130px;
+  height: 140px;
   width: 110px;
   float: left; }
   #thumbnails .thumbnail.selected .day {
@@ -864,18 +864,18 @@ header .alpha {
   padding: 1px; }
 #thumbnails .row {
   height: 8px;
-  border-bottom: 1px solid #d0d0d0;
+  border-bottom: 1px solid #aeaeae;
   /*
   &.noon {
   	background: #d0d0d0;
   }
   */ }
   #thumbnails .row:first-child {
-    border-top: 1px solid #d0d0d0;
-    border-bottom: 1px solid #d0d0d0;
+    border-top: 1px solid #aeaeae;
+    border-bottom: 1px solid #aeaeae;
     height: 9px; }
   #thumbnails .row:last-child {
-    border-bottom: 1px solid #d0d0d0; }
+    border-bottom: 1px solid #aeaeae; }
 #thumbnails .class {
   display: block;
   position: relative;

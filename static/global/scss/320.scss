@@ -868,7 +868,7 @@ header {
 		font-size: 130%;
 	}
 	.thumbnail {
-		height: 130px;
+		height: 140px;
 		width: 110px;
 		float: left;
         &.selected {
@@ -940,15 +940,17 @@ header {
 		padding: 1px;
 	}
 	.row {
+        $bcolor: $border-color - #222;
+
 		height: 8px;
-		border-bottom: 1px solid $border-color;
+		border-bottom: 1px solid $bcolor;
 		&:first-child {
-			border-top: 1px solid $border-color;
-			border-bottom: 1px solid $border-color;
+			border-top: 1px solid $bcolor;
+			border-bottom: 1px solid $bcolor;
 			height: 9px;
 		}
 		&:last-child {
-			border-bottom: 1px solid $border-color;
+			border-bottom: 1px solid $bcolor;
 		}
 		/*
 		&.noon {
