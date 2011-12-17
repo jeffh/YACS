@@ -46,11 +46,11 @@ function prev_schedule(){
 }
 function load_schedule(){
   var sid = $(this).closest('.schedule_wrapper').attr('data-sid');
-  $('#schedules .schedule_wrapper').hide(); // hide all schedules
-  $('#schedule' + sid).show(); // show specific one
+  $('#schedules .schedule_wrapper.selected').hide(); // hide all schedules
   $('#thumbnails').slideUp({duration: 250});
-  $('#thumbnails .schedule_wrapper').removeClass('selected');
+  $('#thumbnails .thumbnail').removeClass('selected');
   $('#schedule_thumbnail' + sid).addClass('selected');
+  $('#schedule' + sid).addClass('selected').show(); // show specific one
   if(History.enabled){
     History.pushState({schedule: sid}, null, url_with_sid(sid));
   }
@@ -255,7 +255,7 @@ $(function(){
     History.Adapter.bind(window, 'statechange', function(){
         var state = History.getState();
         var selected_schedule = (parseInt(state.data.schedule, 10) || 1) - 1;
-        $($('.schedule_wrapper').hide().get(selected_schedule)).show();
+        $($('#schedules .schedule_wrapper').hide().get(selected_schedule)).addClass('selected').show();
     });
 
     History.Adapter.trigger(window, 'statechange')
