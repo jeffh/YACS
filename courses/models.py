@@ -37,6 +37,7 @@ class Semester(models.Model):
 
     def toJSON(self, select_related=()):
         json = {
+            'id': self.id,
             'year': self.year,
             'month': self.month,
             'name': self.name,
@@ -415,6 +416,7 @@ class SectionPeriod(models.Model):
 
     def toJSON(self, select_related=()):
         json = {
+            'id': self.id,
             'instructor': self.instructor,
             'location': self.location,
             'kind': self.kind,

@@ -44,8 +44,7 @@ class DepartmentListView(SelectedCoursesMixin, ListView):
     fetch_semester = True
 
     def get_queryset(self):
-        year, month = self.get_year_and_month()
-        return models.Department.objects.by_semester(year, month)
+        return self.filter_by_semester(models.Department.objects.all())
 
 class SearchCoursesListView(PartialResponseMixin, SearchMixin, SelectedCoursesMixin, ListView):
     "Show search results from a given query."
@@ -56,7 +55,6 @@ class SearchCoursesListView(PartialResponseMixin, SearchMixin, SelectedCoursesMi
 
     # optional parameters used by newapi
     def get_queryset(self, full_select=True):
-        year, month = self.get_year_and_month()
         query = self.request.GET.get('q', '')
         depart = self.request.GET.get('d', 'all')
         if depart == 'all':
@@ -66,11 +64,12 @@ class SearchCoursesListView(PartialResponseMixin, SearchMixin, SelectedCoursesMi
         if depart:
             self.department = models.Department.objects.get(code=depart)
 
-        courses = models.Course.objects.by_semester(year, month).select_related()
+        courses = self.filter_by_semester(models.Course.objects.all()).select_related()
         courses = courses.search(query, self.department)
         if not query:
             courses = courses.order_by('department__code', 'number')
         if full_select:
+            year, month = self.get_year_and_month()
             courses = courses.full_select(year, month)
         return courses
 
@@ -91,9 +90,8 @@ class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
 
     # optional parameters used by newapi
     def get_queryset(self, prefetch_department=True, full_select=True):
-        year, month = self.get_year_and_month()
         self.department = get_object_or_404(models.Department, code=self.kwargs['code'])
-        courses = models.Course.objects.by_semester(year, month).by_department(self.department)
+        courses = self.filter_by_semester(models.Course.objects.all()).by_department(self.department)
 
         query = self.request.GET.get('q')
         if query:
@@ -101,6 +99,7 @@ class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
         if prefetch_department:
             courses = courses.select_related('department')
         if full_select:
+            year, month = self.get_year_and_month()
             courses = courses.full_select(year, month)
         return courses
 
