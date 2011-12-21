@@ -65,7 +65,9 @@
 												<span class="section-number">
 													Section <span class="number">{{ section.number }}</span>
 												</span>
+                                                {% comment %}
 												(<span class="crn">{{ section.crn }}</span>) -
+                                                {% endcomment %}
 												{% if not section.is_full %}
 												<span class="section-seats-left">
 													<span class="number">{{ section.seats_left }}</span> seat{{ section.seats_left|pluralize }} left
