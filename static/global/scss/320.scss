@@ -218,19 +218,12 @@ header {
 		font-size: 100%;
         display: block;
         width: 65px;
-        /* UI behavior is weird in FF, cut.
-        @include transition(all $transition-normal $transition-type);
-        */
     }
     .searchbox {
 		width: $nav-width - 75px;
 		padding: 0;
 		margin: 0 0 0 10px;
 		font-size: 100%;
-
-        @include transition(none $transition-fast $transition-type);
-
-	    @include transition(all $transition-normal $transition-type);
 	}
 }
 /* END SEARCHBOX */
@@ -378,16 +371,46 @@ header {
 		.days {
 			font-size: 85%;
 			margin: 0;
-			display: inline;
-			li {
-				clear: both;
-				margin: 0 0 0 17px;
-				padding: 0;
-				border-top: 1px solid #ddd;
-				&:first-child {
-					border-top: 0;
-				}
-			}
+            padding-left: 13px;
+            clear: left;
+            li {
+                display: inline;
+            }
+			li.item {
+				margin: 0 1px 0 1px;
+				padding: 0 0 0 2px;
+                line-height: 1.5em;
+                text-align: center;
+                &.empty {
+                    background: transparent;
+                    color: #999;
+                    display: none;
+                }
+                &.selected {
+                    background: #d0d0d0;
+
+                    @include border-radius(3px);
+                }
+            }
+            span {
+                padding: 0;
+                margin: 0;
+            }
+
+            .short {
+                display: inline;
+            }
+            .long {
+                display: none;
+            }
+            .times {
+                display: inline;
+                padding: 0 0 0 2px;
+                margin: 0;
+                background: #e0e0e0;
+                font-weight: normal;
+                @include border-radius(3px);
+            }
 		}
 		.time {
 			margin: 0;
@@ -498,7 +521,9 @@ header {
 	.credits {
         display: inline;
         padding-right: 3px;
+        /*
         background: #e0e0e0;
+        */
 
         @include border-radius(2px);
 	}

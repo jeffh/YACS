@@ -14,19 +14,10 @@ body {
   width: 295px;
   text-align: center; }
   .searchform #d {
-    display: block;
-    width: 65px;
-    /* UI behavior is weird in FF, cut.
-    @include transition(all $transition-normal $transition-type);
-    */ }
+    display: none; }
   .searchform .searchbox {
-    width: 220px;
-    margin-left: 10px;
-    -webkit-transition: none 0.2s ease-in-out;
-    -moz-transition: none 0.2s ease-in-out;
-    -o-transition: none 0.2s ease-in-out;
-    -ms-transition: none 0.2s ease-in-out;
-    transition: none 0.2s ease-in-out; }
+    width: 295px;
+    margin: 0; }
 
 #courses .seats-left {
   top: 30px; }
@@ -93,3 +84,5 @@ body {
 
 #selected_courses .sections {
   padding-right: 25px; }
+  #selected_courses .sections .days li.item.empty {
+    display: inline; }

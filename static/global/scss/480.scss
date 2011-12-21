@@ -21,17 +21,11 @@ body {
     text-align: center;
 
     #d {
-        display: block;
-        width: 65px;
-        /* UI behavior is weird in FF, cut.
-        @include transition(all $transition-normal $transition-type);
-        */
+        display: none;
     }
     .searchbox {
-        width: 220px;
-        margin-left: 10px;
-
-        @include transition(none $transition-fast $transition-type);
+        width: 295px;
+        margin: 0;
     }
 }
 
@@ -121,5 +115,12 @@ body {
 #selected_courses {
     .sections {
         padding-right: 25px;
+        .days {
+            li.item {
+                &.empty {
+                    display: inline;
+                }
+            }
+        }
     }
 }

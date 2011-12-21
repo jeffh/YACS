@@ -272,25 +272,12 @@ header .alpha {
     float: left;
     font-size: 100%;
     display: block;
-    width: 65px;
-    /* UI behavior is weird in FF, cut.
-    @include transition(all $transition-normal $transition-type);
-    */ }
+    width: 65px; }
   .searchform .searchbox {
     width: 220px;
     padding: 0;
     margin: 0 0 0 10px;
-    font-size: 100%;
-    -webkit-transition: none 0.2s ease-in-out;
-    -moz-transition: none 0.2s ease-in-out;
-    -o-transition: none 0.2s ease-in-out;
-    -ms-transition: none 0.2s ease-in-out;
-    transition: none 0.2s ease-in-out;
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -o-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out; }
+    font-size: 100%; }
 
 /* END SEARCHBOX */
 /* LISTVIEW */
@@ -420,14 +407,40 @@ header .alpha {
   #selected_courses .sections .days {
     font-size: 85%;
     margin: 0;
-    display: inline; }
+    padding-left: 13px;
+    clear: left; }
     #selected_courses .sections .days li {
-      clear: both;
-      margin: 0 0 0 17px;
+      display: inline; }
+    #selected_courses .sections .days li.item {
+      margin: 0 1px 0 1px;
+      padding: 0 0 0 2px;
+      line-height: 1.5em;
+      text-align: center; }
+      #selected_courses .sections .days li.item.empty {
+        background: transparent;
+        color: #999;
+        display: none; }
+      #selected_courses .sections .days li.item.selected {
+        background: #d0d0d0;
+        border-radius: 3px;
+        -moz-border-radius: 3px;
+        -webkit-border-radius: 3px; }
+    #selected_courses .sections .days span {
       padding: 0;
-      border-top: 1px solid #ddd; }
-      #selected_courses .sections .days li:first-child {
-        border-top: 0; }
+      margin: 0; }
+    #selected_courses .sections .days .short {
+      display: inline; }
+    #selected_courses .sections .days .long {
+      display: none; }
+    #selected_courses .sections .days .times {
+      display: inline;
+      padding: 0 0 0 2px;
+      margin: 0;
+      background: #e0e0e0;
+      font-weight: normal;
+      border-radius: 3px;
+      -moz-border-radius: 3px;
+      -webkit-border-radius: 3px; }
   #selected_courses .sections .time {
     margin: 0;
     display: inline; }
@@ -535,7 +548,9 @@ header .alpha {
   #courses .credits {
     display: inline;
     padding-right: 3px;
+    /*
     background: #e0e0e0;
+    */
     border-radius: 2px;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px; }

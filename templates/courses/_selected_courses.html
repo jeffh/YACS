@@ -86,7 +86,21 @@
 												</div>
 											</label>
 											<ul class="days">
-												{% with times=section.get_periods|prepare_periods %}
+                                              {% with times=section.get_periods|period_dow_buckets %}
+                                                {% for dow in dows %}
+                                                <li class="item {% if times|get:dow %}selected{% else %}empty{% endif %}">
+                                                  <span class="short">{{ dow|dow_short }}</span>
+                                                  <span class="long">{{ dow }}</span>
+                                                    <ul class="times">
+                                                      {% for period in times|get:dow %}
+                                                      <li>{{ period|display_period }}</li>
+                                                      {% endfor %}
+                                                    </ul>
+                                                  </li>
+                                                {% endfor %}
+                                              {% endwith %}
+                                                  {% comment %}
+												{% with times=section.get_periods|period_type_buckets %}
 													{% for dow in dows %}
 														{% with slot=times|get:dow %}
 														{% for daysofweek, periods in slot.items %}
@@ -104,6 +118,7 @@
 														{% endwith %}
 													{% endfor %}
 												{% endwith %}
+                                                  {% endcomment %}
 											</ul>
 										</li>
 									{% endfor %}
