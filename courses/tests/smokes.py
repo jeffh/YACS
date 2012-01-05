@@ -75,7 +75,7 @@ class SearchTest(BasicSchema):
     def test_searching_with_textfield_only_returning_partial(self):
         "/2011/1/search/?q=4230&partial=1"
         response = self.get('search-all-courses', year=2011, month=1, get='?q=4230&partial=1', status_code=200)
-        self.assertEqual('courses/_course_list.html', response.template.name)
+        self.assertIn('courses/_course_list.html', [t.name for t in response.template])
         courses = response.context['courses']
         self.assertIn(self.course1, courses)
         self.assertIn(self.course3, courses)

@@ -126,3 +126,4 @@ class DictByAttrTest(TestCase):
         self.assertEqual([8], ordered[7])
         self.assertEqual([9], ordered[8])
         self.assertEqual([10], ordered[9])
+
