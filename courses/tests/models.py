@@ -18,10 +18,11 @@ from yacs.courses.tests.factories import (SemesterFactory, SemesterDepartmentFac
 class SemesterTest(TestCase):
     def setUp(self):
         self.now = datetime.datetime.now().replace(microsecond=0)
-        self.sem = SemesterFactory.create(year=2011, month=2, name='foo', date_updated=self.now)
+        self.sem = SemesterFactory.create(id=1, year=2011, month=2, name='foo', date_updated=self.now)
 
     def test_to_json(self):
         expected = {
+            'id': 1,
             'year': 2011,
             'month': 2,
             'name': 'foo',
@@ -37,6 +38,7 @@ class SemesterTest(TestCase):
         m = models.Semester.departments.all.return_value = Mock()
         m.toJSON.return_value = {'foobar': 1}
         expected = {
+            'id': 1,
             'year': 2011,
             'month': 2,
             'name': 'foo',
@@ -343,6 +345,7 @@ class SectionPeriodTest(TestCase):
             'location': 'bar',
             'kind': 'fizz',
             'lol': 1,
+            'id': None,
         }
         self.assertEqual(expected, sp.toJSON())
 
