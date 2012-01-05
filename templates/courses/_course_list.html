@@ -1,3 +1,4 @@
+{# this is for the course_list template and ajax search results list (template partial) #}
 {% load courses %}
 
 <div id="courses" class="listview {% if search_results %}search-results {% if query_department == 'all' %}all-dept{% else %}specific-dept{% endif %}{% endif %}">
@@ -11,68 +12,7 @@
         {% csrf_token %}
         <ul>
             {% for course in courses %}
-            {% with seats_left_for_course=course.all_sections|seats_left %}
-                <li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}{% if course.crns|length < 1 %} no-sections{% endif %}">
-                    {% if course.crns|length > 0 %}
-                    <input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}"{% if course in selected_courses %} checked="checked"{% endif %} data-cid="{{ course.id }}" data-crns="{{ course.crns|join }}" data-crns-full="{{ course.full_crns|join }}" />
-                    {% else %}
-                    <p style="float:left; width: 15px; height: 10px; margin: 0; padding: 0;"></p>
-                    {% endif %}
-                    <img src="{{ STATIC_URL }}img/tinyspinner.gif" class="tinyspinner" alt="" style="display: none" />
-                    <label class="padded" for="course_{{ course.id }}">
-                        <span class="name">{{ course.name }}</span>
-                        <span class="disclosure">&gt;</span>
-                        <span class="secondary">
-                            <span class="code">
-                                <span class="dept">{{ course.department.code }}</span>
-                                <span class="number">{{ course.number }}</span>
-                            </span>
-                            {% if course.credits != 4 %}
-                            <span class="credits">
-                                {{ course.credits_display }}
-                            </span>
-                            {% endif %}
-                            <span class="seats-left">
-                                {% if course.crns|length > 0 %}
-                                    {% if seats_left_for_course < 30 %}
-                                    {{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
-                                    {% endif %}
-                                {% else %}
-                                    No Sections
-                                {% endif %}
-                            </span>
-                            <div class="instructors">
-                                <ul>
-                                    {% for instructor in course.instructors %}
-                                    <li>
-                                        {{ instructor }}
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="kinds">
-                                <ul>
-                                    {% for kind in course.kinds %}
-                                    <li>
-                                        {{ kind }}
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="notes">
-                                <ul>
-                                    {% for note in course.notes %}
-                                    <li>
-                                        {{ note }}
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </span>
-                    </label>
-                    <div class="clear"></div>
-                </li>
-            {% endwith %}
+              {% include 'courses/_course.html' with course=course sem_year=sem_year sem_month=sem_month always_show_sections=1 %}
             {% endfor %}
         </ul>
         <p class="actions">

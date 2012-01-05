@@ -337,7 +337,7 @@ header {
 /* END DEPARTMENTS */
 
 /* SELECTED_COURSES */
-#selected_courses {
+#selected_courses, #courses {
 	label.padded {
 		margin-bottom: 0;
 	}
@@ -458,6 +458,7 @@ header {
 	margin-right: 0;
 }
 /* END SELECTED_COURSES */
+
 /* COURSES */
 #courses {
 	margin-top: 1em;

@@ -383,56 +383,56 @@ header .alpha {
 
 /* END DEPARTMENTS */
 /* SELECTED_COURSES */
-#selected_courses label.padded {
+#selected_courses label.padded, #courses label.padded {
   margin-bottom: 0; }
-#selected_courses .sections {
+#selected_courses .sections, #courses .sections {
   clear: left;
   display: block;
   font-size: 95%;
   margin-top: -5px;
   padding-bottom: 10px; }
-  #selected_courses .sections td {
+  #selected_courses .sections td, #courses .sections td {
     border-bottom: 1px solid #aaa; }
-  #selected_courses .sections:last-child td {
+  #selected_courses .sections:last-child td, #courses .sections:last-child td {
     border-bottom: 0; }
-  #selected_courses .sections ul li {
+  #selected_courses .sections ul li, #courses .sections ul li {
     border: 0;
     padding: 2px 0;
     clear: both; }
-  #selected_courses .sections input {
+  #selected_courses .sections input, #courses .sections input {
     top: 4px; }
-  #selected_courses .sections .section {
+  #selected_courses .sections .section, #courses .sections .section {
     padding: 0;
     padding-top: 4px; }
-  #selected_courses .sections .days {
+  #selected_courses .sections .days, #courses .sections .days {
     font-size: 85%;
     margin: 0;
     padding-left: 13px;
     clear: left; }
-    #selected_courses .sections .days li {
+    #selected_courses .sections .days li, #courses .sections .days li {
       display: inline; }
-    #selected_courses .sections .days li.item {
+    #selected_courses .sections .days li.item, #courses .sections .days li.item {
       margin: 0 1px 0 1px;
       padding: 0 0 0 2px;
       line-height: 1.5em;
       text-align: center; }
-      #selected_courses .sections .days li.item.empty {
+      #selected_courses .sections .days li.item.empty, #courses .sections .days li.item.empty {
         background: transparent;
         color: #999;
         display: none; }
-      #selected_courses .sections .days li.item.selected {
+      #selected_courses .sections .days li.item.selected, #courses .sections .days li.item.selected {
         background: #d0d0d0;
         border-radius: 3px;
         -moz-border-radius: 3px;
         -webkit-border-radius: 3px; }
-    #selected_courses .sections .days span {
+    #selected_courses .sections .days span, #courses .sections .days span {
       padding: 0;
       margin: 0; }
-    #selected_courses .sections .days .short {
+    #selected_courses .sections .days .short, #courses .sections .days .short {
       display: inline; }
-    #selected_courses .sections .days .long {
+    #selected_courses .sections .days .long, #courses .sections .days .long {
       display: none; }
-    #selected_courses .sections .days .times {
+    #selected_courses .sections .days .times, #courses .sections .days .times {
       display: inline;
       padding: 0 0 0 2px;
       margin: 0;
@@ -441,24 +441,24 @@ header .alpha {
       border-radius: 3px;
       -moz-border-radius: 3px;
       -webkit-border-radius: 3px; }
-  #selected_courses .sections .time {
+  #selected_courses .sections .time, #courses .sections .time {
     margin: 0;
     display: inline; }
-    #selected_courses .sections .time li {
+    #selected_courses .sections .time li, #courses .sections .time li {
       float: right;
       text-align: right;
       border-top: 0;
       margin: 0; }
-  #selected_courses .sections .instructors {
+  #selected_courses .sections .instructors, #courses .sections .instructors {
     float: right;
     font-weight: bold; }
-    #selected_courses .sections .instructors li:last-child:after {
+    #selected_courses .sections .instructors li:last-child:after, #courses .sections .instructors li:last-child:after {
       content: ''; }
-    #selected_courses .sections .instructors li:after {
+    #selected_courses .sections .instructors li:after, #courses .sections .instructors li:after {
       content: ', '; }
-#selected_courses .crn {
+#selected_courses .crn, #courses .crn {
   color: #940000; }
-#selected_courses .section-seats-left {
+#selected_courses .section-seats-left, #courses .section-seats-left {
   font-weight: bold; }
 
 .total_credits {

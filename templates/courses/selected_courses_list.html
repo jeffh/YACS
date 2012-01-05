@@ -15,7 +15,33 @@
 {% endblock header %}
 
 {% block content %}
-{% include 'courses/_selected_courses.html' %}
+<div id="courses" class="listview">
+{% if selected_courses %}
+	<form action="{% url deselect-courses sem_year,sem_month %}" method="post">
+		{% csrf_token %}
+		<ul id="selected_courses">
+			{% for course in selected_courses %}
+              {% include 'courses/_course.html' with selected_courses=selected_courses course=course sem_year=sem_year sem_month=sem_month always_show_sections=1 %}
+			{% endfor %}
+		</ul>
+		<p class="total_credits">{{ selected_courses|sum_credits }} total</p>
+		<p class="actions">
+			<input type="hidden" name="redirect_to" value="{{ request.get_full_path }}" />
+			<input type="submit" class="save-selected" value="Save" />
+			<a href="{% url schedules sem_year,sem_month %}" class="button view-schedules">View Schedules</a>
+		</p>
+	</form>
+{% else %}
+	<div class="empty">
+		<h3 class="text-center">...</h3>
+		<p>Here would be any courses you selected... <br/>if only you picked out some courses.</p>
+		<p>
+			Checking courses from the <a href="{% url departments sem_year,sem_month %}">catalog</a>
+			will show up here.
+		</p>
+	</div>
+{% endif %}
+</div>
 {% endblock content %}
 
 {% block sidebar %}
