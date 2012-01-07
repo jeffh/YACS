@@ -28,22 +28,22 @@
 	{% endif %}
 
 	{% if courses %}
-		<form action="{% url select-courses sem_year,sem_month %}" method="post">
-			{% csrf_token %}
-			<ul>
-				{% for course in courses %}
-				  {% include 'courses/_course.html' with course=course sem_year=sem_year sem_month=sem_month always_show_sections=1 %}
-				{% endfor %}
-			</ul>
-			<p class="actions">
-				<input type="hidden" name="redirect_to" value="{{ request.get_full_path }}" />
-				<input type="submit" value="Add Selected" />
-			</p>
-		</form>
+      <form action="{% url select-courses sem_year,sem_month %}" method="post" data-set-url="{% url deselect-courses sem_year,sem_month %}">
+          {% csrf_token %}
+          <ul>
+              {% for course in courses %}
+                {% include 'courses/_course.html' with course=course sem_year=sem_year sem_month=sem_month always_show_sections=1 %}
+              {% endfor %}
+          </ul>
+          <p class="actions">
+              <input type="hidden" name="redirect_to" value="{{ request.get_full_path }}" />
+              <input type="submit" value="Add Selected" />
+          </p>
+      </form>
 	{% else %}
-		<p class="text-center" style="margin-bottom: -5px">No courses matched your criteria :(<br/>Here's a picture instead.</p>
-		<p class="text-center"><img src="{{ STATIC_URL }}/img/no-results.jpg" alt="No Results" /></p>
-		<p class="text-center">Photo by <a href="http://www.flickr.com/photos/mizmak/3947476335/">Alexandra MacKenzie</a></p>
+	  <p class="text-center" style="margin-bottom: -5px">No courses matched your criteria :(<br/>Here's a picture instead.</p>
+	  <p class="text-center"><img src="{{ STATIC_URL }}/img/no-results.jpg" alt="No Results" /></p>
+	  <p class="text-center">Photo by <a href="http://www.flickr.com/photos/mizmak/3947476335/">Alexandra MacKenzie</a></p>
 	{% endif %}
 	</div>
 
