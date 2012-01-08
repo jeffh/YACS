@@ -1,5 +1,6 @@
 from django.core.urlresolvers import reverse
 from yacs.courses import models
+from yacs.courses.tests import factories
 from shortcuts import ShortcutTestCase
 from django.utils.simplejson import loads
 from datetime import time
@@ -56,7 +57,7 @@ class TestLatestAPI(ShortcutTestCase):
         self.assertEqual(json['status'], 'OK')
         obj = json['payload']
         self.assertEqual(obj['name'], 'CALCULUS I')
-        self.assertEqual(obj['department'], dict(code='MATH', name='Mathematics'))
+        self.assertEqual(obj['department'], dict(code=u'MATH', name=u'Mathematics'))
         self.assertEqual(obj['number'], 1010)
         self.assertEqual(obj['min_credits'], 4)
         self.assertEqual(obj['max_credits'], 4)
@@ -120,13 +121,25 @@ class TestLatestAPIViaYearAndMonth(TestLatestAPI):
     def json_get(self, *args, **kwargs):
         return super(TestLatestAPIViaYearAndMonth, self).json_get(*args, year=2011, month=9, **kwargs)
 
-    # TODO: make more comprehensive
+# TODO: make more comprehensive
 class TestSemesterAPI(ShortcutTestCase):
     fixtures = ['semesters.json']
     urls = 'yacs.newapi.urls'
 
     def test_get_semesters(self):
         json = self.json_get('semesters', status_code=200)
+        obj = json['payload']
+        self.assertEqual(models.Semester.objects.count(), len(obj))
 
     def test_get_semesters_by_year(self):
         json = self.json_get('semesters-by-year', year=2011, status_code=200)
+
+class TestSemesterAPIWithFactory(ShortcutTestCase):
+    urls = 'yacs.newapi.urls'
+    def test_get_semesters_with_one_semester(self):
+        semester = factories.SemesterFactory.create()
+        json = self.json_get('semesters', status_code=200)
+        obj = json['payload']
+        expected_item = semester.toJSON()
+        expected_item['date_updated'] = expected_item['date_updated'].isoformat()
+        self.assertEqual([expected_item], obj)

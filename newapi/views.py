@@ -20,6 +20,9 @@ class APIMixin(views.AjaxJsonResponseMixin):
     json_allow_callback = True
     default_content_type = 'application/json'
 
+    def get_api_version(self):
+        return self.kwargs.get('version', 3)
+
     def get_default_content_type(self):
         return self.default_content_type
 
@@ -35,12 +38,19 @@ class APIMixin(views.AjaxJsonResponseMixin):
         for method in methods:
             methodinstance = getattr(self, method, None)
             if methodinstance:
-                return methodinstance()
+                qs = methodinstance()
+                try:
+                    qs.force_into_json_array = (method == 'get_queryset')
+                except:
+                    pass
+                try:
+                    return qs.toJSON()
+                except AttributeError:
+                    return qs
         raise NotImplemented("Please override get_api_payload method.")
 
     def wrap_api_metadata(self, payload=None, status='OK'):
         json = {
-            'api': 1,
             'status': status,
             'payload': payload,
         }
@@ -85,6 +95,10 @@ class APIMixin(views.AjaxJsonResponseMixin):
             if settings.DEBUG:
                 raise
             return HttpResponseServerError(body(status='Server Error'), content_type=self.get_content_type())
+
+    # override mixin method
+    def should_filter_by_semester(self):
+        return self.get_api_version() < 3
 
 class DepartmentListView(APIMixin, views.DepartmentListView):
     pass

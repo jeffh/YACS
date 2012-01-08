@@ -232,11 +232,12 @@ body {
     padding-left: 17px;
     display: block;
     clear: both; }
-    #selected_courses .sections .days li {
-      clear: right;
-      margin: 0; }
-      #selected_courses .sections .days li:last-child {
-        padding-right: 0; }
+    #selected_courses .sections .days li.item.empty {
+      display: none; }
+    #selected_courses .sections .days .short {
+      display: none; }
+    #selected_courses .sections .days .long {
+      display: inline; }
   #selected_courses .sections .time {
     margin: 0;
     display: inline; }

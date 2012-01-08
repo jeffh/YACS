@@ -54,7 +54,17 @@ def dow_short(dow):
     }.get(dow)
 
 @register.filter
-def prepare_periods(periods):
+def period_dow_buckets(periods):
+    """Prepares periods by day of the week.
+    """
+    slots = {}
+    for period in periods:
+        for dow in period.days_of_week:
+            slots.setdefault(dow, []).append(period)
+    return slots
+
+@register.filter
+def period_type_buckets(periods):
     """Converts periods into buckets of days of the week.
 
     The periods in each bucket is sorted by start time.

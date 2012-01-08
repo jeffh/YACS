@@ -92,7 +92,18 @@ class SemesterBasedMixin(TemplateBaseOverride):
         year, month = self.kwargs.get('year'), self.kwargs.get('month')
         if year or month:
             return year, month
-        self.semester = getattr(self, 'semester', None) or models.Semester.objects.order_by('-year', '-month')[0]
+
+        # use cache if we can
+        semester = getattr(self, 'semester', None)
+        if semester:
+            return semester.year, semester.month
+
+        # use semester id hint if available
+        sid = self.request.GET.get('semester')
+        if sid:
+            self.semester = get_object_or_404(models.Semester, id=sid)
+        else:
+            self.semester = models.Semester.objects.order_by('-year', '-month')[0]
         return self.semester.year, self.semester.month
 
     def get_semester(self):
@@ -118,6 +129,22 @@ class SemesterBasedMixin(TemplateBaseOverride):
         if self.fetch_semester:
             data['semester'] = self.get_semester()
         return data
+
+    def should_filter_by_semester(self):
+        """Returns logical true if the view should filter by semester or not.
+        This may be set by the particular URL (eg - API).
+        """
+        return self.kwargs.get('filter_by_semester', True)
+
+    def filter_by_semester(self, queryset):
+        """Filters a given queryset by semester if should_filter_by_semester returns True.
+
+        This is useful to allow subclasses of the view to change the default queryset behavior.
+        """
+        if self.should_filter_by_semester():
+            year, month = self.get_year_and_month()
+            return queryset.by_semester(year, month)
+        return queryset
 
 class SelectedCoursesMixin(SemesterBasedMixin):
     def get_sections(self, courses, year, month):
