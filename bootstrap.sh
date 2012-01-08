@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 DIR=`dirname $0`
+cd "$DIR"
 
 function setup(){
-  cd "$DIR"
   mkdir -p logs
   pip install -r requirements/development.txt
 }
