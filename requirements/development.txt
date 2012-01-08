@@ -15,7 +15,6 @@ django-test-utils==0.3
 docutils==0.8.1
 factory-boy==1.0.0
 icalendar==2.2
-ipython==0.11
 mock==0.7.2
 nose==1.1.2
 paramiko==1.7.7.1
