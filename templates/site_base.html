@@ -83,20 +83,29 @@ It would be bad if a 500 error page threw a 500 error when trying to render...
 <!-- Scripts -->
 <script src="{{ STATIC_URL }}js/libs/jquery.history.js"></script>
 <script src="{{ STATIC_URL }}js/libs/underscore-1.2.0.min.js"></script>
-<!--
 <script src="{{ STATIC_URL }}js/libs/backbone-0.5.3.min.js"></script>
--->
 
 <script src="{{ STATIC_URL }}js/320nu.js"></script>
-<!--
-<script src="{{ STATIC_URL }}js/models.js?v=1"></script>
-<script src="{{ STATIC_URL }}js/application.js?v=1"></script>
+
+<!-- version 2 (OO) -->
+<script src="{{ STATIC_URL }}js/v2/objects.js"></script>
+<script src="{{ STATIC_URL }}js/v2/application.js"></script>
+<script>
+Scheduler.selection.set({
+  {% for course in selected_courses %}{{ course.id }}: [
+    {% for section in course.all_sections %}{{ section.crn }}{% if not forloop.last %}, {% endif %}{% endfor %}
+  ]{% if not forloop.last %}, {% endif %}
+  {% endfor %}
+});
+</script>
+
+{% comment %}
 <!-- version 1 -->
 <script src="{{ STATIC_URL }}js/v1/utils.js?v=2"></script>
 <script src="{{ STATIC_URL }}js/v1/selected_sections.js?v=2"></script>
 <script src="{{ STATIC_URL }}js/v1/schedules.js?v=1"></script>
 <script src="{{ STATIC_URL }}js/v1/search.js?v=1"></script>
-<!---->
+{% endcomment %}
 
 <!--[if (lt IE 9) & (!IEMobile)]>
 <script src="{{ STATIC_URL }}js/libs/ie-bundle.js"></script>
