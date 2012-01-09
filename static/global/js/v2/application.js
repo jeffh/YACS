@@ -27,15 +27,16 @@ $(function(){
 	}
 });
 
+Scheduler = {};
+Scheduler.selection = new Selected();
+
 //  Selected Course Feature
-var selected;
 $(function(){
-  selected = new Selected();
   $('#courses .course > input[type=checkbox], #courses .course .section > input[type=checkbox]').bind('change', function(){
     //(this.checked ? selected.add : selected.remove)(this);
-    (this.checked ? selected.add(this) : selected.remove(this));
+    (this.checked ? Scheduler.selecion.add(this) : Scheduler.selecion.remove(this));
   });
   // automatically refresh after any changes
-  var refresh = selected.refresh.bind(selected);
-  $(selected).bind('added', refresh).bind('removed', refresh);
+  var refresh = Scheduler.selection.refresh.bind(Scheduler.selection);
+  $(Scheduler.selection).bind('added', refresh).bind('removed', refresh);
 });

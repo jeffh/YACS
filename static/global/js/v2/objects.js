@@ -498,8 +498,14 @@ var Selected = Class.extend({
   update: function(){
     // write crns to server
   },
-  read: function(){
+  set: function(selected){
     // read crns from the DOM
+    this.course_ids = [];
+    this.crns = selected;
+    for (var cid in this.crns){
+      if(this.crns.hasOwnProperty(cid))
+        this.course_ids.push(cid.toInteger());
+    }
     return this;
   },
   _getCourseElem: function(course_id){
