@@ -190,7 +190,7 @@ def test(apps=None):
 
 def loc():
     "Returns the number of lines of all source files, excluding migrations."
-    local('find -E . -iregex ".+/[^0][^/]+\.(py|html|js|scss|txt)$" -not -iregex ".+/_build/.+" -not -name "manage.py" | xargs wc -l')
+    local('find -E . -iregex ".+/[^0][^/]+\.(py|html|js|scss|txt)$" -not -iregex ".+/(_build|test_reports)/.+" -not -name "manage.py" | xargs wc -l')
 
 @roles('webservers')
 def new_deploy():
