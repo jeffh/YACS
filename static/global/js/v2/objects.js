@@ -56,7 +56,7 @@ window.Utils = {
   },
   CSRFToken: function(){
     return Utils.getCookie('csrftoken');
-  };
+  }
 }
 
 })(window, jQuery);
