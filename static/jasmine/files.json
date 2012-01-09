@@ -1,0 +1,12 @@
+{
+  "name": "YACS Javascript Test Suite",
+  "js_files": [
+    "http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.js"
+  ],
+  "static_files": [
+    "js/libs/jquery.history.js",
+    "js/320nu.js",
+    "js/v2/objects.js",
+    "js/v2/application.js"
+  ]
+}

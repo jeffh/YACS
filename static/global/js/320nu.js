@@ -171,7 +171,9 @@ var imgSizer = {
 }
 $(function(){
      if (document.getElementById && document.getElementsByTagName) {
-          var aImgs = $('.content').get(0).getElementsByTagName("img");
+          var aImgs = $('.content').get(0);
+          if (!aImgs) return;
+          aImgs.getElementsByTagName("img");
           imgSizer.collate(aImgs);
      }
 })
