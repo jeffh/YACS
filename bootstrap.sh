@@ -20,9 +20,9 @@ case "$1" in
     runtest
     ;;
   *)
-    echo "Commands: install|test"
+    echo "Commands:"
     echo
     echo " install - Installs the application dependencies."
-    echo " test - Installs the application and runs the tests."
+    echo " test    - Installs the application and runs the tests."
     ;;
 esac
