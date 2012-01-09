@@ -168,6 +168,11 @@ INSTALLED_APPS = (
     'yacs.newapi',
 )
 
+if DEBUG:
+    INSTALLED_APPS += (
+        'django_jasmine',
+    )
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error.
@@ -270,4 +275,7 @@ DEBUG_TOOLBAR_CONFIG = {
 
 # ==== Django-Robots App ====
 #ROBOTS_CACHE_TIMEOUT = 60*60*24 # 24-hour cache of robots file
+
+# ==== Django-Jasmine ====
+JASMINE_TEST_DIRECTORY = relative('static', 'jasmine')
 
