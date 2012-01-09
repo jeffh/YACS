@@ -9,6 +9,7 @@ coverage==3.5.1
 django-bcrypt==0.9.2
 django-debug-toolbar==0.8.5
 django-extensions==0.7.1
+django-jasmine==0.3.2
 django-picklefield==0.1.9
 django-robots==0.8.0
 django-test-utils==0.3
