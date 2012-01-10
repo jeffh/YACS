@@ -56,6 +56,9 @@ window.Utils = {
   },
   CSRFToken: function(){
     return Utils.getCookie('csrftoken');
+  },
+  sendMessage: function(obj, method, args){
+    return obj && obj[method] && obj[method].apply(context || obj, args || []);
   }
 }
 
@@ -99,6 +102,52 @@ $(document).ajaxSend(function(event, xhr, settings) {
 });
 
 //////////////////////////////// Extensions ////////////////////////////////
+$.extend(Object.prototype, {
+  getAllProperties: function(){
+    var names = [];
+    for(var name in this)
+      names.push(name);
+    return names;
+  },
+  getProperties: function(){
+    return this.getAllProperties().filter(function(value){
+      return ![
+        'getAllProperties',
+        'getProperties',
+        'getOwnProperties',
+        'toInteger',
+        'toFloat'
+      ].contains(value);
+    });
+  },
+  getOwnProperties: function(){
+    var self = this;
+    return this.getProperties().filter(function(value){
+      return self.hasOwnProperty(value);
+    });
+    //return this.getProperties().filter(this.hasOwnProperty.bind(this));
+  },
+  toInteger: function(base){ return parseInt(this, base || 10); },
+  toFloat: function(){ return parseFloat(this); }
+});
+
+$.extend(Function.prototype, {
+    // Returns a function with specified function context
+	bind: function(obj){
+		return (function(self){
+			return function(){ return self.apply(obj, arguments); };
+		})(this);
+	},
+    // function composition
+    comp: function(){
+      return (function(self, args){
+        var a = args.slice(0); // clone() isn't defined yet
+        return function(){ return self.apply(this, a.pushArray(arguments)); };
+      })(this, Array.fromIterable(arguments));
+    }
+});
+
+
 $.extend(jQuery.fn, {
   checked: function(){
     var checkboxes = this.filter('input[type=checkbox], input[type=radio]');
@@ -138,31 +187,42 @@ $.extend(String.prototype, {
 	},
 	trim: function(){
 		return $.trim(this);
-	},
-	toInteger: function(base){
-		return parseInt(this, base || 10);
-	},
-	toFloat: function(){
-		return parseFloat(this);
 	}
 });
 
-$.extend(Number.prototype, {
-	toInteger: String.prototype.toInteger,
-	toFloat: String.prototype.toFloat
+$.extend(Array, {
+  fromIterable: function(it){
+    try {
+      return Array.prototype.slice.call(it);
+    }
+    catch(err){
+      var collection = new this;
+      for (var i=0, l=it.length; i<l; i++)
+        collection.push(it[i]);
+      return collection;
+    }
+  }
 });
 
 $.extend(Array.prototype, {
+    clone: Array.prototype.slice,
 	contains: function(value){
 		for(var i=0, l=this.length; i<l; i++)
 			if (this[i] === value)
               return true;
         return false;
     },
+    each: function(fn){
+      for(var i=0, l=this.length; i<l; i++){
+        var ret = fn.call(this[i], this[i], i);
+        if (ret === 'continue') continue;
+        if (ret === 'break') break;
+      }
+      return this;
+    },
 	map: function(fn){
 		var accum = [];
-		for(var i=0, l=this.length; i<l; i++)
-			accum.push(fn.call(this[i], this[i], i));
+        this.each(function(val, i){ accum.push(fn.call(val, val, i)); });
 		return accum;
 	},
 	filter: function(fn){
@@ -177,6 +237,11 @@ $.extend(Array.prototype, {
       if (!this.contains(value))
         return this.push(value) || true;
       return false;
+    },
+    pushArray: function(arr){
+      for(var i=0, l=arr.length; i<l; i++)
+        this.push(arr[i]);
+      return this;
     },
     unique: function(){
       var items = this.slice(0);
@@ -205,14 +270,6 @@ $.extend(Array.prototype, {
       }
       return success;
     }
-});
-
-$.extend(Function.prototype, {
-	bind: function(obj){
-		return (function(self){
-			return function(){ self.apply(obj, arguments); };
-		})(this);
-	}
 });
 
 //////////////////////////////// Helper Objects ////////////////////////////////
@@ -247,6 +304,42 @@ var Fuse = Class.extend({
 	}
 });
 
+// handles the associated events for showing activity indicators
+// to the user (aka - we're busy doing something)
+var ActivityResponder = Class.extend({
+  options: {
+    show: null,
+    hide: null
+  },
+  _currentState: false,
+  init: function(options){
+    $.extend(this.options, options);
+  },
+  _show: function(){
+    $.callable(this.options.show) ? this.options.show() : $.noop;
+  },
+  _hide: function(){
+    $.callable(this.options.hide) ? this.options.hide() : $.noop;
+  },
+  show: function(){
+    if (this.currentState) return;
+    this._show();
+    this._currentState = true;
+    return this;
+  },
+  hide: function(){
+    if (!this.currentState) return;
+    this._hide();
+    this._currentState = false;
+    return this;
+  },
+  setVisibility: function(value){
+    value ? this.show() : this.hide();
+    return this;
+  },
+  isVisible: function(){ return this._currentState; }
+});
+
 //////////////////////////////// Realtime Search ////////////////////////////////
 
 var RealtimeForm = Class.extend({
@@ -255,13 +348,7 @@ var RealtimeForm = Class.extend({
 		success: function(value){ this.html(value); },
 		error: function(){ console.error('failed realtime form:', arguments); },
 		complete: $.noop,
-		activityIndicatorElement: '#search-spinner',
-		showActivityIndicator: function(){
-			$(this.options.activityIndicatorElement).show();
-		},
-		hideActivityIndicator: function(){
-			$(this.options.activityIndicatorElement).hide();
-		},
+        activityResponder: null,
 		dataType: undefined,
 		url: null,
 		method: null,
@@ -360,10 +447,10 @@ var RealtimeForm = Class.extend({
 		this.initiateRequest();
 	},
 	showActivityIndicator: function(){
-		this.options.showActivityIndicator.call(this);
+      Utils.sendMessage(this.options.activityResponder, 'show');
 	},
 	hideActivityIndicator: function(){
-		this.options.hideActivityIndicator.call(this);
+      Utils.sendMessage(this.options.activityResponder, 'hide');
 	},
 	keyDownSelector: 'input[type=text], input[type=search], textarea',
 	detachEvents: function(){
@@ -406,7 +493,15 @@ var RealtimeForm = Class.extend({
 });
 
 //////////////////////////////// Course Selection ////////////////////////////////
-var Selected = Class.extend({
+var Conflicts = Class.extend({
+  options: {
+  },
+  init: function(options){
+    this.options = $.extend({}, this.options, options);
+  }
+});
+
+var Selection = Class.extend({
   options: {
     course_id_format: 'selected_course_{{ cid }}',
     section_id_format: 'selected_course_{{ cid }}_{{ crn }}',
@@ -498,10 +593,9 @@ var Selected = Class.extend({
   update: function(){
     // write crns to server
   },
-  set: function(selected){
-    // read crns from the DOM
+  set: function(selected_crns){
     this.course_ids = [];
-    this.crns = selected;
+    this.crns = $.extend({}, selected_crns);
     for (var cid in this.crns){
       if(this.crns.hasOwnProperty(cid))
         this.course_ids.push(cid.toInteger());

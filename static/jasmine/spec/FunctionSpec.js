@@ -19,3 +19,25 @@ describe('Function.bind', function(){
     fn(1, 2, 'abc');
   });
 });
+
+describe('Function.comp', function(){
+  it('should save first argument', function(){
+    var add = function(a, b){ return a + b; };
+    var add1 = add.comp(1);
+    expect(add1(2)).toEqual(3);
+  });
+
+  it('should save multiple arguments', function(){
+    var add = function(a, b, c){ return a + b - c; };
+    var add1 = add.comp(1, 4);
+    expect(add1(2)).toEqual(3);
+  });
+
+  it('should retain function context', function(){
+    var add = function(a, b){
+      expect(this).toEqual('foobar');
+    };
+    var add1 = add.comp(1);
+    add1.call('foobar', 1);
+  });
+});

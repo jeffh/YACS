@@ -76,6 +76,14 @@ describe('Array.pushUnique', function(){
   });
 });
 
+describe('Array.pushArray', function(){
+  it('should push all items øf second array and return self', function(){
+    var arr = [1, 2];
+    expect(arr.pushArray([3, 4])).toBe(arr);
+    expect(arr).toEqual([1, 2, 3, 4]);
+  });
+});
+
 describe('Array.unique', function(){
   it('should return new array sorted', function(){
     var arr = [3, 2, 1];
@@ -121,5 +129,45 @@ describe('Array.removeItem', function(){
     var arr = 'a b c'.split(' ');
     expect(arr.removeItem('z')).toBeFalsy();
     expect(arr).toEqual(['a', 'b', 'c']);
+  });
+});
+
+describe('Array.each', function(){
+  it('should return itself', function(){
+    var arr = [1, 2, 3];
+    expect(arr.each($.noop)).toBe(arr);
+  });
+
+  it('should iterate each element', function(){
+    var accum = [];
+    var arr = [1, 2, 3];
+    var add = function(value){ accum.push(value); };
+    arr.each(add);
+    expect(arr).toEqual(accum);
+  });
+});
+
+describe('Array.clone', function(){
+  it('should return a new array', function(){
+    var arr = [1, 2, 3];
+    expect(arr.clone()).not.toBe(arr);
+  });
+});
+
+describe('Array.fromIterable', function(){
+  it('should (shallow) copy an array', function(){
+    var arr1 = [1, 2, 3];
+    expect(Array.fromIterable(arr1)).toEqual(arr1);
+  });
+
+  it('should (shallow) copy arguments special var', function(){
+    var test = function(){
+      var arr = Array.fromIterable(arguments);
+      // argument is actually an object.. so we must compare manually
+      expect(arr[0]).toEqual(arguments[0]);
+      expect(arr[1]).toEqual(arguments[1]);
+      expect(arr[2]).toEqual(arguments[2]);
+    };
+    test(1, 2, 3);
   });
 });

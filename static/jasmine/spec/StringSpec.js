@@ -67,31 +67,3 @@ describe('String.trim', function(){
     expect(' \t\nabc\t \n'.trim()).toEqual('abc');
   });
 });
-
-describe('String.toInteger', function(){
-  it('should convert string to integer', function(){
-    expect('23'.toInteger()).toEqual(23);
-  });
-
-  it('should convert string to integer in base 10', function(){
-    expect('023'.toInteger()).toEqual(23);
-  });
-
-  it('should allow custom base specified', function(){
-    expect('11'.toInteger(2)).toEqual(3);
-  });
-
-  it('should return NaN on failure', function(){
-    expect(isNaN('abc'.toInteger())).toBeTruthy();
-  });
-});
-
-describe('String.toFloat', function(){
-  it('should convert string to integer', function(){
-    expect('23.3'.toFloat()).toEqual(23.3);
-  });
-
-  it('should return NaN on failure', function(){
-    expect(isNaN('abc'.toFloat())).toBeTruthy();
-  });
-});

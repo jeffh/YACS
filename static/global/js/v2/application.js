@@ -11,7 +11,14 @@ $(function(){
 		var SearchForm = new RealtimeForm(searchElement, {
 			updateElement: '#replacable-with-search',
 			additionalGET: {partial: 1},
-			activityIndicatorElement: '#search-spinner',
+            activityResponder: new ActivityResponder({
+              show: function(){
+                $('#search-spinner').show();
+              },
+              hide: function(){
+                $('#search-spinner').hide();
+              }
+            }),
 			suppressFormSubmit: true,
 			customHandler: function(form, fuse){
 				var dept = form.find('#d').val(),
@@ -27,8 +34,9 @@ $(function(){
 	}
 });
 
-Scheduler = {};
-Scheduler.selection = new Selected();
+Scheduler = {
+  selection: new Selection()
+};
 
 //  Selected Course Feature
 $(function(){
