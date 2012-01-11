@@ -98,35 +98,6 @@ $(document).ajaxSend(function(event, xhr, settings) {
 });
 
 //////////////////////////////// Extensions ////////////////////////////////
-$.extend(Object.prototype, {
-  getAllProperties: function(){
-    var names = [];
-    for(var name in this)
-      names.push(name);
-    return names;
-  },
-  getProperties: function(){
-    return this.getAllProperties().filter(function(value){
-      return ![
-        'getAllProperties',
-        'getProperties',
-        'getOwnProperties',
-        'toInteger',
-        'toFloat'
-      ].contains(value);
-    });
-  },
-  getOwnProperties: function(){
-    var self = this;
-    return this.getProperties().filter(function(value){
-      return self.hasOwnProperty(value);
-    });
-    //return this.getProperties().filter(this.hasOwnProperty.bind(this));
-  },
-  toInteger: function(base){ return parseInt(this, base || 10); },
-  toFloat: function(){ return parseFloat(this); }
-});
-
 $.extend(Function.prototype, {
     // Returns a function with specified function context
 	bind: function(obj){
@@ -269,6 +240,25 @@ $.extend(Array.prototype, {
 });
 
 //////////////////////////////// Helper Objects ////////////////////////////////
+var Inspector = Class.extend({
+  init: function(obj){
+    this.obj = obj;
+  },
+  getProperties: function(){
+    if (this.obj === undefined) return [];
+    var names = [];
+    for(var name in this.obj)
+      names.push(name);
+    return names;
+  },
+  getOwnProperties: function(){
+    var obj = this.obj;
+    return this.getProperties().filter(function(value){
+      return obj.hasOwnProperty(value);
+    });
+  }
+});
+
 var Fuse = Class.extend({
 	timer: null,
 	options: {
@@ -501,20 +491,21 @@ var Selection = Class.extend({
   options: {
     course_id_format: 'selected_course_{{ cid }}',
     section_id_format: 'selected_course_{{ cid }}_{{ crn }}',
-    checkbox_selector: '.course input[type=checkbox]'
+    checkbox_selector: '.course input[type=checkbox]',
+    saveURL: null
   },
   init: function(options){
-    this.course_ids = [];
     this.crns = {};
     this.options = $.extend({}, this.options, options);
   },
   // returns object of course data
   _processCourseElement: function(el){
     var $el = $(el);
+    var isNotBlank = function(){ return !this.isBlank(); };
     return {
       id: Utils.integer($el.attr('data-cid')),
-      CRNs: $el.attr('data-crns').split(',').filter(String.prototype.isBlank).map(Utils.integer),
-      fullCRNs: $el.attr('data-crns-full').split(',').filter(String.prototype.isBlank).map(Utils.integer)
+      CRNs: $el.attr('data-crns').split(',').filter(isNotBlank).map(Utils.integer),
+      fullCRNs: $el.attr('data-crns-full').split(',').filter(isNotBlank).map(Utils.integer)
     };
   },
   // returns an object for section data
@@ -537,7 +528,6 @@ var Selection = Class.extend({
   _add: function(course_id, crn){
     this.crns[course_id] || (this.crns[course_id] = []);
     if (!this.crns[course_id].pushUnique(crn)) return false;
-    this.course_ids.pushUnique(course_id);
     this._trigger(['changed', 'changed:item'], {type: 'added', cid: course_id, crn: crn});
     return true;
   },
@@ -553,11 +543,13 @@ var Selection = Class.extend({
         this._add(obj.id, obj.CRNs[i]);
     }
     this._trigger(['added', 'added:course'], {type: 'course', cid: obj.course_id});
+    return added;
   },
   addSection: function(section_elem){
     var obj = this._processSectionElement(section_elem);
-    this._add(obj.course_id, obj.crn);
+    var result = this._add(obj.course_id, obj.crn);
     this._trigger(['added', 'added:section'], {type: 'section', cid: obj.course_id, crn: obj.crn});
+    return result;
   },
   add: function(course_or_section_elem){
     if (this._isCourseElement(course_or_section_elem))
@@ -567,6 +559,8 @@ var Selection = Class.extend({
   },
   _remove: function(course_id, crn){
     if (!(this.crns[course_id] && this.crns[course_id].removeItem(crn))) return;
+    if (!this.crns[course_id].length)
+      delete this.crns[course_id];
     this._trigger(['changed', 'changed:item'], {type: 'removed', cid: course_id, crn: crn});
   },
   removeCourse: function(course_elem){
@@ -586,17 +580,57 @@ var Selection = Class.extend({
     else
       this.removeSection(course_or_section_elem);
   },
-  update: function(){
+  toQueryString: function(){
+    var parameters = {};
+    var self = this;
+    $.each(this.crns, function(cid, crns){
+      parameters[self.options.course_id_format.format({cid: cid})] = "checked";
+      crns.each(function(crn){
+        parameters[self.options.section_id_format.format({cid: cid, crn: crn})] = "checked";
+      });
+    });
+    return parameters;
+  },
+  save: function(){
+    assert(typeof(this.options.saveURL) === 'string', 'saveURL option is required for save()');
     // write crns to server
+    if (this._saveRequest)
+      this._saveRequest.abort();
+
+    this._trigger(['save'], this);
+
+    var self = this;
+    this._saveRequest = $.ajax({
+      url: this.options.saveURL,
+      type: 'POST',
+      cache: false,
+      data: $.param(this.toQueryString()),
+      complete: function(){
+        self._saveRequest = null;
+      },
+      success: function(){
+        self._trigger(['saved:success'], this);
+      },
+      error: function(xhr, status){
+        self._trigger(['saved:failed'], this);
+        if (xhr.status === 403){
+          // too many sections for YACS to process
+        }
+        else if (xhr.status === 404){
+          // conflicts in selection
+        }
+        else {
+          // any other server failure (or connectivity)
+        }
+      }
+    });
   },
   set: function(selected_crns){
-    this.course_ids = [];
     this.crns = $.extend({}, selected_crns);
-    for (var cid in this.crns){
-      if(this.crns.hasOwnProperty(cid))
-        this.course_ids.push(cid.toInteger());
-    }
     return this;
+  },
+  getCourseIds: function(){
+    return new Inspector(this.crns).getOwnProperties().map(Utils.integer);
   },
   _getCourseElem: function(course_id){
     return $('#' + this.options.course_id_format.format({cid: course_id}));
@@ -608,11 +642,11 @@ var Selection = Class.extend({
     // update DOM to reflect selection
     $(this.options.checkbox_selector).checked(false); // this can be a bottleneck if there's enough elements
     var self = this;
-    $.each(this.course_ids, function(i, cid){
+    this.getCourseIds().each(function(cid){
       var crns = self.crns[cid];
       if (crns && crns.length){
         var $course = self._getCourseElem(cid).checked(true);
-        $.each(self.crns[cid], function(i, crn){
+        self.crns[cid].each(function(crn){
           self._getSectionElem(cid, crn).checked(true);
         });
       }
