@@ -66,12 +66,8 @@ window.Utils = {
 
 //////////////////////////////// Core functions ////////////////////////////////
 function assert(bool, message){
-  if (bool){
-    if (message)
-      throw message;
-    else
-      throw "Assertion failed";
-  }
+  if (!bool)
+    throw message || "Assertion failed";
 }
 
 ///////////////////////////////////////////////////
