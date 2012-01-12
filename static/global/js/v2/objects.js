@@ -127,6 +127,7 @@ $.extend(jQuery.fn, {
 });
 
 $.extend(String.prototype, {
+    contains: function(str){ return this.indexOf(str) >= 0; },
     format: function(){
       if (arguments.length < 1)
         return this;
@@ -302,19 +303,19 @@ var ActivityResponder = Class.extend({
     $.extend(this.options, options);
   },
   _show: function(){
-    $.callable(this.options.show) ? this.options.show() : $.noop;
+    $.isFunction(this.options.show) ? this.options.show() : $.noop();
   },
   _hide: function(){
-    $.callable(this.options.hide) ? this.options.hide() : $.noop;
+    $.isFunction(this.options.hide) ? this.options.hide() : $.noop();
   },
   show: function(){
-    if (this.currentState) return;
+    if (this._currentState) return;
     this._show();
     this._currentState = true;
     return this;
   },
   hide: function(){
-    if (!this.currentState) return;
+    if (!this._currentState) return;
     this._hide();
     this._currentState = false;
     return this;
@@ -355,32 +356,42 @@ var RealtimeForm = Class.extend({
 		});
 		this.attachEvents();
 	},
-	getOption: function(name, defaultFn){
-		if (this.options[name])
-			return this.options[name];
-		return defaultFn.apply(this);
-	},
+    _asQueryString: function(obj){
+      var type = $.type(obj);
+      if (type === 'object')
+        return $.param(obj);
+      if (type === 'string')
+        return obj
+      return String(obj);
+    },
 	getURL: function(){
-		return this.getOption('url', function(){
-			return this.form.attr('action');
-		});
+      var base = this.options['url'] || this.form.attr('action'),
+          postfix = base.contains('?') ? '&' : '?',
+          querystr = this.getFormMethod() !== 'GET' ? this._asQueryString(this.options.additionalGET) : '';
+      return base + (querystr.isBlank() ? '' : postfix + querystr);
 	},
+    getFormMethod: function(){
+      var m = this.form.attr('method');
+      return m && m.toUpperCase();
+    },
 	getMethod: function(){
-		return this.getOption('method', function(){
-			return this.form.attr('method');
-		});
+      return (this.options['method'] || this.getFormMethod()).toUpperCase();
 	},
 	getMethodData: function(){
 		var formMethod = this.form.attr('method').toUpperCase(),
 			type = this.getMethod().toUpperCase();
-		if(type === 'GET'){
-			var data = formMethod === 'GET' ? this.form.serialize() : {},
-				params = this.options.additionalGET;
-			return data + '&' + (typeof params === 'object' ? $.param(params) : params);
-		} else if(type === 'POST'){
-			var data = formMethod === 'POST' ? this.form.serialize() : {},
-				params = this.options.additionalPOST;
-			return data + '&' + (typeof params === 'object' ? $.param(params) : params);
+		if(['GET', 'POST'].contains(type)){
+			var data = (type == formMethod ? this.form.serialize() : ''),
+              params = {
+                GET: this.options.additionalGET,
+                POST: this.options.additionalPOST
+              }[type];
+            var paramsType = typeof params;
+            if (paramsType === 'object')
+              return data + '&' + $.param(params);
+            if (paramsType === 'string' && !params.isBlank())
+              return data + '&' + params;
+            return data;
 		} else throw "Invalid method type";
 	},
 	stopRequest: function(){
