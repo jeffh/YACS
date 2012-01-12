@@ -20,6 +20,34 @@ describe('String.format', function(){
   });
 });
 
+describe('String.contains', function(){
+  describe('of "abc"', function(){
+    it('should contain "bc"', function(){
+      expect('abc'.contains('bc')).toBeTruthy();
+    });
+
+    it('should contain "c"', function(){
+      expect('abc'.contains('c')).toBeTruthy();
+    });
+
+    it('should contain "a"', function(){
+      expect('abc'.contains('a')).toBeTruthy();
+    });
+
+    it('should contain empty string', function(){
+      expect('abc'.contains('')).toBeTruthy();
+    });
+
+    it('should not contain "abcd"', function(){
+      expect('abc'.contains('abcd')).toBeFalsy();
+    });
+
+    it('should not contain "z"', function(){
+      expect('abc'.contains('z')).toBeFalsy();
+    });
+  });
+});
+
 describe('String.isBlank', function(){
   it('should return true if the string is empty', function(){
     expect(''.isBlank()).toBeTruthy();
