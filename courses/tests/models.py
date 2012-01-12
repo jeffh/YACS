@@ -335,6 +335,7 @@ class SectionPeriodTest(TestCase):
         period = PeriodFactory.build()
         period.toJSON = Mock(return_value={'lol': 1})
         sp = SectionPeriodFactory.build(
+            id = None,
             instructor='foo',
             location='bar',
             kind='fizz',
