@@ -22,7 +22,7 @@ window.Class.extend = function(attributes){
 					this._super = tmp;
 					return ret;
 				};
-			})(name, attributes[name]) : 
+			})(name, attributes[name]) :
 			attributes[name];
 	}
 
