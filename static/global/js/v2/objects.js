@@ -327,6 +327,89 @@ var ActivityResponder = Class.extend({
   isVisible: function(){ return this._currentState; }
 });
 
+
+// Provides a basic abstraction layer from the storage system
+// Keys can only be strings and values have to be serializable.
+// The default serialize & deserialize functions are JSON.stringify
+// and $.parseJSON.
+//
+// This base implementation uses localStorage when possible and
+// falls back to sessionStorage. Due to the extra library,
+// all grade-A browsers (as defined by YUI), should support
+// sessionStorage.
+var Storage = Class.extend({
+  options: {
+    autoload: true,
+    keyFormat: 'net.jeffhui.{{ type }}.{{ key }}',
+    serialize: JSON.stringify,
+    store: null,
+    deserialize: $.parseJSON
+  },
+  keys: [],
+  init: function(options){
+    $.extend(this.options, options);
+    if (this.options.autoload) this.load();
+  },
+  _getStore: function(){
+    if (this.options.store)
+      return this.options.store;
+    if (window.localStorage) return window.localStorage;
+    return window.sessionStorage;
+  },
+  _set: function(key, string){
+    this._getStore().setItem(key, string);
+  },
+  _get: function(key){
+    return this._getStore().getItem(key);
+  },
+  _remove: function(key){
+    return this._getStore().removeItem(key);
+  },
+  _deserialize: function(string){
+    return this.options.deserialize(string);
+  },
+  _serialize: function(obj){
+    return this.options.serialize(obj);
+  },
+  load: function(){
+    var raw = this._get(this._getFullKey('keys', {isPrivate: true}));
+    this.keys = this._deserialize(raw);
+  },
+  _getFullKey: function(key, options){
+    // private is used to indicate properties set used
+    // by this storage system
+    var opt = $.extend({
+      isPrivate: false
+    }, options);
+
+    return this.options.keyFormat.format({
+      type: opt.isPrivate ? 'private' : 'public',
+      key: key
+    });
+  },
+  set: function(key, value){
+    assert($.type(key) === 'string', 'key must be a string.');
+    var fullKey = this._getFullKey(key);
+    this._set(fullKey, this._serialize(value));
+  },
+  get: function(key){
+    assert($.type(key) === 'string', 'key must be a string.');
+    var fullKey = this._getFullKey(key);
+    return this._deserialize(this._get(fullKey));
+  },
+  contains: function(key){
+    return this.keys.contains(key);
+  },
+  clear: function(){
+    var self = this;
+    this.keys.each(function(key){
+      var fullKey = self._getFullKey(key);
+      self._remove(fullKey);
+    });
+  }
+});
+
+
 //////////////////////////////// Realtime Search ////////////////////////////////
 
 var RealtimeForm = Class.extend({

@@ -4,6 +4,7 @@
     "http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.js"
   ],
   "static_files": [
+    "js/libs/sessionstorage.1.4.js",
     "js/libs/jquery.history.js",
     "js/320nu.js",
     "js/v2/objects.js",
