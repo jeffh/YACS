@@ -632,6 +632,7 @@ var Selection = Class.extend({
         }
         else {
           // any other server failure (or connectivity)
+          alert('Failed');
         }
       }
     });

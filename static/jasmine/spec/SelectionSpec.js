@@ -120,43 +120,47 @@ describe('Selection', function(){
 
   describe('save', function(){
     beforeEach(function(){
-      jasmine.Ajax.useMock();
+      //jasmine.Ajax.useMock();
       sel.options.saveURL = '/foobar/';
     });
 
     it('should do nothing to server on success', function(){
-      sel.save();
-      var request = mostRecentAjaxRequest();
-      request.response({
-        status: 200,
-        responseText: 'ok'
+      var context = jasmine.createSpy();
+      var response = {
+        'status': 200,
+        'responseText': 'ok'
+      };
+      spyOn($, 'ajax').andCallFake(function(options){
+        expect(options.url).toEqual('/foobar/');
+        expect(options.type).toEqual('POST');
+        expect(options.cache).toEqual(false);
+        options.success.call(context, response.responseText, 'success', response);
+        options.complete.call(context, response, 'success');
       });
+
+      sel.save();
+
+      expect($.ajax).toHaveBeenCalled()
     });
 
-    xit('should alert the user of server errors', function(){
-      var oldAlert = alert;
-      window.alert = jasmine.createSpy();
-
-      sel.save();
-      var request = mostRecentAjaxRequest();
-      request.response({
-        status: 500,
-        responseText: ''
+    it('should alert the user of server errors and undo changes', function(){
+      spyOn(window, 'alert').andReturn(null);
+      var context = jasmine.createSpy();
+      var response = {
+        'status': 500,
+        'responseText': ''
+      };
+      spyOn($, 'ajax').andCallFake(function(options){
+        options.error.call(context, response, 'error', 'Server Error');
+        options.complete.call(context, response, 'error');
       });
 
-      expect(alert).toHaveBeenCalledWith();
-      window.alert = oldAlert;
-    });
-
-    xit('should undo selection changes for bad requests', function(){
       sel.save();
-      var request = mostRecentAjaxRequest();
-      request.response({
-        status: 400,
-        responseText: 'bad request'
-      });
+
+      expect(alert).toHaveBeenCalled();
     });
   });
   describe('refresh', function(){
+
   });
 });
