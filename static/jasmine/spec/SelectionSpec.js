@@ -118,48 +118,34 @@ describe('Selection', function(){
     });
   });
 
-  describe('save', function(){
+  describe('save and load', function(){
+    var storage;
     beforeEach(function(){
       //jasmine.Ajax.useMock();
-      sel.options.saveURL = '/foobar/';
+      storage = sel.options.storage = {
+        set: function(k, v){ },
+        get: function(k, v){ }
+      };
     });
 
-    it('should do nothing to server on success', function(){
-      var context = jasmine.createSpy();
-      var response = {
-        'status': 200,
-        'responseText': 'ok'
-      };
-      spyOn($, 'ajax').andCallFake(function(options){
-        expect(options.url).toEqual('/foobar/');
-        expect(options.type).toEqual('POST');
-        expect(options.cache).toEqual(false);
-        options.success.call(context, response.responseText, 'success', response);
-        options.complete.call(context, response, 'success');
-      });
+    it('should load from storage', function(){
+      var selection = { 1: [1, 2, 3], 2: [4, 5] };
+      spyOn(storage, 'get').andReturn(selection);
 
-      sel.save();
-
-      expect($.ajax).toHaveBeenCalled()
+      expect(sel.load().crns).toEqual(selection);
     });
 
-    it('should alert the user of server errors and undo changes', function(){
-      spyOn(window, 'alert').andReturn(null);
-      var context = jasmine.createSpy();
-      var response = {
-        'status': 500,
-        'responseText': ''
-      };
-      spyOn($, 'ajax').andCallFake(function(options){
-        options.error.call(context, response, 'error', 'Server Error');
-        options.complete.call(context, response, 'error');
-      });
+    it('should save to storage', function(){
+      spyOn(storage, 'set').andReturn(null);
 
+      var selection = { 1: [1, 2, 3], 2: [4, 5] };
+      sel.set(selection);
       sel.save();
 
-      expect(alert).toHaveBeenCalled();
+      expect(storage.set).toHaveBeenCalledWith('crns', selection);
     });
   });
+
   describe('refresh', function(){
 
   });

@@ -147,6 +147,30 @@ describe('Array.each', function(){
   });
 });
 
+describe('Array.asyncEach', function(){
+  it('should return timers', function(){
+    var arr = ['a', 'b', 'c'];
+    var timers = arr.asyncEach($.noop);
+    for(var i=0, l=timers.length; i<l; i++){
+      expect(typeof timers[i]).toEqual('number');
+    }
+  });
+
+  it('should iterate each element', function(){
+    var accum = [];
+    runs(function(){
+      var arr = ['a', 'b', 'c'];
+      var add = function(value, i){ accum.push([value, i]); };
+      arr.asyncEach(add, {delay: 2});
+    });
+    // add 1 to ensure this runs after
+    waits(2 * 3 + 1);
+    runs(function(){
+      expect(accum).toEqual([['a', 0], ['b', 1], ['c', 2]]);
+    });
+  });
+});
+
 describe('Array.clone', function(){
   it('should return a new array', function(){
     var arr = [1, 2, 3];

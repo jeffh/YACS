@@ -59,6 +59,16 @@ window.Utils = {
   },
   sendMessage: function(obj, method, args){
     return obj && obj[method] && obj[method].apply(context || obj, args || []);
+  },
+  keys: function(obj){
+    var accum = [];
+    for(var name in obj) accum.push(name);
+    return accum;
+  },
+  values: function(obj){
+    var accum = [];
+    for(var name in obj) accum.push(obj[name]);
+    return accum;
   }
 }
 
@@ -109,7 +119,7 @@ $.extend(Function.prototype, {
     comp: function(){
       return (function(self, args){
         var a = args.slice(0); // clone() isn't defined yet
-        return function(){ return self.apply(this, a.pushArray(arguments)); };
+        return function(){ return self.apply(this, a.pushArray(arguments)); }
       })(this, Array.fromIterable(arguments));
     }
 });
@@ -187,6 +197,21 @@ $.extend(Array.prototype, {
         if (ret === 'break') break;
       }
       return this;
+    },
+    // like each, except performs operations asynchronously
+    // returns an array of all the timers.
+    // Normal break & continue mechanisms do not work with this.
+    asyncEach: function(fn, options){
+      var opt = $.extend({
+        delay: 10
+      }, options);
+      var accum = [];
+      for(var i=0, l=this.length; i<l; i++){
+        accum.push(setTimeout((function(value, index){
+          return function(){ fn.call(value, value, index); };
+        })(this[i], i), opt.delay * i));
+      }
+      return accum;
     },
 	map: function(fn){
 		var accum = [];
@@ -371,6 +396,10 @@ var Storage = Class.extend({
   _serialize: function(obj){
     return this.options.serialize(obj);
   },
+  _save: function(){
+    // save internal information to storage
+    this._set(this.getFullKey('keys', {isPrivate: true}));
+  },
   load: function(){
     var raw = this._get(this._getFullKey('keys', {isPrivate: true}));
     this.keys = this._deserialize(raw);
@@ -391,6 +420,7 @@ var Storage = Class.extend({
     assert($.type(key) === 'string', 'key must be a string.');
     var fullKey = this._getFullKey(key);
     this._set(fullKey, this._serialize(value));
+    this._save();
   },
   get: function(key){
     assert($.type(key) === 'string', 'key must be a string.');
@@ -406,6 +436,7 @@ var Storage = Class.extend({
       var fullKey = self._getFullKey(key);
       self._remove(fullKey);
     });
+    this._save();
   }
 });
 
@@ -586,11 +617,15 @@ var Selection = Class.extend({
     course_id_format: 'selected_course_{{ cid }}',
     section_id_format: 'selected_course_{{ cid }}_{{ crn }}',
     checkbox_selector: '.course input[type=checkbox]',
-    saveURL: null
+    storage: new Storage(),
+    storageKey: 'crns',
+    autoload: true
   },
   init: function(options){
     this.crns = {};
     this.options = $.extend({}, this.options, options);
+    if(this.options.autoload)
+      this.load();
   },
   // returns object of course data
   _processCourseElement: function(el){
@@ -686,39 +721,15 @@ var Selection = Class.extend({
     return parameters;
   },
   save: function(){
-    assert(typeof(this.options.saveURL) === 'string', 'saveURL option is required for save()');
-    // write crns to server
-    if (this._saveRequest)
-      this._saveRequest.abort();
-
+    assert(this.options.storage, 'Storage must be defined in options to save');
+    this.options.storage.set(this.options.storageKey, this.crns);
     this._trigger(['save'], this);
-
-    var self = this;
-    this._saveRequest = $.ajax({
-      url: this.options.saveURL,
-      type: 'POST',
-      cache: false,
-      data: $.param(this.toQueryString()),
-      complete: function(){
-        self._saveRequest = null;
-      },
-      success: function(){
-        self._trigger(['saved:success'], this);
-      },
-      error: function(xhr, status){
-        self._trigger(['saved:failed'], this);
-        if (xhr.status === 403){
-          // too many sections for YACS to process
-        }
-        else if (xhr.status === 404){
-          // conflicts in selection
-        }
-        else {
-          // any other server failure (or connectivity)
-          alert('Failed');
-        }
-      }
-    });
+  },
+  load: function(){
+    assert(this.options.storage, 'Storage must be defined in options to load');
+    this.set(this.options.storage.get(this.options.storageKey) || {});
+    this._trigger(['load'], this);
+    return this;
   },
   set: function(selected_crns){
     this.crns = $.extend({}, selected_crns);
@@ -749,3 +760,212 @@ var Selection = Class.extend({
   }
 });
 
+//////////////////////////////// Scheduling ////////////////////////////////
+
+// based on underscore's templating system
+var Template = Class.extend({
+  options: {
+    string: null,
+    selector: null,
+    context: null,
+    evaluate: /<%([\s\S]+?)%>/g,
+    interpolate: /<%=([\s\S]+?)%>/g,
+    escape: /<%-([\s\S]+?)%>/g,
+    noMatch: /.^/
+  },
+  init: function(options){
+    this.options = $.extend({}, this.options, options || {});
+    assert(this.options.string || this.options.selector, 'string or selector option must be given.');
+  },
+  extendContext: function(context){
+    this.options.context = $.extend({}, this.options.context || {}, context || {});
+    return this;
+  },
+  _getContext: function(context){
+    return $.extend({}, this.options.context, context || {});
+  },
+  _getString: function(){
+    return this.options.string || $(this.options.selector).html();
+  },
+  _escapeHTML: function(string){
+    return (''+string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;');
+  },
+  render: function(context){
+    var data = this._getContext(context),
+        opt = this.options,
+        noMatch = this.options.noMatch;
+    var tmpl = 'var __p=[],print=function(){__p.push.apply(__p,arguments);};' +
+    'with(obj||{}){__p.push(\'' +
+    this._getString().replace(/\\/g, '\\\\')
+      .replace(/'/g, "\\'")
+      .replace(opt.escape || noMatch, function(match, code) {
+        return "',escapeHTML(" + code.replace(/\\'/g, "'") + "),'";
+      })
+      .replace(opt.interpolate || noMatch, function(match, code) {
+        return "'," + code.replace(/\\'/g, "'") + ",'";
+      })
+      .replace(opt.evaluate || noMatch, function(match, code) {
+        return "');" + code.replace(/\\'/g, "'")
+                      .replace(/[\r\n\t]/g, ' ')
+                      .replace(/\\\\/g, '\\') + ";__p.push('";
+      })
+      .replace(/\r/g, '\\r')
+      .replace(/\n/g, '\\n')
+      .replace(/\t/g, '\\t')
+      + "');}return __p.join('');";
+    var func = new Function('obj', 'escapeHTML', tmpl);
+    return func(data, this._escapeHTML);
+  }
+});
+
+var FunctionsContext = {
+  time_parts: function(timestr){
+    var parts = timestr.split(':'), // hour:min:sec
+      i = Utils.integer;
+    return {
+      hour: i(parts[0]),
+      minute: i(parts[1]),
+      second: i(parts[2])
+    };
+  },
+  time_to_seconds: function(timestr){
+    var parts = FunctionsContext.time_parts(timestr); // hour:min:sec
+    return parts.hour * 3600 + parts.minute * 60 + parts.second;
+  },
+  get_crns: Utils.values,
+  create_color_map: function(schedule, maxcolors){
+    var color_map = {},
+      maxcolors = maxcolors || 9;
+    Utils.keys(schedule).each(function(cid, i){
+      color_map[cid] = (i % maxcolors) + 1;
+    });
+    return color_map;
+  },
+  humanize_time: function(timestr){
+    var parts = timestr.split(':'),
+        hour = parseInt(parts[0], 10),
+        minutes = parseInt(parts[1], 10),
+        apm = 'am';
+    if (hour === 0){
+      hour = 12;
+    } else if (hour > 12){
+      apm = 'pm';
+      hour = hour - 12;
+    } else if (hour === 12){
+      apm = 'pm';
+    }
+    if (minutes !== 0)
+      return hour + ":" + (minutes < 10 ? '0' : '') + minutes + apm;
+    return hour + apm;
+  },
+  humanize_hour: function(hour){
+    var apm = 'am';
+    if (hour == 0) hour = 12;
+    else if (hour >= 12) apm = 'pm';
+    if (hour > 12) hour = hour - 12;
+    return hour + " " + apm;
+  },
+  get_period_offset: function(period, height){
+    var start = FunctionsContext.time_parts(period.start_time),
+        time = start.minute * 60 + start.second;
+    return time / 3600.0 * height;
+  },
+  get_period_height: function(period, height){
+    var time = FunctionsContext.time_to_seconds(period.end_time) - time_to_seconds(period.start_time);
+    //return 25 // 30 min time block
+    //return 41.666666667 // 50 min time block
+    return time / 3600.0 * height;
+  }
+};
+
+var ScheduleUI = Class.extend({
+  options: {
+    selection: null, // object of course_id => crns
+    target: '#schedules',
+    schedulesURL: null,
+    scheduleTemplate: null,
+    thumbnailTemplate: null,
+    noSchedulesTemplate: null,
+    tooManyCRNsTemplate: null,
+    periodHeight: 30,
+    thumbnailPeriodHeight: 30
+  },
+  init: function(options){
+    $.extend(this.options, options);
+    assert(this.options.selection, 'selection option must be specified');
+    assert(this.options.scheduleTemplate, 'scheduleTemplate option must be specified');
+    assert(this.options.thumbnailTemplate, 'thumbnailTemplate option must be specified');
+    assert(this.options.noSchedulesTemplate, 'noSchedulesTemplate option must be specified');
+    assert(this.options.tooManyCRNsTemplate, 'tooManyCRNsTemplate  option must be specified');
+    this.options.scheduleTemplate.extendContext(FunctionsContext);
+    this.options.thumbnailTemplate.extendContext(FunctionsContext);
+    this.options.noSchedulesTemplate.extendContext(FunctionsContext);
+    this.options.tooManyCRNsTemplate.extendContext(FunctionsContext);
+  },
+  fetchSchedules: function(){
+    var self = this;
+    $.ajax(this.options.schedulesURL, {
+      type: 'GET',
+      dataType: 'json',
+      success: function(json){
+        if(json.schedules && json.schedules.length)
+          self.render_schedules(json);
+        else
+          self.render_no_schedules();
+      },
+      error: function(xhr, status){
+        // TODO: show a custom error page
+        if(xhr.status === 403){
+          self.render_too_many_crns();
+        } else {
+          //alert('Failed to get schedules... (are you connected to the internet?)');
+          // TODO: log to the server (if we can)
+          console.error('Failed to save to schedules: ' + xhr.status);
+        }
+      }
+    });
+    return this;
+  },
+  render_too_many_crns: function(){
+    $(this.options.target).html(this.options.tooManyCRNsTemplate.render());
+  },
+  render_no_schedules: function(){
+    $(this.options.target).html(this.options.noSchedulesTemplate.render({}));
+  },
+  render_schedules: function(json){
+    var FC = FunctionsContext, self = this;
+    var contextExtensions = {
+      color_map: FC.create_color_map(json.schedules[0]),
+      get_period_height: function(){
+        return FC.get_period_height(period, this.is_thumbnail ? thumbnail_period_height : period_height);
+      },
+      get_period_offset: function(){
+        return FC.get_period_offset(period, this.is_thumbnail ? thumbnail_period_height : period_height);
+      }
+    };
+    this.options.scheduleTemplate.extendContext(contextExtensions);
+    this.options.thumbnailTemplate.extendContext(contextExtensions);
+    $(this.options.target).html('');
+
+    var selected_schedule = get_schedule_id_from_state();
+    json.schedules.asyncEach(function(schedule, i){
+      var context = {
+        sid: i + 1,
+        schedule: schedule,
+        is_thumbnail: false
+      };
+      var frag = $(self.scheduleTemplate.render(context));
+      context.is_thumbnail = true;
+      var thumb = $(self.thumbnailTemplate.render(context));
+      if (i !== selected_schedule) {
+        frag.hide();
+        //thumb.hide(); // TOOD: show if thumbnail mode
+      } else {
+        thumb.addClass('selected');
+      }
+      $('#schedules').append(frag);
+      $('#thumbnails').append(thumb);
+      console.log('rendering ' + (i+1) + ' of ' + context.schedules.length);
+    });
+  }
+});
