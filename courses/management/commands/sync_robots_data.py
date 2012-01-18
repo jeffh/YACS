@@ -1,12 +1,14 @@
+from optparse import make_option
+import sys
+
 from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.contrib.sites.models import Site
-from optparse import make_option
-import sys
 
 from yacs.courses import models
 from yacs.courses.signals import robots_signal
+
 
 class Command(BaseCommand):
     help = "Creates and updates data for robots.txt (requires django-robots to be installed)."

@@ -1,14 +1,16 @@
+import re
+
 from django.views.generic import ListView, RedirectView, DetailView, View
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.conf import settings
+
 from yacs.courses import models
 from yacs.courses.utils import ObjectJSONEncoder, DAYS
 from yacs.courses.views.mixins import (SemesterBasedMixin, AjaxJsonResponseMixin, SelectedCoursesMixin,
         PartialResponseMixin, SearchMixin, SELECTED_COURSES_SESSION_KEY)
 
-import re
 
 class SemesterListView(ListView):
     "Displays a list of semesters to be selected."
@@ -20,11 +22,13 @@ class SemesterListView(ListView):
             qs = qs.filter(year=year)
         return qs
 
+
 class SemesterDetailView(SemesterBasedMixin, DetailView):
     "Displays a specific semester."
     def get_object(self):
         "Returns a specific semester, given year and month."
         return self.get_semester()
+
 
 class SelectedCoursesListView(AjaxJsonResponseMixin, SelectedCoursesMixin, ListView):
     "Lists all user selected courses & sections."
@@ -45,6 +49,7 @@ class DepartmentListView(SelectedCoursesMixin, ListView):
 
     def get_queryset(self):
         return self.filter_by_semester(models.Department.objects.all())
+
 
 class SearchCoursesListView(PartialResponseMixin, SearchMixin, SelectedCoursesMixin, ListView):
     "Show search results from a given query."
@@ -82,6 +87,7 @@ class SearchCoursesListView(PartialResponseMixin, SearchMixin, SelectedCoursesMi
         data['sections'] = self.get_sections(data['courses'], *self.get_year_and_month())
         return data
 
+
 class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
     "Shows all courses for a given department."
     context_object_name = 'courses'
@@ -109,6 +115,7 @@ class CourseByDeptListView(SearchMixin, SelectedCoursesMixin, ListView):
         data['query'] = self.request.GET.get('q', '')
         #data['sections'] = self.get_sections(data['courses'], *self.get_year_and_month())
         return data
+
 
 class CourseDetailView(SemesterBasedMixin, DetailView):
     "Shows gruesome amount of detail for a course"
@@ -147,6 +154,7 @@ class CourseDetailView(SemesterBasedMixin, DetailView):
             sections.append(sp.section)
         return sections
 
+
 class RedirectToLatestSemesterRedirectView(SemesterBasedMixin, RedirectView):
     "Simply redirects to the latest semester."
     url_name = 'departments'
@@ -157,6 +165,7 @@ class RedirectToLatestSemesterRedirectView(SemesterBasedMixin, RedirectView):
     def get_redirect_url(self, **kwargs):
         semester = self.get_semester()
         return reverse(self.url_name, kwargs=dict(year=semester.year, month=semester.month))
+
 
 class DeselectCoursesView(AjaxJsonResponseMixin, SemesterBasedMixin, View):
     "Performs the operation of deselecting courses. This is also used by javascript to update the selected courses."
@@ -214,6 +223,7 @@ class DeselectCoursesView(AjaxJsonResponseMixin, SemesterBasedMixin, View):
         selection = self.update_selected()
         request.session[SELECTED_COURSES_SESSION_KEY] = selection
         return self.render_to_response(self.get_context_data(selection=selection))
+
 
 class SelectCoursesView(DeselectCoursesView):
     "Selects a given course. This is used for non-javascript clients."

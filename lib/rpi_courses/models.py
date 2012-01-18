@@ -3,7 +3,9 @@
 Generally, all instances should be read only.
 """
 from datetime import time
+
 from rpi_courses.utils import safeInt, FrozenDict
+from rpi_courses.config import DEPARTMENTS
 
 class ReadOnly(object):
     """All attributes that are prefixed with a single underscore will have
@@ -303,6 +305,11 @@ class Course(ReadOnly):
             'grade_type': self.grade_type,
             'section_count': len(self.sections)
         }
+
+    @property
+    def full_dept(self):
+        "Uses DEPARTMENT to convert the shorthand name into a full name of the department."
+        return DEPARTMENTS.get(self.dept)
 
     @property
     def available_sections(self):

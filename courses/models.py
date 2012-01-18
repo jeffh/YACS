@@ -1,16 +1,21 @@
+from itertools import product
+
 from django.utils.importlib import import_module
 from django.db import models
-from yacs.courses import managers
-from yacs.courses.utils import options, capitalized, sorted_daysofweek
 from django.core.exceptions import ValidationError
 from django.db.models import F
-from itertools import product
+
+from yacs.courses import managers
+from yacs.courses.utils import options, capitalized, sorted_daysofweek
+
 
 __all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting',
     'Course', 'OfferedFor', 'SectionPeriod']
 
+
 def has_model(select_related, model):
     return any(s == model._meta.db_table for s, _ in select_related)
+
 
 class Semester(models.Model):
     """Represents the semester / quarter for a college. Courses may not be offered every semester.
@@ -50,6 +55,7 @@ class Semester(models.Model):
     def __cmp__(self, other):
         return cmp(self.year, other.year) or cmp(self.month, other.month)
 
+
 class Department(models.Model):
     """Represents a department. Provides UI organization capabilities to drill-down courses by department."""
     name = models.CharField(max_length=200, blank=True, default='')
@@ -74,6 +80,7 @@ class Department(models.Model):
         if has_model(select_related, Semester):
             json['semesters'] = self.semesters.all().toJSON(select_related)
         return json
+
 
 class Period(models.Model):
     """Represents a time period that sections are held for during the week.
@@ -155,6 +162,7 @@ class Period(models.Model):
     def to_tuple(self):
         return (self.start, self.end, self.days_of_week_flag)
 
+
 class SectionCrosslisting(models.Model):
     """Interface for courses that are crosslisted. Crosslisted sections are similar to each other.
 
@@ -171,6 +179,7 @@ class SectionCrosslisting(models.Model):
 
     def __unicode__(self):
         return "%s for %s" % (self.semester, self.ref)
+
 
 class Section(models.Model):
     """Represents a particular course a student can sign up for."""
@@ -264,6 +273,7 @@ class Section(models.Model):
             if period1 == period2 or period1.conflicts_with(period2):
                 return True
         return False
+
 
 class Course(models.Model):
     """A course offered."""
@@ -390,6 +400,7 @@ class OfferedFor(models.Model):
     def __unicode__(self):
         return u"%s is offered for %s" % (self.course, self.semester)
 
+
 class SectionPeriod(models.Model):
     "M2M model of sections and periods"
     period = models.ForeignKey('Period', related_name='section_times')
@@ -428,6 +439,7 @@ class SectionPeriod(models.Model):
         "Returns True if times conflict with the given section period."
         return self.period.conflicts_with(section_period.period)
 
+
 class SemesterDepartment(models.Model):
     "M2M model of departments and semesters."
     department = models.ForeignKey('Department', related_name='+')
@@ -435,6 +447,7 @@ class SemesterDepartment(models.Model):
 
     class Meta:
         unique_together = ('department', 'semester')
+
 
 class SemesterSection(models.Model):
     "M2M model of semesters and sections."
@@ -444,4 +457,4 @@ class SemesterSection(models.Model):
     class Meta:
         unique_together = ('semester', 'section')
 
-### END RELATED MODELS ###
+

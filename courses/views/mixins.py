@@ -1,10 +1,13 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+
 from yacs.courses import models
 from yacs.courses.utils import ObjectJSONEncoder, DAYS
 
+
 SELECTED_COURSES_SESSION_KEY = 'selected'
+
 
 class AjaxJsonResponseMixin(object):
     json_content_prefix = 'for(;;); '
@@ -66,6 +69,7 @@ class AjaxJsonResponseMixin(object):
             return self.get_json_response(self.get_json_content_prefix() + self.convert_context_to_json(context))
         return super(AjaxJsonResponseMixin, self).render_to_response(context)
 
+
 class TemplateBaseOverride(object):
     template_base = 'site_base.html'
 
@@ -78,6 +82,7 @@ class TemplateBaseOverride(object):
         data = super(TemplateBaseOverride, self).get_context_data(**kwargs)
         data['template_base'] = self.get_template_base()
         return data
+
 
 class SemesterBasedMixin(TemplateBaseOverride):
     fetch_semester = False
@@ -146,6 +151,7 @@ class SemesterBasedMixin(TemplateBaseOverride):
             return queryset.by_semester(year, month)
         return queryset
 
+
 class SelectedCoursesMixin(SemesterBasedMixin):
     def get_sections(self, courses, year, month):
         "Returns all sections for all course ids, given it the year and month they were offered."
@@ -191,6 +197,7 @@ class SearchMixin(object):
         data = super(SearchMixin, self).get_context_data(**kwargs)
         data['departments'] = models.Department.objects.all()
         return data
+
 
 class PartialResponseMixin(object):
     "Allows a view to return a template partial (instead of extending base)."

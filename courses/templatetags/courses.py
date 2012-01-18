@@ -2,12 +2,15 @@ from django import template
 
 from yacs.courses.utils import DAYS
 
+
 register = template.Library()
+
 
 def remove_zero_prefix(timestr):
     if timestr[0] == '0':
         return timestr[1:]
     return timestr
+
 
 @register.filter
 def get(obj, key):
@@ -22,6 +25,7 @@ def get(obj, key):
             pass
     return None
 
+
 @register.filter
 def display_period(period):
     fmt = "%s-%s"
@@ -35,9 +39,11 @@ def display_period(period):
         remove_zero_prefix(period.end.strftime('%I:%M %p')),
     )
 
+
 @register.filter
 def sort(iterable):
     return sorted(iterable)
+
 
 @register.filter
 def dow_short(dow):
@@ -53,6 +59,7 @@ def dow_short(dow):
         'Sunday': 'Su',
     }.get(dow)
 
+
 @register.filter
 def period_dow_buckets(periods):
     """Prepares periods by day of the week.
@@ -62,6 +69,7 @@ def period_dow_buckets(periods):
         for dow in period.days_of_week:
             slots.setdefault(dow, []).append(period)
     return slots
+
 
 @register.filter
 def period_type_buckets(periods):
@@ -81,9 +89,11 @@ def period_type_buckets(periods):
             periods.sort(key=lambda p: p.start)
     return slots
 
+
 @register.filter
 def sections_for(sections, course):
     return [s for s in sections if s.course_id == course.id]
+
 
 @register.filter
 def sum_credits(courses):
@@ -95,9 +105,11 @@ def sum_credits(courses):
         return "%d credit%s" % (min_creds, '' if min_creds == 1 else 's')
     return "%d - %d credits" % (min_creds, max_creds)
 
+
 @register.filter
 def seats_left(sections):
     return sum(s.seats_left for s in sections)
+
 
 @register.filter
 def join(collection, sep=', '):

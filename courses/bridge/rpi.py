@@ -3,16 +3,16 @@
 import re
 import urllib2
 import dateutil.parser
-from contextlib import closing
-from yacs.courses.models import (Semester, Course, Department, Section,
-    Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment,
-    SemesterSection)
-from yacs.courses.signals import sections_modified
-
 import logging
 import logging.handlers
 import sys
 import datetime
+from contextlib import closing
+
+from yacs.courses.models import (Semester, Course, Department, Section,
+    Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment,
+    SemesterSection)
+from yacs.courses.signals import sections_modified
 
 
 logger = logging.getLogger(__file__)
@@ -30,58 +30,6 @@ except AttributeError:
 logger.addHandler(NullHandler())
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
-# it would be best to get this data from a reliable data source:
-# like the course catalog: http://catalog.rpi.edu/content.php?catoid=10&navoid=232
-# instead of manually entering this data.
-
-# code: name
-DEPARTMENTS = dict(
-    ADMN="Administration",
-    ARCH="Architecture",
-    ARTS="Arts",
-    ASTR="Astronomy",
-    BCBP="Biochemistry and Biophysics",
-    BIOL="Biology",
-    BMED="Biomedical Engineering",
-    CHEM="Chemistry",
-    CHME="Chemical Engineering",
-    CISH="Computer Science at Hartford",
-    CIVL="Civil Engineering",
-    COGS="Cognitive Science",
-    COMM="Communication",
-    CSCI="Computer Science",
-    ECON="Economics",
-    ECSE="Electrical, Computer, and Systems Engineering",
-    ENGR="General Engineering",
-    ENVE="Environmental Engineering",
-    EPOW="Electrical, Computer, and Systems Engineering",
-    ERTH="Earth and Environmental Sciences",
-    ESCI="Engineering Science",
-    EXCH="Exchange (Study Abroad)",
-    IENV="Interdisciplinary Environmental",
-    IHSS="Interdisciplinary Studies",
-    ISCI="Interdisciplinary Science",
-    ISYE="Industrial and Systems Engineering",
-    ITWS="Information Technology and Web Science",
-    LANG="Foreign Languages",
-    LGHT="Lighting",
-    LITR="Literature",
-    MANE="Mechanical, Aerospace, and Nuclear Engineering",
-    MATH="Mathematics",
-    MATP="Mathematical Programming, Probability, and Statistics",
-    MGMT="Management",
-    MTLE="Materials Science and Engineering",
-    NSST="Natural Science for School Teachers",
-    PHIL="Philosophy",
-    PHYS="Physics",
-    PSYC="Psychology",
-    STSH="Science and Technology Studies (Humanities Courses)",
-    STSS="Science and Technology Studies (Social Sciences Courses)",
-    USAF="Aerospace Studies (Air Force ROTC)",
-    USAR="Military Science (Army ROTC)",
-    USNA="Naval Science (Navy ROTC)",
-    WRIT="Writing",
-)
 
 class ROCSRPIImporter(object):
     """Handles the importation of RPI course data into the database."""
@@ -142,7 +90,7 @@ class ROCSRPIImporter(object):
         for course in catalog.get_courses():
             course_obj, created = Course.objects.get_or_create(
                 number=course.num,
-                department=self.get_or_create_department(semester_obj, code=course.dept, name=DEPARTMENTS.get(course.dept)),
+                department=self.get_or_create_department(semester_obj, code=course.dept, name=course.full_dept),
                 defaults=dict(
                     name=course.name,
                     min_credits=course.cred[0],

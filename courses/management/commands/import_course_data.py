@@ -1,7 +1,10 @@
+from optparse import make_option
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
+
 from yacs.courses.bridge import import_courses
-from optparse import make_option
+
 
 class Command(BaseCommand):
     help = "Downloads the course data and imports it into the database."

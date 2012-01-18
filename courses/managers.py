@@ -1,9 +1,11 @@
 from django.db.models import Manager, Q, F
 from django.db.models.query import QuerySet
+
 from yacs.courses.utils import dict_by_attr
 
 # using the fancy queryset manager technique, as describe:
 # http://adam.gomaa.us/blog/2009/feb/16/subclassing-django-querysets/index.html
+
 
 class QuerySetManager(Manager):
     use_for_related_fields = True
@@ -23,6 +25,7 @@ class QuerySetManager(Manager):
 
     def __getattr__(self, attr):
         return getattr(self.get_query_set(), attr)
+
 
 class SerializableQuerySet(QuerySet):
 
@@ -48,6 +51,7 @@ class SemesterBasedQuerySet(SerializableQuerySet):
             qs = qs.distinct()
 
         return qs
+
 
 class SectionPeriodQuerySet(SemesterBasedQuerySet):
     def by_semester(self, year=None, month=None):
@@ -84,12 +88,14 @@ class SectionPeriodQuerySet(SemesterBasedQuerySet):
     def select_kinds(self, course):
         return self.by_course(course).values_list('kind', flat=True).distinct().order_by('kind')
 
+
 def reverse_select_related(dict):
     params = []
     for key, value in dict.items():
         params.append(key)
         params.extend("%s__%s" % (key, x) for x in reverse_select_related(value))
     return params
+
 
 class SectionQuerySet(SemesterBasedQuerySet):
     def full_select(self, year=None, month=None):
@@ -127,6 +133,7 @@ class SectionQuerySet(SemesterBasedQuerySet):
     def by_availability(self):
         "Filters out all sections that are unavailable. This means seats taken >= seats total."
         return self.filter(seats_taken__lt=F('seats_total'))
+
 
 class CourseQuerySet(SemesterBasedQuerySet):
     def _filter_types(self, query):
