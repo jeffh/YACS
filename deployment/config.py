@@ -1,13 +1,14 @@
 import sys
 import json
 
+
 class DeploymentConfig(object):
     "Abstracts the data storage mechanism from the fabric file."
     def __init__(self, filename, mode):
         self.mode = mode
         with open(filename, 'r') as h:
             self.obj = json.loads(h.read())
-    
+
     def assign_to_env(self, env):
         if 'hosts' in self.deployment_settings:
             env.hosts = self.hosts
@@ -18,7 +19,7 @@ class DeploymentConfig(object):
     @property
     def deployment_settings(self):
         return self.obj[self.mode]
-    
+
     @property
     def hosts(self):
         results = []
@@ -49,7 +50,7 @@ class DeploymentConfig(object):
                 }
                 raise
         return results
-    
+
     @property
     def servers(self):
         return self.obj['servers'].copy()

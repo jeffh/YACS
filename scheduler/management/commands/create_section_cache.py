@@ -1,8 +1,11 @@
+from optparse import make_option
+
 from django.core.management.base import BaseCommand
 from django.db import transaction
+
 from yacs.courses.models import Semester
 from yacs.scheduler import models
-from optparse import make_option
+
 
 class Command(BaseCommand):
     help = "Caches all the section conflicts into the database."

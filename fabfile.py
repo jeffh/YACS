@@ -1,18 +1,38 @@
-from fabric.api import roles, env, local
-from fabric.context_managers import cd, prefix, lcd
-from fabric.contrib.files import upload_template
-from fabric.contrib import django
-
 import shutil
 import os
 import sys
 import zipfile
 from tempfile import NamedTemporaryFile
 
+from fabric.api import roles, env, local
+from fabric.context_managers import cd, prefix, lcd
+from fabric.contrib.files import upload_template
+from fabric.contrib import django
+
 from deployment.remote import exists, run, move, unzip, put, mkdir, phase_out, remove, which, normalize
 from deployment.config import DeploymentConfig
 from deployment.packaging import zipfiles, get_project_files, directory
 from deployment.commands import Command
+
+
+__all__ = (
+    'staging',
+    'production',
+    'webfaction',
+    'scss',
+    'docs',
+    'clean',
+    'loc',
+    'test',
+    'generate_fixtures',
+    'deploy',
+    'restart',
+    'update_courses',
+    'update_cache',
+    'create_robotstxt',
+    'refresh_data',
+)
+
 
 aptget = Command('apt-get', sudo=True)
 python = Command('python2.7',
@@ -53,33 +73,18 @@ DEPLOY_FILE = os.path.join('deployment', 'deploy.json')
 
 deploy_config = None
 
-__all__ = (
-    'staging',
-    'production',
-    'webfaction',
-    'scss',
-    'docs',
-    'clean',
-    'loc',
-    'test',
-    'generate_fixtures',
-    'deploy',
-    'restart',
-    'update_courses',
-    'update_cache',
-    'create_robotstxt',
-    'refresh_data',
-)
 
 def staging():
     "Performs actions on the staging servers, as defined in deploy.json."
     global deploy_config
     deploy_config = DeploymentConfig(DEPLOY_FILE, 'staging').assign_to_env(env)
 
+
 def production():
     "Performs actions on the production servers, as defined in deploy.json."
     global deploy_config
     deploy_config = DeploymentConfig(DEPLOY_FILE, 'production').assign_to_env(env)
+
 
 def webfaction():
     global pip
@@ -95,9 +100,11 @@ def webfaction():
 
     #mkdir('~/tmp', recursive=True)
 
+
 def scss():
     "Watches sass files to convert to css"
     local('sass --watch static/global/scss:static/global/css')
+
 
 def clean():
     "Removes all pyc cache files."
@@ -111,10 +118,12 @@ def clean():
                 print " DIR ", os.path.join(root, d)[2:]
                 shutil.rmtree(os.path.join(root, d))
 
+
 def docs():
     "Generates documentation."
     with lcd(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'docs')):
         local('make html')
+
 
 def generate_fixtures():
     "Generates various fixtures from the current data in the database."
@@ -188,14 +197,17 @@ def test(apps=None):
         local('coverage run -a manage.py test --failfast %s' % (' '.join(apps), ))
     local('coverage html')
 
+
 def loc():
     "Returns the number of lines of all source files, excluding migrations."
     local('find -E . -iregex ".+/[^0][^/]+\.(py|html|js|scss|txt)$" -not -iregex ".+/(_build|test_reports)/.+" -not -name "manage.py" | xargs wc -l')
+
 
 @roles('webservers')
 def new_deploy():
     "Performs the set up of a first deployment, installed all the required software."
     pass
+
 
 @roles('webservers')
 def deploy(use_pip=False):
@@ -204,8 +216,10 @@ def deploy(use_pip=False):
     update_environment(use_pip)
     restart()
 
+
 def activate_virtualenv_cmd():
     return 'source %s/bin/activate' % deploy_config.virtualenv_name
+
 
 @roles('webservers')
 def upload_project():
@@ -240,11 +254,13 @@ def upload_project():
 
         backup.delete()
 
+
 @roles('webservers')
 def upload_templates():
     with cd(deploy_config.project_root):
         for src, dest in TEMPLATES.items():
             upload_template(src, dest, context=deploy_config.deployment_settings, use_jinja=True, backup=False)
+
 
 @roles('webservers')
 def setup_environment():
@@ -290,6 +306,7 @@ def update_environment(use_pip=False):
             manage_py.migrate()
             manage_py.collectstatic('--noinput')
 
+
 def run_manage_cmd(command, *args):
     with cd(deploy_config.project_root):
         if env.use_virtualenv:
@@ -298,28 +315,34 @@ def run_manage_cmd(command, *args):
         else:
             python.extend(['manage.py'])(command, *args)
 
+
 @roles('webservers')
 def refresh_data():
     update_courses()
     update_cache()
     create_robotstxt()
 
+
 @roles('webservers')
 def clear_course_data():
     run_manage_cmd('reset', 'sessions', '--noinput')
     run_manage_cmd('reset', 'courses', '--noinput')
 
+
 @roles('webservers')
 def update_courses(args=''):
     run_manage_cmd('import_course_data', args)
+
 
 @roles('webservers')
 def update_cache(args=''):
     run_manage_cmd('create_section_cache', args)
 
+
 @roles('webservers')
 def create_robotstxt():
     run_manage_cmd('sync_robots_data')
+
 
 @roles('webservers')
 def restart():

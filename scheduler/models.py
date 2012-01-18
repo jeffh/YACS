@@ -1,10 +1,13 @@
+import itertools
+
 from django.db import models, transaction
+
 from yacs.courses.signals import robots_signal
 from yacs.courses import models as courses
 from yacs.courses import managers as courses_managers
 from yacs.courses.utils import dict_by_attr
 from yacs.scheduler import managers
-import itertools
+
 
 # Django bug? Using a proxy causes tests to fail (looking for database NAME).
 SectionProxy = courses.Section
@@ -20,6 +23,7 @@ SectionProxy = courses.Section
 #    def conflicts_with(self, section):
 #        # self.conflicts has to be set by the view....
 #        return section.id in self.conflicts
+
 
 class SectionConflict(models.Model):
     """The relationship where a section conflicts with another section.
@@ -46,6 +50,7 @@ class SectionConflict(models.Model):
 
     def __unicode__(self):
         return u"<SectionConflict: %r and %r for %r>" % (self.section1, self.section2, self.semester)
+
 
 # TODO: move into manager
 def cache_conflicts(semester_year=None, semester_month=None, semester=None):

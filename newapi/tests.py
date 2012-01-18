@@ -1,9 +1,12 @@
+from datetime import time
+
 from django.core.urlresolvers import reverse
+from django.utils.simplejson import loads
+from shortcuts import ShortcutTestCase
+
 from yacs.courses import models
 from yacs.courses.tests import factories
-from shortcuts import ShortcutTestCase
-from django.utils.simplejson import loads
-from datetime import time
+
 
 class TestLatestAPI(ShortcutTestCase):
     fixtures = ['semesters.json', 'courses/fixtures/calc1.json', 'courses/fixtures/intro-to-cs.json', 'courses/fixtures/data-structures.json']
@@ -116,10 +119,12 @@ class TestLatestAPI(ShortcutTestCase):
         self.assertEqual(obj['crn'], 85723)
         # TODO: self.assertEqual(obj['periods'], ...)
 
+
 # yeah, I know, not the best practice to be doing this.. but I'm short on time!
 class TestLatestAPIViaYearAndMonth(TestLatestAPI):
     def json_get(self, *args, **kwargs):
         return super(TestLatestAPIViaYearAndMonth, self).json_get(*args, year=2011, month=9, **kwargs)
+
 
 # TODO: make more comprehensive
 class TestSemesterAPI(ShortcutTestCase):
@@ -133,6 +138,7 @@ class TestSemesterAPI(ShortcutTestCase):
 
     def test_get_semesters_by_year(self):
         json = self.json_get('semesters-by-year', year=2011, status_code=200)
+
 
 class TestSemesterAPIWithFactory(ShortcutTestCase):
     urls = 'yacs.newapi.urls'

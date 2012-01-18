@@ -1,5 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
+
 from yacs.newapi import views
+
 
 api3 = dict(version=3)
 api2 = dict(version=2)

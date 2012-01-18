@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class SetOfIntegersField(models.CharField):
     description = "A sorted, comma separated set of integers. Unlike django's version, API usage is like a set of integers."
 
@@ -20,7 +21,7 @@ class SetOfIntegersField(models.CharField):
 
         if type(value) in (list, tuple):
             return set(value)
-        
+
         if value == '':
             return set()
         values = set(int(x) for x in value.split(self.delimiter))

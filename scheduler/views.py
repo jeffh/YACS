@@ -1,4 +1,3 @@
-from icalendar import Calendar, Event, UTC, vText
 from datetime import datetime
 from json import dumps
 import urllib
@@ -12,6 +11,7 @@ from django.template import RequestContext
 from django.conf import settings
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
+from icalendar import Calendar, Event, UTC, vText
 
 from yacs.courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY, AjaxJsonResponseMixin
 from yacs.courses.models import Semester, SectionPeriod, Course, Section, Department
@@ -19,14 +19,17 @@ from yacs.courses.utils import dict_by_attr, ObjectJSONEncoder, sorted_daysofwee
 from yacs.scheduler import models
 from yacs.scheduler.scheduler import compute_schedules
 
+
 ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')
 SECTION_LIMIT = getattr(settings, 'SECTION_LIMIT', 60)
+
 
 class ResponsePayloadException(Exception):
     "This exception is raised if a special form of HttpResponse is wanted to be returned (eg - JSON error response)."
     def __init__(self, response):
         self.response = response
         super(ResponsePayloadException, self).__init__('')
+
 
 class ExceptionResponseMixin(object):
     """Handles ResponsePayloadExceptions appropriately.
@@ -39,6 +42,7 @@ class ExceptionResponseMixin(object):
             return super(ExceptionResponseMixin, self).dispatch(*args, **kwargs)
         except ResponsePayloadException as e:
             return e.response
+
 
 class ConflictMixin(SemesterBasedMixin):
     "Provides the view with helper methods to acquire the conflicted sections."
@@ -277,6 +281,7 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
         data.update(context)
         return data
 
+
 class JsonComputeSchedules(AjaxJsonResponseMixin, ComputeSchedules):
     "Simply provides a JSON output format for the ComputeSchedules view."
     json_content_prefix = ''
@@ -286,6 +291,7 @@ class JsonComputeSchedules(AjaxJsonResponseMixin, ComputeSchedules):
     def render_to_response(self, context):
         del context['template_base']
         return self.get_json_response(self.get_json_content_prefix() + self.convert_context_to_json(context))
+
 
 def schedules_bootloader(request, year, month):
     """A simple view that loads the basic template and provides the

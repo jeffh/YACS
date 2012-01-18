@@ -1,12 +1,14 @@
+from datetime import time
+from json import loads
+
 from django.core.urlresolvers import reverse
+from shortcuts import ShortcutTestCase
+
 from yacs.courses import models
 from yacs.courses.tests.factories import (SemesterFactory, CourseFactory, PeriodFactory,
         SemesterSectionFactory, SectionFactory, SectionPeriodFactory, OfferedForFactory)
 from yacs.scheduler.models import cache_conflicts
 from yacs.scheduler.views import SELECTED_COURSES_SESSION_KEY
-from shortcuts import ShortcutTestCase
-from datetime import time
-from json import loads
 
 
 # TODO: convert this (and the tests that use this) to use factories
@@ -20,6 +22,7 @@ def create_section(**kwargs):
         models.SectionPeriod.objects.create(section=section, **period)
     return section
 
+
 def create_periods(*ranges):
     periods = []
     for start, end, dow in ranges:
@@ -29,6 +32,7 @@ def create_periods(*ranges):
             days_of_week_flag=dow,
         ))
     return periods
+
 
 class ScheduleViewsSmokeTests(ShortcutTestCase):
     urls = 'yacs.urls'

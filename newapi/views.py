@@ -1,19 +1,23 @@
-from django.views.generic import ListView, DetailView
-from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseServerError
-from yacs.courses import models, views
-from yacs.courses.utils import ObjectJSONEncoder
-from django.conf import settings
-
 import mimetypes
 import plistlib
 import xmlrpclib
+
+from django.views.generic import ListView, DetailView
+from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseServerError
+from django.conf import settings
+
+from yacs.courses import models, views
+from yacs.courses.utils import ObjectJSONEncoder
+
 
 # add some mimetypes
 mimetypes.add_type('application/x-plist', 'plist')
 mimetypes.add_type('application/x-binary-plist', 'bplist')
 mimetypes.add_type('application/x-binary-plist', 'biplist')
 
+
 SHOW_QUERIES = getattr(settings, 'API_RETURN_QUERIES', False) and settings.DEBUG
+
 
 class APIMixin(views.AjaxJsonResponseMixin):
     json_content_prefix = ''
@@ -100,20 +104,25 @@ class APIMixin(views.AjaxJsonResponseMixin):
     def should_filter_by_semester(self):
         return self.get_api_version() < 3
 
+
 class DepartmentListView(APIMixin, views.DepartmentListView):
     pass
+
 
 class SemesterListView(APIMixin, views.SemesterListView):
     pass
 
+
 class SemesterDetailView(APIMixin, views.SemesterDetailView):
     pass
+
 
 class SearchCoursesListView(APIMixin, views.SearchCoursesListView):
     def get_queryset(self):
         qs = super(SearchCoursesListView, self).get_queryset(full_select=False)
         qs.force_into_json_array = True
         return qs
+
 
 class CourseByDeptListView(APIMixin, views.CourseByDeptListView):
     def get_api_payload(self):
@@ -122,10 +131,12 @@ class CourseByDeptListView(APIMixin, views.CourseByDeptListView):
         json['courses'] = queryset.toJSON()
         return json
 
+
 class CourseListView(APIMixin, views.SemesterBasedMixin, ListView):
     def get_queryset(self):
         year, month = self.get_year_and_month()
         return models.Course.objects.by_semester(year, month).select_related('department')
+
 
 class CourseDetailView(APIMixin, views.CourseDetailView):
     def get_api_payload(self):
@@ -133,6 +144,7 @@ class CourseDetailView(APIMixin, views.CourseDetailView):
         json = obj.toJSON()
         json['department'] = obj.department.toJSON()
         return json
+
 
 class SectionListView(APIMixin, views.SemesterBasedMixin, ListView):
     def get_queryset(self):
@@ -146,6 +158,7 @@ class SectionListView(APIMixin, views.SemesterBasedMixin, ListView):
         if course_id is not None:
             queryset = queryset.by_course_id(course_id)
         return queryset.full_select(year, month)
+
 
 class SectionDetailView(APIMixin, views.SemesterBasedMixin, DetailView):
     def get_queryset(self):

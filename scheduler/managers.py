@@ -1,5 +1,6 @@
 from django.db.models import Manager
 
+
 class SectionConflictManager(Manager):
     def by_sections(self, section_ids):
         qs = self.filter(section1__id__in=section_ids, section2__id__in=section_ids)
