@@ -1,5 +1,7 @@
 import collections
+
 from config import logger
+
 
 def safeInt(n, warn_only=False):
     """Throws an exception if the number starts with a 0 (may be significant).
@@ -15,6 +17,7 @@ def safeInt(n, warn_only=False):
         return int(n)
     except ValueError:
         return n
+
 
 # from SO: http://stackoverflow.com/questions/2703599/what-would-be-a-frozen-dict
 class FrozenDict(collections.Mapping):
@@ -63,3 +66,4 @@ class FrozenDict(collections.Mapping):
         return self._hash
 
 FrozenDict.FROZEN_TYPES[dict] = FrozenDict
+

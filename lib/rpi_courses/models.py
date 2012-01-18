@@ -7,6 +7,7 @@ from datetime import time
 from rpi_courses.utils import safeInt, FrozenDict
 from rpi_courses.config import DEPARTMENTS
 
+
 class ReadOnly(object):
     """All attributes that are prefixed with a single underscore will have
     a equivalent getter property without the underscore prefix.
@@ -30,6 +31,7 @@ class ReadOnly(object):
             self.__class__.__name__, key
         )
 
+
 class CrossListing(ReadOnly):
     """Represents a crosslisted set of CRNs and Seats.
     This is immutable once created.
@@ -43,6 +45,7 @@ class CrossListing(ReadOnly):
     def __add__(self, other_crosslisting):
         return self.__class__(self._crns + other_crosslisting._crns, self._seats + other_crosslisting._seats)
 
+
 DAY_MAPPER = {
     0: 'Monday',
     1: 'Tuesday',
@@ -52,6 +55,8 @@ DAY_MAPPER = {
     5: 'Saturday',
     6: 'Sunday',
 }
+
+
 class Period(ReadOnly):
     def __init__(self, type, instructor, start, end, location, int_days):
         self._type, self._instructor, self._location = \
@@ -162,6 +167,7 @@ class Period(ReadOnly):
     def days(self):
         return tuple(map(DAY_MAPPER.get, self.int_days))
 
+
 class Section(ReadOnly):
     """A section is a particular timeslot to take the given course.
     It is uniquely represented in SIS via CRN. The CRN is used for
@@ -253,6 +259,7 @@ class Section(ReadOnly):
                 self.periods == other.periods
             )
         return False
+
 
 class Course(ReadOnly):
     """Represents a particular kind of course and its sections.

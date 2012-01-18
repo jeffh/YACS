@@ -4,8 +4,11 @@ catalog data. This isn't your web.py web dev framework!
 import urllib2
 import datetime
 from contextlib import closing
+
 from BeautifulSoup import BeautifulSoup
+
 from config import ROCS_URL, SIS_URL
+
 
 def get(url, last_modified=None):
     """Performs a get request to a given url. Returns an empty str on error.
@@ -19,6 +22,7 @@ def get(url, last_modified=None):
             return page.read()
     except urllib2.URLError:
         return ""
+
 
 def list_sis_files(datetimes, url_base=SIS_URL):
     today = datetime.datetime.now()
@@ -51,10 +55,13 @@ def list_rocs_files(url=ROCS_URL):
         files.append(url+elem['href'])
     return files
 
+
 def is_xml(filename):
     "Returns True if the filename ends in an xml file extension."
     return filename.strip().endswith('.xml')
 
+
 def list_rocs_xml_files(url=ROCS_URL):
     "Gets all the xml files."
     return list(filter(is_xml, list_rocs_files(url)))
+

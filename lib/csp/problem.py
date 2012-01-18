@@ -1,4 +1,5 @@
-from solvers import DefaultSolver
+from csp.solvers import DefaultSolver
+
 
 class Problem(object):
     """Represents a problem space that needs solutions.
@@ -68,3 +69,4 @@ class Problem(object):
             'c': self._constraints,
             's': self._solver_instance.__class__,
         }
+

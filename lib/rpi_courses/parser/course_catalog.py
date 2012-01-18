@@ -1,10 +1,11 @@
-from BeautifulSoup import BeautifulStoneSoup
-
 import datetime
 import urllib2
 
-from ..web import get
-from features import * # all object postfixed with '_feature' will get used.
+from BeautifulSoup import BeautifulStoneSoup
+
+from rpi_courses.web import get
+from rpi_courses.parser.features import * # all object postfixed with '_feature' will get used.
+
 
 class CourseCatalog(object):
     """Represents the RPI course catalog.
@@ -88,3 +89,4 @@ class CourseCatalog(object):
         course = self.find_course(partial)
         crosslisted = self.crosslisted_with(course.crn)
         return (course,) + tuple(map(self.find_course_by_crn, crosslisted))
+

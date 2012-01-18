@@ -1,3 +1,4 @@
+
 class NilObject(object):
     """An object that represents no value.
 
@@ -38,6 +39,8 @@ class NilObject(object):
 
     def __neg__(self, other): return self
 
+
 def is_nil(obj):
     "Returns True if the given object is a NilObject instance."
     return isinstance(obj, NilObject)
+

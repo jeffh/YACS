@@ -1,5 +1,5 @@
 """Provides basic functionality to provide a Constraints Satisfaction Problem Solvers.
 """
-from problem import Problem
-from solvers import *
-from nil import is_nil
+from csp.problem import Problem
+from csp.solvers import *
+from csp.nil import is_nil

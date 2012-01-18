@@ -1,7 +1,8 @@
-
 from csp import Problem, is_nil, BruteForceSolver
 
+
 __all__ = ['compute_schedules', 'TimeRange', 'Scheduler']
+
 
 class TimeRange(object):
     "Represents a time range to be restricted."
@@ -40,10 +41,12 @@ class TimeRange(object):
                 return True
         return False
 
+
 def section_constraint(section1, section2):
     if is_nil(section1) or is_nil(section2):
         return True
     return not section1.conflicts_with(section2)
+
 
 class Scheduler(object):
     """High-level API that wraps the course scheduling feature.

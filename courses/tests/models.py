@@ -3,10 +3,10 @@ Unit tests (or an attempt to be) - All tests that verify specific functioning co
 
 Utils is large enough to be in its own file.
 """
-from mock import Mock, patch
 import datetime
 import sys
 
+from mock import Mock, patch
 from django.test import TestCase
 
 from yacs.courses import models

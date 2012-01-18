@@ -1,9 +1,11 @@
+from datetime import time
+
 from django.test import TestCase
 from mock import Mock
-from datetime import time
 
 from yacs.courses.templatetags import courses as tags
 from yacs.courses.tests.factories import PeriodFactory
+
 
 __all__ = ['RemoveZeroPrefixTest', 'GetTest', 'DowShortTest']
 
@@ -51,6 +53,7 @@ class DisplayPeriodTest(TestCase):
     def test_display_period_from_morning_to_afternoon(self):
         period = PeriodFactory.build(start=time(hour=10), end=time(hour=14, minute=50))
         self.assertEqual(tags.display_period(period), '10:00 am-2:50 am')
+
 
 class DowShortTest(TestCase):
     def test_monday(self):

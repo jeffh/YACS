@@ -1,4 +1,5 @@
-from nil import NilObject
+from csp.nil import NilObject
+
 
 class BaseConstraint(object):
     """Abstract class. The basic features provided to all constraints.
@@ -25,6 +26,7 @@ class BaseConstraint(object):
     def __cmp__(self, other):
         return cmp(len(self), len(other))
 
+
 class Constraint(BaseConstraint):
     """A simple constraint that takes any function. Less efficient in terms of limiting
     domain values because the solver doesn't fully understand the kinds of constraints
@@ -42,3 +44,4 @@ class Constraint(BaseConstraint):
     def __len__(self):
         "How constrainting this constraint is."
         return min(self._search_spaces)
+

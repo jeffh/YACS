@@ -1,8 +1,10 @@
-from constraints import Constraint, NilObject
 from itertools import product
 from abc import ABCMeta, abstractproperty, abstractmethod
 
+from csp.constraints import Constraint, NilObject
+
 __all__ = ['BruteForceSolver', 'DefaultSolver', 'BacktrackingSolver']
+
 
 class SolverInterface(object):
     """Purely a reference class to understand the interface the Problem class expects."""
@@ -36,6 +38,7 @@ class SolverInterface(object):
     @abstractmethod
     def __iter__(self):
         raise NotImplemented
+
 
 class Solution(object):
     """Represents a JavaScript-like object.
@@ -111,6 +114,7 @@ class Solution(object):
     def __contains__(self, key):
         return key in self.new or key in self.old
 
+
 class BaseSolver(SolverInterface):
     def __init__(self, record_solutions=True):
         self.restore_point()
@@ -140,6 +144,7 @@ class BaseSolver(SolverInterface):
 
     def save_point(self):
         return self._solutions_seen + self._start
+
 
 class BruteForceSolver(BaseSolver):
     """A naive solver that simply goes through every single possible combination
@@ -208,6 +213,7 @@ class BruteForceSolver(BaseSolver):
             if self.satisfies_constraints(possible_solution):
                 yield self._record_solution(possible_solution)
         #print "Visited", self.solutions_seen, "solutions"
+
 
 class BacktrackingSolver(BruteForceSolver):
     """Basic Backtracking Solver. A depth-first search algorithm that finds solution
@@ -299,4 +305,6 @@ class BacktrackingSolver(BruteForceSolver):
             yield s
         print "Visited", self.solutions_seen, "solutions"
 
+
 DefaultSolver = BruteForceSolver
+

@@ -5,6 +5,7 @@ from yacs.courses.tests.factories import (SemesterFactory, SemesterDepartmentFac
         OfferedForFactory, CourseFactory, SemesterSectionFactory, SectionFactory,
         DepartmentFactory, PeriodFactory, SectionPeriodFactory)
 
+
 class SemesterBasedQuerySetTest(TestCase):
     def setUp(self):
         self.sem = SemesterFactory.create(year=2011, month=1)

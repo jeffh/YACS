@@ -14,6 +14,7 @@ from yacs.courses.tests.factories import (SemesterFactory, SemesterDepartmentFac
         OfferedForFactory, CourseFactory, SemesterSectionFactory, SectionFactory,
         DepartmentFactory, PeriodFactory, SectionPeriodFactory)
 
+
 class BasicSchema(ShortcutTestCase):
     urls = 'yacs.urls'
     def setUp(self):
@@ -38,11 +39,13 @@ class BasicSchema(ShortcutTestCase):
 
         self.semester, self.course, self.cs_dept, self.ecse_dept = semester, course, cs_dept, ecse_dept
 
+
 class ListDepartmentsIntegrationTests(BasicSchema):
     def test_list_departments(self):
         response = self.get('departments', year=2011, month=1, status_code=200)
         self.assertIn(self.cs_dept, response.context['departments'])
         self.assertIn(self.ecse_dept, response.context['departments'])
+
 
 class SearchTest(BasicSchema):
     def setUp(self):
@@ -180,6 +183,7 @@ class TestSingleCourseSelecting(ShortcutTestCase):
         self.assertEqual(len(selected), 1)
         self.assertSequenceEqual(selected.keys(), [self.c.id])
         self.assertSequenceEqual(selected[self.c.id], [85723])
+
 
 class TestMultipleCourseSelecting(ShortcutTestCase):
     fixtures = ['intro-to-cs.json', 'intro-to-algorithms.json', 'calc1.json']

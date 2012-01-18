@@ -5,9 +5,11 @@ automatically imported by the CourseCatalog class, postfix the
 function name with '_feature'
 """
 import datetime
+
 from rpi_courses.utils import FrozenDict, safeInt
 from rpi_courses.config import logger, DEBUG
 from rpi_courses.models import CrossListing, Course
+
 
 def timestamp_feature(catalog, soup):
     """The datetime the xml file was last modified.
@@ -15,6 +17,7 @@ def timestamp_feature(catalog, soup):
     catalog.timestamp = int(soup.coursedb['timestamp'])
     catalog.datetime = datetime.datetime.fromtimestamp(catalog.timestamp)
     logger.info('Catalog last updated on %s' % catalog.datetime)
+
 
 def semester_feature(catalog, soup):
     """The year and semester information that this xml file hold courses for.
@@ -48,6 +51,7 @@ def crosslisting_feature(catalog, soup):
 
     logger.info('Catalog has %d course crosslistings' % len(catalog.crosslistings))
 
+
 def course_feature(catalog, soup):
     """Parses all the courses (AKA, the most important part).
     """
@@ -59,3 +63,4 @@ def course_feature(catalog, soup):
     catalog.courses = courses
     catalog.courses
     logger.info('Catalog has %d courses' % len(courses))
+

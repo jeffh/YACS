@@ -1,8 +1,10 @@
+import datetime
+
 from django.contrib.sitemaps import Sitemap
 from django.core.urlresolvers import reverse
+
 from yacs.courses import models
 
-import datetime
 
 class SemesterSitemap(Sitemap):
     changefreq = 'hourly'
@@ -18,6 +20,8 @@ class SemesterSitemap(Sitemap):
         print r
         return r
 
+
 sitemaps = {
     'semesters': SemesterSitemap,
 }
+
