@@ -1,10 +1,11 @@
 //////////////////////////////// Class object ////////////////////////////////
 // Based on john resig's simple javascript inheritance
-(function(window, $, undefined){
+(function($, undefined){
+var root = this;
 var initializing = false;
 
-window.Class = function (){};
-window.Class.extend = function(attributes){
+root.Class = function (){};
+root.Class.extend = function(attributes){
 	var _super = this.prototype;
 
 	initializing = true;
@@ -37,7 +38,7 @@ window.Class.extend = function(attributes){
 };
 
 //////////////////////////////// Utility functions ////////////////////////////////
-window.Utils = {
+root.Utils = {
   integer: function(i){ return parseInt(i, 10); },
   getCookie: function(name) {
     var cookieValue = null;
@@ -58,7 +59,7 @@ window.Utils = {
     return Utils.getCookie('csrftoken');
   },
   sendMessage: function(obj, method, args){
-    return obj && obj[method] && obj[method].apply(context || obj, args || []);
+    return obj && obj[method] && $.isFunction(obj[method]) && obj[method].apply(obj, args || []);
   },
   keys: function(obj){
     var accum = [];
@@ -67,17 +68,26 @@ window.Utils = {
   },
   values: function(obj){
     var accum = [];
-    for(var name in obj) accum.push(obj[name]);
+    Utils.keys(obj).each(function(name){
+      accum.push(obj[name]);
+    });
+    return accum;
+  },
+  keys: function(obj){
+    var accum = [];
+    for(var name in obj){
+      if(obj.hasOwnProperty(name) && name !== 'prototype')
+        accum.push(name);
+    }
     return accum;
   }
 }
 
-})(window, jQuery);
+})(jQuery);
 
 //////////////////////////////// Core functions ////////////////////////////////
 function assert(bool, message){
-  if (!bool)
-    throw message || "Assertion failed";
+  if (!bool) throw message || "Assertion failed";
 }
 
 ///////////////////////////////////////////////////
@@ -266,22 +276,24 @@ $.extend(Array.prototype, {
 });
 
 //////////////////////////////// Helper Objects ////////////////////////////////
-var Inspector = Class.extend({
-  init: function(obj){
-    this.obj = obj;
+var Hash = Class.extend({
+  init: function(properties){
+    this.properties = properties || {};
   },
-  getProperties: function(){
-    if (this.obj === undefined) return [];
-    var names = [];
-    for(var name in this.obj)
-      names.push(name);
-    return names;
+  contains: function(key){
+    return key in this.properties;
   },
-  getOwnProperties: function(){
-    var obj = this.obj;
-    return this.getProperties().filter(function(value){
-      return obj.hasOwnProperty(value);
-    });
+  get: function(key){
+    return this.properties[key];
+  },
+  set: function(key, value){
+    this.properties[key] = value;
+  },
+  keys: function(){
+    return Utils.keys(this.properties);
+  },
+  values: function(){
+    return Utils.values(this.properties);
   }
 });
 
@@ -398,11 +410,15 @@ var Storage = Class.extend({
   },
   _save: function(){
     // save internal information to storage
-    this._set(this.getFullKey('keys', {isPrivate: true}));
+    this._set(this._getFullKey('keys', {isPrivate: true}), this.keys);
   },
   load: function(){
     var raw = this._get(this._getFullKey('keys', {isPrivate: true}));
-    this.keys = this._deserialize(raw);
+    try {
+      this.keys = this._deserialize(raw);
+    } catch (error) {
+      this.keys = [];
+    }
   },
   _getFullKey: function(key, options){
     // private is used to indicate properties set used
@@ -420,6 +436,7 @@ var Storage = Class.extend({
     assert($.type(key) === 'string', 'key must be a string.');
     var fullKey = this._getFullKey(key);
     this._set(fullKey, this._serialize(value));
+    this.keys.pushUnique(key);
     this._save();
   },
   get: function(key){
@@ -736,7 +753,7 @@ var Selection = Class.extend({
     return this;
   },
   getCourseIds: function(){
-    return new Inspector(this.crns).getOwnProperties().map(Utils.integer);
+    return Utils.keys(this.crns).map(Utils.integer);
   },
   _getCourseElem: function(course_id){
     return $('#' + this.options.course_id_format.format({cid: course_id}));
@@ -933,16 +950,17 @@ var ScheduleUI = Class.extend({
     $(this.options.target).html(this.options.noSchedulesTemplate.render({}));
   },
   render_schedules: function(json){
-    var FC = FunctionsContext, self = this;
-    var contextExtensions = {
-      color_map: FC.create_color_map(json.schedules[0]),
-      get_period_height: function(){
-        return FC.get_period_height(period, this.is_thumbnail ? thumbnail_period_height : period_height);
-      },
-      get_period_offset: function(){
-        return FC.get_period_offset(period, this.is_thumbnail ? thumbnail_period_height : period_height);
-      }
-    };
+    var FC = FunctionsContext,
+      self = this,
+      contextExtensions = {
+        color_map: FC.create_color_map(json.schedules[0]),
+        get_period_height: function(){
+          return FC.get_period_height(period, this.is_thumbnail ? thumbnail_period_height : period_height);
+        },
+        get_period_offset: function(){
+          return FC.get_period_offset(period, this.is_thumbnail ? thumbnail_period_height : period_height);
+        }
+      };
     this.options.scheduleTemplate.extendContext(contextExtensions);
     this.options.thumbnailTemplate.extendContext(contextExtensions);
     $(this.options.target).html('');

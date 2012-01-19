@@ -1,7 +1,18 @@
 describe('Selection', function(){
   var sel, target;
   var G = function(selector){ return target.find(selector).get(0); };
+  var fakeStorage;
   beforeEach(function(){
+    fakeStorage = {container: {}};
+    fakeStorage = $.extend(fakeStorage, {
+      set: function(key, value){
+        fakeStorage.container[key] = value;
+      },
+      get: function(key){
+        return fakeStorage.container[key];
+      }
+    });
+
     target = $('<div id="target" style="display:none"></div>').appendTo(document.body);
     target.append(
       '<div class="course">' +
@@ -13,7 +24,9 @@ describe('Selection', function(){
         '</div>' +
       '</div>'
     );
-    sel = new Selection();
+    sel = new Selection({
+      storage: fakeStorage
+    });
   });
 
   afterEach(function(){

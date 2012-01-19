@@ -22,11 +22,10 @@ describe('Storage', function(){
   });
 
   it('can store a string to a key', function(){
-    spyOn(store, 'setItem').andCallFake(function(key, value){
-      expect(key).toEqual('public.foo');
-      expect(value).toEqual('bar');
-    });
+    spyOn(store, 'setItem').andReturn(null);
     storage.set('foo', 'bar');
+    expect(store.setItem).toHaveBeenCalledWith('public.foo', 'bar');
+    expect(store.setItem).toHaveBeenCalledWith('private.keys', ['foo']);
   });
 
   it('can retrieve a string from a key', function(){
