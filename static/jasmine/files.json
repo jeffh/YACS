@@ -7,7 +7,6 @@
     "js/libs/sessionstorage.1.4.js",
     "js/libs/jquery.history.js",
     "js/320nu.js",
-    "js/v2/objects.js",
-    "js/v2/application.js"
+    "js/v2/objects.js"
   ]
 }
