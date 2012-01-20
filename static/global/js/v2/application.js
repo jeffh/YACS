@@ -50,6 +50,14 @@ $(function(){
     Scheduler.selection.refresh();
   };
   $(Scheduler.selection).bind('added', refresh).bind('removed', refresh);
+
+  // must be on selected courses page
+  if(!$('#selected_courses').length) return;
+
+  var courseListView = new CourseListView({
+    template: new Template({selector: 'selected-course-template'}),
+    target: '#selected_courses'
+  }).render(courses);
 });
 
 // Schedules feature

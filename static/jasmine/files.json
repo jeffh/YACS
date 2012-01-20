@@ -6,6 +6,8 @@
   "static_files": [
     "js/libs/sessionstorage.1.4.js",
     "js/libs/jquery.history.js",
+    "js/libs/underscore-1.2.0.min.js",
+    "js/libs/backbone-0.5.3.min.js",
     "js/320nu.js",
     "js/v2/objects.js"
   ]

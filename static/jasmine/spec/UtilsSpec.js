@@ -15,22 +15,4 @@ describe('Utils', function(){
       expect(Utils.sendMessage({}, 'foo', [1, 2])).toBeFalsy();
     });
   });
-
-  describe('keys', function(){
-    it('should return all properties owned by object, excluding prototype', function(){
-      var parentObj = {c: 'foo'};
-      var childObj = {1: 'a', a: 'b'};
-      childObj.prototype = parentObj
-      expect(Utils.keys(childObj)).toEqual(['1', 'a']);
-    });
-  });
-
-  describe('values', function(){
-    it('should return values for all owned properties, excluding prototype', function(){
-      var parentObj = {c: 'foo'};
-      var childObj = {1: 'a', a: 'b'};
-      childObj.prototype = parentObj
-      expect(Utils.values(childObj)).toEqual(['a', 'b']);
-    });
-  });
 });

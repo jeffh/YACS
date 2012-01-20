@@ -61,25 +61,8 @@ root.Utils = {
   sendMessage: function(obj, method, args){
     return obj && obj[method] && $.isFunction(obj[method]) && obj[method].apply(obj, args || []);
   },
-  keys: function(obj){
-    var accum = [];
-    for(var name in obj) accum.push(name);
-    return accum;
-  },
-  values: function(obj){
-    var accum = [];
-    Utils.keys(obj).each(function(name){
-      accum.push(obj[name]);
-    });
-    return accum;
-  },
-  keys: function(obj){
-    var accum = [];
-    for(var name in obj){
-      if(obj.hasOwnProperty(name) && name !== 'prototype')
-        accum.push(name);
-    }
-    return accum;
+  property: function(name){
+    return function(){ return this[name]; };
   }
 }
 
@@ -480,6 +463,12 @@ var Template = Class.extend({
   }
 });
 
+//////////////////////////////// Models ////////////////////////////////
+var Course = Backbone.Model.extend({
+  initialize: function(){
+  }
+});
+
 //////////////////////////////// Realtime Search ////////////////////////////////
 
 var RealtimeForm = Class.extend({
@@ -775,7 +764,7 @@ var Selection = Class.extend({
     return this;
   },
   getCourseIds: function(){
-    return Utils.keys(this.crns).map(Utils.integer);
+    return _.keys(this.crns).map(Utils.integer);
   },
   _getCourseElem: function(course_id){
     return $('#' + this.options.course_id_format.format({cid: course_id}));
@@ -799,63 +788,48 @@ var Selection = Class.extend({
   }
 });
 
-//////////////////////////////// Scheduling ////////////////////////////////
-
-// based on underscore's templating system
-var Template = Class.extend({
+var CourseListView = Class.extend({
   options: {
-    string: null,
-    selector: null,
-    context: null,
-    evaluate: /<%([\s\S]+?)%>/g,
-    interpolate: /<%=([\s\S]+?)%>/g,
-    escape: /<%-([\s\S]+?)%>/g,
-    noMatch: /.^/
+    template: null,
+    target: null
   },
-  init: function(options){
-    this.options = $.extend({}, this.options, options || {});
-    assert(this.options.string || this.options.selector, 'string or selector option must be given.');
+  courses: null,
+  init: function(courses, options){
+    this.options = $.extend({}, this.options, options);
+    assert(this.options.template, 'template option is must be defined');
+    assert(this.options.target, 'target option is must be defined');
   },
-  extendContext: function(context){
-    this.options.context = $.extend({}, this.options.context || {}, context || {});
+  render: function(courses){
+    var $target = $(this.options.target).html(''),
+      tmpl = this.options.template;
+    courses.each(function(course){
+      var sections = course.sections;
+      var context = {
+        course: $.extend({}, course, {
+          seats_total: sections.reduce(function(a, b){ return a + b.seats_total; }, 0),
+          seats_left: sections.reduce(function(a, b){ return a + b.seats_left; }, 0),
+          seats_taken: sections.reduce(function(a, b){ return a + b.seats_taken; }, 0),
+          crns: sections.map(Utils.property('crn')),
+          kinds: sections.map(Utils.property('kinds')),
+          notes: sections.map(Utils.property('notes')),
+          credits_display: (course.max_credits === course.min_credits ?
+            '%s credit%s'.format(
+              course.min_credits,
+              course.min_credits === 1 ? '' : 's') :
+            '%s - %s credits'.format(
+              course.min_credits,
+              course.max_credits
+            )
+          )
+        })
+      };
+      target.append(tmpl.render(context));
+    });
     return this;
-  },
-  _getContext: function(context){
-    return $.extend({}, this.options.context, context || {});
-  },
-  _getString: function(){
-    return this.options.string || $(this.options.selector).html();
-  },
-  _escapeHTML: function(string){
-    return (''+string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;');
-  },
-  render: function(context){
-    var data = this._getContext(context),
-        opt = this.options,
-        noMatch = this.options.noMatch;
-    var tmpl = 'var __p=[],print=function(){__p.push.apply(__p,arguments);};' +
-    'with(obj||{}){__p.push(\'' +
-    this._getString().replace(/\\/g, '\\\\')
-      .replace(/'/g, "\\'")
-      .replace(opt.escape || noMatch, function(match, code) {
-        return "',escapeHTML(" + code.replace(/\\'/g, "'") + "),'";
-      })
-      .replace(opt.interpolate || noMatch, function(match, code) {
-        return "'," + code.replace(/\\'/g, "'") + ",'";
-      })
-      .replace(opt.evaluate || noMatch, function(match, code) {
-        return "');" + code.replace(/\\'/g, "'")
-                      .replace(/[\r\n\t]/g, ' ')
-                      .replace(/\\\\/g, '\\') + ";__p.push('";
-      })
-      .replace(/\r/g, '\\r')
-      .replace(/\n/g, '\\n')
-      .replace(/\t/g, '\\t')
-      + "');}return __p.join('');";
-    var func = new Function('obj', 'escapeHTML', tmpl);
-    return func(data, this._escapeHTML);
   }
 });
+
+//////////////////////////////// Scheduling ////////////////////////////////
 
 var FunctionsContext = {
   time_parts: function(timestr){
@@ -871,11 +845,11 @@ var FunctionsContext = {
     var parts = FunctionsContext.time_parts(timestr); // hour:min:sec
     return parts.hour * 3600 + parts.minute * 60 + parts.second;
   },
-  get_crns: Utils.values,
+  get_crns: _.values,
   create_color_map: function(schedule, maxcolors){
     var color_map = {},
       maxcolors = maxcolors || 9;
-    Utils.keys(schedule).each(function(cid, i){
+    _.keys(schedule).each(function(cid, i){
       color_map[cid] = (i % maxcolors) + 1;
     });
     return color_map;
