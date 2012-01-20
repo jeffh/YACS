@@ -7,6 +7,19 @@ describe('Template', function(){
       fn: function(a, b){ return a + b + this.num; }
     };
 
+    it('should render to element', function(){
+      var jQ = $;
+      var el = jasmine.createSpyObj('element', ['html']);
+      spyOn(window, '$').andReturn(el);
+      $.extend = jQ.extend;
+
+      var t = new Template({string: 'foobar'});
+      t.renderTo(el, context);
+
+      expect($).toHaveBeenCalledWith(el);
+      expect(el.html).toHaveBeenCalledWith('foobar');
+    });
+
     it('should return string', function(){
       var t = new Template({string: 'foobar'});
       expect(t.render(context)).toEqual('foobar');

@@ -118,6 +118,7 @@ $(document).ajaxSend(function(event, xhr, settings) {
 });
 
 //////////////////////////////// Extensions ////////////////////////////////
+// yes, not portable. But this is an app. I get to do whatever I want!
 $.extend(Function.prototype, {
     // Returns a function with specified function context
 	bind: function(obj){
@@ -194,6 +195,11 @@ $.extend(Array, {
 
 $.extend(Array.prototype, {
     clone: Array.prototype.slice,
+    compact: function(){
+      return this.filter(function(v){
+        return !(v === null || v === undefined || $.type(v) === 'string' && v.isBlank());
+      });
+    },
 	contains: function(value){
 		for(var i=0, l=this.length; i<l; i++)
 			if (this[i] === value)
@@ -228,6 +234,15 @@ $.extend(Array.prototype, {
         this.each(function(val, i){ accum.push(fn.call(val, val, i)); });
 		return accum;
 	},
+    reduce: function(fn, initial){
+        var hasInitial = initial === undefined;
+		var value = hasInitial ? initial : this[0];
+        for(var i=0, l=this.length; i<l; i++){
+          if(!hasInitial && i === 0) continue;
+          value = fn(value, this[i]);
+        }
+		return value;
+    },
 	filter: function(fn){
 		var accum = [];
 		for(var i=0, l=this.length; i<l; i++){
@@ -276,27 +291,6 @@ $.extend(Array.prototype, {
 });
 
 //////////////////////////////// Helper Objects ////////////////////////////////
-var Hash = Class.extend({
-  init: function(properties){
-    this.properties = properties || {};
-  },
-  contains: function(key){
-    return key in this.properties;
-  },
-  get: function(key){
-    return this.properties[key];
-  },
-  set: function(key, value){
-    this.properties[key] = value;
-  },
-  keys: function(){
-    return Utils.keys(this.properties);
-  },
-  values: function(){
-    return Utils.values(this.properties);
-  }
-});
-
 var Fuse = Class.extend({
 	timer: null,
 	options: {
@@ -457,6 +451,34 @@ var Storage = Class.extend({
   }
 });
 
+var Template = Class.extend({
+  options: {
+    string: null,
+    selector: null,
+    context: null
+  },
+  init: function(options){
+    this.options = $.extend({}, this.options, options || {});
+    assert(this.options.string || this.options.selector, 'string or selector option must be given.');
+  },
+  extendContext: function(context){
+    this.options.context = $.extend({}, this.options.context || {}, context || {});
+    return this;
+  },
+  _getContext: function(context){
+    return $.extend({}, this.options.context, context || {});
+  },
+  _getString: function(){
+    return this.options.string || $(this.options.selector).html();
+  },
+  render: function(context){
+    var data = this._getContext(context);
+    return _.template(this._getString(), data);
+  },
+  renderTo: function(element, context){
+    $(element).html(this.render(context));
+  }
+});
 
 //////////////////////////////// Realtime Search ////////////////////////////////
 
@@ -944,10 +966,10 @@ var ScheduleUI = Class.extend({
     return this;
   },
   render_too_many_crns: function(){
-    $(this.options.target).html(this.options.tooManyCRNsTemplate.render());
+    this.options.tooManyCRNsTemplate.renderTo(this.options.target);
   },
   render_no_schedules: function(){
-    $(this.options.target).html(this.options.noSchedulesTemplate.render({}));
+    this.options.noSchedulesTemplate.renderTo(this.options.target);
   },
   render_schedules: function(json){
     var FC = FunctionsContext,
