@@ -319,7 +319,9 @@ class Course(models.Model):
             }
         if has_model(select_related, Department):
             values['department'] = self.department.toJSON(select_related)
-        if hasattr(self, 'all_sections'):
+        if hasattr(self, 'all_section_periods'):
+            values['sections'] = [s.toJSON() for s in self.all_section_periods]
+        elif hasattr(self, 'all_sections'):
             values['sections'] = [s.toJSON() for s in self.all_sections]
         return values
 

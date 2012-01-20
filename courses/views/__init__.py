@@ -135,11 +135,11 @@ class CourseDetailView(SemesterBasedMixin, DetailView):
             obj = self.get_queryset().get(id=self.kwargs.get('cid'))
 
         # attach additional properties:
-        obj.all_sections = self.get_sections(obj)
+        self.apply_sections(obj)
 
         return obj
 
-    def get_sections(self, course):
+    def apply_sections(self, course):
         "Fetches all sections for a given course."
         year, month = self.get_year_and_month()
         section_periods = models.SectionPeriod.objects.by_course(course, year, month).select_related()
@@ -152,7 +152,9 @@ class CourseDetailView(SemesterBasedMixin, DetailView):
         for sp in section_periods:
             sp.section.all_periods = periods_for_section[sp.section]
             sections.append(sp.section)
-        return sections
+
+        course.all_sections = sections
+        course.all_section_periods = section_periods
 
 
 class RedirectToLatestSemesterRedirectView(SemesterBasedMixin, RedirectView):
