@@ -433,7 +433,9 @@ class SectionPeriod(models.Model):
             'instructor': self.instructor,
             'location': self.location,
             'kind': self.kind,
+            #'semester_id': self.semester.id,
         }
+        json.update(self.section.toJSON())
         json.update(self.period.toJSON())
         return json
 
