@@ -104,6 +104,13 @@ class APIMixin(views.AjaxJsonResponseMixin):
     def should_filter_by_semester(self):
         return self.get_api_version() < 3
 
+class ObjectList(APIMixin, ListView):
+    def get_queryset(self):
+        return []
+
+    def get_api_payload(self):
+        return self.kwargs.get('objects', ())
+
 
 class DepartmentListView(APIMixin, views.DepartmentListView):
     pass
@@ -134,8 +141,12 @@ class CourseByDeptListView(APIMixin, views.CourseByDeptListView):
 
 class CourseListView(APIMixin, views.SemesterBasedMixin, ListView):
     def get_queryset(self):
-        year, month = self.get_year_and_month()
-        return models.Course.objects.by_semester(year, month).select_related('department')
+        # new in ver3+: RESTful state. So we have to display all the semester
+        # ids this course is associated with
+        if self.get_api_version() < 3 or 'year' in self.kwargs and 'month' in self.kwargs:
+            year, month = self.get_year_and_month()
+            return models.Course.objects.by_semester(year, month).select_related('department')
+        return models.Course.objects.select_related('department').select_semesters()
 
 
 class CourseDetailView(APIMixin, views.CourseDetailView):

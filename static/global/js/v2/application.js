@@ -1,17 +1,19 @@
 // require: objects.js
+Scheduler = {};
+Scheduler.selection = new Selection();
 
 ///////////////////////////////////////////////////
 // Hooks
 
 // realtime search initialization
 $(function(){
-	var defaultHtml = $('#replacable-with-search').html();
-	var searchElement = $('#searchform');
-	if(searchElement.length){
-		var SearchForm = new RealtimeForm(searchElement, {
+    var defaultHtml = $('#replacable-with-search').html();
+    var searchElement = $('#searchform');
+    if(searchElement.length){
+        var SearchForm = new RealtimeForm(searchElement, {
             cache: true,
-			updateElement: '#replacable-with-search',
-			additionalGET: {partial: 1},
+            updateElement: '#replacable-with-search',
+            additionalGET: {partial: 1},
             activityResponder: new ActivityResponder({
               show: function(){
                 $('#search-spinner').show();
@@ -20,23 +22,20 @@ $(function(){
                 $('#search-spinner').hide();
               }
             }),
-			suppressFormSubmit: true,
-			customHandler: function(form, fuse){
-				var dept = form.find('#d').val(),
-					query = form.find('#q').val();
-				if(query === '' && dept === 'all'){
-					$('#replacable-with-search').html(defaultHtml);
-					return true;
-				}
-				fuse.start();
-				return false;
-			}
-		});
-	}
+            suppressFormSubmit: true,
+            customHandler: function(form, fuse){
+                var dept = form.find('#d').val(),
+                    query = form.find('#q').val();
+                if(query === '' && dept === 'all'){
+                    $('#replacable-with-search').html(defaultHtml);
+                    return true;
+                }
+                fuse.start();
+                return false;
+            }
+        });
+    }
 });
-
-Scheduler = {};
-Scheduler.selection = new Selection();
 
 //  Selected Course Feature
 $(function(){
@@ -72,6 +71,12 @@ $(function(){
     noSchedulesTemplate = new Template({selector: '#no-schedules-template'}),
     tooManyCRNsTemplate = new Template({selector: '#too-many-crns-template'});
 
+  Scheduler.schedulesListView = new SchedulesListView({
+    selection: Scheduler.selection,
+    periodHeight: Utils.integer($('#schedule-template').attr('data-period-height')),
+    thumbnailPeriodHeight: Utils.integer($('#thumbnail-template').attr('data-period-height'))
+  });
+  /*
   Scheduler.UI = new ScheduleUI({
     selection: Scheduler.selection.crns,
     schedulesURL: $('#schedules').attr('data-source'),
@@ -82,4 +87,5 @@ $(function(){
     periodHeight: Utils.integer($('#schedule-template').attr('data-period-height')),
     thumbnailPeriodHeight: Utils.integer($('#thumbnail-template').attr('data-period-height'))
   }).fetchSchedules();
+  */
 });

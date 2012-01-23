@@ -143,6 +143,25 @@ class CourseQuerySet(SemesterBasedQuerySet):
             Q(name__icontains=query) | Q(number__contains=query) | \
             Q(sections__section_times__instructor__icontains=query)
 
+    def select_semesters(self):
+        """Returns all courses in the given queryset plus semester data.
+        """
+        from yacs.courses.models import OfferedFor
+        semesters = OfferedFor.objects.filter(course__id__in=[c.id for c in self])
+        semesters = dict_by_attr(set([s.semester for s in semesters]), 'course.id')
+
+        course.all_semesters = semesters.get(course.id, [])
+
+        def semester_key(s):
+            return s.id
+
+        result = []
+        for course in self:
+            course.all_semesters = sorted(set(semesters.get(course.id, [])), key=semester_key)
+            result.append(course)
+        return result
+
+
     def full_select(self, year=None, month=None):
         """Returns all courses in the given queryset, plus Sections, Periods, and SectionPeriod data.
 

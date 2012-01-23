@@ -315,8 +315,10 @@ class Course(models.Model):
             'name': self.name,
             'number': self.number,
             'min_credits': self.min_credits,
-            'max_credits': self.max_credits,
-            }
+            'max_credits': self.max_credits
+        }
+        if hasattr(self, 'all_semesters'):
+            values['semesters'] = [s.id for s in self.all_semesters]
         if has_model(select_related, Department):
             values['department'] = self.department.toJSON(select_related)
         if hasattr(self, 'all_section_periods'):

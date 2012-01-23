@@ -6,35 +6,35 @@ var initializing = false;
 
 root.Class = function (){};
 root.Class.extend = function(attributes){
-	var _super = this.prototype;
+  var _super = this.prototype;
 
-	initializing = true;
-	var prototype = new this;
-	initializing = false;
+  initializing = true;
+  var prototype = new this;
+  initializing = false;
 
-	// copy attributes over to the new class
-	for (var name in attributes){
-		prototype[name] = ($.isFunction(_super[name]) && $.isFunction(attributes[name])) ?
-			(function(name, fn){
-				return function(){
-					var tmp = this._super;
-					this._super = _super[name];
-					var ret = fn.apply(this, arguments);
-					this._super = tmp;
-					return ret;
-				};
-			})(name, attributes[name]) :
-			attributes[name];
-	}
+  // copy attributes over to the new class
+  for (var name in attributes){
+    prototype[name] = ($.isFunction(_super[name]) && $.isFunction(attributes[name])) ?
+  (function(name, fn){
+    return function(){
+      var tmp = this._super;
+      this._super = _super[name];
+      var ret = fn.apply(this, arguments);
+      this._super = tmp;
+      return ret;
+    };
+  })(name, attributes[name]) :
+    attributes[name];
+  }
 
-	function Class(){
-		if (!initializing && this.init)
-			this.init.apply(this, arguments);
-	};
-	Class.prototype = prototype;
-	Class.prototype.constructor = Class;
-	Class.extend = arguments.callee;
-	return Class;
+  function Class(){
+    if (!initializing && this.init)
+      this.init.apply(this, arguments);
+  };
+  Class.prototype = prototype;
+  Class.prototype.constructor = Class;
+  Class.extend = arguments.callee;
+  return Class;
 };
 
 //////////////////////////////// Utility functions ////////////////////////////////
@@ -111,11 +111,11 @@ $(document).ajaxSend(function(event, xhr, settings) {
 // yes, not portable. But this is an app. I get to do whatever I want!
 $.extend(Function.prototype, {
     // Returns a function with specified function context
-	bind: function(obj){
-		return (function(self){
-			return function(){ return self.apply(obj, arguments); };
-		})(this);
-	},
+    bind: function(obj){
+        return (function(self){
+            return function(){ return self.apply(obj, arguments); };
+        })(this);
+    },
     // function composition
     comp: function(){
       return (function(self, args){
@@ -158,21 +158,21 @@ $.extend(String.prototype, {
     isBlank: function(){
       return this.trim() === '';
     },
-	startsWith: function(str){
-		return this.indexOf(str) === 0;
-	},
-	endsWith: function(str){
-		return this.indexOf(str) === this.length - str.length;
-	},
-	trim: function(){
-		return $.trim(this);
-	}
+    startsWith: function(str){
+        return this.indexOf(str) === 0;
+    },
+    endsWith: function(str){
+        return this.indexOf(str) === this.length - str.length;
+    },
+    trim: function(){
+        return $.trim(this);
+    }
 });
 
 $.extend(Array.prototype, {
     clone: Array.prototype.slice,
     compact: function(){ return _.compact(this); },
-	contains: function(value){ return _.contains(this, value); },
+    contains: function(value){ return _.contains(this, value); },
     each: function(fn){
       for(var i=0, l=this.length; i<l; i++){
         var ret = fn.call(this[i], this[i], i);
@@ -196,7 +196,7 @@ $.extend(Array.prototype, {
       }
       return accum;
     },
-	map: function(fn){ return _.map(this, fn); },
+    map: function(fn){ return _.map(this, fn); },
     reduce: function(fn, initial){ return _.reduce(this, fn, initial); },
     all: function(fn){
       for(var i=0, l=this.length; i<l; i++){
@@ -212,7 +212,7 @@ $.extend(Array.prototype, {
       }
       return false;
     },
-	filter: function(fn, context){
+    filter: function(fn, context){
       return _.filter(this, function(value, i){
         return fn.call(this, value, i);
       }, context || this);
@@ -258,34 +258,34 @@ $.extend(Array.prototype, {
 
 //////////////////////////////// Helper Objects ////////////////////////////////
 var Fuse = Class.extend({
-	timer: null,
-	options: {
-		delay: 200,
-		trigger: function(){},
-		cancelled: function(){}
-	},
-	init: function(options){
-		this.options = $.extend({}, this.options, options);
-	},
-	start: function(delay){
-		this.stop();
-		var self = this;
-		this.timer = setTimeout(function(){
-			self.trigger();
-		}, delay !== undefined ? delay : this.options.delay);
-	},
-	stop: function(suppressCancelEvent){
-		if (this.timer){
-			clearTimeout(this.timer);
-			this.timer = null;
-			if (!suppressCancelEvent)
-				this.options.cancelled.call(this);
-		}
-	},
-	trigger: function(){
-		this.options.trigger.call(this);
-		this.timer = null;
-	}
+    timer: null,
+    options: {
+        delay: 200,
+        trigger: function(){},
+        cancelled: function(){}
+    },
+    init: function(options){
+        this.options = $.extend({}, this.options, options);
+    },
+    start: function(delay){
+        this.stop();
+        var self = this;
+        this.timer = setTimeout(function(){
+            self.trigger();
+        }, delay !== undefined ? delay : this.options.delay);
+    },
+    stop: function(suppressCancelEvent){
+        if (this.timer){
+            clearTimeout(this.timer);
+            this.timer = null;
+            if (!suppressCancelEvent)
+                this.options.cancelled.call(this);
+        }
+    },
+    trigger: function(){
+        this.options.trigger.call(this);
+        this.timer = null;
+    }
 });
 
 // handles the associated events for showing activity indicators
@@ -334,6 +334,8 @@ var ActivityResponder = Class.extend({
 // falls back to sessionStorage. Due to the extra library,
 // all grade-A browsers (as defined by YUI), should support
 // sessionStorage.
+//
+// Using this class should be considered a slow operation.
 var Storage = Class.extend({
   options: {
     autoload: true,
@@ -348,26 +350,15 @@ var Storage = Class.extend({
     if (this.options.autoload) this.load();
   },
   _getStore: function(){
-    if (this.options.store)
-      return this.options.store;
+    if (this.options.store) return this.options.store;
     if (window.localStorage) return window.localStorage;
     return window.sessionStorage;
   },
-  _set: function(key, string){
-    this._getStore().setItem(key, string);
-  },
-  _get: function(key){
-    return this._getStore().getItem(key);
-  },
-  _remove: function(key){
-    return this._getStore().removeItem(key);
-  },
-  _deserialize: function(string){
-    return this.options.deserialize(string);
-  },
-  _serialize: function(obj){
-    return this.options.serialize(obj);
-  },
+  _set: function(key, string){ this._getStore().setItem(key, string); },
+  _get: function(key){ return this._getStore().getItem(key); },
+  _remove: function(key){ return this._getStore().removeItem(key); },
+  _deserialize: function(string){ return this.options.deserialize(string); },
+  _serialize: function(obj){ return this.options.serialize(obj); },
   _save: function(){
     // save internal information to storage
     this._set(this._getFullKey('keys', {isPrivate: true}), this.keys);
@@ -406,9 +397,7 @@ var Storage = Class.extend({
     var fullKey = this._getFullKey(key);
     return this._deserialize(this._get(fullKey));
   },
-  contains: function(key){
-    return this.keys.contains(key);
-  },
+  contains: function(key){ return this.keys.contains(key); },
   clear: function(){
     var self = this;
     this.keys.each(function(key){
@@ -547,6 +536,18 @@ var Course = ModelBase.extend({
   }
 });
 
+var Schedule = ModelBase.extend({
+  url: function(){ return $('#schedules').attr('data-source'); },
+  getCourseIDs: function(){ return _.keys(this.get('mapping')); },
+  getCRNs: function(){ return _.values(this.get('mapping')); },
+  getCRNsForCourseID: function(cid){ return this.get('mapping')[cid]; }
+});
+
+// TODO: implement
+var SectionConflict = ModelBase.extend({
+  urlRoot: '/api/v2/latest/section-conflicts/'
+});
+
 //////////////////////////////// Collections ////////////////////////////////
 var CollectionBase = Backbone.Collection.extend({
   reload: function(){
@@ -562,255 +563,12 @@ var CourseList = CollectionBase.extend({
   url: '/api/v2/latest/courses/'
 });
 
-//////////////////////////////// Views ////////////////////////////////
-var CourseListView = Backbone.View.extend({
-  initialize: function(options){
-    this.options.dows = options.dows || 'Monday Tuesday Wednesday Thursday Friday'.split(' ');
-    var courses = options.course_ids;
-    if(!courses) return;
-
-    this.collection = new CourseList();
-    var self = this;
-    courses.each(function(course_id){
-      var c = new Course({id: course_id});
-      c.fetch();
-      self.collection.add(c, {slient: true});
-    });
-    // don't receive change events until all the models have been fetched.
-    var left = courses.length;
-    this.collection.bind('change', function(){
-      if (--left <= 0){
-        self.render();
-        left = 0;
-      }
-    });
-  },
-  render: function(){
-    var $target = $(this.options.el).empty(),
-      tmpl = this.options.template || templateFromElement('#course-template'),
-      noneTmpl = this.options.emptyTemplate || templateFromElement('#no-courses-template');
-    if (!this.collection.length){
-      $target.html(noneTmpl());
-      return this;
-    }
-
-    var self = this;
-    this.collection.each(function(id){
-      var course = self.collection.get(id);
-      if (course.isNew()) return;
-      var sections = course.sections;
-      var context = {
-        alwaysShowSections: true,
-        dows: self.options.dows,
-        periodsByDayOfWeek: function(periods){
-          var remapped_periods = {};
-          self.options.dows.each(function(dow){
-            remapped_periods[dow] = [];
-          });
-          _.toArray(periods).each(function(period){
-            period.days_of_the_week.each(function(dow){
-              remapped_periods[dow].push(period);
-            });
-          });
-          return remapped_periods;
-        },
-        isSelectedCRN: function(crn){
-          return self.options.selected.containsCRN(crn);
-        },
-        displayPeriod: function(p){
-          var fmt = '{{ 0 }}-{{ 1 }}',
-            start = FunctionsContext.time_parts(p.start_time),
-            end = FunctionsContext.time_parts(p.end_time)
-          if(start > 12 && end > 12 || start <= 12 && end <= 12){
-            return fmt.format(
-              FunctionsContext.humanize_time(p.start_time),
-              FunctionsContext.humanize_time(p.end_time)
-            );
-          }
-          return fmt.format(
-            FunctionsContext.humanize_time(p.start_time),
-            FunctionsContext.humanize_time(p.end_time)
-          );
-        },
-        course: course
-      };
-      $target.append(tmpl(context));
-    });
-    return this;
-  }
+var ScheduleList = CollectionBase.extend({
+  model: Schedule,
+  url: '/api/v2/latest/
 });
 
-//////////////////////////////// Realtime Search ////////////////////////////////
-
-var RealtimeForm = Class.extend({
-	options: {
-		updateElement: $(),
-		success: function(value){ this.html(value); },
-		error: function(){ console.error('failed realtime form:', arguments); },
-		complete: $.noop,
-        activityResponder: null,
-		dataType: undefined,
-		url: null,
-		method: null,
-		cache: false,
-		additionalPOST: '',
-		additionalGET: '',
-		suppressFormSubmit: false,
-		triggerDelay: 200,
-		customHandler: null
-	},
-	init: function(form, options){
-		this.options = $.extend({}, this.options, options);
-		this.form = $(form);
-		this.fuse = new Fuse({
-			delay: this.options.triggerDelay,
-			trigger: this.sendRequest.bind(this),
-			cancelled: this.stopRequest.bind(this)
-		});
-		this.attachEvents();
-	},
-    _asQueryString: function(obj){
-      var type = $.type(obj);
-      if (type === 'object')
-        return $.param(obj);
-      if (type === 'string')
-        return obj
-      return String(obj);
-    },
-	getURL: function(){
-      var base = this.options['url'] || this.form.attr('action'),
-          postfix = base.contains('?') ? '&' : '?',
-          querystr = this.getFormMethod() !== 'GET' ? this._asQueryString(this.options.additionalGET) : '';
-      return base + (querystr.isBlank() ? '' : postfix + querystr);
-	},
-    getFormMethod: function(){
-      var m = this.form.attr('method');
-      return m && m.toUpperCase();
-    },
-	getMethod: function(){
-      return (this.options['method'] || this.getFormMethod()).toUpperCase();
-	},
-	getMethodData: function(){
-		var formMethod = this.form.attr('method').toUpperCase(),
-			type = this.getMethod().toUpperCase();
-		if(['GET', 'POST'].contains(type)){
-			var data = (type == formMethod ? this.form.serialize() : ''),
-              params = {
-                GET: this.options.additionalGET,
-                POST: this.options.additionalPOST
-              }[type];
-            var paramsType = typeof params;
-            if (paramsType === 'object')
-              return data + '&' + $.param(params);
-            if (paramsType === 'string' && !params.isBlank())
-              return data + '&' + params;
-            return data;
-		} else throw "Invalid method type";
-	},
-	stopRequest: function(){
-		if(this.request){
-			this.request.abort();
-			this.request = null;
-		}
-	},
-	sendRequest: function(){
-		var self = this;
-		console.log('send', this.getURL(), this.getMethodData());
-		self.request = $.ajax({
-			url: this.getURL(),
-			type: this.getMethod(),
-			data: this.getMethodData(),
-			dataType: this.options.dataType,
-			cache: this.options.cache,
-			success: function(){
-				var $el = $(self.options.updateElement);
-				self.options.success.apply($el, arguments);
-			},
-			error: function(){
-				self.options.error.apply(this, arguments);
-			},
-			complete: function(){
-				self.request = null;
-				self.options.complete.apply(self, arguments);
-				self.hideActivityIndicator();
-			}
-		});
-	},
-	initiateRequest: function(){
-		this.showActivityIndicator();
-		// call custom hook which can override the default behavior if necessary
-		if (this.options.customHandler){
-			if (this.options.customHandler(this.form, this.fuse))
-				this.hideActivityIndicator();
-		} else {
-			this.fuse.start();
-		}
-	},
-	formSubmitted: function(evt){
-		if (this.options.suppressFormSubmit){
-			this.initiateRequest();
-		}
-		return !this.options.suppressFormSubmit;
-	},
-	changed: function(evt){
-		console.log(evt.type, evt);
-		this.initiateRequest();
-	},
-	showActivityIndicator: function(){
-      Utils.sendMessage(this.options.activityResponder, 'show');
-	},
-	hideActivityIndicator: function(){
-      Utils.sendMessage(this.options.activityResponder, 'hide');
-	},
-	keyDownSelector: 'input[type=text], input[type=search], textarea',
-	detachEvents: function(){
-		if (this.options.suppressFormSubmit && this._formSubmitted)
-			this.form.unbind('submit', this._formSubmit);
-
-		if (this._changed){
-			var self = this;
-			this.form.find('input, textarea, select').each(function(){
-				var $el = $(this);
-				if ($el.is(self.keyDownSelector))
-					$el.unbind('keyup', self._changed);
-				if (this._formSubmitted && $el.is('input[type=search]'))
-					$el.unbind('search', self._formSubmitted);
-				$el.unbind('change', self._changed);
-			});
-		}
-		if (this._formSubmitted){
-			this.form.submit(this._formSubmit);
-		}
-	},
-	attachEvents: function(){
-		this.detachEvents();
-		var self = this;
-		this._changed = this.changed.bind(this);
-		this.form.find('input, textarea, select').each(function(){
-			var $el = $(this);
-			if ($el.is(self.keyDownSelector))
-				$el.keyup(self._changed);
-			if ($el.is('input[type=search]'))
-				$el.bind('search', self._changed);
-			$el.bind('change', self._changed);
-		});
-
-		if (this.options.suppressFormSubmit){
-			this._formSubmitted = this.formSubmitted.bind(this);
-			this.form.submit(this._formSubmit);
-		}
-	}
-});
-
-//////////////////////////////// Course Selection ////////////////////////////////
-var Conflicts = Class.extend({
-  options: {
-  },
-  init: function(options){
-    this.options = $.extend({}, this.options, options);
-  }
-});
-
+// represents a mapping of course id => crns
 var Selection = Class.extend({
   options: {
     course_id_format: 'selected_course_{{ cid }}',
@@ -846,13 +604,10 @@ var Selection = Class.extend({
   },
   _trigger: function(names, obj){
     var $self = $(this);
-    for(var i=0, l=names.length; i<l; i++){
-      $self.trigger(names[i], obj);
-    }
+    for(var i=0, l=names.length; i<l; i++)
+      $self.trigger(names[i], $.extend(obj, {sender: this}));
   },
-  _isCourseElement: function(el){
-    return $(el).attr('data-crns-full') !== undefined;
-  },
+  _isCourseElement: function(el){ return $(el).attr('data-crns-full') !== undefined; },
   _add: function(course_id, crn){
     this.crns[course_id] || (this.crns[course_id] = []);
     if (!this.crns[course_id].pushUnique(crn)) return false;
@@ -863,7 +618,6 @@ var Selection = Class.extend({
     var obj = this._processCourseElement(course_elem),
       crns = obj.CRNs.excludeFrom(obj.fullCRNs),
       added = false;
-    console.log(obj, crns);
     for (var i=0, l=crns.length; i<l; i++)
       added = this._add(obj.id, crns[i]) || added;
     // if none were added (because all were full), explicitly add all sections
@@ -886,9 +640,7 @@ var Selection = Class.extend({
     else
       this.addSection(course_or_section_elem);
   },
-  containsCourseID: function(course_id){
-    return this.getCourseIds().contains(course_id);
-  },
+  containsCourseID: function(course_id){ return this.getCourseIds().contains(course_id); },
   containsCRN: function(crn){
     var contained = false;
     _.values(this.crns).each(function(crns){
@@ -971,6 +723,282 @@ var Selection = Class.extend({
       }
     });
   }
+});
+
+//////////////////////////////// Views ////////////////////////////////
+var ScheduleView = Backbone.Views.extend({
+  initialize: function(options){
+  }
+});
+var ThumbnailScheduleView = Backbone.Views.extend({
+});
+
+var SchedulesListView = Backbone.Views.extend({
+  selectedScheduleIndex: 0,
+  initialize: function(options){
+    $.extend(this.options, {
+      scheduleViewClass: ScheduleView,
+      noSchedulesTemplate: TemplateFromElement('#no-schedules-template'),
+      errorTemplate: TemplateFromElement('#too-many-crns-template')
+    }, options);
+    this.children = [];
+    $(this.getSelection).bind('changed', this.selectionChanged.bind(this));
+  },
+  getSelection: function(){ return this.options.selection; },
+  createView: function(options){
+    return new this.options.scheduleViewClass(options);
+  },
+  renderChildren: function(){
+    this.children.each(function(view){ view.render(); });
+  },
+  selectionChanged: function(evt){
+    this.render();
+  },
+  render: function(){
+    this.$('.schedule_wrapper').hide().get(this.selectedScheduleIndex).show();
+    this.renderChildren();
+  },
+  show: function(){ return $(this.el).show(); },
+  hide: function(){ return $(this.el).hide(); }
+});
+
+var CourseListView = Backbone.View.extend({
+  initialize: function(options){
+    this.options.dows = options.dows || 'Monday Tuesday Wednesday Thursday Friday'.split(' ');
+    var courses = options.course_ids;
+    if(!courses) return;
+
+    this.collection = new CourseList();
+    var self = this;
+    courses.each(function(course_id){
+      var c = new Course({id: course_id});
+      c.fetch();
+      self.collection.add(c, {slient: true});
+    });
+    // don't receive change events until all the models have been fetched.
+    var left = courses.length;
+    this.collection.bind('change', function(){
+      if (--left <= 0){
+        self.render();
+        left = 0;
+      }
+    });
+  },
+  render: function(){
+    var $target = $(this.options.el).empty(),
+      tmpl = this.options.template || templateFromElement('#course-template'),
+      noneTmpl = this.options.emptyTemplate || templateFromElement('#no-courses-template');
+    if (!this.collection.length){
+      $target.html(noneTmpl());
+      return this;
+    }
+
+    var self = this;
+    this.collection.each(function(id){
+      var course = self.collection.get(id);
+      if (course.isNew()) return;
+      var sections = course.sections;
+      var context = {
+        alwaysShowSections: true,
+        dows: self.options.dows,
+        periodsByDayOfWeek: function(periods){
+          var remapped_periods = {};
+          self.options.dows.each(function(dow){
+            remapped_periods[dow] = [];
+          });
+          _.toArray(periods).each(function(period){
+            period.days_of_the_week.each(function(dow){
+              remapped_periods[dow].push(period);
+            });
+          });
+          return remapped_periods;
+        },
+        isSelectedCRN: function(crn){
+          return self.options.selected.containsCRN(crn);
+        },
+        displayPeriod: function(p){
+          var fmt = '{{ 0 }}-{{ 1 }}',
+            start = FunctionsContext.time_parts(p.start_time),
+            end = FunctionsContext.time_parts(p.end_time)
+          if(start > 12 && end > 12 || start <= 12 && end <= 12){
+            return fmt.format(
+              FunctionsContext.humanize_time(p.start_time),
+              FunctionsContext.humanize_time(p.end_time)
+            );
+          }
+          return fmt.format(
+            FunctionsContext.humanize_time(p.start_time),
+            FunctionsContext.humanize_time(p.end_time)
+          );
+        },
+        course: course
+      };
+      $target.append(tmpl(context));
+    });
+    return this;
+  }
+});
+
+//////////////////////////////// Realtime Search ////////////////////////////////
+
+var RealtimeForm = Class.extend({
+    options: {
+        updateElement: $(),
+        success: function(value){ this.html(value); },
+        error: function(){ console.error('failed realtime form:', arguments); },
+        complete: $.noop,
+        activityResponder: null,
+        dataType: undefined,
+        url: null,
+        method: null,
+        cache: false,
+        additionalPOST: '',
+        additionalGET: '',
+        suppressFormSubmit: false,
+        triggerDelay: 200,
+        customHandler: null
+    },
+    init: function(form, options){
+        this.options = $.extend({}, this.options, options);
+        this.form = $(form);
+        this.fuse = new Fuse({
+            delay: this.options.triggerDelay,
+            trigger: this.sendRequest.bind(this),
+            cancelled: this.stopRequest.bind(this)
+        });
+        this.attachEvents();
+    },
+    _asQueryString: function(obj){
+      var type = $.type(obj);
+      if (type === 'object')
+        return $.param(obj);
+      if (type === 'string')
+        return obj
+      return String(obj);
+    },
+    getURL: function(){
+      var base = this.options['url'] || this.form.attr('action'),
+          postfix = base.contains('?') ? '&' : '?',
+          querystr = this.getFormMethod() !== 'GET' ? this._asQueryString(this.options.additionalGET) : '';
+      return base + (querystr.isBlank() ? '' : postfix + querystr);
+    },
+    getFormMethod: function(){
+      var m = this.form.attr('method');
+      return m && m.toUpperCase();
+    },
+    getMethod: function(){
+      return (this.options['method'] || this.getFormMethod()).toUpperCase();
+    },
+    getMethodData: function(){
+        var formMethod = this.form.attr('method').toUpperCase(),
+            type = this.getMethod().toUpperCase();
+        if(['GET', 'POST'].contains(type)){
+            var data = (type == formMethod ? this.form.serialize() : ''),
+              params = {
+                GET: this.options.additionalGET,
+                POST: this.options.additionalPOST
+              }[type];
+            var paramsType = typeof params;
+            if (paramsType === 'object')
+              return data + '&' + $.param(params);
+            if (paramsType === 'string' && !params.isBlank())
+              return data + '&' + params;
+            return data;
+        } else throw "Invalid method type";
+    },
+    stopRequest: function(){
+        if(this.request){
+            this.request.abort();
+            this.request = null;
+        }
+    },
+    sendRequest: function(){
+        var self = this;
+        console.log('send', this.getURL(), this.getMethodData());
+        self.request = $.ajax({
+            url: this.getURL(),
+            type: this.getMethod(),
+            data: this.getMethodData(),
+            dataType: this.options.dataType,
+            cache: this.options.cache,
+            success: function(){
+                var $el = $(self.options.updateElement);
+                self.options.success.apply($el, arguments);
+            },
+            error: function(){
+                self.options.error.apply(this, arguments);
+            },
+            complete: function(){
+                self.request = null;
+                self.options.complete.apply(self, arguments);
+                self.hideActivityIndicator();
+            }
+        });
+    },
+    initiateRequest: function(){
+        this.showActivityIndicator();
+        // call custom hook which can override the default behavior if necessary
+        if (this.options.customHandler){
+            if (this.options.customHandler(this.form, this.fuse))
+                this.hideActivityIndicator();
+        } else {
+            this.fuse.start();
+        }
+    },
+    formSubmitted: function(evt){
+        if (this.options.suppressFormSubmit){
+            this.initiateRequest();
+        }
+        return !this.options.suppressFormSubmit;
+    },
+    changed: function(evt){
+        console.log(evt.type, evt);
+        this.initiateRequest();
+    },
+    showActivityIndicator: function(){
+      Utils.sendMessage(this.options.activityResponder, 'show');
+    },
+    hideActivityIndicator: function(){
+      Utils.sendMessage(this.options.activityResponder, 'hide');
+    },
+    keyDownSelector: 'input[type=text], input[type=search], textarea',
+    detachEvents: function(){
+        if (this.options.suppressFormSubmit && this._formSubmitted)
+            this.form.unbind('submit', this._formSubmit);
+
+        if (this._changed){
+            var self = this;
+            this.form.find('input, textarea, select').each(function(){
+                var $el = $(this);
+                if ($el.is(self.keyDownSelector))
+                    $el.unbind('keyup', self._changed);
+                if (this._formSubmitted && $el.is('input[type=search]'))
+                    $el.unbind('search', self._formSubmitted);
+                $el.unbind('change', self._changed);
+            });
+        }
+        if (this._formSubmitted){
+            this.form.submit(this._formSubmit);
+        }
+    },
+    attachEvents: function(){
+        this.detachEvents();
+        var self = this;
+        this._changed = this.changed.bind(this);
+        this.form.find('input, textarea, select').each(function(){
+            var $el = $(this);
+            if ($el.is(self.keyDownSelector))
+                $el.keyup(self._changed);
+            if ($el.is('input[type=search]'))
+                $el.bind('search', self._changed);
+            $el.bind('change', self._changed);
+        });
+
+        if (this.options.suppressFormSubmit){
+            this._formSubmitted = this.formSubmitted.bind(this);
+            this.form.submit(this._formSubmit);
+        }
+    }
 });
 
 //////////////////////////////// Scheduling ////////////////////////////////

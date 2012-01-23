@@ -3,11 +3,14 @@ from django.conf.urls.defaults import patterns, include, url
 from yacs.api import views
 
 
-api3 = dict(version=3)
+api3 = dict(version=3, objects=(
+    'semesters', 'departments', 'courses', 'sections',
+))
 api2 = dict(version=2)
 
 urlpatterns = patterns('',
     # version 3
+    url(r'^v3/$', views.ObjectList.as_view(), api3, name='objects'),
     url(r'^v3/semesters/$', views.SemesterListView.as_view(), api3, name='semesters'),
     url(r'^v3/semesters/(?P<year>[1-9]\d*)/$', views.SemesterListView.as_view(), api3, name='semesters-by-year'),
     url(r'^v3/semesters/(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/$', views.SemesterDetailView.as_view(), api3, name='semester'),
