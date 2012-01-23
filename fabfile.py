@@ -52,7 +52,7 @@ env.use_virtualenv = True
 env.apache_restart = ('apache2', 'restart')
 
 PROJECT_FILES = [
-    directory('newapi', filter='*.py'),
+    directory('api', filter='*.py'),
     directory('courses', filter='*.py'),
     directory('scheduler', filter='*.py'),
     directory('lib', 'csp', filter='*.py'),
@@ -171,11 +171,11 @@ def generate_fixtures():
     course_fixture('courses/fixtures/data-structures', 'DATA STRUCTURES')
     course_fixture('courses/fixtures/intro-to-algorithms', 'INTRODUCTION TO ALGORITHMS')
     course_fixture('courses/fixtures/intro-to-cs', 'INTRO TO COMPUTER PROGRAMMING')
-    print "Generating newapi fixtures"
-    semester_fixtures('newapi/fixtures/semesters', ('CALCULUS I', 'DATA STRUCTURES', 'INTRO TO COMPUTER PROGRAMMING'))
-    #course_fixture('newapi/fixtures/calc1', 'CALCULUS I')
-    #course_fixture('newapi/fixtures/data-structures', 'DATA STRUCTURES')
-    #course_fixture('newapi/fixtures/intro-to-cs', 'INTRO TO COMPUTER PROGRAMMING')
+    print "Generating api fixtures"
+    semester_fixtures('api/fixtures/semesters', ('CALCULUS I', 'DATA STRUCTURES', 'INTRO TO COMPUTER PROGRAMMING'))
+    #course_fixture('api/fixtures/calc1', 'CALCULUS I')
+    #course_fixture('api/fixtures/data-structures', 'DATA STRUCTURES')
+    #course_fixture('api/fixtures/intro-to-cs', 'INTRO TO COMPUTER PROGRAMMING')
 
 
 def test(apps=None):
@@ -183,7 +183,7 @@ def test(apps=None):
     If lib is provided as app, only the lib directory is tested.
     """
     if apps is None:
-        apps = 'newapi courses scheduler lib'
+        apps = 'api courses scheduler lib'
     apps = apps.split(' ')
     test_lib = 'lib' in apps
     apps = [a for a in apps if a != 'lib']

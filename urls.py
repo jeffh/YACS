@@ -11,7 +11,7 @@ urlpatterns = patterns('',
 
     url(r'^', include('yacs.courses.urls')),
     url(r'^', include('yacs.scheduler.urls')),
-    url(r'^api/', include('yacs.newapi.urls', namespace='api')),
+    url(r'^api/', include('yacs.api.urls', namespace='api')),
     #url(r'^api/', include('yacs.api.urls', namespace='api')),
     # Examples:
     # url(r'^$', 'yacs.views.home', name='home'),

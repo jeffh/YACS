@@ -115,21 +115,21 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.Loader',
 )
 
-# newapi middleware allows session middleware to be optional for
+# api middleware allows session middleware to be optional for
 # specific urls. Other custom middleware simply respect the optional
 # session middleware
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
     #'django.contrib.sessions.middleware.SessionMiddleware',
-    'yacs.newapi.middleware.SessionMiddleware',
+    'yacs.api.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     #'django.contrib.auth.middleware.AuthenticationMiddleware',
     #'django.contrib.messages.middleware.MessageMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'yacs.newapi.middleware.AuthenticationMiddleware',
-    'yacs.newapi.middleware.MessageMiddleware',
-    'yacs.newapi.middleware.DebugToolbarMiddleware',
+    'yacs.api.middleware.AuthenticationMiddleware',
+    'yacs.api.middleware.MessageMiddleware',
+    'yacs.api.middleware.DebugToolbarMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -172,7 +172,7 @@ INSTALLED_APPS = (
     # local apps
     'yacs.courses',
     'yacs.scheduler',
-    'yacs.newapi',
+    'yacs.api',
 )
 
 if DEBUG:
@@ -286,9 +286,10 @@ DEBUG_TOOLBAR_CONFIG = {
 # ==== Django-Jasmine ====
 JASMINE_TEST_DIRECTORY = relative('static', 'jasmine')
 
-# ==== yacs.newapi ====
+# ==== yacs.api ====
 # which urls require no sessions. This saves us at least one DB query.
 # this is a collection of regular expressions
 SESSION_EXCLUDED_URLS = (
     r'^/api/',
 )
+
