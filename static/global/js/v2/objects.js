@@ -39,6 +39,13 @@ root.Class.extend = function(attributes){
 
 //////////////////////////////// Utility functions ////////////////////////////////
 root.Utils = {
+  time: function(fn, context, msg){
+    var start = new Date;
+    var result = fn.call(context || this);
+    var diff = new Date - start;
+    console.log('time', diff, msg || '');
+    return result;
+  },
   integer: function(i){ return parseInt(i, 10); },
   getCookie: function(name) {
     var cookieValue = null;
@@ -62,7 +69,7 @@ root.Utils = {
     return obj && obj[method] && $.isFunction(obj[method]) && obj[method].apply(obj, args || []);
   },
   property: function(name){
-    return function(){ return this[name]; };
+    return function(obj){ return obj[name]; };
   }
 }
 
@@ -114,7 +121,7 @@ $.extend(Function.prototype, {
       return (function(self, args){
         var a = args.slice(0); // clone() isn't defined yet
         return function(){ return self.apply(this, a.pushArray(arguments)); }
-      })(this, Array.fromIterable(arguments));
+      })(this, _.toArray(arguments));
     }
 });
 
@@ -162,33 +169,10 @@ $.extend(String.prototype, {
 	}
 });
 
-$.extend(Array, {
-  fromIterable: function(it){
-    try {
-      return Array.prototype.slice.call(it);
-    }
-    catch(err){
-      var collection = new this;
-      for (var i=0, l=it.length; i<l; i++)
-        collection.push(it[i]);
-      return collection;
-    }
-  }
-});
-
 $.extend(Array.prototype, {
     clone: Array.prototype.slice,
-    compact: function(){
-      return this.filter(function(v){
-        return !(v === null || v === undefined || $.type(v) === 'string' && v.isBlank());
-      });
-    },
-	contains: function(value){
-		for(var i=0, l=this.length; i<l; i++)
-			if (this[i] === value)
-              return true;
-        return false;
-    },
+    compact: function(){ return _.compact(this); },
+	contains: function(value){ return _.contains(this, value); },
     each: function(fn){
       for(var i=0, l=this.length; i<l; i++){
         var ret = fn.call(this[i], this[i], i);
@@ -212,28 +196,27 @@ $.extend(Array.prototype, {
       }
       return accum;
     },
-	map: function(fn){
-		var accum = [];
-        this.each(function(val, i){ accum.push(fn.call(val, val, i)); });
-		return accum;
-	},
-    reduce: function(fn, initial){
-        var hasInitial = initial === undefined;
-		var value = hasInitial ? initial : this[0];
-        for(var i=0, l=this.length; i<l; i++){
-          if(!hasInitial && i === 0) continue;
-          value = fn(value, this[i]);
-        }
-		return value;
+	map: function(fn){ return _.map(this, fn); },
+    reduce: function(fn, initial){ return _.reduce(this, fn, initial); },
+    all: function(fn){
+      for(var i=0, l=this.length; i<l; i++){
+        if(!fn(this[i], fn))
+          return false;
+      }
+      return true;
     },
-	filter: function(fn){
-		var accum = [];
-		for(var i=0, l=this.length; i<l; i++){
-			if(fn.call(this[i], this[i], i))
-				accum.push(this[i]);
-		}
-		return accum;
-	},
+    some: function(fn){
+      for(var i=0, l=this.length; i<l; i++){
+        if(fn(this[i], fn))
+          return true;
+      }
+      return false;
+    },
+	filter: function(fn, context){
+      return _.filter(this, function(value, i){
+        return fn.call(this, value, i);
+      }, context || this);
+    },
     pushUnique: function(value){
       if (!this.contains(value))
         return this.push(value) || true;
@@ -413,6 +396,8 @@ var Storage = Class.extend({
     assert($.type(key) === 'string', 'key must be a string.');
     var fullKey = this._getFullKey(key);
     this._set(fullKey, this._serialize(value));
+    if(!this.keys)
+      this.keys = [];
     this.keys.pushUnique(key);
     this._save();
   },
@@ -434,6 +419,10 @@ var Storage = Class.extend({
   }
 });
 
+
+function templateFromElement(selector, data){
+  return _.template($(selector).html(), data);
+}
 var Template = Class.extend({
   options: {
     string: null,
@@ -464,8 +453,190 @@ var Template = Class.extend({
 });
 
 //////////////////////////////// Models ////////////////////////////////
-var Course = Backbone.Model.extend({
-  initialize: function(){
+ModelBase = Backbone.Model.extend({
+  parse: function(response){ return response.payload; }
+});
+
+var Semester = ModelBase.extend({
+  urlRoot: '/api/v2/'
+});
+var Course = ModelBase.extend({
+  urlRoot: '/api/v2/latest/courses/',
+  getSections: function(){
+    return _.sortBy(this.get('sections'), function(section){ return section.number; });
+  },
+  getMergedSections: function(){
+    var mapper = {}; // section num => new section obj
+    function extract_period(section){
+      return {
+          start_time: section.start_time,
+          end_time: section.end_time,
+          days_of_the_week: section.days_of_the_week,
+          instructor: section.instructor,
+          kind: section.kind,
+          location: section.location
+      };
+    }
+    function getDaysOfTheWeek(){
+      var dows = 'Monday Tuesday Wednesday Thursday Friday Saturday Sunday'.split(' ');
+      var accum = [];
+      this.periods.each(function(period){
+        accum.pushArray(period.days_of_the_week);
+      });
+      return _.sortBy(accum.unique(), function(dow){
+        return dows.indexOf(dow);
+      });;
+    }
+    function getInstructors(){
+      return this.periods.map(function(p){ return p.instructor }).unique();
+    }
+    this.getSections().each(function(section){
+      if(mapper[section.crn]){
+        mapper[section.crn].periods.push(extract_period(section));
+      } else {
+        var obj = $.extend({}, section);
+        $.extend(obj, {
+          getDaysOfTheWeek: getDaysOfTheWeek.bind(obj),
+          getInstructors: getInstructors.bind(obj),
+        });
+
+        obj.periods = [extract_period(obj)];
+        'instructor start_time end_time days_of_the_week kind'.split(' ').each(function(name){
+          delete obj[name];
+        });
+        mapper[section.crn] = obj;
+      }
+    });
+    return _.sortBy(_.values(mapper), function(s){ return s.number; });
+  },
+  getSeatsTotal: function(){
+    return this.getMergedSections().reduce(function(a, b){
+      return a + b.seats_total;
+    }, 0);
+  },
+  getSeatsLeft: function(){
+    return this.getMergedSections().reduce(function(a, b){
+      return a + b.seats_left;
+    }, 0);
+  },
+  getSeatsTaken: function(){
+    return this.getMergedSections().reduce(function(a, b){
+      return a + b.seats_taken;
+    }, 0);
+  },
+  getCRNs: function(){
+    return this.getSections().map(Utils.property('crn')).unique();
+  },
+  getFullCRNs: function(){
+    return this.getSections().filter(function(section){
+      return section.seats_left <= 0;
+    }).map(Utils.property('crn')).unique();
+  },
+  getKinds: function(){
+    return this.getSections().map(Utils.property('kind')).unique().unique();
+  },
+  getNotes: function(){
+    return this.getSections().map(Utils.property('notes')).unique().unique();
+  },
+  getCreditsDisplay: function(){
+    var min_credits = this.get('min_credits'),
+      max_credits = this.get('max_credits');
+    return (min_credits === max_credits ?
+        '{{ 0 }} credit{{ 1 }}'.format(min_credits, min_credits === 1 ? '' : 's') :
+        '{{ 0 }} - {{ 1 }} credits'.format(min_credits, max_credits));
+  }
+});
+
+//////////////////////////////// Collections ////////////////////////////////
+var CollectionBase = Backbone.Collection.extend({
+  reload: function(){
+    this.each(function(model){ model.fetch(); });
+  }
+});
+var SemesterList = CollectionBase.extend({
+  model: Semester,
+  url: '/api/v2/'
+});
+var CourseList = CollectionBase.extend({
+  model: Course,
+  url: '/api/v2/latest/courses/'
+});
+
+//////////////////////////////// Views ////////////////////////////////
+var CourseListView = Backbone.View.extend({
+  initialize: function(options){
+    this.options.dows = options.dows || 'Monday Tuesday Wednesday Thursday Friday'.split(' ');
+    var courses = options.course_ids;
+    if(!courses) return;
+
+    this.collection = new CourseList();
+    var self = this;
+    courses.each(function(course_id){
+      var c = new Course({id: course_id});
+      c.fetch();
+      self.collection.add(c, {slient: true});
+    });
+    // don't receive change events until all the models have been fetched.
+    var left = courses.length;
+    this.collection.bind('change', function(){
+      if (--left <= 0){
+        self.render();
+        left = 0;
+      }
+    });
+  },
+  render: function(){
+    var $target = $(this.options.el).empty(),
+      tmpl = this.options.template || templateFromElement('#course-template'),
+      noneTmpl = this.options.emptyTemplate || templateFromElement('#no-courses-template');
+    if (!this.collection.length){
+      $target.html(noneTmpl());
+      return this;
+    }
+
+    var self = this;
+    this.collection.each(function(id){
+      var course = self.collection.get(id);
+      if (course.isNew()) return;
+      var sections = course.sections;
+      var context = {
+        alwaysShowSections: true,
+        dows: self.options.dows,
+        periodsByDayOfWeek: function(periods){
+          var remapped_periods = {};
+          self.options.dows.each(function(dow){
+            remapped_periods[dow] = [];
+          });
+          _.toArray(periods).each(function(period){
+            period.days_of_the_week.each(function(dow){
+              remapped_periods[dow].push(period);
+            });
+          });
+          return remapped_periods;
+        },
+        isSelectedCRN: function(crn){
+          return self.options.selected.containsCRN(crn);
+        },
+        displayPeriod: function(p){
+          var fmt = '{{ 0 }}-{{ 1 }}',
+            start = FunctionsContext.time_parts(p.start_time),
+            end = FunctionsContext.time_parts(p.end_time)
+          if(start > 12 && end > 12 || start <= 12 && end <= 12){
+            return fmt.format(
+              FunctionsContext.humanize_time(p.start_time),
+              FunctionsContext.humanize_time(p.end_time)
+            );
+          }
+          return fmt.format(
+            FunctionsContext.humanize_time(p.start_time),
+            FunctionsContext.humanize_time(p.end_time)
+          );
+        },
+        course: course
+      };
+      $target.append(tmpl(context));
+    });
+    return this;
   }
 });
 
@@ -658,7 +829,7 @@ var Selection = Class.extend({
   // returns object of course data
   _processCourseElement: function(el){
     var $el = $(el);
-    var isNotBlank = function(){ return !this.isBlank(); };
+    var isNotBlank = function(s){ return !s.isBlank(); };
     return {
       id: Utils.integer($el.attr('data-cid')),
       CRNs: $el.attr('data-crns').split(',').filter(isNotBlank).map(Utils.integer),
@@ -692,6 +863,7 @@ var Selection = Class.extend({
     var obj = this._processCourseElement(course_elem),
       crns = obj.CRNs.excludeFrom(obj.fullCRNs),
       added = false;
+    console.log(obj, crns);
     for (var i=0, l=crns.length; i<l; i++)
       added = this._add(obj.id, crns[i]) || added;
     // if none were added (because all were full), explicitly add all sections
@@ -713,6 +885,19 @@ var Selection = Class.extend({
       this.addCourse(course_or_section_elem);
     else
       this.addSection(course_or_section_elem);
+  },
+  containsCourseID: function(course_id){
+    return this.getCourseIds().contains(course_id);
+  },
+  containsCRN: function(crn){
+    var contained = false;
+    _.values(this.crns).each(function(crns){
+      if(crns.contains(crn)){
+        contained = true;
+        return 'break';
+      }
+    });
+    return contained;
   },
   _remove: function(course_id, crn){
     if (!(this.crns[course_id] && this.crns[course_id].removeItem(crn))) return;
@@ -785,47 +970,6 @@ var Selection = Class.extend({
         });
       }
     });
-  }
-});
-
-var CourseListView = Class.extend({
-  options: {
-    template: null,
-    target: null
-  },
-  courses: null,
-  init: function(courses, options){
-    this.options = $.extend({}, this.options, options);
-    assert(this.options.template, 'template option is must be defined');
-    assert(this.options.target, 'target option is must be defined');
-  },
-  render: function(courses){
-    var $target = $(this.options.target).html(''),
-      tmpl = this.options.template;
-    courses.each(function(course){
-      var sections = course.sections;
-      var context = {
-        course: $.extend({}, course, {
-          seats_total: sections.reduce(function(a, b){ return a + b.seats_total; }, 0),
-          seats_left: sections.reduce(function(a, b){ return a + b.seats_left; }, 0),
-          seats_taken: sections.reduce(function(a, b){ return a + b.seats_taken; }, 0),
-          crns: sections.map(Utils.property('crn')),
-          kinds: sections.map(Utils.property('kinds')),
-          notes: sections.map(Utils.property('notes')),
-          credits_display: (course.max_credits === course.min_credits ?
-            '%s credit%s'.format(
-              course.min_credits,
-              course.min_credits === 1 ? '' : 's') :
-            '%s - %s credits'.format(
-              course.min_credits,
-              course.max_credits
-            )
-          )
-        })
-      };
-      target.append(tmpl.render(context));
-    });
-    return this;
   }
 });
 
@@ -946,6 +1090,7 @@ var ScheduleUI = Class.extend({
     this.options.noSchedulesTemplate.renderTo(this.options.target);
   },
   render_schedules: function(json){
+    console.log('render_schedules', json);
     var FC = FunctionsContext,
       self = this,
       contextExtensions = {
@@ -961,16 +1106,17 @@ var ScheduleUI = Class.extend({
     this.options.thumbnailTemplate.extendContext(contextExtensions);
     $(this.options.target).html('');
 
-    var selected_schedule = get_schedule_id_from_state();
+    //var selected_schedule = get_schedule_id_from_state();
+    var selected_schedule = 0;
     json.schedules.asyncEach(function(schedule, i){
-      var context = {
+      var context = $.extend({}, json, {
         sid: i + 1,
         schedule: schedule,
         is_thumbnail: false
-      };
-      var frag = $(self.scheduleTemplate.render(context));
+      });
+      var frag = $(self.options.scheduleTemplate.render(context));
       context.is_thumbnail = true;
-      var thumb = $(self.thumbnailTemplate.render(context));
+      var thumb = $(self.options.thumbnailTemplate.render(context));
       if (i !== selected_schedule) {
         frag.hide();
         //thumb.hide(); // TOOD: show if thumbnail mode

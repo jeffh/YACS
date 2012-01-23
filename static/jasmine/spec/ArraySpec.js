@@ -21,12 +21,6 @@ describe('Array.map', function(){
     expect(arr.map(incr)).toEqual([2, 3, 4]);
   });
 
-  it('should give value as this to fn', function(){
-    var incr = function(){ return this + 1; };
-    var arr = [1, 2, 3];
-    expect(arr.map(incr)).toEqual([2, 3, 4]);
-  });
-
   it('should give index as second arg to fn', function(){
     var incr = function(value, i){ return value + i; };
     var arr = [1, 2, 3];
@@ -48,11 +42,6 @@ describe('Array.filter', function(){
 
   it('should be dependent on fn return value', function(){
     var isEven = function(value){ return value % 2 === 0; };
-    expect([1, 2, 3].filter(isEven)).toEqual([2]);
-  });
-
-  it('should give value as this to fn', function(){
-    var isEven = function(){ return this % 2 === 0; };
     expect([1, 2, 3].filter(isEven)).toEqual([2]);
   });
 
@@ -178,20 +167,3 @@ describe('Array.clone', function(){
   });
 });
 
-describe('Array.fromIterable', function(){
-  it('should (shallow) copy an array', function(){
-    var arr1 = [1, 2, 3];
-    expect(Array.fromIterable(arr1)).toEqual(arr1);
-  });
-
-  it('should (shallow) copy arguments special var', function(){
-    var test = function(){
-      var arr = Array.fromIterable(arguments);
-      // argument is actually an object.. so we must compare manually
-      expect(arr[0]).toEqual(arguments[0]);
-      expect(arr[1]).toEqual(arguments[1]);
-      expect(arr[2]).toEqual(arguments[2]);
-    };
-    test(1, 2, 3);
-  });
-});

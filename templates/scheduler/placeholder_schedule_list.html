@@ -62,9 +62,9 @@
                             <% var course = courses[cid], section = sections[crn], period = section.periods[pid], height = get_period_height(period); %>
                             <span style="height: <%- height %>px; margin-top: <%- get_period_offset(period) %>px" class="class
                             color<%- color_map[course.id] %>
-                            <% if (height <= 35){ %>very<% } %>
-                            <% if (height <= 60) { %>small<% } %>
-                            <% if (height <= 80) { %>medium<% } %>">
+                            <%- height <= 35 ? 'very' : '' %>
+                            <%- height <= 60 ? 'small' : '' %>
+                            <%- height <= 80 ? 'medium' : '' %>">
                                 <span class="time">
                                     <span class="start"><%- humanize_time(period.start_time) %></span>
                                     <span class="sep">-</span>
@@ -114,9 +114,9 @@
                             <% var course = courses[cid], section = sections[crn], period = section.periods[pid], height = get_period_height(period); %>
                             <span style="height: <%- height %>px; margin-top: <%- get_period_offset(period) %>px" class="class
                             color<%- color_map[course.id] %>
-                            <% if (height <= 35){ %>very<% } %>
-                            <% if (height <= 60) { %>small<% } %>
-                            <% if (height <= 80) { %>medium<% } %>">
+                            <%- height <= 35 ? 'very' : '' %>
+                            <%- height <= 60 ? 'small' : '' %>
+                            <%- height <= 80 ? 'medium' : '' %>">
                             </span>
                         <% } %>
                     </div>

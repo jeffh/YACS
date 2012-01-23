@@ -40,10 +40,11 @@ Scheduler.selection = new Selection();
 
 //  Selected Course Feature
 $(function(){
-  $('#courses .course > input[type=checkbox], #courses .course .section > input[type=checkbox]').bind('change', function(){
-    //(this.checked ? selected.add : selected.remove)(this);
+  // async saves makes the click feel faster
+  var saveFuse = new Fuse({ trigger: function(){ Scheduler.selection.save(); } });
+  $('#courses .course > input[type=checkbox], #courses .course .section > input[type=checkbox]').live('change', function(){
     (this.checked ? Scheduler.selection.add(this) : Scheduler.selection.remove(this));
-    Scheduler.selection.save();
+    saveFuse.start();
   });
   // automatically refresh after any changes
   var refresh = function(){
@@ -54,10 +55,11 @@ $(function(){
   // must be on selected courses page
   if(!$('#selected_courses').length) return;
 
-  var courseListView = new CourseListView({
-    template: new Template({selector: 'selected-course-template'}),
-    target: '#selected_courses'
-  }).render(courses);
+  Scheduler.courseListView = new CourseListView({
+    el: '#selected_courses',
+    course_ids: Scheduler.selection.getCourseIds(),
+    selected: Scheduler.selection
+  });
 });
 
 // Schedules feature
@@ -70,7 +72,6 @@ $(function(){
     noSchedulesTemplate = new Template({selector: '#no-schedules-template'}),
     tooManyCRNsTemplate = new Template({selector: '#too-many-crns-template'});
 
-  console.log(Scheduler.selection.crns);
   Scheduler.UI = new ScheduleUI({
     selection: Scheduler.selection.crns,
     schedulesURL: $('#schedules').attr('data-source'),

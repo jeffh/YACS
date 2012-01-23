@@ -26,29 +26,29 @@
 
 {# functions: #}
 {# required context: #}
-<script type="text/template" id="selected-course-template">
-<li class="course <%- course.seats_left < 1 ? 'no-seats' : ''; %><%- course.crns.length < 1 ? 'no-sections' : ''; %>">
-    <% if (course.crns.length > 0){ %>
+<script type="text/template" id="course-template">
+<li class="course <%- course.getSeatsLeft() < 1 ? 'no-seats' : '' %><%- course.getCRNs().length < 1 ? 'no-sections' : '' %>">
+    <% if (course.getCRNs().length > 0){ %>
         <input type="checkbox" id="selected_course_<%- course.id %>" name="course_<%- course.id %>"
-    <% if (course.is_selected){ %> checked="checked" <% } %>
-        data-cid="<%- course.id %>" data-crns="<%- course.crns.join(', '); %>" data-crns-full="<%- course.full_crns.join(', ') %>" />
+    <% if (course.getCRNs().some(isSelectedCRN)){ %> checked="checked" <% } %>
+        data-cid="<%- course.id %>" data-crns="<%- course.getCRNs().join(', ') %>" data-crns-full="<%- course.getFullCRNs().join(', ') %>" />
     <% } else { %>
         <p style="float:left; width: 15px; height: 10px; margin: 0; padding: 0;"></p>
     <% } %>
     <label class="padded" for="selected_course_<%- course.id %>">
-        <span class="name"><%- course.name %></span>
+        <span class="name"><%- course.get('name') %></span>
         <span class="secondary">
             <span class="code">
-                <span class="dept"><%- course.department.code %></span>
-                <span class="number"><%- course.number %></span>
+                <span class="dept"><%- course.get('department').code %></span>
+                <span class="number"><%- course.get('number') %></span>
             </span>
             <span class="credits">
-                <%- course.credits_display %>
+                <%- course.getCreditsDisplay() %>
             </span>
             <span class="seats-left">
-                <% if (course.crns.length > 0){ %>
-                    <% if (course.seats_left < 30) { %>
-                        <%- course.seats_left %> seat<%- course.seats_left === 1 ? '' : 's' %> left
+                <% if (course.getCRNs().length > 0){ %>
+                    <% if (course.getSeatsLeft() < 30) { %>
+                        <%- course.getSeatsLeft() %> seat<%- course.getSeatsLeft() === 1 ? '' : 's' %> left
                     <% } %>
                 <% } else { %>
                     No Sections
@@ -56,62 +56,65 @@
             </span>
             <div class="kinds">
                 <ul>
-                    <% course.kinds.each(function(kind){ %>
-                        <li><%- kind %></li>
-                    <% }); %>
+                    <% for(var kinds=course.getKinds(), i=0, l=kinds.length; i<l; i++){ %>
+                        <li><%- kinds[i] %></li>
+                    <% } %>
                 </ul>
             </div>
             <div class="notes">
                 <ul>
-                    <% course.notes.each(function(note){ %>
-                        <li><%- note %><li>
-                    <% }); %>
+                    <% for(var notes=course.getNotes(), i=0, l=notes.length; i<l; i++){ %>
+                        <li><%- notes[i] %><li>
+                    <% } %>
                 </ul>
             </div>
         </span>
     </label>
-    <% if (always_show_sections){ %>
+    <% if (alwaysShowSections){ %>
     <span class="sections">
-        <% if(course.sections){ %>
+        <% if(course.get('sections').length){ %>
             <ul>
-                <% course.sections.each(function(section){ %>
-                    <li class="section<%- section.is_full ? 'full' : ''; %>">
-                        <input type="checkbox" id="selected_course_<%- course.id %>_<%- section.crn %>" name="selected_course_{{ course.id }}_{{ section.crn }}"{% if section.crn in selected_section_ids %} checked="checked"{% endif %} data-cid="{{ course.id }}" data-crn="{{ section.crn }}" />
+                <% for(var sections=course.getMergedSections(), i=0, l=sections.length; i<l; i++){ var section = sections[i]; %>
+                    <% console.log(section.seats_taken, section.seats_total); %>
+                    <li class="section<%- section.seats_taken >= section.seats_total ? ' full' : '' %>">
+                    <input type="checkbox" id="selected_course_<%- course.id %>_<%- section.crn %>" name="selected_course_<%- course.id %>_<%- section.crn %>" <%- isSelectedCRN(section.crn) ? ' checked="checked"' : '' %> data-cid="<%- course.id %>" data-crn="<%- section.crn  %>" />
                         <label for="selected_course_<%- course.id %>_<%- section.crn %>">
                             <span class="section-number">
                                 Section <span class="number"><%- section.number %></span>
                             </span>
-                            <% if (!section.is_full) { %>
+                            <% if(section.seats_taken >= section.seats_total){ %>
+                            <span class="section-seats-left none">No seats left</span>
+                            <% } else { %>
                             <span class="section-seats-left">
                                 <span class="number"><%- section.seats_left %></span> seat<%- section.seats_left === 1 ? '' : 's' %> left
                             </span>
-                            <% } else { %>
-                            <span class="section-seats-left none">No seats left</span>
                             <% } %>
                             <div class="instructors">
                                 <ul>
-                                    <% section.instructors.each(function(instructor){ %>
-                                    <li><%- instructor %></li>
-                                    <% });
+                                    <% for(var instructors=section.getInstructors(), i2=0, l2=instructors.length; i2<l2; i2++){ %>
+                                    <li><%- instructors[i2] %></li>
+                                    <% } %>
                                 </ul>
                             </div>
                         </label>
                         <ul class="days">
-                            <% var times = section.get_periods %>
-                            <% dows.each(function(dow){ %>
-                            <li class="item <%- times[dow] ? 'selected' : 'empty' %>">
-                                <span class="short"><%- dow %></span>
-                                <span class="long"><%- dow %></span>
-                                <ul class="times">
-                                    <% times[dow].each(function(){ %>
-                                        <li><%- display_period(period) %></li>
-                                    <% } %>
-                                </ul>
-                            </li>
+                            <% var times = periodsByDayOfWeek(section.periods); %>
+                            <% for(var i3=0, l3=dows.length; i3<l3; i3++){ var dow = dows[i3]; %>
+                                <% if(times[dow].length){ %>
+                                <li class="item <%- times[dow] ? 'selected' : 'empty' %>">
+                                    <span class="short"><%- dow %></span>
+                                    <span class="long"><%- dow %></span>
+                                    <ul class="times">
+                                        <% for(var i4=0, l4=times[dow].length; i4<l4; i4++){ %>
+                                            <li><%- displayPeriod(times[dow][i4]) %></li>
+                                        <% } %>
+                                    </ul>
+                                </li>
+                                <% } %>
                             <% } %>
                         </ul>
                     </li>
-                <% }); %>
+                <% } %>
             </ul>
         <% } else { %>
             There are no listed sections.
@@ -122,7 +125,7 @@
 </li>
 </script>
 
-<script type="text/template" id="no-selected-courses-template">
+<script type="text/template" id="no-courses-template">
 <div class="empty">
     <h3 class="text-center">...</h3>
     <p>Here would be any courses you selected... <br/>if only you picked out some courses.</p>
