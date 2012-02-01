@@ -142,7 +142,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",
 )
 
-ROOT_URLCONF = 'urls'
+ROOT_URLCONF = 'yacs.urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
