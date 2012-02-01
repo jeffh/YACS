@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from yacs.courses.models import *
+from courses.models import *
 
 admin.site.register(Department)
 admin.site.register(Semester)

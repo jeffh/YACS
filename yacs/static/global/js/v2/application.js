@@ -71,11 +71,17 @@ $(function(){
     noSchedulesTemplate = new Template({selector: '#no-schedules-template'}),
     tooManyCRNsTemplate = new Template({selector: '#too-many-crns-template'});
 
+  Scheduler.view = new ScheduleView({
+    el: $('.schedule_wrapper'),
+    json: {schedule: {}}
+  }).render();
+  /*
   Scheduler.schedulesListView = new SchedulesListView({
     selection: Scheduler.selection,
     periodHeight: Utils.integer($('#schedule-template').attr('data-period-height')),
     thumbnailPeriodHeight: Utils.integer($('#thumbnail-template').attr('data-period-height'))
   });
+  */
   /*
   Scheduler.UI = new ScheduleUI({
     selection: Scheduler.selection.crns,

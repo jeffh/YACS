@@ -1,6 +1,6 @@
 from django import template
 
-from yacs.courses.utils import DAYS
+from ..utils import DAYS
 
 
 register = template.Library()

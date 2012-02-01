@@ -6,8 +6,8 @@ from django.core.urlresolvers import reverse
 from django.db import transaction
 from django.contrib.sites.models import Site
 
-from yacs.courses import models
-from yacs.courses.signals import robots_signal
+from courses import models
+from courses.signals import robots_signal
 
 
 class Command(BaseCommand):

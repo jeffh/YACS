@@ -6,8 +6,8 @@ from django.views.generic import ListView, DetailView
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.conf import settings
 
-from yacs.courses import models, views
-from yacs.courses.utils import ObjectJSONEncoder
+from courses import models, views
+from courses.utils import ObjectJSONEncoder
 
 
 # add some mimetypes

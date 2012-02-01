@@ -2,11 +2,12 @@ import itertools
 
 from django.db import models, transaction
 
-from yacs.courses.signals import robots_signal
-from yacs.courses import models as courses
-from yacs.courses import managers as courses_managers
-from yacs.courses.utils import dict_by_attr
-from yacs.scheduler import managers
+from courses.signals import robots_signal
+from courses import models as courses
+from courses import managers as courses_managers
+from courses.utils import dict_by_attr
+#from scheduler import managers
+import managers # we have to rely on local
 
 
 # Django bug? Using a proxy causes tests to fail (looking for database NAME).
@@ -86,5 +87,5 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None):
 def sitemap_for_scheduler(sender, semester, rule, **kwargs):
     url = sender.get_or_create_url('schedules', year=semester.year, month=semester.month)
     rule.disallowed.add(url)
-robots_signal.connect(sitemap_for_scheduler, dispatch_uid='yacs.scheduler.sitemap_for_scheduler')
+robots_signal.connect(sitemap_for_scheduler, dispatch_uid='scheduler.sitemap_for_scheduler')
 

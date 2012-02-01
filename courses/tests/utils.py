@@ -2,7 +2,7 @@ from collections import namedtuple
 
 from django.test import TestCase
 
-from yacs.courses import utils
+from courses import utils
 
 
 class CapitalizationTest(TestCase):

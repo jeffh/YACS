@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
 
-from yacs.courses import views
+from courses import views
 
 
 urlpatterns = patterns('',

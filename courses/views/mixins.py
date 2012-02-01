@@ -2,8 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 
-from yacs.courses import models
-from yacs.courses.utils import ObjectJSONEncoder, DAYS
+from courses import models
+from courses.utils import ObjectJSONEncoder, DAYS
 
 
 SELECTED_COURSES_SESSION_KEY = 'selected'

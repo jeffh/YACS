@@ -131,10 +131,10 @@ def generate_fixtures():
     django.project('yacs')
     import sys
     sys.path.append('..')
-    from yacs.courses import models
+    from courses import models
 
     def include(model, ids):
-        return ' '.join('yacs.courses.%s[%d]' % (model, pk) for pk in ids)
+        return ' '.join('courses.%s[%d]' % (model, pk) for pk in ids)
 
     def include_all(*pairs):
         return ' '.join(include(*pair) for pair in pairs)
@@ -194,7 +194,7 @@ def test(apps=None):
         local('coverage run -a `which nosetests` -x -w lib')
 
     if apps:
-        local('coverage run -a manage.py test --failfast %s' % (' '.join(apps), ))
+        local('cd yacs && coverage run -a manage.py test --failfast %s' % (' '.join(apps), ))
     local('coverage html')
 
 

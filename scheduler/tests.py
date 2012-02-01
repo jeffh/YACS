@@ -4,11 +4,11 @@ from json import loads
 from django.core.urlresolvers import reverse
 from shortcuts import ShortcutTestCase
 
-from yacs.courses import models
-from yacs.courses.tests.factories import (SemesterFactory, CourseFactory, PeriodFactory,
+from courses import models
+from courses.tests.factories import (SemesterFactory, CourseFactory, PeriodFactory,
         SemesterSectionFactory, SectionFactory, SectionPeriodFactory, OfferedForFactory)
-from yacs.scheduler.models import cache_conflicts
-from yacs.scheduler.views import SELECTED_COURSES_SESSION_KEY
+from models import cache_conflicts
+from views import SELECTED_COURSES_SESSION_KEY
 
 
 # TODO: convert this (and the tests that use this) to use factories

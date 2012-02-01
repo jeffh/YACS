@@ -4,10 +4,10 @@ import sys
 from datetime import timedelta
 
 # setup
-relative = lambda *x: os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', *x)
+relative = lambda *x: os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', *x))
 
 if relative('lib') not in sys.path:
-    sys.path.append(relative('lib'))
+    sys.path.insert(0, relative('..', 'lib'))
 
 # end setup
 
@@ -34,7 +34,7 @@ MANAGERS = ADMINS
 #CACHES = {
 #    'default': {
 #        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-#        'LOCATION': 'yacs.locmemcache'
+#        'LOCATION': 'locmemcache'
 #    }
 #}
 #
@@ -122,14 +122,14 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
     #'django.contrib.sessions.middleware.SessionMiddleware',
-    'yacs.api.middleware.SessionMiddleware',
+    'api.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     #'django.contrib.auth.middleware.AuthenticationMiddleware',
     #'django.contrib.messages.middleware.MessageMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
-    'yacs.api.middleware.AuthenticationMiddleware',
-    'yacs.api.middleware.MessageMiddleware',
-    'yacs.api.middleware.DebugToolbarMiddleware',
+    'api.middleware.AuthenticationMiddleware',
+    'api.middleware.MessageMiddleware',
+    'api.middleware.DebugToolbarMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -142,7 +142,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",
 )
 
-ROOT_URLCONF = 'yacs.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -170,9 +170,9 @@ INSTALLED_APPS = (
     'django_bcrypt',
     'test_utils',
     # local apps
-    'yacs.courses',
-    'yacs.scheduler',
-    'yacs.api',
+    'courses',
+    'scheduler',
+    'api',
 )
 
 if DEBUG:
@@ -203,12 +203,12 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': relative('django.log'),
-            'formatter': 'default',
-        },
+        #'file': {
+        #    'level': 'DEBUG',
+        #    'class': 'logging.FileHandler',
+        #    'filename': relative('django.log'),
+        #    'formatter': 'default',
+        #},
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
@@ -239,7 +239,7 @@ API_RETURN_QUERIES = True
 
 # ==== Courses App ====
 # full module path to the function that does all the importing
-COURSES_COLLEGE_PARSER = 'yacs.courses.bridge.rpi.import_data'
+COURSES_COLLEGE_PARSER = 'courses.bridge.rpi.import_data'
 
 # ==== Scheduler App ====
 SCHEDULER_ICAL_PRODUCT_ID = '-//Jeff Hui//YACS Export 1.0//EN'
@@ -286,7 +286,7 @@ DEBUG_TOOLBAR_CONFIG = {
 # ==== Django-Jasmine ====
 JASMINE_TEST_DIRECTORY = relative('static', 'jasmine')
 
-# ==== yacs.api ====
+# ==== api ====
 # which urls require no sessions. This saves us at least one DB query.
 # this is a collection of regular expressions
 SESSION_EXCLUDED_URLS = (

@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from yacs.courses import models
-from yacs.courses.tests.factories import (SemesterFactory, SemesterDepartmentFactory,
+from courses import models
+from courses.tests.factories import (SemesterFactory, SemesterDepartmentFactory,
         OfferedForFactory, CourseFactory, SemesterSectionFactory, SectionFactory,
         DepartmentFactory, PeriodFactory, SectionPeriodFactory)
 

@@ -1,7 +1,7 @@
 from django.db.models import Manager, Q, F
 from django.db.models.query import QuerySet
 
-from yacs.courses.utils import dict_by_attr
+from courses.utils import dict_by_attr
 
 # using the fancy queryset manager technique, as describe:
 # http://adam.gomaa.us/blog/2009/feb/16/subclassing-django-querysets/index.html
@@ -102,7 +102,7 @@ class SectionQuerySet(SemesterBasedQuerySet):
         """Returns all Sections in the given queryset, plus SectionPeriod and Periods.
         """
         select_related = tuple('section__' + x for x in reverse_select_related(self.query.select_related or {}))
-        from yacs.courses.models import SectionPeriod
+        from courses.models import SectionPeriod
         queryset = SectionPeriod.objects.by_sections(self, year, month).select_related('period', 'section', *select_related)
 
         sid2sps = dict_by_attr(queryset, 'section.id')
@@ -146,18 +146,17 @@ class CourseQuerySet(SemesterBasedQuerySet):
     def select_semesters(self):
         """Returns all courses in the given queryset plus semester data.
         """
-        from yacs.courses.models import OfferedFor
-        semesters = OfferedFor.objects.filter(course__id__in=[c.id for c in self])
-        semesters = dict_by_attr(set([s.semester for s in semesters]), 'course.id')
-
-        course.all_semesters = semesters.get(course.id, [])
+        from courses.models import OfferedFor
+        semesters = OfferedFor.objects.select_related('course__id', 'semester').filter(course__id__in=[c.id for c in self])
+        semesters = dict_by_attr(semesters, 'course.id')
 
         def semester_key(s):
-            return s.id
+            return s.year * 100 + s.month
 
         result = []
         for course in self:
-            course.all_semesters = sorted(set(semesters.get(course.id, [])), key=semester_key)
+            sems = semesters.get(course.id, [])
+            course.all_semesters = sorted(set(s.semester for s in sems), key=semester_key)
             result.append(course)
         return result
 
@@ -170,7 +169,7 @@ class CourseQuerySet(SemesterBasedQuerySet):
         Since this operation performs multiple selects and merges the resulting queries, the queryset
         is actively evaluated.
         """
-        from yacs.courses.models import SectionPeriod
+        from courses.models import SectionPeriod
         sps = SectionPeriod.objects.by_courses(self, year, month).select_related(
             'period', 'section', 'section__course'
         )
@@ -197,7 +196,7 @@ class CourseQuerySet(SemesterBasedQuerySet):
 
     def _search_Q(self, query, dept_code=None):
         "Returns a composed set of django.db.models.Q objects for searching courses."
-        from yacs.courses.models import Department
+        from courses.models import Department
         parts = query.split(' ')
 
         department_filter = Q()

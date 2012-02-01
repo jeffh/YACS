@@ -9,10 +9,10 @@ import sys
 import datetime
 from contextlib import closing
 
-from yacs.courses.models import (Semester, Course, Department, Section,
+from courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment,
     SemesterSection)
-from yacs.courses.signals import sections_modified
+from courses.signals import sections_modified
 
 
 logger = logging.getLogger(__file__)

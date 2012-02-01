@@ -5,8 +5,8 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.db.models import F
 
-from yacs.courses import managers
-from yacs.courses.utils import options, capitalized, sorted_daysofweek
+from courses import managers
+from courses.utils import options, capitalized, sorted_daysofweek
 
 
 __all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting',

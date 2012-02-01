@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
 
-from yacs.api import views
+from api import views
 
 
 api3 = dict(version=3, objects=(

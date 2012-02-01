@@ -6,9 +6,9 @@ from django.http import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.conf import settings
 
-from yacs.courses import models
-from yacs.courses.utils import ObjectJSONEncoder, DAYS
-from yacs.courses.views.mixins import (SemesterBasedMixin, AjaxJsonResponseMixin, SelectedCoursesMixin,
+from courses import models
+from courses.utils import ObjectJSONEncoder, DAYS
+from courses.views.mixins import (SemesterBasedMixin, AjaxJsonResponseMixin, SelectedCoursesMixin,
         PartialResponseMixin, SearchMixin, SELECTED_COURSES_SESSION_KEY)
 
 

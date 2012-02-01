@@ -8,9 +8,9 @@ import sys
 
 from shortcuts import ShortcutTestCase
 
-from yacs.courses import models
-from yacs.courses.views import SELECTED_COURSES_SESSION_KEY
-from yacs.courses.tests.factories import (SemesterFactory, SemesterDepartmentFactory,
+from courses import models
+from courses.views import SELECTED_COURSES_SESSION_KEY
+from courses.tests.factories import (SemesterFactory, SemesterDepartmentFactory,
         OfferedForFactory, CourseFactory, SemesterSectionFactory, SectionFactory,
         DepartmentFactory, PeriodFactory, SectionPeriodFactory)
 

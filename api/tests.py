@@ -4,13 +4,19 @@ from django.core.urlresolvers import reverse
 from django.utils.simplejson import loads
 from shortcuts import ShortcutTestCase
 
-from yacs.courses import models
-from yacs.courses.tests import factories
+from courses import models
+from courses.tests import factories
+
+class TestAPI3(ShortcutTestCase):
+    urls = 'api.urls'
+    def test_get_semester(self):
+        factories.SemesterFactory.create
 
 
-class TestLatestAPI(ShortcutTestCase):
+#class TestLatestAPI(ShortcutTestCase):
+class TestLatestAPI(object):
     fixtures = ['semesters.json', 'courses/fixtures/calc1.json', 'courses/fixtures/intro-to-cs.json', 'courses/fixtures/data-structures.json']
-    urls = 'yacs.api.urls'
+    urls = 'api.urls'
     def fields(self, dicts, field):
         return list(d[field] for d in dicts)
 
@@ -129,7 +135,7 @@ class TestLatestAPIViaYearAndMonth(TestLatestAPI):
 # TODO: make more comprehensive
 class TestSemesterAPI(ShortcutTestCase):
     fixtures = ['semesters.json']
-    urls = 'yacs.api.urls'
+    urls = 'api.urls'
 
     def test_get_semesters(self):
         json = self.json_get('semesters', status_code=200)
@@ -141,7 +147,7 @@ class TestSemesterAPI(ShortcutTestCase):
 
 
 class TestSemesterAPIWithFactory(ShortcutTestCase):
-    urls = 'yacs.api.urls'
+    urls = 'api.urls'
     def test_get_semesters_with_one_semester(self):
         semester = factories.SemesterFactory.create()
         json = self.json_get('semesters', status_code=200)

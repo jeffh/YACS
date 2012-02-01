@@ -2,7 +2,7 @@ import datetime
 
 import factory
 
-from yacs.courses import models
+from courses import models
 
 
 class SemesterFactory(factory.Factory):

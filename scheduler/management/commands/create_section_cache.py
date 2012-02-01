@@ -3,8 +3,8 @@ from optparse import make_option
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from yacs.courses.models import Semester
-from yacs.scheduler import models
+from courses.models import Semester
+from scheduler import models
 
 
 class Command(BaseCommand):

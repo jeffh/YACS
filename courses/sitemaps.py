@@ -3,7 +3,7 @@ import datetime
 from django.contrib.sitemaps import Sitemap
 from django.core.urlresolvers import reverse
 
-from yacs.courses import models
+from courses import models
 
 
 class SemesterSitemap(Sitemap):

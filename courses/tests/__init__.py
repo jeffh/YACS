@@ -1,6 +1,6 @@
-from yacs.courses.tests.models import *
-from yacs.courses.tests.template_tags import *
-from yacs.courses.tests.querysets import *
-from yacs.courses.tests.utils import *
-from yacs.courses.tests.smokes import *
+from courses.tests.models import *
+from courses.tests.template_tags import *
+from courses.tests.querysets import *
+from courses.tests.utils import *
+from courses.tests.smokes import *
 
