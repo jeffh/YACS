@@ -16,8 +16,8 @@ from icalendar import Calendar, Event, UTC, vText
 from courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY, AjaxJsonResponseMixin
 from courses.models import Semester, SectionPeriod, Course, Section, Department
 from courses.utils import dict_by_attr, ObjectJSONEncoder, sorted_daysofweek, DAYS
-import models
-from scheduler import compute_schedules
+from scheduler import models
+from scheduler.scheduling import compute_schedules
 
 
 ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')

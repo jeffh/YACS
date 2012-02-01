@@ -1,6 +1,6 @@
 {# requires context of: selected_courses, course, sem_year, sem_month #}
 {# optional context of: always_show_sections=False #}
-{% load courses %}
+{% load course_tags %}
 
 {% with seats_left_for_course=course.all_sections|seats_left %}
     <li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}{% if course.crns|length < 1 %} no-sections{% endif %}">

@@ -3,7 +3,7 @@ from datetime import time
 from django.test import TestCase
 from mock import Mock
 
-from courses.templatetags.courses import remove_zero_prefix, get, display_period, dow_short
+from courses.templatetags.course_tags import remove_zero_prefix, get, display_period, dow_short
 from courses.tests.factories import PeriodFactory
 
 

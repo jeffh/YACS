@@ -1,5 +1,5 @@
 {# this is for the course_list template and ajax search results list (template partial) #}
-{% load courses %}
+{% load course_tags %}
 
 <div id="courses" class="listview {% if search_results %}search-results {% if query_department == 'all' %}all-dept{% else %}specific-dept{% endif %}{% endif %}">
 

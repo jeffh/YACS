@@ -6,8 +6,7 @@ from courses.signals import robots_signal
 from courses import models as courses
 from courses import managers as courses_managers
 from courses.utils import dict_by_attr
-#from scheduler import managers
-import managers # we have to rely on local
+from scheduler import managers
 
 
 # Django bug? Using a proxy causes tests to fail (looking for database NAME).

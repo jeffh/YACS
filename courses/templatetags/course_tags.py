@@ -1,6 +1,6 @@
 from django import template
 
-from ..utils import DAYS
+from courses.utils import DAYS
 
 
 register = template.Library()

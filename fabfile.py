@@ -194,7 +194,7 @@ def test(apps=None):
         local('coverage run -a `which nosetests` -x -w lib')
 
     if apps:
-        local('cd yacs && coverage run -a manage.py test --failfast %s' % (' '.join(apps), ))
+        local('coverage run -a manage.py test --failfast %s' % (' '.join(apps), ))
     local('coverage html')
 
 
