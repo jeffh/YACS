@@ -2,9 +2,9 @@
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'timetable',
-        'USER': 'timetable',
-        'PASSWORD': 'thereisn0sp00n',
+        'NAME': 'yacs',
+        'USER': 'padawanyacs',
+        'PASSWORD': 'yacs2012',
         'HOST': 'localhost',
         'PORT': '',
         'OPTIONS': {
