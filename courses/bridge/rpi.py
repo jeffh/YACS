@@ -207,16 +207,27 @@ class ROCSRPIImporter(object):
 
 class SISRPIImporter(ROCSRPIImporter):
 
+    def get_files(self, latest_semester):
+        from rpi_courses import list_sis_files
+        get_files = list_sis_files
+
+        files = list_sis_files()
+        if latest_semester:
+            files.append(latest_semester.ref)
+
+        now = datetime.datetime.now()
+        return list(set(files))
+
+
     def sync(self, get_files=None, get_catalog=None, force=False):
         if get_files is None:
-            from rpi_courses import list_sis_files
-            get_files = list_sis_files
+            get_files = self.get_files
 
         if get_catalog is None:
             from rpi_courses import CourseCatalog
             get_catalog = CourseCatalog.from_string
 
-        for filename in get_files([s.date_updated for s in self.semesters.values() if '/zs' in s.ref]):
+        for filename in get_files(self.latest_semester):
             semester = self.semesters.get(filename)
             # if latest semester or newer semester
             if (not semester) or semester == self.latest_semester:
@@ -230,6 +241,7 @@ class SISRPIImporter(ROCSRPIImporter):
                                 continue
                         catalog = get_catalog(page.read())
                 except urllib2.URLError:
+                    logger.debug("Failed to fetch url (%r)" % (filename))
                     continue
 
                 if not force and self.latest_semester and semester == self.latest_semester: # and catalog.datetime <= self.latest_semester.date_updated:

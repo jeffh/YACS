@@ -24,19 +24,20 @@ def get(url, last_modified=None):
         return ""
 
 
-def list_sis_files(datetimes, url_base=SIS_URL):
+def list_sis_files(url_base=SIS_URL):
     today = datetime.datetime.now()
     format = '%szs%.4d%.2d.htm'
     base = []
     months = (1, 5, 9)
+    prev_m = None
     for m in months:
         if m >= today.month:
             base.append(format % (url_base, today.year, m))
-            break
+            if prev_m and prev_m < today.month:
+                base.append(format % (url_base, today.year, prev_m))
+        prev_m = m
     if not base:
-            base.append(format % (url_base, today.year + 1, 1))
-    for dt in datetimes:
-        base.append(format % (url_base, dt.year, dt.month))
+        base.append(format % (url_base, today.year + 1, 1))
     return base
 
 
