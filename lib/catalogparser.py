@@ -39,9 +39,21 @@ def get_course_detail(course_page):
 	course['num'] = title.group(2)
 	course['title'] = title.group(3)
 	desc = soup.findAll('hr')[0].nextSibling
-	if re.search('<.*>', str(desc)) == None:
-		course['description'] = desc
+	context = str(desc)
+	while re.search('<em>|<strong>', str(desc)) == None:
+		context = context + str(desc)
+		desc = desc.nextSibling
+	if re.search('<em>|<strong>', context) != None:
+		course['description'] = ''
+	elif re.search('>?.*<', context) != None:
+		course['description'] = special(context)
+	else:
+		course['description'] = context
 	return course
+
+def special(tags):
+	contents = re.findall('>?(.*?)<.*?>', tags)
+	return "".join(contents)
 
 def parse_catalog():
 	url = "catalog.rpi.edu"
