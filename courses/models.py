@@ -283,6 +283,7 @@ class Course(models.Model):
     department = models.ForeignKey(Department, related_name='courses')
     semesters = models.ManyToManyField(Semester, through='OfferedFor', related_name='courses')
 
+    description = models.TextField(default="")
     min_credits = models.IntegerField()
     max_credits = models.IntegerField()
 
@@ -315,7 +316,8 @@ class Course(models.Model):
             'name': self.name,
             'number': self.number,
             'min_credits': self.min_credits,
-            'max_credits': self.max_credits
+            'max_credits': self.max_credits,
+            'description': self.description,
         }
         if hasattr(self, 'all_semesters'):
             values['semesters'] = [s.id for s in self.all_semesters]

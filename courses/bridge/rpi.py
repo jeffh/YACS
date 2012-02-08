@@ -274,3 +274,17 @@ def import_data(force=False):
     logger.debug('Removed %r periods!' % period_count)
     #ROCSRPIImporter().sync() # slower.. someone manually updates this I think?
     SISRPIImporter().sync(force=force)
+
+def import_catalog():
+    from catalogparser import *
+    catalog = parse_catalog()
+    courses = Course.objects.all()
+    for c in courses:
+	key = str(c.department.code)+str(c.number)
+	if key in catalog.keys():
+	    if 'description' in catalog[key].keys():
+	        c.description = catalog[key]['description']
+	    c.name = catalog[key]['title']
+	    c.save()
+
+

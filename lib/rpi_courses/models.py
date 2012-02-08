@@ -353,3 +353,4 @@ class Course(ReadOnly):
             tag['name'], tag['dept'], int(tag['num']), tag['credmin'],
             tag['credmax'], tag['gradetype'], [s for s in sections if s.is_valid]
         )
+

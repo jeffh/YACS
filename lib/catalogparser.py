@@ -39,25 +39,26 @@ def get_course_detail(course_page):
 	course['num'] = title.group(2)
 	course['title'] = title.group(3)
 	desc = soup.findAll('hr')[0].nextSibling
-	if re.search('<\w+>', str(desc)) != None:
-		course['description'] = None
-	else:
+	if re.search('<.*>', str(desc)) == None:
 		course['description'] = desc
 	return course
 
-url = "catalog.rpi.edu"
-ids= get_catalogs(load_page(url))
-catalog_url = url+"/index.php?catoid="+ids[0]
-link_id = get_courses_link_id(load_page(catalog_url))
-courses_url = url+"/content.php?catoid="+ids[0]+"&navoid="+ link_id
+def parse_catalog():
+	url = "catalog.rpi.edu"
+	ids= get_catalogs(load_page(url))
+	catalog_url = url+"/index.php?catoid="+ids[0]
+	link_id = get_courses_link_id(load_page(catalog_url))
+	courses_url = url+"/content.php?catoid="+ids[0]+"&navoid="+ link_id
 
-# parse need to parse out the coid (course id) from each department list of courses
-# then use it in the url: http://catalog.rpi.edu/preview_course.php?catoid=<id>&navoid<link_id>&coid=<course>
-# this will bring up the course descriptions and info and only the info for that course.
-for e in DEPARTMENTS.keys():
-	print "parsing", e			
-	course_id = get_course_ids(load_page(courses_url, "filter[27]="+e))
-	for c in range(0, len(course_id)):
-		detail_url = url+"/preview_course.php?catoid="+ids[0]+"&navoid="+link_id+"&coid="+course_id[c]
-		print get_course_detail(load_page(detail_url))
-
+	# parse need to parse out the coid (course id) from each department list of courses
+	# then use it in the url: http://catalog.rpi.edu/preview_course.php?catoid=<id>&navoid<link_id>&coid=<course>
+	# this will bring up the course descriptions and info and only the info for that course.
+	courses = {}
+	for e in DEPARTMENTS.keys():
+		print "parsing", e			
+		course_id = get_course_ids(load_page(courses_url, "filter[27]="+e))
+		for c in range(0, len(course_id)):
+			detail_url = url+"/preview_course.php?catoid="+ids[0]+"&navoid="+link_id+"&coid="+course_id[c]
+			temp= get_course_detail(load_page(detail_url))
+			courses[temp['department']+temp['num']] = temp 
+	return courses
