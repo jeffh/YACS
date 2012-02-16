@@ -55,22 +55,23 @@ def special(tags):
 	contents = re.findall('>?(.*?)<.*?>', tags)
 	return "".join(contents)
 
-def parse_catalog():
+def parse_catalog(catalogs=1):
+	courses = {}
 	url = "catalog.rpi.edu"
 	ids= get_catalogs(load_page(url))
-	catalog_url = url+"/index.php?catoid="+ids[0]
-	link_id = get_courses_link_id(load_page(catalog_url))
-	courses_url = url+"/content.php?catoid="+ids[0]+"&navoid="+ link_id
+	for i in range(catalogs-1, -1, -1):
+		catalog_url = url+"/index.php?catoid="+ids[i]
+		link_id = get_courses_link_id(load_page(catalog_url))
+		courses_url = url+"/content.php?catoid="+ids[i]+"&navoid="+ link_id
 
-	# parse need to parse out the coid (course id) from each department list of courses
-	# then use it in the url: http://catalog.rpi.edu/preview_course.php?catoid=<id>&navoid<link_id>&coid=<course>
-	# this will bring up the course descriptions and info and only the info for that course.
-	courses = {}
-	for e in DEPARTMENTS.keys():
-		print "parsing", e			
-		course_id = get_course_ids(load_page(courses_url, "filter[27]="+e))
-		for c in range(0, len(course_id)):
-			detail_url = url+"/preview_course.php?catoid="+ids[0]+"&navoid="+link_id+"&coid="+course_id[c]
-			temp= get_course_detail(load_page(detail_url))
-			courses[temp['department']+temp['num']] = temp 
+		# parse need to parse out the coid (course id) from each department list of courses
+		# then use it in the url: http://catalog.rpi.edu/preview_course.php?catoid=<id>&navoid<link_id>&coid=<course>
+		# this will bring up the course descriptions and info and only the info for that course.
+		for e in DEPARTMENTS.keys():
+			print "parsing", e			
+			course_id = get_course_ids(load_page(courses_url, "filter[27]="+e))
+			for c in range(0, len(course_id)):
+				detail_url = url+"/preview_course.php?catoid="+ids[0]+"&navoid="+link_id+"&coid="+course_id[c]
+				temp= get_course_detail(load_page(detail_url))
+				courses[temp['department']+temp['num']] = temp 
 	return courses
