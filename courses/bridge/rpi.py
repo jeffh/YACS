@@ -286,7 +286,7 @@ def import_catalog(a=False):
 	        c.description = catalog[key]['description']
 	    c.name = catalog[key]['title']
 	    c.save()
-    #add_cross_listing()
+    add_cross_listing()
 
 def add_cross_listing():
 	from itertools import product
