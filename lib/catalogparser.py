@@ -45,21 +45,25 @@ def get_course_detail(course_page):
 		desc = desc.nextSibling
 	if re.search('<em>|<strong>', context) != None:
 		course['description'] = ''
-	elif re.search('>?.*<', context) != None:
+	elif re.search('>??(.*?)<', context) != None:
 		course['description'] = special(context)
 	else:
 		course['description'] = context
 	return course
 
 def special(tags):
-	contents = re.findall('>?(.*?)<.*?>', tags)
+	contents = re.findall('>??(.*?)<.*?>', tags)
 	return "".join(contents)
 
-def parse_catalog(catalogs=1):
+def parse_catalog(a=False):
 	courses = {}
 	url = "catalog.rpi.edu"
 	ids= get_catalogs(load_page(url))
-	for i in range(catalogs-1, -1, -1):
+	if a:
+		catalogs = len(ids)
+	else:
+		catalogs = 1
+	for i in range(catalogs):
 		catalog_url = url+"/index.php?catoid="+ids[i]
 		link_id = get_courses_link_id(load_page(catalog_url))
 		courses_url = url+"/content.php?catoid="+ids[i]+"&navoid="+ link_id
@@ -71,7 +75,9 @@ def parse_catalog(catalogs=1):
 			print "parsing", e			
 			course_id = get_course_ids(load_page(courses_url, "filter[27]="+e))
 			for c in range(0, len(course_id)):
-				detail_url = url+"/preview_course.php?catoid="+ids[0]+"&navoid="+link_id+"&coid="+course_id[c]
+				detail_url = url+"/preview_course.php?catoid="+ids[i]+"&coid="+course_id[c]
 				temp= get_course_detail(load_page(detail_url))
-				courses[temp['department']+temp['num']] = temp 
+				key = temp['department'] + temp['num']
+				if key not in courses or temp['description'].strip() != '':
+					courses[key] = temp 
 	return courses
