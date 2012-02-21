@@ -254,7 +254,7 @@ class SectionTest(TestCase):
 class CourseTest(TestCase):
     def test_to_json(self):
         course = CourseFactory.create(
-                pk=1, name='foo', number=5050, min_credits=4, max_credits=5, description='something'
+                pk=1, name='foo', number=5050, min_credits=4, max_credits=5, description=u'something'
         )
         expected = {
             'id': 1,
@@ -262,7 +262,7 @@ class CourseTest(TestCase):
             'number': 5050,
             'min_credits': 4,
             'max_credits': 5,
-	    'description':'something'
+            'description': 'something',
         }
         self.assertEqual(expected, course.toJSON())
 

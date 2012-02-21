@@ -283,7 +283,7 @@ class Course(models.Model):
     department = models.ForeignKey(Department, related_name='courses')
     semesters = models.ManyToManyField(Semester, through='OfferedFor', related_name='courses')
 
-    description = models.TextField(default='')
+    description = models.TextField(default="")
     min_credits = models.IntegerField()
     max_credits = models.IntegerField()
 
