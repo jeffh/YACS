@@ -57,16 +57,16 @@ PROJECT_FILES = [
     directory('scheduler', filter='*.py'),
     directory('lib', 'csp', filter='*.py'),
     directory('lib', 'rpi_courses', filter='*.py'),
-    directory('static', filter='*.*'),
-    directory('templates', filter='*.*'),
-    directory('settings', filter='*.py'),
+    directory('requirements', filter='*.txt'),
+    directory('yacs', 'static', filter='*.*'),
+    directory('yacs', 'templates', filter='*.*'),
+    directory('yacs', filter='*.py'),
     '__init__.py',
     'manage.py',
-    'requirements.txt',
     'urls.py',
 ]
 TEMPLATES = {
-    normalize('settings', 'overrides_template.py'): normalize('settings', 'overrides.py')
+    normalize('yacs', 'settings', 'overrides_template.py'): normalize('yacs', 'settings', 'overrides.py')
 }
 
 DEPLOY_FILE = os.path.join('deployment', 'deploy.json')
@@ -299,7 +299,7 @@ def update_environment(use_pip=False):
                 run('python', 'manage.py', 'collectstatic', '--noinput')
         else:
             if use_pip:
-                pip.install(r='requirements.txt')
+                pip.install(r='requirements/deployment.txt')
 
             manage_py = python.extend(['manage.py'])
             manage_py.syncdb()
