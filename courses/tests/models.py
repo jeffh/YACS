@@ -254,7 +254,7 @@ class SectionTest(TestCase):
 class CourseTest(TestCase):
     def test_to_json(self):
         course = CourseFactory.create(
-            pk=1, name='foo', number=5050, min_credits=4, max_credits=5, description='foo',
+        pk=1, name='foo', number=5050, min_credits=4, max_credits=5, description='foo',
         )
         expected = {
             'id': 1,

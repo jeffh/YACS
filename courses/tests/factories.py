@@ -61,7 +61,6 @@ class CourseFactory(factory.Factory):
     max_credits = 4
     grade_type = ''
 
-
 class OfferedForFactory(factory.Factory):
     FACTORY_FOR = models.OfferedFor
 
