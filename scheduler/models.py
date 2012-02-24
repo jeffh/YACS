@@ -1,6 +1,6 @@
 import itertools
 
-from django.db import models, transaction
+from django.db import models, transaction, connection
 
 from courses.signals import robots_signal
 from courses import models as courses
@@ -53,7 +53,7 @@ class SectionConflict(models.Model):
 
 
 # TODO: move into manager
-def cache_conflicts(semester_year=None, semester_month=None, semester=None):
+def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=False):
     assert (semester_year and semester_month) or semester, "Semester year & month must be provided or the semester object."
     import sys
     # trash existing conflict data...
@@ -64,6 +64,7 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None):
     sections = courses.Section.objects.select_related('course').full_select(semester_year, semester_month)
     section_courses = dict_by_attr(sections, 'course')
     count = 0
+    query = "insert into scheduler_sectionconflict (section1_id, section2_id, semester_id) values "
     for course1, course2 in itertools.combinations(section_courses.keys(), 2):
         for section1, section2 in itertools.product(section_courses[course1], section_courses[course2]):
             if section1.conflicts_with(section2):
@@ -76,12 +77,21 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None):
                     sys.stdout.write('.')
                     sys.stdout.flush()
                     count = 0
-                SectionConflict.objects.create(
-                    section1=section1,
-                    section2=section2,
-                    semester=semester,
-                )
+                if sql:
+                    query = query + "("+str(section1.id)+", "+str(section2.id)+", "+str(semester.id)+"),"
+                else:
+                    SectionConflict.objects.create(
+                        section1=section1,
+                        section2=section2,
+                        semester=semester,
+                    )
 
+    if sql:
+        query = query[:-1]+";"
+        print "Manually inserting...:"
+        cursor = connection.cursor()
+        cursor.execute(query)
+        transaction.commit_unless_managed()
 # attach to signals
 def sitemap_for_scheduler(sender, semester, rule, **kwargs):
     url = sender.get_or_create_url('schedules', year=semester.year, month=semester.month)
