@@ -130,7 +130,7 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
         "/2011/1/schedules/"
         self.set_selected({1: [1000, 1001], 2: [1003]})
         response = self.get('schedules', year=2011, month=1)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
     def test_get_ajax_schedules(self):
         "/2011/1/schedules/ajax/?crn=1000&crn=1001&crn=1003"
