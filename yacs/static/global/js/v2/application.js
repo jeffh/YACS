@@ -61,6 +61,16 @@ $(function(){
   });
 });
 
+
+Scheduler.getURL = function(){
+  var schedulesURL = $('#schedules').attr('data-source');
+  if(!schedulesURL) return;
+  Scheduler.selection.getCRNs().each(function(crn){
+    schedulesURL += '&crn=' + crn;
+  });
+  return schedulesURL;
+};
+
 // Schedules feature
 $(function(){
   if(!$('#schedules').length) return;
@@ -71,10 +81,42 @@ $(function(){
     noSchedulesTemplate = new Template({selector: '#no-schedules-template'}),
     tooManyCRNsTemplate = new Template({selector: '#too-many-crns-template'});
 
-  Scheduler.view = new ScheduleView({
-    el: $('.schedule_wrapper'),
-    json: {schedule: {}}
-  }).render();
+  var target = $('#schedules');
+  $.ajax(Scheduler.getURL(), {
+    type: 'GET',
+    dataType: 'json',
+    success: function(json){
+      if(json.schedules && json.schedules.length){
+        Scheduler.view = new ScheduleView({
+          el: target,
+          json: json,
+          template: scheduleTemplate.render.bind(scheduleTemplate)
+        }).render();
+        return;
+      }
+      // ERROR
+      Scheduler.view = new ScheduleView({
+        el: target,
+        json: {},
+        template: noSchedulesTemplate.render.bind(scheduleTemplate)
+      }).render();
+    },
+    error: function(xhr, status){
+      // TODO: show a custom error page
+      if(xhr.status === 403){
+        Scheduler.view = new ScheduleView({
+          el: target,
+          json: {},
+          template: tooManyCRNsTemplate
+        });
+        $('#schedules').html(too_many_crns_template({}));
+      } else {
+        //alert('Failed to get schedules... (are you connected to the internet?)');
+        // TODO: log to the server (if we can)
+        console.error('Failed to save to schedules: ' + xhr.status);
+      }
+    }
+  });
   /*
   Scheduler.schedulesListView = new SchedulesListView({
     selection: Scheduler.selection,

@@ -705,6 +705,9 @@ var Selection = Class.extend({
   getCourseIds: function(){
     return _.keys(this.crns).map(Utils.integer);
   },
+  getCRNs: function(){
+    return _.values(this.crns).map(Utils.integer);
+  },
   _getCourseElem: function(course_id){
     return $('#' + this.options.course_id_format.format({cid: course_id}));
   },
@@ -750,23 +753,32 @@ var Selection = Class.extend({
 var ScheduleView = Backbone.View.extend({
   initialize: function(options){
     this.options.template = options.template || templateFromElement('#schedule-template');
+    this.options.index = options.index || 0;
+    this.period_height = parseInt($('#schedule-template').attr('data-period-height'), 10)
+    this.thumbnail_period_height = parseInt($('#thumbnail-template').attr('data-period-height'), 10);
   },
   render: function(){
     var json = this.options.json,
       FC = FunctionsContext,
       self = this,
       context = {
-        color_map: FC.create_color_map(json.schedule),
-        get_period_height: function(){
-          return FC.get_period_height(period, this.is_thumbnail ? thumbnail_period_height : period_height);
+        color_map: FC.create_color_map(json.schedules[0]),
+        get_period_height: function(period){
+          return FC.get_period_height(period, self.is_thumbnail ? self.thumbnail_period_height : self.period_height);
         },
-        get_period_offset: function(){
-          return FC.get_period_offset(period, this.is_thumbnail ? thumbnail_period_height : period_height);
-        }
+        get_period_offset: function(period){
+          return FC.get_period_offset(period, self.is_thumbnail ? self.thumbnail_period_height : self.period_height);
+        },
+        sid: Utils.integer(_.keys(json.schedules)[0]) + 1,
+        schedule: json.schedules[0],
       };
-    $(this.options.el).html(this.options.template($.extend({}, FC, context)));
+      context = $.extend({}, json, FC, context);
+    console.log(context);
+    $(this.options.el).html(this.options.template(context));
+    return this;
   }
 });
+
 var ThumbnailScheduleView = Backbone.View.extend({
 });
 
@@ -1101,7 +1113,8 @@ var FunctionsContext = {
     return time / 3600.0 * height;
   },
   get_period_height: function(period, height){
-    var time = FunctionsContext.time_to_seconds(period.end_time) - time_to_seconds(period.start_time);
+    var time_to_seconds = FunctionsContext.time_to_seconds;
+    var time = time_to_seconds(period.end_time) - time_to_seconds(period.start_time);
     //return 25 // 30 min time block
     //return 41.666666667 // 50 min time block
     return time / 3600.0 * height;

@@ -297,15 +297,15 @@ def schedules_bootloader(request, year, month):
     """A simple view that loads the basic template and provides the
     URL for the javascript client to hit for the schedule computation.
     """
-    crns = request.GET.get('crns')
-    if crns is not None:
-        crns = [c for c in crns.split('-') if c.strip() != '']
-    if crns is None:
-        selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
-        return redirect(reverse('schedules', kwargs=dict(year=year, month=month)) + '?crns=' + urllib.quote('-'.join(str(crn) for sections in selected_courses.values() for crn in sections)))
+    #crns = request.GET.get('crns')
+    #if crns is not None:
+    #    crns = [c for c in crns.split('-') if c.strip() != '']
+    #if crns is None:
+    #    selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
+    #    return redirect(reverse('schedules', kwargs=dict(year=year, month=month)) + '?crns=' + urllib.quote('-'.join(str(crn) for sections in selected_courses.values() for crn in sections)))
 
-    prefix = 'crn='
-    crns = prefix + ('&'+prefix).join(urllib.quote(str(crn)) for crn in crns)
+    #prefix = 'crn='
+    #crns = prefix + ('&'+prefix).join(urllib.quote(str(crn)) for crn in crns)
 
     single_schedule = ''
     # disabled for now... use JS
@@ -313,7 +313,7 @@ def schedules_bootloader(request, year, month):
     #if schedule_offset:
     #    single_schedule = "&from=%s&limit=1" % urllib.quote(schedule_offset)
     return render_to_response('scheduler/placeholder_schedule_list.html', {
-        'ajax_url': reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?' + crns + single_schedule,
+        'ajax_url': reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?', # + crns + single_schedule,
         'sem_year': year,
         'sem_month': month,
     }, RequestContext(request))
