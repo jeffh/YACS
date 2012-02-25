@@ -35,6 +35,7 @@ function next_schedule(){
     }
     return false;
 }
+
 function prev_schedule(){
     if($(this).hasClass('disabled'))
         return false;
@@ -44,6 +45,8 @@ function prev_schedule(){
     }
     return false;
 }
+
+
 function load_schedule(){
   var sid = $(this).closest('.schedule_wrapper').attr('data-sid');
   $('#schedules .schedule_wrapper.selected').hide(); // hide all schedules
@@ -56,6 +59,7 @@ function load_schedule(){
   }
   return false;
 }
+
 function toggle_thumbnails(){
   if($('#thumbnails').is(':visible')){
     $('#thumbnails').slideUp({duration: 250});
