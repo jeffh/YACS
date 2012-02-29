@@ -3,10 +3,11 @@
   function toggleDescription(e)
   {
     description = e.parentNode.getElementsByClassName("description")[0];
-    if (description.style.display == "none")
-      description.style.display = "inline";
-    else
+    alert(description.style.display);
+    if (description.style.display == "inline")
       description.style.display = "none";
+    else
+      description.style.display = "inline";
   }
 
   function hideDescription(e)
@@ -14,7 +15,9 @@
     e.style.display = "none";
   }
 </script>
-
+<style>
+  span.description { display: none }
+</style>
 {# requires context of: selected_courses, course, sem_year, sem_month #}
 {# optional context of: always_show_sections=False #}
 {% load course_tags %}
