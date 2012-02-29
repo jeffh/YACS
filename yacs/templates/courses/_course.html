@@ -1,9 +1,26 @@
+<script type="text/javascript">
+  var description
+  function toggleDescription(e)
+  {
+    description = e.parentNode.getElementsByClassName("description")[0];
+    if (description.style.display == "none")
+      description.style.display = "inline";
+    else
+      description.style.display = "none";
+  }
+
+  function hideDescription(e)
+  {
+    e.style.display = "none";
+  }
+</script>
+
 {# requires context of: selected_courses, course, sem_year, sem_month #}
 {# optional context of: always_show_sections=False #}
 {% load course_tags %}
 
 {% with seats_left_for_course=course.all_sections|seats_left %}
-    <li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}{% if course.crns|length < 1 %} no-sections{% endif %}">
+    <li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}{% if course.crns|length < 1 %} no-sections{% endif %}" >
         {% if course.crns|length > 0 %}
         <input type="checkbox" id="selected_course_{{ course.id }}" name="course_{{ course.id }}"
         {% if course in selected_courses %} checked="checked" {% endif %}
@@ -12,7 +29,7 @@
         <p style="float:left; width: 15px; height: 10px; margin: 0; padding: 0;"></p>
         {% endif %}
         <img src="{{ STATIC_URL }}img/tinyspinner.gif" class="tinyspinner" alt="" style="display: none" />
-        <label class="padded" for="selected_course_{{ course.id }}">
+        <label class="padded" for="selected_course_{{ course.id }}" onClick="toggleDescription(this);">
             <span class="name">{{ course.name }}</span>
             <span class="secondary">
                 <span class="code">
