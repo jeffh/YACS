@@ -1,23 +1,21 @@
 from datetime import time
 from json import loads
+import sys
 
 from django.core.urlresolvers import reverse
 from shortcuts import ShortcutTestCase
 
 from courses import models
 from courses.tests.factories import (SemesterFactory, CourseFactory, PeriodFactory,
-        SemesterSectionFactory, SectionFactory, SectionPeriodFactory, OfferedForFactory)
+        SectionFactory, SectionPeriodFactory, OfferedForFactory)
 from models import cache_conflicts
 from views import SELECTED_COURSES_SESSION_KEY
 
 
 # TODO: convert this (and the tests that use this) to use factories
 def create_section(**kwargs):
-    semesters = kwargs.pop('semesters', [])
     periods = kwargs.pop('periods', [])
     section = models.Section.objects.create(**kwargs)
-    for semester in semesters:
-        models.SemesterSection.objects.create(semester=semester, section=section)
     for period in periods:
         models.SectionPeriod.objects.create(section=section, **period)
     return section
@@ -62,7 +60,7 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
             number=1,
             seats_taken=3,
             seats_total=10,
-            semesters=[self.semester],
+            semester=self.semester,
             periods=[
                 dict(period=self.periods[0], semester=self.semester),
                 dict(period=self.periods[4], semester=self.semester),
@@ -74,7 +72,7 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
             number=2,
             seats_taken=4,
             seats_total=5,
-            semesters=[self.semester],
+            semester=self.semester,
             periods=[
                 dict(period=self.periods[1], semester=self.semester),
             ],
@@ -85,7 +83,7 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
             number=1,
             seats_taken=4,
             seats_total=6,
-            semesters=[self.semester],
+            semester=self.semester,
             periods=[
                 dict(period=self.periods[4], semester=self.semester),
             ],
@@ -96,7 +94,7 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
             number=2,
             seats_taken=7,
             seats_total=6,
-            semesters=[self.semester],
+            semester=self.semester,
             periods=[
                 dict(period=self.periods[5], semester=self.semester),
             ]
@@ -105,9 +103,6 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
         # its do to get(models.Section, ...) but not sure where
         #models.Semester.objects.filter(id__gt=self.semester.id).delete()
         cache_conflicts(semester=self.semester)
-
-    def set_selected(self, value):
-        return self.set_session({SELECTED_COURSES_SESSION_KEY: value})
 
     def get_ajax_schedules_from_crns(self, crns):
         return self.get('ajax-schedules', year=2011, month=1, get='?crn=' + '&crn='.join(map(str, crns)))
@@ -128,7 +123,6 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
 
     def test_get_schedules(self):
         "/2011/1/schedules/"
-        self.set_selected({1: [1000, 1001], 2: [1003]})
         response = self.get('schedules', year=2011, month=1)
         self.assertEqual(response.status_code, 200)
 

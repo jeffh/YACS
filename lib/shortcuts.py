@@ -64,16 +64,3 @@ class ShortcutTestCase(TestCase):
                 headers['HTTP_'+key.upper().replace('-', '_')] = value
         return headers
 
-    def set_session(self, *dicts, **kwargs):
-        # bug: https://code.djangoproject.com/ticket/11475
-        # we need to log in to get around this
-        if not User.objects.filter(email='foo@foo.com').exists():
-            User.objects.create_user(email='foo@foo.com', username='anon', password='bugme')
-        self.client.login(username='anon', password='bugme')
-        self.client.get('/')
-        session = self.client.session
-        for dic in dicts + (kwargs,):
-            for key, value in dic.items():
-                session[key] = value
-        session.save()
-        return session

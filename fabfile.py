@@ -24,7 +24,6 @@ __all__ = (
     'clean',
     'loc',
     'test',
-    'generate_fixtures',
     'deploy',
     'restart',
     'update_courses',
@@ -123,59 +122,6 @@ def docs():
     "Generates documentation."
     with lcd(os.path.join(os.path.abspath(os.path.dirname(__file__)), 'docs')):
         local('make html')
-
-
-def generate_fixtures():
-    "Generates various fixtures from the current data in the database."
-    # Set up the Django Enviroment
-    django.project('yacs')
-    import sys
-    sys.path.append('..')
-    from courses import models
-
-    def include(model, ids):
-        return ' '.join('courses.%s[%d]' % (model, pk) for pk in ids)
-
-    def include_all(*pairs):
-        return ' '.join(include(*pair) for pair in pairs)
-
-    def generate_fixture(output, models):
-        local('python manage.py makefixture --indent=4 %s > %s.json' % (
-            models, output
-        ))
-    def course_fixture(output, course_name):
-        course_id = models.Course.objects.get(name=course_name).id
-        sp_ids = models.SectionPeriod.objects.filter(section__course__id=course_id).values_list('id', flat=True)
-        ss_ids = models.SemesterSection.objects.filter(section__course__id=course_id).values_list('id', flat=True)
-        return generate_fixture(output,
-            include_all(
-                ('Course', [course_id]),
-                ('SectionPeriod', sp_ids),
-                ('SemesterSection', ss_ids),
-            )
-        )
-
-    def semester_fixtures(output, course_names):
-        ids = models.OfferedFor.objects.filter(course__name__in=course_names).values_list('id', flat=True)
-        query = models.SemesterDepartment.objects.filter(department__code__in=('CSCI', 'MATH', 'ECSE'))
-        return generate_fixture(output,
-            include_all(
-                ('Semester', models.Semester.objects.all().values_list('id', flat=True)),
-                ('SemesterDepartment', query.values_list('id', flat=True)),
-                ('OfferedFor', ids),
-            )
-        )
-
-    course_fixture('courses/fixtures/calc1', 'CALCULUS I')
-    course_fixture('courses/fixtures/calc2', 'CALCULUS II')
-    course_fixture('courses/fixtures/data-structures', 'DATA STRUCTURES')
-    course_fixture('courses/fixtures/intro-to-algorithms', 'INTRODUCTION TO ALGORITHMS')
-    course_fixture('courses/fixtures/intro-to-cs', 'INTRO TO COMPUTER PROGRAMMING')
-    print "Generating api fixtures"
-    semester_fixtures('api/fixtures/semesters', ('CALCULUS I', 'DATA STRUCTURES', 'INTRO TO COMPUTER PROGRAMMING'))
-    #course_fixture('api/fixtures/calc1', 'CALCULUS I')
-    #course_fixture('api/fixtures/data-structures', 'DATA STRUCTURES')
-    #course_fixture('api/fixtures/intro-to-cs', 'INTRO TO COMPUTER PROGRAMMING')
 
 
 def test(apps=None):

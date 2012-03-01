@@ -2,8 +2,8 @@ from django.test import TestCase
 
 from courses import models
 from courses.tests.factories import (SemesterFactory, SemesterDepartmentFactory,
-        OfferedForFactory, CourseFactory, SemesterSectionFactory, SectionFactory,
-        DepartmentFactory, PeriodFactory, SectionPeriodFactory)
+        OfferedForFactory, CourseFactory, SectionFactory, DepartmentFactory,
+        PeriodFactory, SectionPeriodFactory)
 
 
 class SemesterBasedQuerySetTest(TestCase):
@@ -53,8 +53,7 @@ class SectionPeriodQuerySetTest(TestCase):
         self.course = CourseFactory.create(number=2222, department=self.dept)
         OfferedForFactory.create(course=self.course, semester=self.sem)
 
-        self.section = SectionFactory.create(course=self.course)
-        SemesterSectionFactory.create(semester=self.sem, section=self.section)
+        self.section = SectionFactory.create(course=self.course, semester=self.sem)
         SectionPeriodFactory.create(section=self.section)
 
     def test_filter_by_course_code(self):
