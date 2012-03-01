@@ -64,7 +64,7 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
     sections = courses.Section.objects.select_related('course').full_select(semester_year, semester_month)
     section_courses = dict_by_attr(sections, 'course')
     count = 0
-    query = "insert into scheduler_sectionconflict (section1_id, section2_id, semester_id) values "
+    query = ["insert into scheduler_sectionconflict (section1_id, section2_id, semester_id) values "]
     for course1, course2 in itertools.combinations(section_courses.keys(), 2):
         for section1, section2 in itertools.product(section_courses[course1], section_courses[course2]):
             if section1.conflicts_with(section2):
@@ -78,7 +78,7 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
                     sys.stdout.flush()
                     count = 0
                 if sql:
-                    query = query + "("+str(section1.id)+", "+str(section2.id)+", "+str(semester.id)+"),"
+                    query += ["("+str(section1.id)+", "+str(section2.id)+", "+str(semester.id)+"),"]
                 else:
                     SectionConflict.objects.create(
                         section1=section1,
@@ -87,6 +87,7 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
                     )
 
     if sql:
+        query = ''.join(query)
         query = query[:-1]+";"
         print "Manually inserting...:"
         cursor = connection.cursor()
