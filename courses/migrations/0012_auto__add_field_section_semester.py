@@ -7,8 +7,10 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        semester = orm.Semester.objects.all()[0].id
-        # Adding field 'Section.semester'
+        semester = 0
+        if orm.Semester.objects.count() > 0:
+            semester = orm.Semester.objects.all()[0].id
+            # Adding field 'Section.semester'
         db.add_column('courses_section', 'semester', self.gf('django.db.models.fields.related.ForeignKey')(default=semester, related_name='sections', to=orm['courses.Semester']), keep_default=False)
 
 
