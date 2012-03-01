@@ -16,9 +16,7 @@ django-robots==0.8.0
 django-test-utils==0.3
 docutils==0.8.1
 factory-boy==1.0.0
-guppy==0.1.9
 icalendar==2.2
-line-profiler==1.0b3
 mock==0.7.2
 nose==1.1.2
 paramiko==1.7.7.1
