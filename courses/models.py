@@ -223,8 +223,7 @@ class Section(models.Model):
         }
         if has_model(select_related, Course):
             values['course'] = self.course.toJSON(select_related)
-        if hasattr(self, 'all_section_periods'):
-            values['periods'] = [sp.toJSON() for sp in self.all_section_periods]
+        values['periods'] = [sp.toJSON() for sp in self.get_periods()]
         return values
 
     @property
@@ -250,17 +249,22 @@ class Section(models.Model):
     def instructors(self):
         return set([ps.instructor for ps in self.get_period_sections()])
 
-    def get_period_sections(self):
-        if getattr(self, 'all_section_periods', None) is None:
-            print "WARN: performing DB call. You should be using full_select."
-            self.all_section_periods = self.section_times.all()
-        return set(self.all_section_periods)
+    def _has_prefetched(self, attr):
+        return attr in self._prefetched_objects_cache
+
+    def get_section_times(self):
+        if not self._has_prefetched('section_times'):
+            print "WARN: DB query call for 'section_times'. You should probably use prefetch_related."
+        return self.section_times.all()
 
     def get_periods(self):
-        return set(sp.period for sp in self.get_period_sections())
+        if not self._has_prefetched('periods'):
+            print "WARN: DB query for 'periods'. You should probably use prefetch_related."
+        return self.periods.all()
 
     def conflicts_with(self, section):
         "Returns True if the given section conflicts with another provided section."
+        # always conflicts with itself...
         if self == section:
             return True
         # START --- this should really be a proxy in scheduler.models.SectionProxy
