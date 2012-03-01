@@ -98,24 +98,6 @@ def reverse_select_related(dict):
 
 
 class SectionQuerySet(SemesterBasedQuerySet):
-    def full_select(self, year=None, month=None):
-        """Returns all Sections in the given queryset, plus SectionPeriod and Periods.
-        """
-        select_related = tuple('section__' + x for x in reverse_select_related(self.query.select_related or {}))
-        from courses.models import SectionPeriod
-        queryset = SectionPeriod.objects.by_sections(self, year, month).select_related('period', 'section', *select_related)
-
-        sid2sps = dict_by_attr(queryset, 'section.id')
-        sid2periods = dict_by_attr(queryset, 'section.id', value_attrname='period')
-
-        result = []
-        for section in self.by_semester(year, month):
-            section.all_periods = sid2periods.get(section.id, [])
-            section.all_section_periods = sid2sps.get(section.id, [])
-            result.append(section)
-
-        return result
-
     YEAR_QUERY_PARAM = 'semester__year__exact'
     MONTH_QUERY_PARAM = 'semester__month__exact'
     def prefetch_periods(self):
