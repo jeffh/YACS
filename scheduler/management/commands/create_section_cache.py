@@ -19,9 +19,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         with transaction.commit_on_success():
             semesters = Semester.objects.all()
-            if not options.get('all'):
+            if not options.get('all', False):
                 semesters = semesters[:1]
-            s = options.get('sql')
+            s = options.get('sql', True)
             for semester in semesters:
                 print "Computing conflicts for %d-%d..." % (semester.year, semester.month)
                 models.cache_conflicts(semester=semester, sql=s)
