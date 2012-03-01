@@ -71,14 +71,13 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
                 if section1.id > section2.id:
                     section1, section2 = section2, section1
 
-                #print "  Conflict: %r and %r" % (section1, section2)
                 count += 1
                 if count > 1000:
                     sys.stdout.write('.')
                     sys.stdout.flush()
                     count = 0
                 if sql:
-                    query += ["("+str(section1.id)+", "+str(section2.id)+", "+str(semester.id)+"),"]
+                    query += ["(", str(section1.id), ", ", str(section2.id), ", ", str(semester.id), "),"]
                 else:
                     SectionConflict.objects.create(
                         section1=section1,
