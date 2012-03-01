@@ -4,7 +4,6 @@ import xmlrpclib
 
 from django.views.generic import ListView, DetailView
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseServerError
-from django.conf import settings
 
 from courses import models, views
 from courses.utils import ObjectJSONEncoder
@@ -14,9 +13,6 @@ from courses.utils import ObjectJSONEncoder
 mimetypes.add_type('application/x-plist', 'plist')
 mimetypes.add_type('application/x-binary-plist', 'bplist')
 mimetypes.add_type('application/x-binary-plist', 'biplist')
-
-
-SHOW_QUERIES = getattr(settings, 'API_RETURN_QUERIES', False) and settings.DEBUG
 
 
 class APIMixin(views.AjaxJsonResponseMixin):
@@ -58,13 +54,8 @@ class APIMixin(views.AjaxJsonResponseMixin):
             'status': status,
             'payload': payload,
         }
-        if SHOW_QUERIES:
-            from django.db import connection
-            json['$DEBUG'] = {
-                'query_count': len(connection.queries),
-                'sql': connection.queries
-            }
-        return json
+        # we need to inject debug info in-case we're not using json
+        return self.inject_debug_info(json)
 
     def convert_context_to_xml(self, context):
         # TODO: check if datetime classes is handle automatically
