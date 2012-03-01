@@ -2,11 +2,16 @@ from itertools import product
 
 from django.utils.importlib import import_module
 from django.db import models
-from django.core.exceptions import ValidationError
 from django.db.models import F
+from django.core.exceptions import ValidationError
+from django.conf import settings
 
 from courses import managers
 from courses.utils import options, capitalized, sorted_daysofweek
+
+
+DEBUG = getattr(settings, 'DEBUG', False)
+WARN_EXTRA_QUERIES = getattr(settings, 'COURSES_WARN_EXTRA_QUERIES', DEBUG)
 
 
 __all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting',
@@ -250,15 +255,15 @@ class Section(models.Model):
         return set([ps.instructor for ps in self.get_period_sections()])
 
     def _has_prefetched(self, attr):
-        return attr in self._prefetched_objects_cache
+        return attr in getattr(self, '_prefetched_objects_cache', [])
 
     def get_section_times(self):
-        if not self._has_prefetched('section_times'):
+        if WARN_EXTRA_QUERIES and not self._has_prefetched('section_times'):
             print "WARN: DB query call for 'section_times'. You should probably use prefetch_related."
         return self.section_times.all()
 
     def get_periods(self):
-        if not self._has_prefetched('periods'):
+        if WARN_EXTRA_QUERIES and not  self._has_prefetched('periods'):
             print "WARN: DB query for 'periods'. You should probably use prefetch_related."
         return self.periods.all()
 

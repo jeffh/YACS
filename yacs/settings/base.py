@@ -5,6 +5,7 @@ from datetime import timedelta
 
 # setup
 relative = lambda *x: os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', *x))
+RUNNING_TESTS = 'test' in sys.argv
 
 if relative('lib') not in sys.path:
     sys.path.insert(0, relative('..', 'lib'))
@@ -243,6 +244,9 @@ API_RETURN_QUERIES = True
 # full module path to the function that does all the importing
 COURSES_COLLEGE_PARSER = 'courses.bridge.rpi.import_data'
 
+# prints warnings to stdout about possible excuting extra queries
+COURSES_WARN_EXTRA_QUERIES = not DEBUG and not RUNNING_TESTS
+
 # ==== Scheduler App ====
 SCHEDULER_ICAL_PRODUCT_ID = '-//Jeff Hui//YACS Export 1.0//EN'
 # maximum number of sections to compute schedules for.
@@ -261,7 +265,7 @@ BCRYPT_LOG_ROUNDS = 12
 INTERNAL_IPS = ('127.0.0.1',)
 
 def debug_toolbar_callback(request):
-    return 'test' not in sys.argv and request.user.is_staff
+    return RUNNING_TESTS and request.user.is_staff
 
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.version.VersionDebugPanel',
@@ -294,4 +298,13 @@ JASMINE_TEST_DIRECTORY = relative('static', 'jasmine')
 SESSION_EXCLUDED_URLS = (
     r'^/api/',
 )
+
+# ==== devserver ====
+if not RUNNING_TESTS:
+    DEVSERVER_AUTO_PROFILE = DEBUG
+    DEVSERVER_MODULES = (
+        'devserver.modules.sql.SQLRealTimeModule',
+        'devserver.modules.sql.SQLSummaryModule',
+        'devserver.modules.profile.ProfileSummaryModule',
+    )
 

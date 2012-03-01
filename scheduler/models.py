@@ -53,8 +53,7 @@ class SectionConflict(models.Model):
 
 
 # TODO: move into manager
-# TODO: write to logger instead of stdout directly
-def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=True):
+def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=True, stdout=False):
     assert (semester_year and semester_month) or semester, "Semester year & month must be provided or the semester object."
     import sys
     # trash existing conflict data...
@@ -67,6 +66,11 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
             .by_semester(semester).prefetch_periods()
     section_courses = dict_by_attr(sections, 'course')
     query = ["insert into scheduler_sectionconflict (section1_id, section2_id, semester_id) values "]
+
+    def log(msg):
+        if stdout:
+            sys.stdout.write(msg)
+            sys.stdout.flush()
 
     def perform_insert(query):
         querystring = ''.join(query)
@@ -84,14 +88,12 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
 
                 count += 1
                 if count % 1000 == 0:
-                    sys.stdout.write('.')
-                    sys.stdout.flush()
+                    log('.')
                 if sql:
                     if count % 10000 == 0:
                         perform_insert(query)
                         query = query[:1]
-                        sys.stdout.write('I')
-                        sys.stdout.flush()
+                        log('.')
                     query += ["(", str(section1.id), ", ", str(section2.id), ", ", str(semester.id), "),"]
                 else:
                     SectionConflict.objects.create(
@@ -99,7 +101,8 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
                         section2=section2,
                         semester=semester,
                     )
-    print
+
+    log('\n')
 
     if sql:
         perform_insert(query)
