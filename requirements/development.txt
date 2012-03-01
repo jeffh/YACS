@@ -1,5 +1,5 @@
 BeautifulSoup==3.2.0
-Django==1.4b1
+http://www.djangoproject.com/download/1.4-beta-1/tarball/#egg=django
 Fabric==1.2.2
 Jinja2==2.6
 Pygments==1.4
