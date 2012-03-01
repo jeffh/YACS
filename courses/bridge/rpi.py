@@ -10,9 +10,11 @@ import datetime
 from contextlib import closing
 
 from courses.models import (Semester, Course, Department, Section,
-    Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment,
-    SemesterSection)
+    Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment)
 from courses.signals import sections_modified
+
+# TODO: remove import *
+from catalogparser import *
 
 
 logger = logging.getLogger(__file__)
@@ -276,17 +278,35 @@ def import_data(force=False):
     #ROCSRPIImporter().sync() # slower.. someone manually updates this I think?
     SISRPIImporter().sync(force=force)
 
+def import_all_data():
+    urls = [
+        'http://sis.rpi.edu/reg/zs201201.htm',
+        'http://sis.rpi.edu/reg/zs201109.htm',
+        'http://sis.rpi.edu/reg/zs201101.htm',
+        'http://sis.rpi.edu/reg/rocs/201001.xml',
+        'http://sis.rpi.edu/reg/rocs/201005.xml',
+        'http://sis.rpi.edu/reg/rocs/201009.xml',
+        'http://sis.rpi.edu/reg/rocs/201101.xml',
+        'http://sis.rpi.edu/reg/rocs/201105.xml',
+    ]
+    for url in urls:
+        print url
+        if 'rocs' in url:
+            importer = ROCSRPIImporter()
+        else:
+            importer = SISRPIImporter()
+        importer.sync(get_files=lambda *a, **k: [url])
+
 def import_catalog(a=False):
-    from catalogparser import *
     catalog = parse_catalog(a)
     courses = Course.objects.all()
     for c in courses:
-    key = str(c.department.code)+str(c.number)
-    if key in catalog.keys():
-        if 'description' in catalog[key].keys() and catalog[key]['description'] != "":
-            c.description = catalog[key]['description']
-        c.name = catalog[key]['title']
-        c.save()
+        key = str(c.department.code)+str(c.number)
+        if key in catalog.keys():
+            if 'description' in catalog[key].keys() and catalog[key]['description'] != "":
+                c.description = catalog[key]['description']
+            c.name = catalog[key]['title']
+            c.save()
     add_cross_listing()
 
 def add_cross_listing():
