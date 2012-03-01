@@ -109,12 +109,26 @@ class SectionQuerySet(SemesterBasedQuerySet):
         sid2periods = dict_by_attr(queryset, 'section.id', value_attrname='period')
 
         result = []
-        for section in self:
+        for section in self.by_semester(year, month):
             section.all_periods = sid2periods.get(section.id, [])
             section.all_section_periods = sid2sps.get(section.id, [])
             result.append(section)
 
         return result
+
+    def by_semester(self, year=None, month=None):
+        # TODO: abstract me out with my buddy in SectionPeriodQuerySet
+        qs = self
+        if year:
+            qs = qs.filter(semester__year__exact=year)
+
+        if month:
+            qs = qs.filter(semester__month__exact=month)
+
+        if year or month:
+            qs = qs.distinct()
+
+        return qs
 
     def by_crns(self, crns, year=None, month=None):
         return self.by_semester(year, month).filter(crn__in=crns)

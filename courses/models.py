@@ -189,7 +189,7 @@ class Section(models.Model):
 
     crn = models.IntegerField(unique=True)
     course = models.ForeignKey('Course', related_name='sections')
-    semesters = models.ManyToManyField(Semester, through='SemesterSection', related_name='sections')
+    semester = models.ForeignKey(Semester, related_name='sections')
     periods = models.ManyToManyField(Period, through='SectionPeriod', related_name='sections')
     crosslisted = models.ForeignKey(SectionCrosslisting, related_name='sections', null=True, blank=True)
 
@@ -457,12 +457,12 @@ class SemesterDepartment(models.Model):
         unique_together = ('department', 'semester')
 
 
-class SemesterSection(models.Model):
-    "M2M model of semesters and sections."
-    semester = models.ForeignKey('Semester', related_name='+')
-    section = models.ForeignKey('Section', related_name='+')
-
-    class Meta:
-        unique_together = ('semester', 'section')
+#class SemesterSection(models.Model):
+#    "M2M model of semesters and sections."
+#    semester = models.ForeignKey('Semester', related_name='+')
+#    section = models.ForeignKey('Section', related_name='+')
+#
+#    class Meta:
+#        unique_together = ('semester', 'section')
 
 

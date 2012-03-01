@@ -113,6 +113,7 @@ class ROCSRPIImporter(object):
             # TODO: encode prereqs / notes
             section_obj, created = Section.objects.get_or_create(
                 crn=section.crn,
+                semester=semester_obj,
                 defaults=dict(
                     notes='\n'.join(section.notes),
                     number=section.num,
@@ -121,10 +122,10 @@ class ROCSRPIImporter(object):
                     course=course_obj,
                 )
             )
-            SemesterSection.objects.get_or_create(
-                semester=semester_obj,
-                section=section_obj,
-            )
+            #SemesterSection.objects.get_or_create(
+            #    semester=semester_obj,
+            #    section=section_obj,
+            #)
 
             if not created:
                 section_obj.number = section.num
