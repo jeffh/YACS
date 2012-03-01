@@ -281,28 +281,29 @@ def import_catalog(a=False):
     catalog = parse_catalog(a)
     courses = Course.objects.all()
     for c in courses:
-	key = str(c.department.code)+str(c.number)
-	if key in catalog.keys():
-	    if 'description' in catalog[key].keys() and catalog[key]['description'] != "":
-	        c.description = catalog[key]['description']
-	    c.name = catalog[key]['title']
-	    c.save()
+    key = str(c.department.code)+str(c.number)
+    if key in catalog.keys():
+        if 'description' in catalog[key].keys() and catalog[key]['description'] != "":
+            c.description = catalog[key]['description']
+        c.name = catalog[key]['title']
+        c.save()
     add_cross_listing()
 
 def add_cross_listing():
-	from itertools import product
-	cross_list = {}
-	courses = Course.objects.all()
-	for c in courses:
-		sections = c.sections.all()
-		for s1, s2 in product(sections, sections):
-			if s1 != s2 and s1.conflicts_with(s2) and s1.instructors == s2.instructors:
-				if c.id not in cross_list.keys():
-					cross_list[c.id] = set()
-				cross_list[c.id].add(str(s1.id))
-				cross_list[c.id].add(str(s2.id))
-	for i in cross_list.keys():
-		course = courses.get(id=i)
-		sc = SectionCrosslisting(semester=Semester.objects.get(id=course.semesters), ref=",".join(cross_list[i]))
-		for s in cross_list[i]:
-			course.sections.get(id=s).crosslisted = sc.id
+    from itertools import product
+    cross_list = {}
+    courses = Course.objects.all()
+    for c in courses:
+        sections = c.sections.all()
+        for s1, s2 in product(sections, sections):
+            if s1 != s2 and s1.conflicts_with(s2) and s1.instructors == s2.instructors:
+                if c.id not in cross_list.keys():
+                    cross_list[c.id] = set()
+                cross_list[c.id].add(str(s1.id))
+                cross_list[c.id].add(str(s2.id))
+    for i in cross_list.keys():
+        course = courses.get(id=i)
+        sc = SectionCrosslisting(semester=Semester.objects.get(id=course.semesters), ref=",".join(cross_list[i]))
+        for s in cross_list[i]:
+            course.sections.get(id=s).crosslisted = sc.id
+
