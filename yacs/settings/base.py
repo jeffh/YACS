@@ -130,6 +130,7 @@ MIDDLEWARE_CLASSES = (
     'api.middleware.AuthenticationMiddleware',
     'api.middleware.MessageMiddleware',
     'api.middleware.DebugToolbarMiddleware',
+    'devserver.middleware.DevServerMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -178,6 +179,7 @@ INSTALLED_APPS = (
 if DEBUG:
     INSTALLED_APPS += (
         'django_jasmine',
+        'devserver',
     )
 
 # A sample logging configuration. The only tangible logging
@@ -225,7 +227,7 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'timetable': {
+        'yacs': {
             'handlers': ['console'],
             'level': 'INFO',
             'propagate': True,
