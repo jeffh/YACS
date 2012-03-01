@@ -53,7 +53,7 @@ class SectionConflict(models.Model):
 
 
 # TODO: move into manager
-def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=False):
+def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=True):
     assert (semester_year and semester_month) or semester, "Semester year & month must be provided or the semester object."
     import sys
     # trash existing conflict data...
