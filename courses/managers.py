@@ -118,6 +118,8 @@ class SectionQuerySet(SemesterBasedQuerySet):
 
     YEAR_QUERY_PARAM = 'semester__year__exact'
     MONTH_QUERY_PARAM = 'semester__month__exact'
+    def prefetch_periods(self):
+        return self.prefetch_related('periods', 'section_times')
 
     def by_crns(self, crns, year=None, month=None):
         return self.by_semester(year, month).filter(crn__in=crns)
