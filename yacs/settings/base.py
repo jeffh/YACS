@@ -35,9 +35,9 @@ class SettingsInterface(object):
         self.settings.lazy_fns.append(fn)
 
     def alias(self, key_src, key_dest, *more_key_dest):
-        self.set_lazy(key_src, lambda s: key_dest)
+        self.set_lazy(key_dest, lambda s: s[key_src])
         for key_dest in more_key_dest:
-            self.set_lazy(key_src, lambda s: key_dest)
+            self.set_lazy(key_dest, lambda s: s[key_src])
 
     def relative_path(self, *paths):
         return self.settings.relative_path(*paths)
@@ -152,6 +152,14 @@ class BaseSettings(SettingsCore):
         # Examples: "http://foo.com/static/admin/", "/static/admin/".
         settings.ADMIN_MEDIA_PREFIX = '/static/admin/'
 
+        # Additional locations of static files
+        settings.STATICFILES_DIRS = (
+            # Put strings here, like "/home/html/static" or
+            # "C:/www/django/static".
+            # Always use forward slashes, even on Windows.
+            # Don't forget to use absolute paths, not relative paths.
+            settings.relative_path('static', 'global'),
+        )
 
         # List of finder classes that know how to find static files in
         # various locations.

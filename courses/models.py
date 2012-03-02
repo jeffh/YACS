@@ -228,7 +228,7 @@ class Section(models.Model):
         }
         if has_model(select_related, Course):
             values['course'] = self.course.toJSON(select_related)
-        values['periods'] = [sp.toJSON() for sp in self.get_periods()]
+        values['periods'] = [sp.toJSON() for sp in self.get_section_times()]
         return values
 
     @property
@@ -448,7 +448,6 @@ class SectionPeriod(models.Model):
             'kind': self.kind,
             #'semester_id': self.semester.id,
         }
-        json.update(self.section.toJSON())
         json.update(self.period.toJSON())
         return json
 
