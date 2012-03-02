@@ -58,7 +58,7 @@ help:
 ##### simple commands #####
 
 bootstrap: REQUIREMENTS=$(DEV_REQUIREMENTS)
-bootstrap: install_dependencies
+bootstrap: install_requirements
 	mkdir -p logs
 
 loc:
