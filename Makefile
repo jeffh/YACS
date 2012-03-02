@@ -35,8 +35,8 @@ TEMP_ARCHIVE_NAME=yacs_project_deploy_archive
 PRODUCTION_ROOT=~/
 PRODUCTION_DIR_NAME=yacs-test
 PRODUCTION_SERVER=hui.afraid.org
-# this is defined when deploying to remote server
-PRODUCTION=
+# this is automatically defined when deploying to remote server
+#PRODUCTION=
 
 help:
 	@echo "Commands supported:"
