@@ -171,6 +171,13 @@ class BaseSettings(SettingsCore):
         #     'django.template.loaders.eggs.Loader',
         )
 
+        settings.PASSWORD_HASHERS = (
+            'django.contrib.auth.hashers.BCryptPasswordHasher',
+            'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+            'django.contrib.auth.hashers.PBKDF2Sha1PasswordHasher',
+            'django.contrib.auth.hashers.SHA1PasswordHasher',
+        )
+
         # api middleware allows session middleware to be optional for
         # specific urls. Other custom middleware simply respect the optional
         # session middleware
@@ -223,7 +230,6 @@ class BaseSettings(SettingsCore):
             'django_extensions',
             'robots',
             'debug_toolbar',
-            'django_bcrypt',
             # local apps
             'courses',
             'scheduler',
@@ -302,13 +308,6 @@ class BaseSettings(SettingsCore):
         # more sections means it takes longer to compute. Until we have
         # a good caching strategy, this is a hard upper bound. Default is 60.
         settings.SCHEDULER_SECTION_LIMIT = 60
-
-        # ==== Django BCrypt ====
-        # The number of rounds determines the complexity of the bcrypt algorithm.
-        # The work factor is 2**log_rounds, and the default is 12
-        #
-        # This setting can be changed at any time without invalidating previously-generated hashes.
-        settings.BCRYPT_LOG_ROUNDS = 12
 
         # ==== Django Debug Toolbar ====
         settings.INTERNAL_IPS = ('127.0.0.1',)

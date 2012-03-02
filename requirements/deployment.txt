@@ -1,7 +1,6 @@
 BeautifulSoup==3.2.1
 http://www.djangoproject.com/download/1.4-beta-1/tarball/#egg=django
 South==0.7.3
-django-bcrypt==0.9.2
 django-extensions==0.6
 django-debug-toolbar==0.9.4
 django-robots==0.8.0
