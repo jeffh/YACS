@@ -4,12 +4,8 @@ South==0.7.3
 django-bcrypt==0.9.2
 django-extensions==0.6
 django-debug-toolbar==0.9.4
-django-dynamic-fixture==1.4.3
-django-picklefield==0.2.0
-django-test-utils==0.3
 django-robots==0.8.0
 icalendar==3.0.1b2
 py-bcrypt==0.2
-pyparsing==1.5.6
 python-dateutil==2.0
 wsgiref==0.1.2

@@ -11,7 +11,7 @@ from django.template import RequestContext
 from django.conf import settings
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from icalendar import Calendar, Event, UTC, vText
+from icalendar import Calendar, Event, vText
 
 from courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY, AjaxJsonResponseMixin
 from courses.models import Semester, SectionPeriod, Course, Section, Department

@@ -224,7 +224,6 @@ class BaseSettings(SettingsCore):
             'robots',
             'debug_toolbar',
             'django_bcrypt',
-            'test_utils',
             # local apps
             'courses',
             'scheduler',
