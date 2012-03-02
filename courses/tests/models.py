@@ -308,15 +308,12 @@ class SectionPeriodTest(TestCase):
     def test_to_json(self):
         period = PeriodFactory.build()
         period.toJSON = Mock(return_value={'lol': 1})
-        section = SectionFactory.build()
-        section.toJSON = Mock(return_value={'asdf': 1})
         sp = SectionPeriodFactory.build(
             id = None,
             instructor='foo',
             location='bar',
             kind='fizz',
             period=period,
-            section=section,
         )
         expected = {
             'instructor': 'foo',
@@ -324,7 +321,6 @@ class SectionPeriodTest(TestCase):
             'kind': 'fizz',
             'lol': 1,
             'id': None,
-            'asdf': 1,
         }
         self.assertEqual(expected, sp.toJSON())
 
