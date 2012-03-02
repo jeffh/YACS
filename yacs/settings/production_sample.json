@@ -1,0 +1,13 @@
+{
+  "static_url": "/static/",
+  "databases": {
+    "default": {
+      "ENGINE": "django.db.backends.postgresql_psycopg2",
+      "NAME": "jeff_yacs_staging",
+      "USER": "jeff_yacs_staging",
+      "PASSWORD": "a very secret password",
+      "HOST": "localhost",
+      "PORT": ""
+    }
+  }
+}
