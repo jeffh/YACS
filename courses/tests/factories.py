@@ -43,6 +43,7 @@ class SectionFactory(factory.Factory):
     number = factory.Sequence(lambda n: n)
     crn = factory.Sequence(lambda n: n)
     course = factory.LazyAttribute(lambda s: CourseFactory())
+    semester = factory.LazyAttribute(lambda s: SemesterFactory())
 
     seats_taken = 10
     seats_total = 100
@@ -86,9 +87,4 @@ class SemesterDepartmentFactory(factory.Factory):
     semester = factory.LazyAttribute(lambda s: SemesterFactory())
 
 
-class SemesterSectionFactory(factory.Factory):
-    FACTORY_FOR = models.SemesterSection
-
-    semester = factory.LazyAttribute(lambda s: SemesterFactory())
-    section = factory.LazyAttribute(lambda s: SemesterSectionFactory())
 

@@ -53,7 +53,7 @@ class SectionConflict(models.Model):
 
 
 # TODO: move into manager
-def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=False):
+def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=True, stdout=False):
     assert (semester_year and semester_month) or semester, "Semester year & month must be provided or the semester object."
     import sys
     # trash existing conflict data...
@@ -61,24 +61,40 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
         semester = courses.Semester.objects.get(year=semester_year, month=semester_month)
     SectionConflict.objects.filter(semester=semester).delete()
 
-    sections = courses.Section.objects.select_related('course').full_select(semester_year, semester_month)
+    #sections = courses.Section.objects.select_related('course', 'semester').full_select(semester_year, semester_month)
+    sections = courses.Section.objects .select_related('course', 'semester') \
+            .by_semester(semester).prefetch_periods()
     section_courses = dict_by_attr(sections, 'course')
+    query = ["insert into scheduler_sectionconflict (section1_id, section2_id, semester_id) values "]
+
+    def log(msg):
+        if stdout:
+            sys.stdout.write(msg)
+            sys.stdout.flush()
+
+    def perform_insert(query):
+        querystring = ''.join(query)
+        querystring = querystring[:-1] + ";"
+        cursor = connection.cursor()
+        cursor.execute(querystring)
+        transaction.commit_unless_managed()
+
     count = 0
-    query = "insert into scheduler_sectionconflict (section1_id, section2_id, semester_id) values "
     for course1, course2 in itertools.combinations(section_courses.keys(), 2):
         for section1, section2 in itertools.product(section_courses[course1], section_courses[course2]):
             if section1.conflicts_with(section2):
                 if section1.id > section2.id:
                     section1, section2 = section2, section1
 
-                #print "  Conflict: %r and %r" % (section1, section2)
                 count += 1
-                if count > 1000:
-                    sys.stdout.write('.')
-                    sys.stdout.flush()
-                    count = 0
+                if count % 1000 == 0:
+                    log('.')
                 if sql:
-                    query = query + "("+str(section1.id)+", "+str(section2.id)+", "+str(semester.id)+"),"
+                    if count % 10000 == 0:
+                        perform_insert(query)
+                        query = query[:1]
+                        log('.')
+                    query += ["(", str(section1.id), ", ", str(section2.id), ", ", str(semester.id), "),"]
                 else:
                     SectionConflict.objects.create(
                         section1=section1,
@@ -86,12 +102,12 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
                         semester=semester,
                     )
 
+    log('\n')
+
     if sql:
-        query = query[:-1]+";"
-        print "Manually inserting...:"
-        cursor = connection.cursor()
-        cursor.execute(query)
-        transaction.commit_unless_managed()
+        perform_insert(query)
+
+
 # attach to signals
 def sitemap_for_scheduler(sender, semester, rule, **kwargs):
     url = sender.get_or_create_url('schedules', year=semester.year, month=semester.month)

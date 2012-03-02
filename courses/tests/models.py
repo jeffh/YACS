@@ -11,8 +11,8 @@ from django.test import TestCase
 
 from courses import models
 from courses.tests.factories import (SemesterFactory, SemesterDepartmentFactory,
-        OfferedForFactory, CourseFactory, SemesterSectionFactory, SectionFactory,
-        DepartmentFactory, PeriodFactory, SectionPeriodFactory)
+        OfferedForFactory, CourseFactory, SectionFactory, DepartmentFactory,
+        PeriodFactory, SectionPeriodFactory)
 
 
 class SemesterTest(TestCase):
@@ -138,12 +138,13 @@ class TBAPeriodTest(TestCase):
 
 class SectionTest(TestCase):
     def test_to_json(self):
-        section = SectionFactory.build(
+        section = SectionFactory.create(
             number=1, crn=2, seats_taken=3, seats_total=4
         )
         expected = {
             'number': 1,
             'crn': 2,
+            'periods': [],
             'seats_taken': 3,
             'seats_total': 4,
             'seats_left': 1,
@@ -185,34 +186,6 @@ class SectionTest(TestCase):
 
         expected = ['Monday', 'Tuesday']
         self.assertEqual(expected, section.days_of_week)
-
-    @patch.object(sys, 'stdout', Mock())
-    def test_instructors(self):
-        section = SectionFactory.create()
-        SectionPeriodFactory.create(section=section, instructor='foo')
-        SectionPeriodFactory.create(section=section, instructor='bar')
-
-        expected = set(['foo', 'bar'])
-        self.assertEqual(expected, section.instructors)
-
-    @patch.object(sys, 'stdout', Mock())
-    def test_get_period_section_from_db(self):
-        section = SectionFactory.build()
-        self.assertEqual(set([]), section.get_period_sections())
-
-    def test_get_period_section_from_cache(self):
-        section = SectionFactory.build()
-        section.all_section_periods = [1,2]
-
-        self.assertEqual(set([1,2]), section.get_period_sections())
-
-    def test_get_periods_from_db(self):
-        section = SectionFactory.build()
-        section.get_period_sections = Mock()
-        section_periods = [SectionPeriodFactory.create() for i in range(3)]
-        section.get_period_sections.return_value = set(section_periods)
-
-        self.assertEqual(set([sp.period for sp in section_periods]), section.get_periods())
 
     def test_conflicts_with_self(self):
         section = SectionFactory.build()

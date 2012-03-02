@@ -7,6 +7,7 @@ from courses.utils import ObjectJSONEncoder, DAYS
 
 
 SELECTED_COURSES_SESSION_KEY = 'selected'
+DEBUG = getattr(settings, 'DEBUG', False)
 
 
 class AjaxJsonResponseMixin(object):
@@ -39,6 +40,19 @@ class AjaxJsonResponseMixin(object):
         """
         return self.request.GET.get(self.get_json_callback_parameter(), '')
 
+    def inject_debug_info(self, context):
+        """Adds information about sql queries executed when generating this view.
+
+        Does nothing if settings.DEBUG is False. Otherwise, sets the '$DEBUG' key in the context.
+        """
+        if DEBUG:
+            from django.db import connection
+            context['$DEBUG'] = {
+                'query_count': len(connection.queries),
+                'sql': connection.queries,
+            }
+        return context
+
     def convert_context_to_json(self, context):
         """Converts a given context dictionary into the JSON for output. Returns a JSON string.
 
@@ -46,6 +60,7 @@ class AjaxJsonResponseMixin(object):
         Otherwise, simply outputs the JSON data.
         """
         name = self.get_json_callback_parameter_name()
+        context = self.inject_debug_info(context)
         obj = self.json_encoder.encode(context)
         if name:
             return "%s(%s)" % (name, obj)

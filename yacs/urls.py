@@ -1,7 +1,8 @@
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf import settings
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 admin.autodiscover()
-from django.conf import settings
 
 from courses.sitemaps import sitemaps
 
@@ -21,7 +22,10 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 )
 
+
 if settings.DEBUG:
     urlpatterns += patterns('',
         url(r'^tests/', include('django_jasmine.urls')),
     )
+
+    urlpatterns += staticfiles_urlpatterns()

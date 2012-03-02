@@ -11,7 +11,7 @@ from django.template import RequestContext
 from django.conf import settings
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from icalendar import Calendar, Event, UTC, vText
+from icalendar import Calendar, Event, vText
 
 from courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY, AjaxJsonResponseMixin
 from courses.models import Semester, SectionPeriod, Course, Section, Department
@@ -64,7 +64,7 @@ class ConflictMixin(SemesterBasedMixin):
         year, month = self.get_year_and_month()
         queryset = models.SectionProxy.objects.by_crns(crns, year=year, month=month)
         queryset = queryset.select_related('course', 'course__department')
-        return queryset.full_select(year, month)
+        return queryset.by_semester(year, month).prefetch_periods() #queryset.full_select(year, month)
 
     def inject_conflict_mapping_in_sections(self, sections):
         """Givens the collection of section objects, attaches a conflict attr
@@ -146,6 +146,7 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
             schedules = list(schedules)
 
         return schedules
+
     def period_stats(self, periods):
         """Returns various statistics of the period objects provided..
 
@@ -176,22 +177,18 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
         dow_mapping = dict((d, i) for i, d in enumerate(DAYS))
         for i, schedule in enumerate(schedules):
             the_dows = section_mapping[i+1] = {}
-            for secs in schedule.values():
-                for j, sp in enumerate(secs.all_section_periods):
-                    for dow in sp.period.days_of_week:
+            for section in schedule.values():
+                for j, period in enumerate(section.get_periods()):
+                    for dow in period.days_of_week:
                         dowi = dow_mapping.get(dow)
                         the_dows[dowi] = the_dows.get(dowi, {})
-                        the_dows[dowi][sp.period.start.hour] = (
-                            sp.section.course.id,
-                            sp.section.crn,
+                        # saves 50% of request size by using tuple instead
+                        # of dictionary
+                        the_dows[dowi][period.start.hour] = (
+                            section.course.id,
+                            section.crn,
                             j,
                         )
-                        # can cut 50% of response size by reducing reduncy
-                        #the_dows[dow][sp.period.start.hour] = {
-                        #    'cid': sp.section.course.id,
-                        #    'crn': sp.section.crn,
-                        #    'pid': j,
-                        #}
         return section_mapping
 
     def section_mapping_for_thumbnails(self, selected_courses, schedules, periods):
@@ -202,14 +199,14 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
         # TODO: fixme -- change to new section_mapping
         for i, schedule in enumerate(schedules):
             the_dows = section_mapping[i+1] = {}
-            for secs in schedule.values():
-                for j, sp in enumerate(secs.all_section_periods):
-                    for dow in sp.period.days_of_week:
+            for section in schedule.values():
+                for j, period in enumerate(section.get_periods()):
+                    for dow in period.days_of_week:
                         dowi = dow_mapping.get(dow)
                         the_dows[dowi] = the_dows.get(dowi, {})
-                        the_dows[dowi][sp.period.start.hour] = (
-                            sp.section.course.id,
-                            sp.section.crn,
+                        the_dows[dowi][period.start.hour] = (
+                            section.course.id,
+                            section.crn,
                             j,
                         )
         return section_mapping
@@ -259,7 +256,7 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
         schedules_output = self.prep_schedules_for_context(schedules)
 
         if len(schedules_output):
-            periods = set(p for s in sections for p in s.all_periods)
+            periods = set(p for s in sections for p in s.get_periods())
             timerange, dows = self.period_stats(periods)
             courses_output, sections_output = self.prep_courses_and_sections_for_context(selected_courses)
             context = {

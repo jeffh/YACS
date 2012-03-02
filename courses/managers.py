@@ -39,13 +39,23 @@ class SerializableQuerySet(QuerySet):
 
 
 class SemesterBasedQuerySet(SerializableQuerySet):
-    def by_semester(self, year=None, month=None):
+    YEAR_QUERY_PARAM = 'semesters__year__exact'
+    MONTH_QUERY_PARAM = 'semesters__month__exact'
+    def by_semester(self, year_or_sem=None, month=None):
         qs = self
+
+        # read model
+        if hasattr(year_or_sem, 'year'):
+            month = year_or_sem.month
+            year = year_or_sem.year
+        else:
+            year = year_or_sem
+
         if year:
-            qs = qs.filter(semesters__year__exact=year)
+            qs = qs.filter(**{self.YEAR_QUERY_PARAM: year})
 
         if month:
-            qs = qs.filter(semesters__month__exact=month)
+            qs = qs.filter(**{self.MONTH_QUERY_PARAM: month})
 
         if year or month:
             qs = qs.distinct()
@@ -54,18 +64,8 @@ class SemesterBasedQuerySet(SerializableQuerySet):
 
 
 class SectionPeriodQuerySet(SemesterBasedQuerySet):
-    def by_semester(self, year=None, month=None):
-        qs = self
-        if year:
-            qs = qs.filter(semester__year__exact=year)
-
-        if month:
-            qs = qs.filter(semester__month__exact=month)
-
-        if year or month:
-            qs = qs.distinct()
-
-        return qs
+    YEAR_QUERY_PARAM = 'semester__year__exact'
+    MONTH_QUERY_PARAM = 'semester__month__exact'
 
     def by_crns(self, crns, year=None, month=None):
         return self.by_semester(year, month).filter(crn__in=crns)
@@ -98,23 +98,10 @@ def reverse_select_related(dict):
 
 
 class SectionQuerySet(SemesterBasedQuerySet):
-    def full_select(self, year=None, month=None):
-        """Returns all Sections in the given queryset, plus SectionPeriod and Periods.
-        """
-        select_related = tuple('section__' + x for x in reverse_select_related(self.query.select_related or {}))
-        from courses.models import SectionPeriod
-        queryset = SectionPeriod.objects.by_sections(self, year, month).select_related('period', 'section', *select_related)
-
-        sid2sps = dict_by_attr(queryset, 'section.id')
-        sid2periods = dict_by_attr(queryset, 'section.id', value_attrname='period')
-
-        result = []
-        for section in self:
-            section.all_periods = sid2periods.get(section.id, [])
-            section.all_section_periods = sid2sps.get(section.id, [])
-            result.append(section)
-
-        return result
+    YEAR_QUERY_PARAM = 'semester__year__exact'
+    MONTH_QUERY_PARAM = 'semester__month__exact'
+    def prefetch_periods(self):
+        return self.prefetch_related('periods', 'section_times', 'section_times__period')
 
     def by_crns(self, crns, year=None, month=None):
         return self.by_semester(year, month).filter(crn__in=crns)

@@ -2,11 +2,16 @@ from itertools import product
 
 from django.utils.importlib import import_module
 from django.db import models
-from django.core.exceptions import ValidationError
 from django.db.models import F
+from django.core.exceptions import ValidationError
+from django.conf import settings
 
 from courses import managers
 from courses.utils import options, capitalized, sorted_daysofweek
+
+
+DEBUG = getattr(settings, 'DEBUG', False)
+WARN_EXTRA_QUERIES = getattr(settings, 'COURSES_WARN_EXTRA_QUERIES', DEBUG)
 
 
 __all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting',
@@ -189,7 +194,7 @@ class Section(models.Model):
 
     crn = models.IntegerField(unique=True)
     course = models.ForeignKey('Course', related_name='sections')
-    semesters = models.ManyToManyField(Semester, through='SemesterSection', related_name='sections')
+    semester = models.ForeignKey(Semester, related_name='sections')
     periods = models.ManyToManyField(Period, through='SectionPeriod', related_name='sections')
     crosslisted = models.ForeignKey(SectionCrosslisting, related_name='sections', null=True, blank=True)
 
@@ -223,8 +228,7 @@ class Section(models.Model):
         }
         if has_model(select_related, Course):
             values['course'] = self.course.toJSON(select_related)
-        if hasattr(self, 'all_section_periods'):
-            values['periods'] = [sp.toJSON() for sp in self.all_section_periods]
+        values['periods'] = [sp.toJSON() for sp in self.get_section_times()]
         return values
 
     @property
@@ -250,17 +254,22 @@ class Section(models.Model):
     def instructors(self):
         return set([ps.instructor for ps in self.get_period_sections()])
 
-    def get_period_sections(self):
-        if getattr(self, 'all_section_periods', None) is None:
-            print "WARN: performing DB call. You should be using full_select."
-            self.all_section_periods = self.section_times.all()
-        return set(self.all_section_periods)
+    def _has_prefetched(self, attr):
+        return attr in getattr(self, '_prefetched_objects_cache', [])
+
+    def get_section_times(self):
+        if WARN_EXTRA_QUERIES and not self._has_prefetched('section_times'):
+            print "WARN: DB query call for 'section_times'. You should probably use prefetch_related."
+        return self.section_times.all()
 
     def get_periods(self):
-        return set(sp.period for sp in self.get_period_sections())
+        if WARN_EXTRA_QUERIES and not  self._has_prefetched('periods'):
+            print "WARN: DB query for 'periods'. You should probably use prefetch_related."
+        return self.periods.all()
 
     def conflicts_with(self, section):
         "Returns True if the given section conflicts with another provided section."
+        # always conflicts with itself...
         if self == section:
             return True
         # START --- this should really be a proxy in scheduler.models.SectionProxy
@@ -439,7 +448,6 @@ class SectionPeriod(models.Model):
             'kind': self.kind,
             #'semester_id': self.semester.id,
         }
-        json.update(self.section.toJSON())
         json.update(self.period.toJSON())
         return json
 
@@ -457,12 +465,12 @@ class SemesterDepartment(models.Model):
         unique_together = ('department', 'semester')
 
 
-class SemesterSection(models.Model):
-    "M2M model of semesters and sections."
-    semester = models.ForeignKey('Semester', related_name='+')
-    section = models.ForeignKey('Section', related_name='+')
-
-    class Meta:
-        unique_together = ('semester', 'section')
+#class SemesterSection(models.Model):
+#    "M2M model of semesters and sections."
+#    semester = models.ForeignKey('Semester', related_name='+')
+#    section = models.ForeignKey('Section', related_name='+')
+#
+#    class Meta:
+#        unique_together = ('semester', 'section')
 
 
