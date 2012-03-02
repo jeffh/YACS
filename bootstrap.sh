@@ -3,12 +3,11 @@ DIR=`dirname $0`
 cd "$DIR"
 
 function setup(){
-  mkdir -p logs
-  pip install -r requirements/development.txt
+    make bootstrap
 }
 
 function runtest(){
-  fab test
+    make test
 }
 
 case "$1" in
