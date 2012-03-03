@@ -59,7 +59,6 @@ help:
 
 bootstrap: REQUIREMENTS=$(DEV_REQUIREMENTS)
 bootstrap: install_requirements
-	mkdir -p logs
 
 loc:
 	find -E . -iregex ".+/[^0][^/]+\.(py|html|js|scss|txt)$$" -not -iregex ".+/(_build|test_reports)/.+" -not -name "manage.py" | xargs wc -l
