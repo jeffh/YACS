@@ -698,6 +698,10 @@ var Selection = Class.extend({
     this._trigger(['load'], this);
     return this;
   },
+  clear: function(){
+    this.set({});
+    this.save();
+  },
   set: function(selected_crns){
     this.crns = $.extend({}, selected_crns);
     return this;
@@ -750,74 +754,88 @@ var Selection = Class.extend({
 });
 
 //////////////////////////////// Views ////////////////////////////////
-var ScheduleView = Backbone.View.extend({
-  initialize: function(options){
-    this.options.template = options.template || templateFromElement('#schedule-template');
-    this.options.index = options.index || 0;
-    this.period_height = parseInt($('#schedule-template').attr('data-period-height'), 10)
-    this.thumbnail_period_height = parseInt($('#thumbnail-template').attr('data-period-height'), 10);
+var TemplateView = Backbone.View.extend({
+  context: {},
+  templateSelector: null,
+  getContext: function(){
+    return this.context;
+  },
+  templateFromSelector: function(selector){
+    return new Template({selector: selector});
+  },
+  getTemplate: function(){
+    return this.templateFromSelector(this.templateSelector);
   },
   render: function(){
+    $(this.el).html(this.getTemplate().render(this.getContext()));
+    return this;
+  }
+});
+
+var TooManyCRNsView = TemplateView.extend({
+  templateSelector: '#too-many-crns-template'
+});
+
+var NoSchedulesView = TemplateView.extend({
+  templateSelector: '#thumbnail-template'
+});
+
+var BaseScheduleView = TemplateView.extend({
+  insertionType: 'replaceWith',
+  initialize: function(options){
+    this.scheduleIndex = options.scheduleIndex || 0;
+    this.period_height = parseInt($(this.templateSelector).attr('data-period-height'), 10)
+  },
+  setScheduleIndex: function(index){
+    this.scheduleIndex = index || 0;
+    return this;
+  },
+  getContext: function(){
     var json = this.options.json,
       FC = FunctionsContext,
       self = this,
       context = {
         color_map: FC.create_color_map(json.schedules[0]),
         get_period_height: function(period){
-          return FC.get_period_height(period, self.is_thumbnail ? self.thumbnail_period_height : self.period_height);
+          return FC.get_period_height(period, self.period_height);
         },
         get_period_offset: function(period){
-          return FC.get_period_offset(period, self.is_thumbnail ? self.thumbnail_period_height : self.period_height);
+          return FC.get_period_offset(period, self.period_height);
         },
-        sid: Utils.integer(_.keys(json.schedules)[0]) + 1,
-        schedule: json.schedules[0],
+        sid: Utils.integer(_.keys(json.schedules)[self.scheduleIndex]) + 1,
+        schedule: json.schedules[self.scheduleIndex],
       };
-      context = $.extend({}, json, FC, context);
-    console.log(context);
-    $(this.options.el).html(this.options.template(context));
-    return this;
+    return $.extend({}, json, FC, context);
   }
 });
 
-var ThumbnailScheduleView = Backbone.View.extend({
+var ThumbnailView = BaseScheduleView.extend({
+  events: {
+    'click .select-schedule': 'selectSchedule'
+  },
+  templateSelector: '#thumbnail-template',
+  selectSchedule: function(){
+    this.options.scheduleView.setScheduleIndex(this.scheduleIndex).render().toggleThumbnails();
+    return false;
+  }
 });
 
-var SchedulesListView = Backbone.View.extend({
-  selectedScheduleIndex: 0,
-  initialize: function(options){
-    $.extend(this.options, {
-      scheduleViewClass: ScheduleView,
-      noSchedulesTemplate: templateFromElement('#no-schedules-template'),
-      errorTemplate: templateFromElement('#too-many-crns-template')
-    }, options);
-    this.children = [];
-    $(this.getSelection).bind('changed', this.selectionChanged.bind(this));
+var ScheduleView = BaseScheduleView.extend({
+  events: {
+    'click .view-schedules': 'toggleThumbnails'
   },
-  getSelection: function(){ return this.options.selection; },
-  createView: function(options){
-    return new this.options.scheduleViewClass(options);
-  },
-  renderChildren: function(){
-    this.children.each(function(view){ view.render(); });
-  },
-  selectionChanged: function(evt){
-    var self = this;
-    $(this.options.selection).bind('fetchedSchedules', function(json, sel){
-      self.last_json = json;
-      self.render();
-    });
-  },
-  parse_json: function(json){
-    json.schedules.asyncEach(function(schedule, i){
-    });
-  },
-  render: function(){
-    this.$('.schedule_wrapper').hide().get(this.selectedScheduleIndex).show();
-    this.renderChildren();
-  },
-  show: function(){ return $(this.el).show(); },
-  hide: function(){ return $(this.el).hide(); }
+  templateSelector: '#schedule-template',
+  toggleThumbnails: function(){
+    var $target = $(this.options.thumbnailsContainerEl);
+    if ($target.is(':visible')){
+      $target.slideUp();
+    } else {
+      $target.slideDown();
+    }
+    return false;
+  }
 });
+
 
 var CourseListView = Backbone.View.extend({
   initialize: function(options){
