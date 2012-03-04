@@ -5,10 +5,13 @@ from django.contrib import admin
 admin.autodiscover()
 
 from courses.sitemaps import sitemaps
+from courses.views.newviews import redirect_to_latest_semester
 
 urlpatterns = patterns('',
     url(r'^robots\.txt$', include('robots.urls'), name='robots'),
     url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}, name='sitemap'),
+
+    url(r'^$', redirect_to_latest_semester, name='index'),
 
     url(r'^semesters/', include('courses.urls')),
     url(r'^semesters/', include('scheduler.urls')),

@@ -5,8 +5,6 @@ from courses.views import newviews as nviews
 
 
 urlpatterns = patterns('',
-    url(r'^$', nviews.redirect_to_latest_semester, name='index'),
-
     url(r'^$', nviews.semester_list, name='semesters'),
     url(r'^(?P<year>[1-9]\d*)/$', nviews.semester_list, name='semesters'),
 

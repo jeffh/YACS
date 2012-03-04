@@ -25,6 +25,7 @@ def semester_list(request, year=None, month=None):
     semesters = models.Semester.objects.optional_filter(year=year)
     return {
         'context': {
+            'sem_year': year,
             'semesters': semesters
         }
     }
