@@ -830,12 +830,23 @@ header .alpha {
   text-align: center;
   font-size: 130%; }
 #thumbnails .thumbnail {
-  border: 1px solid #666;
+  border: 1px solid #999;
   margin: 0 5px 10px 0;
   float: left;
-  box-shadow: 1px 1px 20px #666; }
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-box-shadow: 1px 1px 10px #999999;
+  -webkit-box-shadow: 1px 1px 10px #999999;
+  box-shadow: 1px 1px 10px #999999; }
   #thumbnails .thumbnail.selected .day {
     background: #e0e0e0; }
+  #thumbnails .thumbnail.selected:hover .day {
+    background: inherit; }
+  #thumbnails .thumbnail.selected:hover .row {
+    border-color: #aeaeae; }
+    #thumbnails .thumbnail.selected:hover .row:first-child {
+      border-color: #aeaeae; }
   #thumbnails .thumbnail:hover {
     cursor: pointer; }
     #thumbnails .thumbnail:hover .day {

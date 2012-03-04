@@ -897,14 +897,27 @@ header {
 		font-size: 130%;
 	}
 	.thumbnail {
-        border: 1px solid #666;
+        border: 1px solid #999;
         margin: 0 5px 10px 0;
 		float: left;
-        box-shadow: 1px 1px 20px #666;
+        @include border-radius(3px);
+        @include box-shadow(1px 1px 10px #999);
 
         &.selected {
             .day {
                 background: #e0e0e0;
+            }
+            &:hover {
+                .day {
+                    background: inherit;
+                }
+                .row {
+                    $bcolor: $border-color - #222;
+                    border-color: $bcolor;
+                    &:first-child {
+                        border-color: $bcolor;
+                    }
+                }
             }
         }
 		&:hover {

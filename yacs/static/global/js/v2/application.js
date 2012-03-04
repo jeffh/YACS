@@ -102,6 +102,7 @@ $(function(){
           Scheduler.thumbnails.push(view);
           thumbnailsContainer.append(view.render().el);
         }
+        Scheduler.thumbnails[0].selectSchedule();
 
         return;
       }

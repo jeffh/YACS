@@ -793,6 +793,7 @@ var BaseScheduleView = TemplateView.extend({
     this.scheduleIndex = options.scheduleIndex || 0;
     this.period_height = parseInt($(this.templateSelector).attr('data-period-height'), 10)
   },
+  getScheduleIndex: function(){ return this.scheduleIndex; },
   setScheduleIndex: function(index){
     this.scheduleIndex = index || 0;
     return this;
@@ -829,7 +830,10 @@ var ThumbnailView = BaseScheduleView.extend({
     });
   },
   selectSchedule: function(){
-    this.options.scheduleView.setScheduleIndex(this.scheduleIndex).render().toggleThumbnails();
+    var scheduleView = this.options.scheduleView;
+    $('#schedule_thumbnail' + scheduleView.getScheduleIndex()).removeClass('selected');
+    scheduleView.setScheduleIndex(this.scheduleIndex).render().hideThumbnails();
+    $(this.el).addClass('selected');
     return false;
   }
 });
@@ -839,13 +843,22 @@ var ScheduleView = BaseScheduleView.extend({
     'click .view-schedules': 'toggleThumbnails'
   },
   templateSelector: '#schedule-template',
+  animationDuration: 300,
+  onRender: function(){
+    this.$thumbnails = $(this.options.thumbnailsContainerEl);
+  },
+  hideThumbnails: function(){
+    this.$thumbnails.slideUp(this.animationDuration);
+  },
+  showThumbnails: function(){
+    this.$thumbnails.slideDown(this.animationDuration);
+  },
+  areThumbnailsVisible: function(){ return this.$thumbnails.is(':visible'); },
   toggleThumbnails: function(){
-    var $target = $(this.options.thumbnailsContainerEl);
-    if ($target.is(':visible')){
-      $target.slideUp();
-    } else {
-      $target.slideDown();
-    }
+    if (this.areThumbnailsVisible())
+      this.hideThumbnails();
+    else
+      this.showThumbnails();
     return false;
   }
 });
