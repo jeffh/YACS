@@ -219,11 +219,13 @@ header .alpha {
     -webkit-border-radius: 0; }
     .nav a:link:hover, .nav a:visited:hover {
       text-decoration: none;
-      border-left: 1px solid #943030;
-      border-right: 1px solid #560000; }
+      border-left: 0;
+      border-right: 1px solid #560000;
+      padding-left: 9px; }
   .nav a.selected:link, .nav a.selected:visited {
     border: 0;
-    border-left: 1px solid #943030;
+    border-left: 0;
+    padding-left: 9px;
     border-right: 1px solid #560000;
     color: #f77;
     background: #741010;

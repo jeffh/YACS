@@ -184,15 +184,17 @@ header {
 
 		&:hover {
 			text-decoration: none;
-			border-left: 1px solid #943030;
-			border-right: 1px solid #560000;
+			border-left: 0;
+            border-right: 1px solid #560000;
+            padding-left: 9px;
 		}
 	}
 	a.selected {
 		&:link, &:visited {
 			border: 0;
-			border-left: 1px solid #943030;
+			border-left: 0;
 			border-right: 1px solid #560000;
+            padding-left: 9px;
 			color: #f77;
 
 			@include background-gradient(#741010, #942020);
