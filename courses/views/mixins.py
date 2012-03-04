@@ -156,7 +156,7 @@ class SemesterBasedMixin(TemplateBaseOverride):
         """
         return self.kwargs.get('filter_by_semester', True)
 
-    def filter_by_semester(self, queryset):
+    def optionally_by_semester(self, queryset):
         """Filters a given queryset by semester if should_filter_by_semester returns True.
 
         This is useful to allow subclasses of the view to change the default queryset behavior.
@@ -165,44 +165,6 @@ class SemesterBasedMixin(TemplateBaseOverride):
             year, month = self.get_year_and_month()
             return queryset.by_semester(year, month)
         return queryset
-
-
-class SelectedCoursesMixin(SemesterBasedMixin):
-    def get_sections(self, courses, year, month):
-        "Returns all sections for all course ids, given it the year and month they were offered."
-        course_ids = [c.id for c in courses]
-        queryset = models.Section.objects.by_semester(year, month)
-        sections = queryset.filter(course__id__in=course_ids)
-
-        return sections
-
-    def get_user_selection(self):
-        "Returns a dictionary of user selected courses (course id mapped to section crns)."
-        return self.request.session.get(SELECTED_COURSES_SESSION_KEY, {})
-
-    def get_user_selected_course_ids(self):
-        "Returns a list of all course ids the user selected."
-        return self.get_user_selection().keys()
-
-    def get_user_selected_section_crns(self):
-        "Returns a set of selected section CRNs."
-        return set(s for sections in self.get_user_selection().values() for s in sections)
-
-    def get_selected_courses(self, course_ids):
-        "Returns the selected courses from the given set of course ids. Prefetches all corresponding section and department data."
-        year, month = self.get_year_and_month()
-        queryset = models.Course.objects.by_semester(year, month)
-        courses = queryset.filter(id__in=course_ids).select_related('department').full_select(year, month)
-
-        return courses
-
-    def get_context_data(self, **kwargs):
-        "Assigns `selected_courses` to the selected courses, `selected_section_ids` to all section crns, and `dow` to days of the week."
-        data = super(SelectedCoursesMixin, self).get_context_data(**kwargs)
-        data['selected_courses'] = self.get_selected_courses(self.get_user_selected_course_ids())
-        data['selected_section_ids'] = self.get_user_selected_section_crns()
-        data['dows'] = DAYS  # TODO: probably move this to its own mixin?
-        return data
 
 
 class SearchMixin(object):

@@ -348,6 +348,9 @@ header {
 		margin-top: -5px;
 		padding-bottom: 10px;
 
+        .section-number {
+            margin-right: 5px;
+        }
 		td {
 			border-bottom: 1px solid #aaa;
 		}
@@ -424,7 +427,7 @@ header {
 		}
 		.instructors {
 			float: right;
-			font-weight: bold;
+            padding-right: 17px;
 			li {
 				&:last-child:after {
 					content: '';
@@ -894,9 +897,11 @@ header {
 		font-size: 130%;
 	}
 	.thumbnail {
-		height: 140px;
-		width: 110px;
+        border: 1px solid #666;
+        margin: 0 5px 10px 0;
 		float: left;
+        box-shadow: 1px 1px 20px #666;
+
         &.selected {
             .day {
                 background: #e0e0e0;

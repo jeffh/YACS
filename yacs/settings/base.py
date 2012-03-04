@@ -182,7 +182,7 @@ class BaseSettings(SettingsCore):
         settings.PASSWORD_HASHERS = (
             'django.contrib.auth.hashers.BCryptPasswordHasher',
             'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-            'django.contrib.auth.hashers.PBKDF2Sha1PasswordHasher',
+            'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
             'django.contrib.auth.hashers.SHA1PasswordHasher',
         )
 
@@ -321,7 +321,7 @@ class BaseSettings(SettingsCore):
         settings.INTERNAL_IPS = ('127.0.0.1',)
 
         def debug_toolbar_callback(request):
-            return settings.RUNNING_TESTS and request.user.is_staff
+            return not settings.RUNNING_TESTS and request.user.is_staff
 
         settings.DEBUG_TOOLBAR_PANELS = (
             'debug_toolbar.panels.version.VersionDebugPanel',
@@ -361,9 +361,11 @@ class BaseSettings(SettingsCore):
             if not settings.RUNNING_TESTS:
                 settings.DEVSERVER_AUTO_PROFILE = settings.DEBUG
                 settings.DEVSERVER_MODULES = (
-                    'devserver.modules.sql.SQLRealTimeModule',
+                    #'devserver.modules.sql.SQLRealTimeModule',
                     'devserver.modules.sql.SQLSummaryModule',
                     'devserver.modules.profile.ProfileSummaryModule',
+
+                    'devserver.modules.profile.LineProfilerModule',
                 )
 
 

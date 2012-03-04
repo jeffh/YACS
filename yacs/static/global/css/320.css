@@ -391,6 +391,8 @@ header .alpha {
   font-size: 95%;
   margin-top: -5px;
   padding-bottom: 10px; }
+  #selected_courses .sections .section-number, #courses .sections .section-number {
+    margin-right: 5px; }
   #selected_courses .sections td, #courses .sections td {
     border-bottom: 1px solid #aaa; }
   #selected_courses .sections:last-child td, #courses .sections:last-child td {
@@ -451,7 +453,7 @@ header .alpha {
       margin: 0; }
   #selected_courses .sections .instructors, #courses .sections .instructors {
     float: right;
-    font-weight: bold; }
+    padding-right: 17px; }
     #selected_courses .sections .instructors li:last-child:after, #courses .sections .instructors li:last-child:after {
       content: ''; }
     #selected_courses .sections .instructors li:after, #courses .sections .instructors li:after {
@@ -828,9 +830,10 @@ header .alpha {
   text-align: center;
   font-size: 130%; }
 #thumbnails .thumbnail {
-  height: 140px;
-  width: 110px;
-  float: left; }
+  border: 1px solid #666;
+  margin: 0 5px 10px 0;
+  float: left;
+  box-shadow: 1px 1px 20px #666; }
   #thumbnails .thumbnail.selected .day {
     background: #e0e0e0; }
   #thumbnails .thumbnail:hover {

@@ -4,15 +4,170 @@ import xmlrpclib
 
 from django.views.generic import ListView, DetailView
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseServerError
+from django.conf import settings
 
+from courses.utils import ObjectJSONEncoder, dict_by_attr
+from courses.views import decorators
 from courses import models, views
-from courses.utils import ObjectJSONEncoder
+from courses import encoder as encoders
 
+
+DEBUG = getattr(settings, 'DEBUG', False)
 
 # add some mimetypes
-mimetypes.add_type('application/x-plist', 'plist')
-mimetypes.add_type('application/x-binary-plist', 'bplist')
-mimetypes.add_type('application/x-binary-plist', 'biplist')
+mimetypes.init()
+mimetypes.add_type('application/x-plist', '.plist')
+mimetypes.add_type('application/x-binary-plist', '.bplist')
+mimetypes.add_type('application/x-binary-plist', '.biplist')
+
+class DataFormatter(object):
+    def __init__(self, encoder=None, context_processor=None, default_content_type='application/json'):
+        self.encoder = encoder or encoders.default_encoder
+        self.context_processor = context_processor
+        self.default_content_type = default_content_type
+
+    def get_context_type_from_extension(self, ext):
+        filetype = 'file.' + (ext or '')
+        print filetype
+        print mimetypes.guess_type('file.' + (ext or ''), strict=False)
+        return mimetypes.guess_type('file.' + (ext or ''), strict=False)[0]
+
+    def convert_data_to_json(self, context):
+        indent = None
+        if DEBUG:
+            indent = 4
+        return ObjectJSONEncoder(indent=indent).encode(context)
+
+    def convert_data_to_xml(self, context):
+        # TODO: check if datetime classes is handle automatically
+        # TODO: make a proper xml dumper
+        return xmlrpclib.dumps((context,))
+
+    def convert_data_to_binary_plist(self, context):
+        # TODO: handle datetime classes
+        import biplist
+        return biplist.writePlistToString(context)
+
+    def convert_data_to_plist(self, context):
+        # TODO: handle datetime classes
+        return plistlib.writePlistToString(context)
+
+    def convert_to_content_type(self, data, content_type=None):
+        return {
+            'application/json': self.convert_data_to_json,
+            #'application/xml': self.convert_data_to_xml,
+            #'text/xml': self.convert_data_to_xml,
+            'application/x-plist': self.convert_data_to_plist,
+            'application/x-binary-plist': self.convert_data_to_binary_plist,
+        }.get(content_type)(data)
+
+    def convert(self, data, content_type):
+        converted_data = self.convert_to_content_type(data, content_type)
+        return converted_data
+
+    def convert_request(self, settings, request, *args, **kwargs):
+        context = settings['context']
+        if callable(self.context_processor):
+            context = self.context_processor(context)
+        context = self.encoder.encode(context)
+        content_type = kwargs.get('ext') or self.default_content_type
+        if content_type != self.default_content_type:
+            content_type = self.get_context_type_from_extension(content_type)
+        data = self.convert(context, content_type)
+        response = HttpResponse(data, content_type=content_type)
+        raise decorators.AlternativeResponse(response)
+
+def wrap_request(render_settings, request, *args, **kwargs):
+    def wrap_context(context):
+        data = {
+            'success': True,
+            'result': context,
+            'version': kwargs.get('version', 4),
+        }
+        if DEBUG:
+            from django.db import connection
+            queries = connection.queries
+            data['DEBUG'] = encoders.default_encoder.encode({
+                'query_count': len(queries),
+                'queries': map(dict, queries),
+            })
+        return data
+    formatter = DataFormatter(context_processor=wrap_context)
+    formatter.convert_request(render_settings, request, *args, **kwargs)
+
+render = decorators.Renderer(posthook=wrap_request)
+
+def get_if_id_present(queryset, id=None):
+    if id is not None:
+        return queryset.get()
+    else:
+        return queryset
+
+@render()
+def raw_data(request, data, version=None, ext=None):
+    return { 'context': data }
+
+@render()
+def semesters(request, id=None, version=None, ext=None):
+    queryset = models.Semester.objects.optional_filter(
+        id__in=request.GET.getlist('id') or None,
+        courses__id__in=request.GET.getlist('course_id') or None,
+        departments__id__in=request.GET.getlist('department_id') or None,
+        year=request.GET.get('year'), month=request.GET.get('month'),
+        id=id,
+    )
+    return { 'context': get_if_id_present(queryset, id) }
+
+@render()
+def departments(request, id=None, version=None, ext=None):
+    queryset = models.Department.objects.optional_filter(
+        id__in=request.GET.getlist('id') or None,
+        semesters__id__in=request.GET.getlist('semester_id') or None,
+        code__in=request.GET.getlist('code') or None,
+        id=id,
+    )
+    return { 'context': get_if_id_present(queryset, id) }
+
+@render()
+def courses(request, id=None, version=None, ext=None):
+    queryset = models.Course.objects.optional_filter(
+        semesters__id__in=request.GET.get('semester_id') or None,
+        department__code__in=request.GET.get('department_code') or None,
+        department__id__in=request.GET.get('department_id') or None,
+        number__in=request.GET.get('number') or None,
+        id__in=request.GET.get('id') or None,
+        id=id,
+    )
+    search_query = request.GET.get('search')
+    queryset = queryset.search(search_query)
+    return { 'context': get_if_id_present(queryset, id) }
+
+@render()
+def sections(request, id=None, version=None, ext=None):
+    queryset = models.SectionPeriod.objects.optional_filter(
+        semester__id__in=request.GET.getlist('semester_id') or None,
+        section__course__id__in=request.GET.getlist('course_id') or None,
+        section__id__in=request.GET.getlist('id') or None,
+        section__crn__in=request.GET.getlist('crn') or None,
+        section__id=id,
+    ).select_related('section', 'period')
+    section_periods = encoders.default_encoder.encode(queryset)
+    sections = []
+    for section_period in section_periods:
+        sections.append(section_period['section'])
+
+        section_period['section']['section_times'] = section_period
+        # to prevent infinite recursion
+        del section_period['section']
+
+        period = section_period['period']
+        del section_period['period']
+        section_period.update(period)
+
+    return { 'context': sections }
+
+
+###########################################################################
 
 
 class APIMixin(views.AjaxJsonResponseMixin):
@@ -87,7 +242,7 @@ class APIMixin(views.AjaxJsonResponseMixin):
         except HttpResponse as httpresp:
             return httpresp.__class__(body(status=str(httpresp)), content_type=self.get_content_type())
         except Exception as e:
-            if settings.DEBUG:
+            if DEBUG:
                 raise
             return HttpResponseServerError(body(status='Server Error'), content_type=self.get_content_type())
 

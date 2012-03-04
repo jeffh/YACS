@@ -3,9 +3,14 @@ from django.db.models.query import QuerySet
 
 from courses.utils import dict_by_attr
 
+
+def set_prefetch_cache(model, field, cache):
+    if not hasattr(model, '_prefetched_objects_cache'):
+        model._prefetched_objects_cache = {}
+    model._prefetched_objects_cache[field] = cache
+
 # using the fancy queryset manager technique, as describe:
 # http://adam.gomaa.us/blog/2009/feb/16/subclassing-django-querysets/index.html
-
 
 class QuerySetManager(Manager):
     use_for_related_fields = True
@@ -26,8 +31,14 @@ class QuerySetManager(Manager):
     def __getattr__(self, attr):
         return getattr(self.get_query_set(), attr)
 
+class OptionalFilterMixin(object):
+    def optional_filter(self, **kwargs):
+        for key, value in kwargs.items():
+            if value is None:
+                del kwargs[key]
+        return self.filter(**kwargs)
 
-class SerializableQuerySet(QuerySet):
+class SerializableQuerySet(OptionalFilterMixin, QuerySet):
 
     # set to True to make toJSON() to always output a list
     force_into_json_array = False
@@ -130,25 +141,8 @@ class CourseQuerySet(SemesterBasedQuerySet):
             Q(name__icontains=query) | Q(number__contains=query) | \
             Q(sections__section_times__instructor__icontains=query)
 
-    def select_semesters(self):
-        """Returns all courses in the given queryset plus semester data.
-        """
-        from courses.models import OfferedFor
-        semesters = OfferedFor.objects.select_related('course__id', 'semester').filter(course__id__in=[c.id for c in self])
-        semesters = dict_by_attr(semesters, 'course.id')
 
-        def semester_key(s):
-            return s.year * 100 + s.month
-
-        result = []
-        for course in self:
-            sems = semesters.get(course.id, [])
-            course.all_semesters = sorted(set(s.semester for s in sems), key=semester_key)
-            result.append(course)
-        return result
-
-
-    def full_select(self, year=None, month=None):
+    def full_select(self, year=None, month=None, amount=None):
         """Returns all courses in the given queryset, plus Sections, Periods, and SectionPeriod data.
 
         Optionally can have all related data to be filtered by semester year and month.
@@ -158,25 +152,31 @@ class CourseQuerySet(SemesterBasedQuerySet):
         """
         from courses.models import SectionPeriod
         sps = SectionPeriod.objects.by_courses(self, year, month).select_related(
-            'period', 'section', 'section__course'
+            'period', 'section', 'section__course__id'
         )
 
         # TODO: optimize into one loop
         sid2sps = dict_by_attr(sps, 'section_id')
-        #sid2periods = dict_by_attr(sps, 'section_id', 'period')
+        sid2periods = dict_by_attr(sps, 'section_id', 'period')
         cid2sections = dict_by_attr([sp.section for sp in sps], 'course.id')
         cid2sps = dict_by_attr(sps, 'section.course.id')
 
         for sp in sps:
-            sp.section.all_section_periods = sid2sps.get(sp.section.id, [])
+            set_prefetch_cache(sp.section, 'section_times', sid2sps.get(sp.section.id, []))
+            set_prefetch_cache(sp.section, 'periods', sid2periods.get(sp.section.id, []))
 
         def section_key(section):
             return section.number
 
         result = []
-        for course in self:
-            course.all_sections = sorted(set(cid2sections.get(course.id, [])), key=section_key)
-            course.all_section_periods = cid2sps.get(course.id, [])
+        courses = self
+        if amount is not None:
+            courses[:amount]
+        for course in courses:
+            sections = sorted(set(cid2sections.get(course.id, [])), key=section_key)
+            for section in sections:
+                section.course = course
+            set_prefetch_cache(course, 'sections', sections)
             result.append(course)
         return result
 
@@ -203,5 +203,5 @@ class CourseQuerySet(SemesterBasedQuerySet):
         return self.filter(department=department)
 
     def search(self, query=None, dept=None):
-        return self.filter(self._search_Q(query or '', dept))
+        return self.filter(self._search_Q(query or '', dept)).distinct()
 

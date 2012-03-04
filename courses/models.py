@@ -21,6 +21,13 @@ __all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting',
 def has_model(select_related, model):
     return any(s == model._meta.db_table for s, _ in select_related)
 
+def has_prefetched(model_instance, field):
+    return field in getattr(model_instance, '_prefetched_objects_cache', [])
+
+def notify_if_missing_prefetch(model_instance, field):
+    if WARN_EXTRA_QUERIES and not has_prefetched(model_instance, field):
+        print "WARN: DB query for %r. You should probably use prefetch_related." % field
+
 
 class Semester(models.Model):
     """Represents the semester / quarter for a college. Courses may not be offered every semester.
@@ -225,6 +232,7 @@ class Section(models.Model):
             'seats_taken': self.seats_taken,
             'seats_total': self.seats_total,
             'seats_left': self.seats_left,
+            'notes': [n for n in self.notes.split('\n') if n],
         }
         if has_model(select_related, Course):
             values['course'] = self.course.toJSON(select_related)
@@ -252,18 +260,15 @@ class Section(models.Model):
 
     @property
     def instructors(self):
-        return set([ps.instructor for ps in self.get_period_sections()])
-
-    def _has_prefetched(self, attr):
-        return attr in getattr(self, '_prefetched_objects_cache', [])
+        return set([ps.instructor for ps in self.get_section_times()])
 
     def get_section_times(self):
-        if WARN_EXTRA_QUERIES and not self._has_prefetched('section_times'):
+        if WARN_EXTRA_QUERIES and not has_prefetched(self, 'section_times'):
             print "WARN: DB query call for 'section_times'. You should probably use prefetch_related."
         return self.section_times.all()
 
     def get_periods(self):
-        if WARN_EXTRA_QUERIES and not  self._has_prefetched('periods'):
+        if WARN_EXTRA_QUERIES and not has_prefetched(self, 'periods'):
             print "WARN: DB query for 'periods'. You should probably use prefetch_related."
         return self.periods.all()
 
@@ -328,14 +333,12 @@ class Course(models.Model):
             'max_credits': self.max_credits,
             'description': self.description,
         }
-        if hasattr(self, 'all_semesters'):
-            values['semesters'] = [s.id for s in self.all_semesters]
         if has_model(select_related, Department):
             values['department'] = self.department.toJSON(select_related)
-        if hasattr(self, 'all_section_periods'):
-            values['sections'] = [s.toJSON() for s in self.all_section_periods]
-        elif hasattr(self, 'all_sections'):
-            values['sections'] = [s.toJSON() for s in self.all_sections]
+        if has_prefetched(self, 'semesters'):
+            values['semesters'] = [s.id for s in self.semesters.all()]
+        if has_prefetched(self, 'sections'):
+            values['sections'] = [s.toJSON() for s in self.sections.all()]
         return values
 
     @property
@@ -373,33 +376,34 @@ class Course(models.Model):
         def _process(notes):
             lines = set([line for note in notes for line in note.split('\n')])
             return lines
-        if not hasattr(self, 'all_section_periods'):
-            return _process(SectionPeriod.objects.by_course(course=self).values_list('section__notes', flat=True))
-        return _process(set(sp.section.notes for sp in self.section_periods))
+        return _process(set(sp.section.notes for sp in self.section_times))
 
     @property
     def crns(self):
-        if not hasattr(self, 'all_section_periods'):
-            return SectionPeriod.objects.by_course(course=self).values_list('section__crn', flat=True)
-        return set(sp.section.crn for sp in self.section_periods)
+        notify_if_missing_prefetch(self, 'sections')
+        return set(section.crn for section in self.sections.all())
 
     @property
     def full_crns(self):
-        if not hasattr(self, 'all_section_periods'):
-            return SectionPeriod.objects.by_course(course=self).filter(section__seats_taken__lt=F('section__seats_total')).values_list('section__crn', flat=True)
-        return set(sp.section.crn for sp in self.section_periods if sp.section.seats_taken >= sp.section.seats_total)
+        notify_if_missing_prefetch(self, 'sections')
+        return set(s.crn for s in self.sections.all() if s.seats_taken >= s.seats_total)
+
+    @property
+    def section_times(self):
+        notify_if_missing_prefetch(self, 'sections')
+        section_periods = []
+        for section in self.sections.all():
+            notify_if_missing_prefetch(section, 'section_times')
+            section_periods.extend(section.section_times.all())
+        return set(section_periods)
 
     @property
     def instructors(self):
-        if not hasattr(self, 'all_section_periods'):
-            return SectionPeriod.objects.select_instructors(course=self)
-        return set(sp.instructor for sp in self.section_periods)
+        return set(sp.instructor for sp in self.section_times)
 
     @property
     def kinds(self):
-        if not hasattr(self, 'all_section_periods'):
-            return SectionPeriod.objects.select_kinds(course=self)
-        return set(sp.kind for sp in self.section_periods)
+        return set(st.kind for st in self.section_times)
 
 
 class OfferedFor(models.Model):

@@ -103,7 +103,7 @@
 {# defined: schedule, time_range, courses, sections, color_map, sid #}
 <script type="text/template" id="thumbnail-template" data-period-height="8">
 <% var first=(sid===1), last=(sid===schedules.length), secmap = section_mapping[sid]; %>
-<div id="schedule_thumbnail<%- sid %>" class="schedule_wrapper thumbnail" data-sid="<%- sid %>">
+{# <div id="schedule_thumbnail<%- sid %>" class="schedule_wrapper thumbnail" data-sid="<%- sid %>"> #}
     <a class="schedule select-schedule" href="#schedule<%- sid %>">
         <% for(var j=0, l2=dows.length; j<l2; ++j){ var dow = dows[j]; var secsforday = secmap[j]; %>
             <div class="day">
@@ -124,7 +124,7 @@
             </div>
         <% } %>
     </a>
-</div>
+{#</div> #}
 </script>
 
 <script type="text/template" id="too-many-crns-template">

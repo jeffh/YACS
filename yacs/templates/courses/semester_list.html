@@ -1,0 +1,20 @@
+{% extends 'site_base.html' %}
+
+{% block content %}
+
+<h1>Shhhhhh!</h1>
+
+<p>I see you like to explore! Too bad I didn't have time to properly make this page.</p>
+<p>But since you're so awesome, here's some nice links to proper places.</p>
+
+<ul>
+{% for semester in semesters %}
+<li><a href="{% url departments semester.year,semester.month %}">{{ semester.name }}</a></li>
+{% endfor %}
+</ul>
+
+<p>Enjoy!</p>
+<p>- Jeff</p>
+
+
+{% endblock %}

@@ -16,12 +16,10 @@
 
 {% block content %}
 <div id="courses" class="listview">
-	<form action="{% url deselect-courses sem_year,sem_month %}" method="post">
-		{% csrf_token %}
-		<ul id="selected_courses">
-		</ul>
-		<p class="total_credits"></p>
-	</form>
+    {% csrf_token %}
+    <ul id="selected_courses">
+    </ul>
+    <p class="total_credits"></p>
 </div>
 
 {# functions: #}
@@ -72,21 +70,20 @@
     </label>
     <% if (alwaysShowSections){ %>
     <span class="sections">
-        <% if(course.get('sections').length){ %>
+        <% if(course.getSections().length){ %>
             <ul>
-                <% for(var sections=course.getMergedSections(), i=0, l=sections.length; i<l; i++){ var section = sections[i]; %>
-                    <% console.log(section.seats_taken, section.seats_total); %>
-                    <li class="section<%- section.seats_taken >= section.seats_total ? ' full' : '' %>">
-                    <input type="checkbox" id="selected_course_<%- course.id %>_<%- section.crn %>" name="selected_course_<%- course.id %>_<%- section.crn %>" <%- isSelectedCRN(section.crn) ? ' checked="checked"' : '' %> data-cid="<%- course.id %>" data-crn="<%- section.crn  %>" />
-                        <label for="selected_course_<%- course.id %>_<%- section.crn %>">
+                <% for(var sections=course.getSections(), i=0, l=sections.length; i<l; i++){ var section = sections.at(i); %>
+                    <li class="section<%- section.get('seats_taken') >= section.get('seats_total') ? ' full' : '' %>">
+                    <input type="checkbox" id="selected_course_<%- course.id %>_<%- section.get('crn') %>" name="selected_course_<%- course.id %>_<%- section.get('crn') %>" <%- isSelectedCRN(section.get('crn')) ? ' checked="checked"' : '' %> data-cid="<%- course.id %>" data-crn="<%- section.get('crn')  %>" />
+                        <label for="selected_course_<%- course.id %>_<%- section.get('crn') %>">
                             <span class="section-number">
-                                Section <span class="number"><%- section.number %></span>
+                                Section <span class="number"><%- section.get('number') %></span>
                             </span>
-                            <% if(section.seats_taken >= section.seats_total){ %>
+                            <% if(section.get('seats_taken') >= section.get('seats_total')){ %>
                             <span class="section-seats-left none">No seats left</span>
                             <% } else { %>
                             <span class="section-seats-left">
-                                <span class="number"><%- section.seats_left %></span> seat<%- section.seats_left === 1 ? '' : 's' %> left
+                                <span class="number"><%- section.get('seats_left') %></span> seat<%- section.get('seats_left') === 1 ? '' : 's' %> left
                             </span>
                             <% } %>
                             <div class="instructors">
@@ -98,8 +95,8 @@
                             </div>
                         </label>
                         <ul class="days">
-                            <% var times = periodsByDayOfWeek(section.periods); %>
-                            <% for(var i3=0, l3=dows.length; i3<l3; i3++){ var dow = dows[i3]; %>
+                            <% var times = periodsByDayOfWeek(section.get('periods')); %>
+                            <% for(var i3=0, l3=days_of_the_week.length; i3<l3; i3++){ var dow = days_of_the_week[i3]; %>
                                 <% if(times[dow].length){ %>
                                 <li class="item <%- times[dow] ? 'selected' : 'empty' %>">
                                     <span class="short"><%- dow %></span>
