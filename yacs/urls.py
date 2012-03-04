@@ -10,8 +10,8 @@ urlpatterns = patterns('',
     url(r'^robots\.txt$', include('robots.urls'), name='robots'),
     url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}, name='sitemap'),
 
-    url(r'^', include('courses.urls')),
-    url(r'^', include('scheduler.urls')),
+    url(r'^semesters/', include('courses.urls')),
+    url(r'^semesters/', include('scheduler.urls')),
     url(r'^api/', include('api.urls', namespace='api')),
     #url(r'^api/', include('api.urls', namespace='api')),
     # Examples:
