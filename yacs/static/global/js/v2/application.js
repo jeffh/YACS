@@ -120,23 +120,4 @@ $(function(){
       }
     }
   });
-  /*
-  Scheduler.schedulesListView = new SchedulesListView({
-    selection: Scheduler.selection,
-    periodHeight: Utils.integer($('#schedule-template').attr('data-period-height')),
-    thumbnailPeriodHeight: Utils.integer($('#thumbnail-template').attr('data-period-height'))
-  });
-  */
-  /*
-  Scheduler.UI = new ScheduleUI({
-    selection: Scheduler.selection.crns,
-    schedulesURL: $('#schedules').attr('data-source'),
-    scheduleTemplate: scheduleTemplate,
-    thumbnailTemplate: thumbnailTemplate,
-    noSchedulesTemplate: noSchedulesTemplate,
-    tooManyCRNsTemplate: tooManyCRNsTemplate,
-    periodHeight: Utils.integer($('#schedule-template').attr('data-period-height')),
-    thumbnailPeriodHeight: Utils.integer($('#thumbnail-template').attr('data-period-height'))
-  }).fetchSchedules();
-  */
 });
