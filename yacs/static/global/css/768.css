@@ -45,7 +45,7 @@ body {
   position: relative;
   top: -3em;
   margin-bottom: -3em; }
-  #courses .sections .days li.item.selected, #selected_courses .sections .days li.item.selected {
+  #courses .sections .days li.item.empty, #courses .sections .days li.item.selected, #selected_courses .sections .days li.item.empty, #selected_courses .sections .days li.item.selected {
     display: block;
     min-width: initial;
     width: 95px;

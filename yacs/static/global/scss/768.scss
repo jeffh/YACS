@@ -64,7 +64,7 @@ body {
             margin-bottom: -3em;
 
             li.item {
-                &.selected {
+                &.empty, &.selected {
                     display: block;
                     min-width: initial;
                     width: 95px;

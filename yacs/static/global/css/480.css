@@ -85,7 +85,7 @@ body {
   #courses .sections .days, #selected_courses .sections .days {
     padding-left: 0;
     clear: none; }
-    #courses .sections .days li.item.selected, #selected_courses .sections .days li.item.selected {
+    #courses .sections .days li.item.empty, #courses .sections .days li.item.selected, #selected_courses .sections .days li.item.empty, #selected_courses .sections .days li.item.selected {
       display: block;
       white-space: nowrap;
       clear: none;
@@ -93,6 +93,8 @@ body {
       width: 45%;
       min-width: 230px;
       margin-left: 17px; }
+    #courses .sections .days li.item.empty, #selected_courses .sections .days li.item.empty {
+      display: none; }
     #courses .sections .days .short, #selected_courses .sections .days .short {
       display: none; }
     #courses .sections .days .long, #selected_courses .sections .days .long {

@@ -418,14 +418,18 @@ header .alpha {
       padding: 0;
       line-height: 1.5em;
       text-align: right; }
-      #selected_courses .sections .days li.item.empty, #courses .sections .days li.item.empty {
-        display: none; }
-      #selected_courses .sections .days li.item.selected, #courses .sections .days li.item.selected {
+      #selected_courses .sections .days li.item.empty, #selected_courses .sections .days li.item.selected, #courses .sections .days li.item.empty, #courses .sections .days li.item.selected {
         display: block;
         border: 1px solid #999;
         border-radius: 3px;
         -moz-border-radius: 3px;
         -webkit-border-radius: 3px; }
+      #selected_courses .sections .days li.item.empty, #courses .sections .days li.item.empty {
+        display: none;
+        border: 1px solid #ccc; }
+        #selected_courses .sections .days li.item.empty .short, #selected_courses .sections .days li.item.empty .long, #courses .sections .days li.item.empty .short, #courses .sections .days li.item.empty .long {
+          background: #eee;
+          color: #999; }
     #selected_courses .sections .days span, #courses .sections .days span {
       padding: 0;
       margin: 0; }

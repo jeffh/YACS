@@ -385,13 +385,18 @@ header {
                 padding: 0;
                 line-height: 1.5em;
                 text-align: right;
-                &.empty {
-                    display: none;
-                }
-                &.selected {
+                &.empty, &.selected {
                     display: block;
                     border: 1px solid #999;
                     @include border-radius(3px);
+                }
+                &.empty {
+                    display: none;
+                    border: 1px solid #ccc;
+                    .short, .long {
+                        background: #eee;
+                        color: #999;
+                    }
                 }
             }
             span {
