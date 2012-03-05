@@ -56,6 +56,7 @@ DEPARTMENTS = dict(
     CISH="Computer Science at Hartford",
     CIVL="Civil Engineering",
     COGS="Cognitive Science",
+    COOP="Cooperative Education",
     COMM="Communication",
     CSCI="Computer Science",
     ECON="Economics",
