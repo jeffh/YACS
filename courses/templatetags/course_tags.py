@@ -35,14 +35,13 @@ def get(obj, key):
 @register.filter
 def display_period(period):
     fmt = "%s-%s"
-    if period.start.strftime('%p') == period.end.strftime('%p'):
-        return fmt % (
-            remove_zero_prefix(period.start.strftime('%I:%M')),
-            remove_zero_prefix(period.end.strftime('%I:%M %p')),
-        )
+    start_format, end_format = "%I", "%I"
+    if period.start.minute != 0: start_format += ':%M'
+    if period.end.minute != 0: end_format += ':%M'
+    end_format += " %p"
     return fmt % (
-        remove_zero_prefix(period.start.strftime('%I:%M %p')),
-        remove_zero_prefix(period.end.strftime('%I:%M %p')),
+        remove_zero_prefix(period.start.strftime(start_format)).lower(),
+        remove_zero_prefix(period.end.strftime(end_format)).lower(),
     )
 
 

@@ -922,14 +922,8 @@ var CourseListView = Backbone.View.extend({
           var fmt = '{{ 0 }}-{{ 1 }}',
             start = FunctionsContext.time_parts(p.start_time),
             end = FunctionsContext.time_parts(p.end_time)
-          if(start > 12 && end > 12 || start <= 12 && end <= 12){
-            return fmt.format(
-              FunctionsContext.humanize_time(p.start_time),
-              FunctionsContext.humanize_time(p.end_time)
-            );
-          }
           return fmt.format(
-            FunctionsContext.humanize_time(p.start_time),
+            FunctionsContext.humanize_time(p.start_time, {includesAPM: false}),
             FunctionsContext.humanize_time(p.end_time)
           );
         },
@@ -1128,19 +1122,24 @@ var FunctionsContext = {
     });
     return color_map;
   },
-  humanize_time: function(timestr){
+  humanize_time: function(timestr, options){
+    options = $.extend({
+      includesAPM: true
+    }, options);
     var parts = timestr.split(':'),
         hour = parseInt(parts[0], 10),
         minutes = parseInt(parts[1], 10),
-        apm = 'am';
+        apm = 'AM';
     if (hour === 0){
       hour = 12;
     } else if (hour > 12){
-      apm = 'pm';
+      apm = 'PM';
       hour = hour - 12;
     } else if (hour === 12){
-      apm = 'pm';
+      apm = 'PM';
     }
+    if (!options.includesAPM)
+      apm = '';
     if (minutes !== 0)
       return hour + ":" + (minutes < 10 ? '0' : '') + minutes + apm;
     return hour + apm;

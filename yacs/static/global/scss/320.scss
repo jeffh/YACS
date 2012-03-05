@@ -210,23 +210,19 @@ header {
 
 /* SEARCHBOX */
 .searchform {
-	width: $nav-width;
-	margin: 0 auto 7px auto;
-	padding: 0;
-	text-align: center;
+    width: $nav-width;
+    text-align: center;
+    margin: 0 auto 7px auto;
+    padding: 0;
 
     #d {
-        float: left;
-		font-size: 100%;
-        display: block;
-        width: 65px;
+        display: none;
     }
     .searchbox {
-		width: $nav-width - 75px;
-		padding: 0;
-		margin: 0 0 0 10px;
-		font-size: 100%;
-	}
+        width: 295px;
+        margin: 0;
+        font-size: 100%;
+    }
 }
 /* END SEARCHBOX */
 
@@ -352,6 +348,7 @@ header {
 
         .section-number {
             margin-right: 5px;
+            color: #555;
         }
 		td {
 			border-bottom: 1px solid #aaa;
@@ -376,24 +373,24 @@ header {
 		.days {
 			font-size: 85%;
 			margin: 0;
-            padding-left: 13px;
+            padding-left: 18px;
+            text-align: right;
             clear: left;
+
             li {
                 display: inline;
             }
 			li.item {
-				margin: 0 1px 0 1px;
-				padding: 0 0 0 2px;
+				margin: 1px;
+                padding: 0;
                 line-height: 1.5em;
-                text-align: center;
+                text-align: right;
                 &.empty {
-                    background: transparent;
-                    color: #999;
                     display: none;
                 }
                 &.selected {
-                    background: #d0d0d0;
-
+                    display: block;
+                    border: 1px solid #999;
                     @include border-radius(3px);
                 }
             }
@@ -401,20 +398,39 @@ header {
                 padding: 0;
                 margin: 0;
             }
+            .short, .long {
+                background: #cfcfcf;
+                color: #333;
+				padding: 0 2px;
+                text-align: center;
+                border-right: 1px solid #999;
+            }
 
             .short {
-                display: inline;
-            }
-            .long {
                 display: none;
             }
+            .long {
+                display: block;
+                float: left;
+                width: 75px;
+            }
             .times {
-                display: inline;
-                padding: 0 0 0 2px;
+                display: block;
+                padding: 0 2px 0 2px;
                 margin: 0;
-                background: #e0e0e0;
                 font-weight: normal;
                 @include border-radius(3px);
+
+                li {
+                    display: inline;
+                    padding-right: 2px;
+                }
+                li:after {
+                    content: ', ';
+                }
+                li:last-child:after {
+                    content: '';
+                }
             }
 		}
 		.time {
@@ -429,7 +445,9 @@ header {
 		}
 		.instructors {
 			float: right;
-            padding-right: 17px;
+            font-size: inherit;
+            clear: inherit;
+            margin-left: inherit;
 			li {
 				&:last-child:after {
 					content: '';
@@ -518,6 +536,9 @@ header {
 	.code {
 		font-size: 85%;
 		color: $highlight;
+        .dept {
+            margin-right: 0.2em;
+        }
 	}
 	.credits, .seats-left {
 		color: #222;
@@ -584,6 +605,9 @@ header {
 				color: #544;
 			}
 		}
+        .secondary {
+            padding-left: 10px;
+        }
 	}
 	a:link:hover, a:visited:hover {
 		@include highlight-gradient;

@@ -1,125 +1,144 @@
 @import "mixins.scss";
 
 body {
-    min-width: 470px;
+  min-width: 470px;
 
-    /* @include transition(all $transition-fast $transition-type); */
+  /* @include transition(all $transition-fast $transition-type); */
 }
 
 .listview {
-    li {
-        a:link, a:visited {
-            padding: 3px 7px;
+  li {
+    a:link, a:visited {
+      padding: 3px 7px;
 
-            @include transition(padding $transition-normal $transition-type);
-        }
+      @include transition(padding $transition-normal $transition-type);
     }
+  }
 }
 
 .searchform {
-    width: 295px;
-    text-align: center;
+  width: 295px;
+  text-align: center;
 
-    #d {
-        display: none;
-    }
-    .searchbox {
-        width: 295px;
-        margin: 0;
-    }
+  #d {
+    display: none;
+  }
+  .searchbox {
+    width: 295px;
+    margin: 0;
+  }
 }
 
 #courses {
-    .seats-left {
-        top: 30px;
-    }
-    .instructors {
-        display: block;
-        font-size: 85%;
+  .sections {
+    padding-right: 17px;
+  }
+  .seats-left {
+    top: 30px;
+  }
+  .instructors {
+    display: block;
+    font-size: 85%;
 
-        ul {
-            display: inline;
-            padding: 0;
-            /*
-            width: 300px;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            */
-        }
-        li {
-            margin: 0;
-            border: 0;
-            display: inline;
-            padding: 0 2px;
-
-            background: $inline-list-bg;
-            color: #333;
-            text-shadow: transparent 0 0 0;
-
-            @include border-radius(2px);
-        }
+    ul {
+      display: inline;
+      padding: 0;
     }
-    .kinds {
-        display: inline;
+    li {
+      margin: 0;
+      border: 0;
+      display: inline;
+      padding: 0 2px;
 
-        ul {
-            display: inline;
-            padding: 0;
-            position: absolute;
-            top: 5px;
-            right: 10px;
-        }
-        li {
-            border: 0;
-            float: right;
-            margin: 0 3px 0 0;
-            padding: 0 4px;
-            color: #333;
-            text-shadow: transparent 0 0 0;
+      background: $inline-list-bg;
+      color: #000;
+      text-shadow: transparent 0 0 0;
 
-            @include border-radius(0 0 2px 2px);
-        }
+      @include border-radius(2px);
     }
-    .no-seats {
-        .instructors, .kinds {
-            li {
-                color: #777;
-            }
-        }
+  }
+  .kinds {
+    display: inline;
+
+    ul {
+      display: inline;
+      padding: 0;
+      position: absolute;
+      top: 5px;
+      right: 10px;
     }
-    .notes {
-        ul {
-            padding: 0 0 0 15px;
-        }
+    li {
+      border: 0;
+      float: right;
+      margin: 0 3px 0 0;
+      padding: 0 4px;
+      color: #333;
+      text-shadow: transparent 0 0 0;
+
+      @include border-radius(0 0 2px 2px);
     }
+  }
+  .no-seats {
+    .instructors, .kinds {
+      li {
+        color: #333;
+      }
+    }
+  }
+  .notes {
+    ul {
+      padding: 0 0 0 6px;
+    }
+  }
 }
 
 #schedules {
-    .class {
-        width: 83.3333333%;
+  .class {
+    width: 83.3333333%;
 
-        @include transition(width $transition-fast $transition-type);
+    @include transition(width $transition-fast $transition-type);
 
-        &.small { /* approximately 1 hour time slot */
-            .name {
-                display: block;
-                float: left;
-                padding-right: 0.3em;
-                font-size: 100%;
-            }
-        }
+    &.small { /* approximately 1 hour time slot */
+      .name {
+        display: block;
+        float: left;
+        padding-right: 0.3em;
+        font-size: 100%;
+      }
     }
+  }
 }
 
-#selected_courses {
+#courses, #selected_courses {
+    .course {
+        .clear{
+            margin-top: 20px;
+        }
+    }
     .sections {
-        padding-right: 25px;
+        padding-right: 17px;
         .days {
+            padding-left: 0;
+            clear: none;
             li.item {
-                &.empty {
-                    display: inline;
+                &.selected {
+                    display: block;
+                    white-space: nowrap;
+                    clear: none;
+                    float: left;
+                    width: 45%;
+                    min-width: 230px;
+                    margin-left: 17px;
                 }
+            }
+            .short {
+                display: none;
+            }
+            .long {
+                display: block;
+            }
+            .times {
+                padding: 0;
             }
         }
     }
