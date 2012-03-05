@@ -75,7 +75,7 @@ class ROCSRPIImporter(object):
                     month=catalog.month,
                     defaults={
                         'name': catalog.name,
-                        'ref': name + '.xml',
+                        'ref': filename,
                     })
                 self.create_courses(catalog, semester_obj)
                 self.create_crosslistings(semester_obj, set(catalog.crosslistings.values()))

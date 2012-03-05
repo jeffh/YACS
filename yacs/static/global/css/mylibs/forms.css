@@ -1,71 +1,129 @@
-/*
-Syntax error: Invalid CSS after "http": expected expression (e.g. 1px, bold), was "://stuffandnons..."
-        on line 9 of static/global/sass/mylibs/forms.sass
+/* Forms
 
-4: 
-5: 320 and Up boilerplate extension
-6: 
-7: Author: Andy Clarke
-8: Version: 0.9b
-9: URL: http://stuffandnonsense.co.uk/projects/320andup/
-10: License: http://creativecommons.org/licenses/MIT/
-11: _____________________________________________________
-12: 
-13: */
-14: 
+_____________________________________________________
 
-Backtrace:
-static/global/sass/mylibs/forms.sass:9
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/scss/parser.rb:898:in `expected'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/script/lexer.rb:193:in `expected!'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/script/parser.rb:458:in `assert_done'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/script/parser.rb:50:in `parse'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/script/parser.rb:140:in `parse'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/script.rb:32:in `parse'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:809:in `parse_script'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:585:in `parse_property'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:574:in `parse_property_or_rule'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:555:in `parse_line'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:448:in `build_tree'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:467:in `block in append_children'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:466:in `each'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:466:in `append_children'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:323:in `_to_tree'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:293:in `_render'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/engine.rb:240:in `render'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:319:in `update_stylesheet'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:181:in `block (2 levels) in update_stylesheets'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:175:in `each'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:175:in `block in update_stylesheets'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:173:in `each'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:173:in `update_stylesheets'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:257:in `block (4 levels) in watch'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/path.rb:73:in `call'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/path.rb:73:in `run_callback'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/path.rb:55:in `callback_action'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/path.rb:31:in `create'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/state/directory.rb:26:in `block in created'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/state/directory.rb:25:in `each'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/state/directory.rb:25:in `created'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/state/directory.rb:17:in `refresh'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:17:in `block (2 levels) in run'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:17:in `each'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:17:in `block in run'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:15:in `loop'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/backends/polling.rb:15:in `run'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm/monitor.rb:26:in `run'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/vendor/fssm/lib/fssm.rb:20:in `monitor'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin/compiler.rb:245:in `watch'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/plugin.rb:111:in `method_missing'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/exec.rb:408:in `watch_or_update'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/exec.rb:294:in `process_result'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/exec.rb:41:in `parse'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/lib/sass/exec.rb:21:in `parse!'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.7/bin/sass:8:in `<top (required)>'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/bin/sass:19:in `load'
-/Users/jeff/.rvm/gems/ruby-1.9.2-p290/bin/sass:19:in `<main>'
+320 and Up boilerplate extension
+
+Author: Andy Clarke
+Version: 0.9b
+URL: http://stuffandnonsense.co.uk/projects/320andup/
+License: http://creativecommons.org/licenses/MIT/
+_____________________________________________________
+
 */
-body:before {
-  white-space: pre;
-  font-family: monospace;
-  content: "Syntax error: Invalid CSS after \"http\": expected expression (e.g. 1px, bold), was \"://stuffandnons...\"\A         on line 9 of static/global/sass/mylibs/forms.sass\A \A 4: \A 5: 320 and Up boilerplate extension\A 6: \A 7: Author: Andy Clarke\A 8: Version: 0.9b\A 9: URL: http://stuffandnonsense.co.uk/projects/320andup/\A 10: License: http://creativecommons.org/licenses/MIT/\A 11: _____________________________________________________\A 12: \A 13: */\A 14: "; }
+form {
+  margin-bottom: 1.5em; }
+
+fieldset {
+  margin-bottom: 1.5em;
+  padding: 0;
+  border-width: 0; }
+
+legend {
+  margin-top: -0.2em 0 1em 0;
+  font-weight: bold;
+  font-size: 1.2em; }
+
+label {
+  font-weight: normal; }
+
+button,
+input,
+select,
+textarea {
+  margin: 0; }
+
+label,
+input[type="button"],
+input[type="submit"],
+input[type="image"],
+button {
+  cursor: pointer; }
+
+input,
+select {
+  vertical-align: middle; }
+
+input[type=text],
+input[type=password],
+input[type=tel],
+input[type=email],
+input[type=url],
+input[type=search],
+textarea {
+  padding: 2px;
+  width: 100%;
+  background-color: white;
+  border: 1px solid #c8c8c8;
+  font-family: inherit;
+  font-size: inherit; }
+
+input[type=text]:focus,
+input[type=password]:focus,
+input[type=tel]:focus,
+input[type=email]:focus,
+input[type=url]:focus,
+input[type=search]:focus,
+textarea:focus {
+  border-color: #646464; }
+
+input[type="radio"] {
+  vertical-align: text-bottom; }
+
+input[type="checkbox"] {
+  vertical-align: bottom; }
+
+/* Colors for form validity */
+input:valid,
+textarea:valid {
+  /* Styles */ }
+
+input:invalid,
+textarea:invalid {
+  -webkit-box-shadow: 0 0 2px red;
+  -moz-box-shadow: 0 0 2px red;
+  box-shadow: 0 0 2px red; }
+
+.no-boxshadow input:invalid,
+.no-boxshadow textarea:invalid {
+  background-color: #f0dddd; }
+
+select {
+  margin: .5em 0;
+  background-color: white;
+  border-width: 1px;
+  border-style: solid; }
+
+textarea {
+  overflow: auto;
+  padding: 2px; }
+
+button {
+  width: auto;
+  padding: 8px 12px 9px;
+  overflow: visible;
+  background-color: #e3e3e3;
+  border: 1px solid #cccccc;
+  border-bottom-color: #bbbbbb;
+  font-family: "Helvetica Neue", Helvetica, Arial;
+  font-size: .875em;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1;
+  color: #333333;
+  text-shadow: 0 1px 0 white; }
+
+button:hover {
+  cursor: pointer;
+  background-color: #d9d9d9; }
+
+.ie6 legend,
+.ie7 legend {
+  margin-left: -7px; }
+
+.ie6 input {
+  vertical-align: text-bottom; }
+
+.ie7 input[type="checkbox"],
+.iem7 input[type="checkbox"] {
+  vertical-align: baseline; }

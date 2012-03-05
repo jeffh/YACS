@@ -148,6 +148,7 @@ class SectionTest(TestCase):
             'seats_taken': 3,
             'seats_total': 4,
             'seats_left': 1,
+            'notes': [],
         }
         result = section.toJSON()
         self.assertEqual(expected, result)
@@ -274,12 +275,14 @@ class CourseTest(TestCase):
 
     def test_full_crns(self):
         course = CourseFactory.create()
-        section1 = SectionFactory.create(crn=123, course=course)
-        section2 = SectionFactory.create(crn=124, course=course, seats_total=1)
+        section1 = SectionFactory.create(
+            crn=123, course=course, seats_total=1, seats_taken=0)
+        section2 = SectionFactory.create(
+            crn=124, course=course, seats_total=1, seats_taken=5)
         SectionPeriodFactory.create(section=section1)
         SectionPeriodFactory.create(section=section2)
 
-        self.assertEqual([123], list(course.full_crns))
+        self.assertEqual([124], list(course.full_crns))
 
     def test_instructors(self):
         course = CourseFactory.create()

@@ -1,0 +1,31 @@
+{% extends 'site_base.html' %}
+
+{% block header %}
+{{ block.super }}
+{% endblock header %}
+
+{% block content %}
+
+<div style="width:70%; position: relative; left: 20%">
+<h1>Hey, No Peeking!</h1>
+
+<p>
+I see you like to explore! Too bad I didn't have time to properly make this page.
+But since you're so awesome, here's some nice links to proper places.
+</p>
+
+<ul style="margin-left: 10px">
+{% for semester in semesters %}
+<li><a href="{% url departments semester.year,semester.month %}">{{ semester.name }}</a></li>
+{% endfor %}
+{% if sem_year %}
+<li>Or <a href="{% url semesters %}">view other semesters not in {{ sem_year }}</a></li>
+{% endif %}
+</ul>
+
+<p>Just don't tell anyone... It's a secret between you and I.</p>
+<p>- Jeff</p>
+</div>
+
+
+{% endblock %}

@@ -20,6 +20,12 @@ $transition-type: ease-in-out;
     opacity: $opacity;
 }
 
+@mixin box-shadow($args) {
+    -moz-box-shadow: $args;
+    -webkit-box-shadow: $args;
+    box-shadow: $args;
+}
+
 @mixin border-radius ($radius) {
 	border-radius: $radius;
 	-moz-border-radius: $radius;

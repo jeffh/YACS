@@ -34,6 +34,8 @@ class BasicSchema(ShortcutTestCase):
 
         self.semester, self.course, self.cs_dept, self.ecse_dept = semester, course, cs_dept, ecse_dept
 
+def ids(list_of_dicts):
+    return [e.id for e in list_of_dicts]
 
 class ListDepartmentsIntegrationTests(BasicSchema):
     def test_list_departments(self):
@@ -99,22 +101,4 @@ class SearchTest(BasicSchema):
         self.assertIn(self.course1, courses)
         self.assertIn(self.course2, courses)
         self.assertNotIn(self.course3, courses)
-
-    def test_searching_by_department(self):
-        "/2011/1/search/?d=CSCI"
-        response = self.get('search-all-courses', year=2011, month=1, get='?d=CSCI', status_code=200)
-        courses = response.context['courses']
-        self.assertIn(self.course1, courses)
-        self.assertIn(self.course2, courses)
-        self.assertNotIn(self.course3, courses)
-
-    def test_searching_by_department_and_textfield(self):
-        "/2011/1/search/?d=CSCI&q=4230"
-        response = self.get('search-all-courses', year=2011, month=1, get='?d=CSCI&q=4230', status_code=200)
-        courses = response.context['courses']
-        self.assertIn(self.course1, courses)
-        self.assertNotIn(self.course2, courses)
-        self.assertNotIn(self.course3, courses)
-
-
 

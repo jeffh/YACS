@@ -1,6 +1,7 @@
 from django import template
 
-from courses.utils import DAYS
+from courses.utils import DAYS, ObjectJSONEncoder
+from courses.encoder import default_encoder
 
 
 register = template.Library()
@@ -10,6 +11,11 @@ def remove_zero_prefix(timestr):
     if timestr[0] == '0':
         return timestr[1:]
     return timestr
+
+
+@register.filter
+def toJSON(obj):
+    return ObjectJSONEncoder().encode(default_encoder.encode(obj))
 
 
 @register.filter

@@ -184,15 +184,17 @@ header {
 
 		&:hover {
 			text-decoration: none;
-			border-left: 1px solid #943030;
-			border-right: 1px solid #560000;
+			border-left: 0;
+            border-right: 1px solid #560000;
+            padding-left: 9px;
 		}
 	}
 	a.selected {
 		&:link, &:visited {
 			border: 0;
-			border-left: 1px solid #943030;
+			border-left: 0;
 			border-right: 1px solid #560000;
+            padding-left: 9px;
 			color: #f77;
 
 			@include background-gradient(#741010, #942020);
@@ -348,6 +350,9 @@ header {
 		margin-top: -5px;
 		padding-bottom: 10px;
 
+        .section-number {
+            margin-right: 5px;
+        }
 		td {
 			border-bottom: 1px solid #aaa;
 		}
@@ -424,7 +429,7 @@ header {
 		}
 		.instructors {
 			float: right;
-			font-weight: bold;
+            padding-right: 17px;
 			li {
 				&:last-child:after {
 					content: '';
@@ -894,12 +899,27 @@ header {
 		font-size: 130%;
 	}
 	.thumbnail {
-		height: 140px;
-		width: 110px;
+        border: 1px solid #999;
+        margin: 0 5px 10px 0;
 		float: left;
+        @include border-radius(3px);
+        @include box-shadow(1px 1px 10px #999);
+
         &.selected {
             .day {
                 background: #e0e0e0;
+            }
+            &:hover {
+                .day {
+                    background: inherit;
+                }
+                .row {
+                    $bcolor: $border-color - #222;
+                    border-color: $bcolor;
+                    &:first-child {
+                        border-color: $bcolor;
+                    }
+                }
             }
         }
 		&:hover {

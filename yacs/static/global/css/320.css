@@ -219,11 +219,13 @@ header .alpha {
     -webkit-border-radius: 0; }
     .nav a:link:hover, .nav a:visited:hover {
       text-decoration: none;
-      border-left: 1px solid #943030;
-      border-right: 1px solid #560000; }
+      border-left: 0;
+      border-right: 1px solid #560000;
+      padding-left: 9px; }
   .nav a.selected:link, .nav a.selected:visited {
     border: 0;
-    border-left: 1px solid #943030;
+    border-left: 0;
+    padding-left: 9px;
     border-right: 1px solid #560000;
     color: #f77;
     background: #741010;
@@ -391,6 +393,8 @@ header .alpha {
   font-size: 95%;
   margin-top: -5px;
   padding-bottom: 10px; }
+  #selected_courses .sections .section-number, #courses .sections .section-number {
+    margin-right: 5px; }
   #selected_courses .sections td, #courses .sections td {
     border-bottom: 1px solid #aaa; }
   #selected_courses .sections:last-child td, #courses .sections:last-child td {
@@ -451,7 +455,7 @@ header .alpha {
       margin: 0; }
   #selected_courses .sections .instructors, #courses .sections .instructors {
     float: right;
-    font-weight: bold; }
+    padding-right: 17px; }
     #selected_courses .sections .instructors li:last-child:after, #courses .sections .instructors li:last-child:after {
       content: ''; }
     #selected_courses .sections .instructors li:after, #courses .sections .instructors li:after {
@@ -828,11 +832,23 @@ header .alpha {
   text-align: center;
   font-size: 130%; }
 #thumbnails .thumbnail {
-  height: 140px;
-  width: 110px;
-  float: left; }
+  border: 1px solid #999;
+  margin: 0 5px 10px 0;
+  float: left;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-box-shadow: 1px 1px 10px #999999;
+  -webkit-box-shadow: 1px 1px 10px #999999;
+  box-shadow: 1px 1px 10px #999999; }
   #thumbnails .thumbnail.selected .day {
     background: #e0e0e0; }
+  #thumbnails .thumbnail.selected:hover .day {
+    background: inherit; }
+  #thumbnails .thumbnail.selected:hover .row {
+    border-color: #aeaeae; }
+    #thumbnails .thumbnail.selected:hover .row:first-child {
+      border-color: #aeaeae; }
   #thumbnails .thumbnail:hover {
     cursor: pointer; }
     #thumbnails .thumbnail:hover .day {

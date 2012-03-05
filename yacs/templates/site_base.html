@@ -91,16 +91,6 @@ It would be bad if a 500 error page threw a 500 error when trying to render...
 <!-- version 2 (OO) -->
 <script src="{{ STATIC_URL }}js/v2/objects.js"></script>
 <script src="{{ STATIC_URL }}js/v2/application.js"></script>
-<script>
-/*
-Scheduler.selection.set({
-  {% for course in selected_courses %}{{ course.id }}: [
-    {% for section in course.all_sections %}{{ section.crn }}{% if not forloop.last %}, {% endif %}{% endfor %}
-  ]{% if not forloop.last %}, {% endif %}
-  {% endfor %}
-});
-*/
-</script>
 
 {% comment %}
 <!-- version 1 -->

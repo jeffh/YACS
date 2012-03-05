@@ -13,9 +13,6 @@
 <head>
 <meta charset="utf-8">
 {% if sem_year and sem_month %}
-<meta name="selection-url" content="{% url selected-courses sem_year,sem_month %}?ajax=1">
-<meta name="select-url" content="{% url deselect-courses sem_year,sem_month %}">
-<meta name="schedules-url" content="{% url ajax-schedules sem_year,sem_month %}">
 <meta name="spinner-url" content="{{ STATIC_URL }}img/spinner.gif">
 {% endif %}
 {% block head %}{% endblock %}

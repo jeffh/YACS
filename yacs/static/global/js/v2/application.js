@@ -74,42 +74,45 @@ Scheduler.getURL = function(){
 // Schedules feature
 $(function(){
   if(!$('#schedules').length) return;
-  $('.schedule_wrapper').hide().filter(':first').show();
-  $('#thumbnails').hide();
-  var scheduleTemplate = new Template({selector: '#schedule-template'}),
-    thumbnailTemplate = new Template({selector: '#thumbnail-template'}),
-    noSchedulesTemplate = new Template({selector: '#no-schedules-template'}),
-    tooManyCRNsTemplate = new Template({selector: '#too-many-crns-template'});
-
   var target = $('#schedules');
+  var thumbnailsContainer = $('#thumbnails').hide();
+
+  Scheduler.thumbnails = [];
   $.ajax(Scheduler.getURL(), {
     type: 'GET',
     dataType: 'json',
     success: function(json){
       if(json.schedules && json.schedules.length){
+        // primary schedule view
         Scheduler.view = new ScheduleView({
           el: target,
           json: json,
-          template: scheduleTemplate.render.bind(scheduleTemplate)
+          scheduleIndex: 0,
+          thumbnailsContainerEl: thumbnailsContainer
         }).render();
+
+        // thumbnails
+        thumbnailsContainer.html('');
+        for(var i=0, l=json.schedules.length; i<l; i++){
+          var view = new ThumbnailView({
+            json: json,
+            scheduleIndex: i,
+            scheduleView: Scheduler.view
+          });
+          Scheduler.thumbnails.push(view);
+          thumbnailsContainer.append(view.render().el);
+        }
+        Scheduler.thumbnails[0].selectSchedule();
+
         return;
       }
       // ERROR
-      Scheduler.view = new ScheduleView({
-        el: target,
-        json: {},
-        template: noSchedulesTemplate.render.bind(scheduleTemplate)
-      }).render();
+      Scheduler.view = new NoSchedulesView({el: target}).render();
     },
     error: function(xhr, status){
       // TODO: show a custom error page
       if(xhr.status === 403){
-        Scheduler.view = new ScheduleView({
-          el: target,
-          json: {},
-          template: tooManyCRNsTemplate
-        });
-        $('#schedules').html(too_many_crns_template({}));
+        Scheduler.view = new TooManyCRNsView({el: target}).render();
       } else {
         //alert('Failed to get schedules... (are you connected to the internet?)');
         // TODO: log to the server (if we can)
