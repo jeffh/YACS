@@ -1139,3 +1139,13 @@ footer {
 	}
 }
 /* END TOUCH */
+/* Visuals */
+h1 span {
+  text-transform: lowercase;
+  color: $highlight;
+  &:before {
+    content: '|';
+    color: #999;
+    margin-left: -0.3em;
+  }
+}

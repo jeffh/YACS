@@ -1,0 +1,302 @@
+{% extends 'site_base.html' %}
+
+{% block title %}Bubbles | {% endblock %}
+
+{% block app-title %}{{ block.super }} <span>Visuals</span>{% endblock %}
+
+{% block header %}
+{{ block.super }}
+{% include 'courses_viz/_nav.html' with selected='bubbles' %}
+{% endblock header %}
+
+{% block head %}
+{{ block.super }}
+<link href="{{ STATIC_URL }}css/dragdealer.css" rel="stylesheet" type="text/css" />
+<style>
+  circle {
+    stroke: #fff;
+    stroke-width: 1.5px;
+  }
+
+  text {
+    font: sans-serif;
+  }
+
+  g.text rect {
+    fill: #999;
+  }
+
+  g.text text {
+    fill: #fff;
+  }
+
+  svg {
+    border: 1px solid #999;
+  }
+</style>
+{% endblock head %}
+
+{% block content %}
+<div id="seatsFilterSlider" class="dragdealer">
+  <div class="red-bar handle">Size Filter</div>
+</div>
+
+<div id="viz">
+  <p style="text-align:center"><img src="{{ STATIC_URL }}img/spinner.gif" alt="Loading" style="margin: 20px 0 20px 0"></p>
+  <p id="status" style="text-align:center"></p>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+<script src="{{ STATIC_URL }}js/libs/underscore-1.2.0.min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/jquery-1.6.4.min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/jquery-1.6.4.min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/dragdealer.js"></script>
+<script src="{{ STATIC_URL }}d3/d3.v2.min.js"></script>
+<script src="{{ STATIC_URL }}js/utils.js"></script>
+<script>
+  // This code is kind of messy, but I'll try an annotate it.
+  $('#seatsFilterSlider').hide();
+  var semestersURL = "{% url api:v4:semesters %}",
+  departmentsURL = "{% url api:v4:departments %}",
+  coursesURL = "{% url api:v4:courses %}",
+  sectionsURL = "{% url api:v4:sections %}";
+
+  var statusElement = document.getElementById('status');
+
+  // visualization generation
+  function createVisualization(data, numCoursesByDept){
+    $('#viz').html('');
+
+    var vizEl = d3.select('#viz');
+
+    var format = d3.format(",d"),
+    fill = d3.scale.category20()
+    zoom = d3.behavior.zoom();
+
+    var
+    vis = d3.select("#viz").append("svg").call(zoom),
+    root = vis.append("g").attr("class", "bubble"),
+    dataRange;
+
+    var bubble = d3.layout.pack().sort(null);
+
+    var applyZoom = function(translate, scale) {
+      root.attr("transform", "translate(" +
+        (translate || d3.event.translate) +
+        ") scale(" + (scale || d3.event.scale) + ")");
+    };
+    zoom.on("zoom", applyZoom);
+
+    var computeSize = function(){
+      var width = parseInt($(document.body).width(), 10);
+      return [
+        width,
+        720 / 1280.0 * width + 100
+      ];
+    };
+    var computeZoomRange = function(){
+      var size = computeSize();
+      vis.attr("width", size[0]).attr("height", size[1])
+      var zoomRange = [size[0] / 1024.0, 4];
+      return zoomRange;
+    };
+
+    var updateSize = function(){
+      var zoomRange = computeZoomRange();
+      var size = bubble.size();
+      zoom.scaleExtent(zoomRange);
+      zoom.translate([-size[0] * zoomRange[0] / 8.0, size[1] * zoomRange[0] / 8.0 - 90]);
+      // using timeout prevents text display bug
+      zoom.scale(zoomRange[0]);
+      applyZoom(zoom.translate(), zoom.scale());
+    };
+
+    var minSeatsFilter = 0;
+
+    var render = function(firstTime){
+      bubble.size([1280, 720]);
+      var nodes = bubble.nodes(data);
+      // remove root, which is sum of all values
+      nodes = _.filter(nodes, function(d){ return !d.children.length; });
+
+      if(!dataRange){
+        dataRange = [
+          d3.min(nodes, function(n){ return n.value; }),
+          d3.max(nodes, function(n){ return n.value; })
+        ];
+      }
+
+      var nodeSelection = root.select('g.graphics');
+      if (nodeSelection.empty())
+        nodeSelection = root.append('g').attr('class', 'graphics');
+      nodeSelection = nodeSelection.selectAll("g.node").data(nodes);
+      //nodeSelection.exit().remove();
+
+      var visibility = function(d){
+        return d.value >= minSeatsFilter ? "visible" : "hidden";
+      };
+
+      if (firstTime){
+        var node = nodeSelection.enter().append("g")
+        .attr("class", "node")
+        .attr("width", "100%")
+        .attr("height", "100%");
+      } else node = nodeSelection;
+
+      // for text that goes above everything
+      var textLayer = vis.select('g.text');
+      if(textLayer.empty()){
+        var textGroup
+        textLayer = vis.append('g').attr('class', 'text');
+
+        textLayer.append('rect')
+        .attr('width', '100%')
+        .attr('height', 30)
+        .attr('transform', 'translate(-10, -20)')
+        .attr('opacity', 0);
+        textLayer.append('text')
+        .attr('text-anchor', 'left');
+
+
+        textLayer = vis.select('g.text');
+        textLayer.attr('transform', 'translate(10, 20)');
+      }
+      window.textLayer = textLayer;
+
+      // bind events
+      if (firstTime){
+        nodeSelection.on('mouseover', function(d){
+          textLayer.select('text').text(d.name + ': ' + format(d.value) + ' seats');
+          textLayer.select('rect').transition().attr('opacity', 1);
+
+          d3.select(this).select('circle')
+          .style('stroke', 'steelblue');
+        })
+        .on('mouseout', function(d){
+          textLayer.select('text').text("");
+          textLayer.select('rect').transition().attr('opacity', 0);
+
+          d3.select(this).select('circle')
+          .style('stroke', 'white');
+        });
+      }
+
+      node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
+      .attr("visibility", visibility);
+
+      (firstTime ?
+        node.append("circle")
+        .style("fill", function(d) { return fill(d.groupID); })
+        : node.selectAll("circle")
+      ).attr("r", function(d) { return d.r; })
+      .attr("visibility", visibility);
+
+
+      (firstTime ? 
+        node.append("text")
+        .attr('class', 'celltext')
+        .attr("text-anchor", "middle")
+        .attr("dy", "0.3em")
+        : node.selectAll("text.celltext")
+      ).text(function(d){
+        var name = d.name.substring(0, d.r / 5);
+        if (name.length < 2) return "";
+        if (name !== d.name && name.length > 4){
+          name = name.substring(0, name.length - 1) + '..';
+        }
+        return name;
+      })
+      .attr("visibility", visibility);
+
+      nodeSelection.exit().remove();
+    };
+
+    render(1);
+    var zoomRange = computeZoomRange();
+    zoom.scaleExtent(zoomRange);
+
+    $('#seatsFilterSlider').show();
+    new Dragdealer('seatsFilterSlider', {
+      steps: 100,
+      callback: function(x){
+        var scale = d3.scale.linear().domain([1, 100]).range([dataRange[0], dataRange[1]/2]);
+        window.scale = scale;
+        x = x * 100 + 1;
+        minSeatsFilter = scale(x);
+        console.log(minSeatsFilter, x+1);
+        render(0);
+      }
+    });
+
+    $(window).resize($U.delayFunction(function(){
+      //render();
+      updateSize();
+    }, 200));
+    updateSize();
+  }
+
+
+  // data loading & parsing
+  statusElement.innerText = "Downloading departments...";
+  d3.json(departmentsURL, function(json) {
+    $U.assert(json.success, "department JSON fetch failed");
+    var departments = {}; // id => dept
+    _.each(json.result, function(dept){ departments[dept.id] = dept; });
+
+    delete json;
+
+    statusElement.innerText = "Downloading sections...";
+    d3.json(sectionsURL, function(json){
+      $U.assert(json.success, "sections JSON fetch failed");
+      var seats = {}; // course_id => num_seats
+
+      $U.iterate(json.result, {
+        each: function(section){
+          var cid = section.course_id;
+          seats[cid] = (seats[cid] === undefined ? 0 : seats[cid]) + section.seats_total;
+        },
+        batch: function(items, start, stop){
+          statusElement.innerText = $U.format("Reading sections (%s / %s) ...", start, items.length);
+        },
+        complete: function(){
+          delete json;
+          statusElement.innerText = "Downloading courses...";
+          d3.json(coursesURL, function(json){
+            $U.assert(json.success, "courses JSON fetch failed");
+            var numCoursesPerDept = $U.Counter();
+            var root = {children: []};
+
+            $U.iterate(json.result, {
+              each: function(course){
+                if (seats[course.id]){
+                  var deptID = course.department_id;
+                  var name = departments[deptID].code + ' ' + course.number + ' - ' + course.name
+                  var node = {
+                    groupID: deptID,
+                    dept: departments[deptID],
+                    value: seats[course.id] || 0,
+                    name: name,
+                    children: []
+                  };
+                  numCoursesPerDept.increment(deptID);
+                  root.children.push(node);
+                }
+              },
+              batch: function(items, start, stop){
+                statusElement.innerText = $U.format("Reading courses (%s / %s) ...", start, items.length);
+              },
+              complete: function(){
+                statusElement.innerText = "Rendering ...";
+                createVisualization(root, numCoursesPerDept.getCounts());
+              }
+            });
+          });
+        }
+      });
+    });
+  });
+
+</script>
+
+{% endblock javascript %}

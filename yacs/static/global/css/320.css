@@ -1013,3 +1013,11 @@ footer {
   color: #000; }
 
 /* END TOUCH */
+/* Visuals */
+h1 span {
+  text-transform: lowercase;
+  color: #940000; }
+  h1 span:before {
+    content: '|';
+    color: #999;
+    margin-left: -0.3em; }
