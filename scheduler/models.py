@@ -7,6 +7,40 @@ from courses import models as courses
 from courses import managers as courses_managers
 from courses.utils import dict_by_attr
 from scheduler import managers
+from scheduler.utils import slugify, deserialize_crns, serialize_crns
+
+
+
+class Selection(models.Model):
+    """Represents a unique set of selected CRNs. It also offers a unique URL for each set.
+    """
+    internal_slug = models.CharField(max_length=200, db_index=True, blank=True, default="")
+    internal_crns = models.CharField(max_length=255)
+
+    objects = managers.SelectionManager()
+
+    def assign_slug_by_id(self):
+        "Automatically assigns slug by id. The model much be saved before using this method."
+        self.slug = self.pk
+
+    @property
+    def crns(self):
+        return deserialize_crns(self.internal_crns)
+
+    @crns.setter
+    def crns(self, crns):
+        self.internal_crns = serialize_crns(crns)
+
+    @property
+    def slug(self):
+        return self.internal_slug
+
+    @slug.setter
+    def slug(self, string):
+        self.internal_slug = slugify(string)
+
+    def __unicode__(self):
+        return "%r, %r" % (self.slug, self.crns)
 
 
 # Django bug? Using a proxy causes tests to fail (looking for database NAME).
@@ -23,7 +57,6 @@ SectionProxy = courses.Section
 #    def conflicts_with(self, section):
 #        # self.conflicts has to be set by the view....
 #        return section.id in self.conflicts
-
 
 class SectionConflict(models.Model):
     """The relationship where a section conflicts with another section.

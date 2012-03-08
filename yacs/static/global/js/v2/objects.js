@@ -325,6 +325,20 @@ var ActivityResponder = Class.extend({
 });
 
 
+// Simply stores it into memory, not persistent
+var MemoryStore = Class.extend({
+  init: function(container){
+    this.container = container;
+  },
+  setItem: function(key, string){ this.container[key] = string; },
+  getItem: function(key){ console.log(key); return this.container[key]; },
+  removeItem: function(key){
+    var value = this.container[key];
+    delete this.container[key];
+    return value;
+  },
+});
+
 // Provides a basic abstraction layer from the storage system
 // Keys can only be strings and values have to be serializable.
 // The default serialize & deserialize functions are JSON.stringify
@@ -722,25 +736,6 @@ var Selection = Class.extend({
   _getSectionElem: function(course_id, crn){
     return $('#' + this.options.section_id_format.format({cid: course_id, crn: crn}));
   },
-  fetchSchedules: function(){
-    var self = this;
-    $.ajax(this.options.scheduleURL, $.extend({
-      type: 'GET',
-      dataType: 'json',
-      success: function(json){
-        var args = [json, self];
-        json.schedules && json.schedules.length ?
-          $(self).trigger('fetchedSchedules', args) :
-          $(self).trigger('fetchedNoSchedules', args);
-      },
-      error: function(xhr, status){
-        var args = [xhr, status, self];
-        xhr.status === 403 ?
-          $(self).trigger('tooManyCRNsForSchedules', args) :
-          $(self).trigger('serverErrorForSchedules', args);
-      }
-    }));
-  },
   refresh: function(){
     // update DOM to reflect selection
     $(this.options.checkbox_selector).checked(false); // this can be a bottleneck if there's enough elements
@@ -867,6 +862,7 @@ var ScheduleView = BaseScheduleView.extend({
 var CourseListView = Backbone.View.extend({
   initialize: function(options){
     this.options.dows = options.dows || 'Monday Tuesday Wednesday Thursday Friday'.split(' ');
+    this.options.isReadOnly = options.isReadOnly || false;
     var courses = options.course_ids;
     if(!courses) return;
 
@@ -885,6 +881,8 @@ var CourseListView = Backbone.View.extend({
         left = 0;
       }
     });
+    if (!courses.length)
+      self.render();
   },
   render: function(){
     var $target = $(this.options.el).empty(),
@@ -927,6 +925,7 @@ var CourseListView = Backbone.View.extend({
             FunctionsContext.humanize_time(p.end_time)
           );
         },
+        isReadOnly: self.options.isReadOnly,
         course: course
       };
       $target.append(tmpl(context));
@@ -1165,97 +1164,3 @@ var FunctionsContext = {
   }
 };
 
-var ScheduleUI = Class.extend({
-  options: {
-    selection: null, // object of course_id => crns
-    target: '#schedules',
-    schedulesURL: null,
-    scheduleTemplate: null,
-    thumbnailTemplate: null,
-    noSchedulesTemplate: null,
-    tooManyCRNsTemplate: null,
-    periodHeight: 30,
-    thumbnailPeriodHeight: 30
-  },
-  init: function(options){
-    $.extend(this.options, options);
-    assert(this.options.selection, 'selection option must be specified');
-    assert(this.options.scheduleTemplate, 'scheduleTemplate option must be specified');
-    assert(this.options.thumbnailTemplate, 'thumbnailTemplate option must be specified');
-    assert(this.options.noSchedulesTemplate, 'noSchedulesTemplate option must be specified');
-    assert(this.options.tooManyCRNsTemplate, 'tooManyCRNsTemplate  option must be specified');
-    this.options.scheduleTemplate.extendContext(FunctionsContext);
-    this.options.thumbnailTemplate.extendContext(FunctionsContext);
-    this.options.noSchedulesTemplate.extendContext(FunctionsContext);
-    this.options.tooManyCRNsTemplate.extendContext(FunctionsContext);
-  },
-  fetchSchedules: function(){
-    var self = this;
-    $.ajax(this.options.schedulesURL, {
-      type: 'GET',
-      dataType: 'json',
-      success: function(json){
-        if(json.schedules && json.schedules.length)
-          self.render_schedules(json);
-        else
-          self.render_no_schedules();
-      },
-      error: function(xhr, status){
-        // TODO: show a custom error page
-        if(xhr.status === 403){
-          self.render_too_many_crns();
-        } else {
-          //alert('Failed to get schedules... (are you connected to the internet?)');
-          // TODO: log to the server (if we can)
-          console.error('Failed to save to schedules: ' + xhr.status);
-        }
-      }
-    });
-    return this;
-  },
-  render_too_many_crns: function(){
-    this.options.tooManyCRNsTemplate.renderTo(this.options.target);
-  },
-  render_no_schedules: function(){
-    this.options.noSchedulesTemplate.renderTo(this.options.target);
-  },
-  render_schedules: function(json){
-    console.log('render_schedules', json);
-    var FC = FunctionsContext,
-      self = this,
-      contextExtensions = {
-        color_map: FC.create_color_map(json.schedules[0]),
-        get_period_height: function(){
-          return FC.get_period_height(period, this.is_thumbnail ? thumbnail_period_height : period_height);
-        },
-        get_period_offset: function(){
-          return FC.get_period_offset(period, this.is_thumbnail ? thumbnail_period_height : period_height);
-        }
-      };
-    this.options.scheduleTemplate.extendContext(contextExtensions);
-    this.options.thumbnailTemplate.extendContext(contextExtensions);
-    $(this.options.target).html('');
-
-    //var selected_schedule = get_schedule_id_from_state();
-    var selected_schedule = 0;
-    json.schedules.asyncEach(function(schedule, i){
-      var context = $.extend({}, json, {
-        sid: i + 1,
-        schedule: schedule,
-        is_thumbnail: false
-      });
-      var frag = $(self.options.scheduleTemplate.render(context));
-      context.is_thumbnail = true;
-      var thumb = $(self.options.thumbnailTemplate.render(context));
-      if (i !== selected_schedule) {
-        frag.hide();
-        //thumb.hide(); // TOOD: show if thumbnail mode
-      } else {
-        thumb.addClass('selected');
-      }
-      $('#schedules').append(frag);
-      $('#thumbnails').append(thumb);
-      console.log('rendering ' + (i+1) + ' of ' + context.schedules.length);
-    });
-  }
-});

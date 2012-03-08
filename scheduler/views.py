@@ -13,7 +13,7 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from icalendar import Calendar, Event, vText
 
-from courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY, AjaxJsonResponseMixin
+from courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY, AjaxJsonResponseMixin, SelectedCoursesListView
 from courses.models import Semester, SectionPeriod, Course, Section, Department
 from courses.utils import dict_by_attr, ObjectJSONEncoder, sorted_daysofweek, DAYS
 from scheduler import models
@@ -23,6 +23,15 @@ from scheduler.scheduling import compute_schedules
 ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')
 SECTION_LIMIT = getattr(settings, 'SECTION_LIMIT', 60)
 
+class SelectionSelectedCoursesListView(SelectedCoursesListView):
+    def get_context_data(self, **kwargs):
+        context = super(SelectionSelectedCoursesListView, self).get_context_data(**kwargs)
+        selection_obj = context['selection'] = models.Selection.objects.get(slug=self.kwargs.get('slug'))
+        selection = {}
+        for crn, cid in Section.objects.filter(crn__in=selection_obj.crns).values_list('crn', 'course_id'):
+            selection.setdefault(cid, []).append(crn)
+        context['raw_selection'] = dumps(selection)
+        return context
 
 class ResponsePayloadException(Exception):
     "This exception is raised if a special form of HttpResponse is wanted to be returned (eg - JSON error response)."
@@ -88,23 +97,25 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
     def get_crns(self):
         "Returns the list of CRNs the user currently selected."
         requested_crns = self.request.GET.getlist('crn')
-        savepoint = int(self.request.GET.get('from', 0))
-        crns = []
-        for crn in requested_crns:
-            try:
-                crns.append(int(crn))
-            except (ValueError, TypeError):
-                pass
-        return crns
+        if requested_crns:
+            crns = []
+            for crn in requested_crns:
+                try:
+                    crns.append(int(crn))
+                except (ValueError, TypeError):
+                    pass
+            return crns
+        slug = self.request.GET.get('slug')
+        return models.Selection.objects.get(slug=slug).crns
 
-    def get_sections(self):
+    def get_sections(self, crns):
         """Return the collection of section objects that
         correspond to the user's selection of CRNs.
 
         The section object has select_related and conflict maps.
         """
         year, month = self.get_year_and_month()
-        sections = self.get_sections_by_crns(self.get_crns())
+        sections = self.get_sections_by_crns(crns)
 
         if len(sections) > SECTION_LIMIT:
             raise ResponsePayloadException(HttpResponseForbidden('invalid'))
@@ -246,11 +257,23 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
                 sections_output[section.crn] = section.toJSON()
         return courses_output, sections_output
 
+    def get_or_create_selection(self, crns):
+        "Creates a Selection model instance if it does not exist."
+        selection, created = models.Selection.objects.get_or_create(crns=crns)
+        if created:
+            selection.assign_slug_by_id()
+            selection.save()
+        return selection
+
     def get_context_data(self, **kwargs):
         "Outputs all the context data used to render the view."
         data = super(ComputeSchedules, self).get_context_data(**kwargs)
         year, month = self.get_year_and_month()
-        sections = self.get_sections()
+
+        crns = self.get_crns()
+
+        selection = self.get_or_create_selection(crns)
+        sections = self.get_sections(crns)
         selected_courses = self.reformat_to_selected_courses(sections)
         schedules = self.compute_schedules(selected_courses)
         schedules_output = self.prep_schedules_for_context(schedules)
@@ -268,12 +291,14 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
                 'courses': courses_output,
                 'sections': sections_output,
                 'section_mapping': self.get_section_mapping(selected_courses, schedules, periods),
+                'selection_slug': selection.slug,
             }
         else:
             context = {
                 'schedules': [],
                 'sem_year': year,
                 'sem_month': month,
+                'selection_slug': selection.slug,
             }
         data.update(context)
         return data
@@ -290,32 +315,31 @@ class JsonComputeSchedules(AjaxJsonResponseMixin, ComputeSchedules):
         return self.get_json_response(self.get_json_content_prefix() + self.convert_context_to_json(context))
 
 
-def schedules_bootloader(request, year, month):
+def schedules_bootloader(request, year, month, slug=None):
     """A simple view that loads the basic template and provides the
     URL for the javascript client to hit for the schedule computation.
     """
-    #crns = request.GET.get('crns')
-    #if crns is not None:
-    #    crns = [c for c in crns.split('-') if c.strip() != '']
-    #if crns is None:
-    #    selected_courses = request.session.get(SELECTED_COURSES_SESSION_KEY, {})
-    #    return redirect(reverse('schedules', kwargs=dict(year=year, month=month)) + '?crns=' + urllib.quote('-'.join(str(crn) for sections in selected_courses.values() for crn in sections)))
 
-    #prefix = 'crn='
-    #crns = prefix + ('&'+prefix).join(urllib.quote(str(crn)) for crn in crns)
+    semester = Semester.objects.get(year=year, month=month)
+    url = reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?'
+    try:
+        slug = slug or request.GET.get('slug')
+        selection = models.Selection.objects.get(slug=slug)
+        prefix = '&crn='
+        url += prefix + prefix.join(map(str, selection.crns))
+    except models.Selection.DoesNotExist:
+        selection = None
 
-    single_schedule = ''
-    # disabled for now... use JS
-    #schedule_offset = request.GET.get('at', '')
-    #if schedule_offset:
-    #    single_schedule = "&from=%s&limit=1" % urllib.quote(schedule_offset)
     return render_to_response('scheduler/placeholder_schedule_list.html', {
-        'ajax_url': reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?', # + crns + single_schedule,
-        'sem_year': year,
-        'sem_month': month,
+        'ajax_url': url,
+        'selection': selection,
+        'sem_year': semester.year,
+        'sem_month': semester.month,
     }, RequestContext(request))
 
-## OBSOLETE -- should remove below when implemented as class-based view.
+
+
+## TODO -- implement me
 
 def icalendar(request, year, month):
     "Exports a given calendar into ics format."

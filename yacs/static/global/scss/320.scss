@@ -85,7 +85,7 @@ a.button:hover, a.button:visited:hover {
 	h3 {
 		font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 		font-size: 500%;
-		margin: -50px 0 0 0;
+		margin: -10px 0 0 0;
 		padding: 0;
 	}
 	text-align: center;
@@ -175,7 +175,7 @@ header {
 		display: block;
 		padding: 8px;
 		color: #fff;
-		width: 80px;
+		min-width: 80px;
 		border: 0;
 		border-left: 1px solid #943030;
 		border-right: 1px solid #560000;
