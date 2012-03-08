@@ -5,10 +5,19 @@ from django.conf import settings
 from django.http import HttpResponse, Http404
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.contrib.auth.decorators import login_required
 
-__all__ = ['Renderer']
+__all__ = ['Renderer', 'login_required', 'staff_required']
 
+def staff_required(fn):
+    @login_required
+    @wraps(fn)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_staff:
+            raise PermissionDenied("You are not an admin")
+        return fn(request, *args, **kwargs)
+    return wrapper
 
 class AlternativeResponse(Exception):
     def __init__(self, response):
@@ -84,4 +93,5 @@ class Renderer(object):
                 context,
                 context_instance=RequestContext(request),
                 mimetype=settings['mimetype'])
+
 
