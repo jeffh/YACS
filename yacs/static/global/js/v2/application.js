@@ -20,28 +20,24 @@ Scheduler.State = Class.extend({
     else
       this.options.history.replaceState({path: url}, '', url);
   },
-  start: function(url){
+  start: function(){
     var self = this;
     $(this.options.bindEventTo).bind('popstate', function(){
-      self.load();
+      var index = parseInt($('#schedules').attr('data-start') || 0, 10);
+      self.load(location.pathname, index);
     });
   },
-  load: function(url){
+  load: function(url, index){
     url = url || location.pathname;
-    var args = this.parse_schedules_url(url);
-    this.load_schedules.apply(this, args);
+    var args = this.parseSchedulesURL(url);
+    args.push(index || 0);
+    this.loadSchedules.apply(this, args);
   },
-  parse_schedules_url: function(url){
+  parseSchedulesURL: function(url){
     var parts = url.split('/');
     return [parts[2], parts[3], parts[5]];
   },
-  build_schedules_url: function(year, month, slug){
-    var url = Scheduler.getURL().replace(/\?.+$/, '');
-    if (slug)
-      url += '?slug=' + slug;
-    return url;
-  },
-  load_schedules: function(year, month, slug, replaceState){
+  loadSchedules: function(year, month, slug, index, replaceState){
     var target = $('#schedules');
     var thumbnailsContainer = $('#thumbnails').hide();
     var self = this;
@@ -52,10 +48,15 @@ Scheduler.State = Class.extend({
       dataType: 'json',
       success: function(json){
         if(json.schedules && json.schedules.length){
-          var url = '/semesters/' + year + '/' + month + '/schedules/';
-          if (json.selection_slug) url += json.selection_slug + '/';
-
-          self.mark(url, replaceState);
+          function createURL(year, month, slug, index){
+            var url = '/semesters/' + year + '/' + month + '/schedules/';
+            if (json.selection_slug){
+              url += json.selection_slug + '/';
+              if (index > 0) url += index + '/';
+            }
+            return url;
+          }
+          var loadedURL = createURL(year, month, slug, index);
 
           // primary schedule view
           Scheduler.view = new ScheduleView({
@@ -64,6 +65,11 @@ Scheduler.State = Class.extend({
             scheduleIndex: 0,
             thumbnailsContainerEl: thumbnailsContainer
           }).render();
+
+          $(Scheduler.view).bind('scheduleIndexChanged', function(evt){
+            var url = createURL(year, month, slug, evt.index + 1);
+            self.mark(url, url === loadedURL);
+          });
 
           // thumbnails
           thumbnailsContainer.html('');
@@ -76,7 +82,7 @@ Scheduler.State = Class.extend({
             Scheduler.thumbnails.push(view);
             thumbnailsContainer.append(view.render().el);
           }
-          Scheduler.thumbnails[0].selectSchedule();
+          Scheduler.thumbnails[index].selectSchedule();
 
           return;
         }
@@ -102,53 +108,51 @@ Scheduler.State = Class.extend({
 
 // realtime search initialization
 $(function(){
-    var defaultHtml = $('#replacable-with-search').html();
-    var searchElement = $('#searchform');
-    if(searchElement.length){
-        var SearchForm = new RealtimeForm(searchElement, {
-            cache: true,
-            updateElement: '#replacable-with-search',
-            additionalGET: {partial: 1},
-            activityResponder: new ActivityResponder({
-              show: function(){
-                $('#search-spinner').show();
-              },
-              hide: function(){
-                $('#search-spinner').hide();
-              }
-            }),
-            suppressFormSubmit: true,
-            customHandler: function(form, fuse){
-                var dept = form.find('#d').val(),
-                    query = form.find('#q').val();
-                if(query === '' && dept === 'all'){
-                    $('#replacable-with-search').html(defaultHtml);
-                    return true;
-                }
-                fuse.start();
-                return false;
-            }
-        });
-    }
+  var defaultHtml = $('#replacable-with-search').html();
+  var searchElement = $('#searchform');
+  if(searchElement.length){
+    var SearchForm = new RealtimeForm(searchElement, {
+      cache: true,
+      updateElement: '#replacable-with-search',
+      additionalGET: {partial: 1},
+      activityResponder: new ActivityResponder({
+        show: function(){
+          $('#search-spinner').show();
+        },
+        hide: function(){
+          $('#search-spinner').hide();
+        }
+      }),
+      suppressFormSubmit: true,
+      customHandler: function(form, fuse){
+        var dept = form.find('#d').val(),
+        query = form.find('#q').val();
+        if(query === '' && dept === 'all'){
+          $('#replacable-with-search').html(defaultHtml);
+          return true;
+        }
+        fuse.start();
+        return false;
+      }
+    });
+  }
 });
 
 //  Selected Course Feature
 $(function(){
   // if we're pointed to a schedule... disable all saving features
   var isReadOnly = $('#courses').attr('data-readonly');
-  if (!isReadOnly){
-    // async saves makes the click feel faster
-    var saveFuse = new Fuse({ trigger: function(){ Scheduler.selection.save(); } });
-    $('#courses .course > input[type=checkbox], #courses .course .section > input[type=checkbox]').live('change', function(){
-      (this.checked ? Scheduler.selection.add(this) : Scheduler.selection.remove(this));
-      saveFuse.start();
-    });
-    // automatically refresh after any changes
-    var refresh = function(){
-      Scheduler.selection.refresh();
-    };
-    $(Scheduler.selection).bind('added', refresh).bind('removed', refresh);
-  }
+  // async saves makes the click feel faster
+  var saveFuse = new Fuse({ trigger: function(){ Scheduler.selection.save(); } });
+  $('#courses .course > input[type=checkbox], #courses .course .section > input[type=checkbox]').live('change', function(){
+    (this.checked ? Scheduler.selection.add(this) : Scheduler.selection.remove(this));
+    saveFuse.start();
+  });
+  // automatically refresh after any changes
+  var refresh = function(){
+    Scheduler.selection.refresh();
+  };
+  $(Scheduler.selection).bind('added', refresh).bind('removed', refresh);
 
   // must be on selected courses page
   if(!$('#selected_courses').length) return;
@@ -156,15 +160,32 @@ $(function(){
   // load alternative schedule
   var schedule = $('#courses').attr('data-selection');
   if (schedule){
-    Scheduler.selection = new Selection({
+    var selection = new Selection({
       store: new MemoryStore(),
       autoload: false
     }).set($.parseJSON($('#courses').attr('data-raw-selection')));
+    if (_.isEqual(Scheduler.selection.crns, selection.crns)){
+      // we're equal -- don't say anything
+    } else {
+      $('#notifications').fadeIn(1000);
+      Scheduler.selection = selection;
+      // 
+      $('a[data-action=adopt-selection]').bind('click', function(){
+        Scheduler.selection = new Selection().set($.parseJSON($(this).attr('data-raw-selection')));
+        Scheduler.selection.save();
+        // it's easier to just reload the page (letting the link follow through)
+        var spinner = $($('img.spinner').get(0)).clone().css({display: 'inline'});
+        var notifications = $('#notifications');
+        notifications.fadeOut(100, function(){
+          notifications.html(spinner).width($('.nav').width()).fadeIn(100);
+        });
+        $(this).unbind();
+      });
+    }
   }
 
   Scheduler.courseListView = new CourseListView({
     el: '#selected_courses',
-    course_ids: Scheduler.selection.getCourseIds(),
     selected: Scheduler.selection,
     isReadOnly: isReadOnly
   });
@@ -185,6 +206,8 @@ Scheduler.getURL = function(){
 // Bootloader for schedules
 $(function(){
   if(!$('#schedules').length) return;
+  // TODO: check if current selection already matches or not
+  $('#notifications').fadeIn(1000);
   Scheduler.state = new Scheduler.State({root: window.location.pathname});
-  Scheduler.state.start(Scheduler.getURL());
+  Scheduler.state.start();
 });

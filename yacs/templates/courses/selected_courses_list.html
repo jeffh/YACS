@@ -15,10 +15,10 @@
 {% endblock header %}
 
 {% block content %}
-<div id="notification">
-    <p>You are viewing a saved schedule.</p>
-    <p><a href="#adopt" data-action="adopt-selection" data-raw-selection="{{ raw_selection|escape }}">Copy this to edit</a> or <a href="{% url selected-courses sem_year,sem_month %}">revert back to your own selection</a>.</p>
-</div>
+{% if selection %}
+{% include 'scheduler/_saved_selection_notification.html' with selection=selection raw_selection=raw_selection sem_year=sem_year sem_month=sem_month %}
+{% endif %}
+
 <div id="courses" class="listview"{% if selection %} data-readonly="true" data-selection="{{ selection.slug }}" data-raw-selection="{{ raw_selection|escape }}"{% endif %}>
     {% csrf_token %}
     <ul id="selected_courses">

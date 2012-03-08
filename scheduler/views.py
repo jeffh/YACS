@@ -23,14 +23,17 @@ from scheduler.scheduling import compute_schedules
 ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')
 SECTION_LIMIT = getattr(settings, 'SECTION_LIMIT', 60)
 
+def compute_selection_dict(crns):
+    selection = {}
+    for crn, cid in Section.objects.filter(crn__in=crns).values_list('crn', 'course_id'):
+        selection.setdefault(cid, []).append(crn)
+    return selection
+
 class SelectionSelectedCoursesListView(SelectedCoursesListView):
     def get_context_data(self, **kwargs):
         context = super(SelectionSelectedCoursesListView, self).get_context_data(**kwargs)
-        selection_obj = context['selection'] = models.Selection.objects.get(slug=self.kwargs.get('slug'))
-        selection = {}
-        for crn, cid in Section.objects.filter(crn__in=selection_obj.crns).values_list('crn', 'course_id'):
-            selection.setdefault(cid, []).append(crn)
-        context['raw_selection'] = dumps(selection)
+        selection = context['selection'] = models.Selection.objects.get(slug=self.kwargs.get('slug'))
+        context['raw_selection'] = dumps(compute_selection_dict(selection.crns))
         return context
 
 class ResponsePayloadException(Exception):
@@ -315,10 +318,16 @@ class JsonComputeSchedules(AjaxJsonResponseMixin, ComputeSchedules):
         return self.get_json_response(self.get_json_content_prefix() + self.convert_context_to_json(context))
 
 
-def schedules_bootloader(request, year, month, slug=None):
+def schedules_bootloader(request, year, month, slug=None, index=None):
     """A simple view that loads the basic template and provides the
     URL for the javascript client to hit for the schedule computation.
     """
+
+    try:
+        index = int(index) - 1
+        assert index >= 0
+    except (ValueError, TypeError, AssertionError):
+        return redirect(reverse('schedules', kwargs=dict(year=year, month=month, slug=slug, index=1)))
 
     semester = Semester.objects.get(year=year, month=month)
     url = reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?'
@@ -333,8 +342,10 @@ def schedules_bootloader(request, year, month, slug=None):
     return render_to_response('scheduler/placeholder_schedule_list.html', {
         'ajax_url': url,
         'selection': selection,
+        'raw_selection': dumps(compute_selection_dict(selection.crns)) if selection else None,
         'sem_year': semester.year,
         'sem_month': semester.month,
+        'index': index,
     }, RequestContext(request))
 
 

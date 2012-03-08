@@ -790,7 +790,14 @@ var BaseScheduleView = TemplateView.extend({
   },
   getScheduleIndex: function(){ return this.scheduleIndex; },
   setScheduleIndex: function(index){
+    var old = index;
     this.scheduleIndex = index || 0;
+    $(this).trigger({
+      type:'scheduleIndexChanged',
+      sender: this,
+      index: this.scheduleIndex,
+      oldIndex: old
+    })
     return this;
   },
   getContext: function(){
@@ -860,15 +867,21 @@ var ScheduleView = BaseScheduleView.extend({
 
 
 var CourseListView = Backbone.View.extend({
+  beingRemoved: false,
   initialize: function(options){
     this.options.dows = options.dows || 'Monday Tuesday Wednesday Thursday Friday'.split(' ');
     this.options.isReadOnly = options.isReadOnly || false;
-    var courses = options.course_ids;
+    if (options.selected)
+      this.setSelection(options.selected);
+  },
+  setSelection: function(selection){
+    this.options.selected = selection;
+    var courses = this.options.selected.getCourseIds();
     if(!courses) return;
-
     this.collection = new CourseList();
     var self = this;
     courses.each(function(course_id){
+      if (self.beingRemoved) return;
       var c = new Course({id: course_id});
       c.fetch();
       self.collection.add(c, {slient: true});
@@ -876,6 +889,7 @@ var CourseListView = Backbone.View.extend({
     // don't receive change events until all the models have been fetched.
     var left = courses.length;
     this.collection.bind('change', function(){
+      if (self.beingRemoved) return;
       if (--left <= 0){
         self.render();
         left = 0;
@@ -885,7 +899,7 @@ var CourseListView = Backbone.View.extend({
       self.render();
   },
   render: function(){
-    var $target = $(this.options.el).empty(),
+    var $target = $(this.el).empty(),
       tmpl = this.options.template || templateFromElement('#course-template'),
       noneTmpl = this.options.emptyTemplate || templateFromElement('#no-courses-template');
     if (!this.collection.length){

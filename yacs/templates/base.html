@@ -20,6 +20,8 @@
 
 <body class="clearfix" id="{% block body-id %}{% endblock %}">
 
+<img class="spinner" src="{{ STATIC_URL }}img/spinner.gif" alt="Loading" style="display:none" />
+
 <header role="banner" class="clearfix">
 {% block header %}
 <h1>{% block app-title %}YACS{% endblock %}</h1>

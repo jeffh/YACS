@@ -278,6 +278,20 @@ header .alpha {
     font-size: 100%; }
 
 /* END SEARCHBOX */
+/* NOTIFICATIONS */
+#notifications {
+  background: #ffc;
+  border: 1px solid #999;
+  padding: 5px 0;
+  margin: 0 auto;
+  max-width: 590px; }
+  #notifications a:link {
+    text-decoration: underline; }
+  #notifications p {
+    padding: 0;
+    margin: 0; }
+
+/* END NOTIFICATIONS */
 /* LISTVIEW */
 .listview p {
   padding: 5px; }
