@@ -35,6 +35,7 @@ TEMP_ARCHIVE_NAME=yacs_project_deploy_archive
 PRODUCTION_ROOT=~/
 PRODUCTION_DIR_NAME=yacs-test
 PRODUCTION_SERVER=hui.afraid.org
+PRODUCTION_PRE_COMMAND=source .bashrc; source .bash_profile;
 # this is automatically defined when deploying to remote server
 #PRODUCTION=
 
@@ -92,7 +93,7 @@ clean:
 CD_PROJECT := cd $(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME)
 
 remote = \
-	  ssh $(PRODUCTION_SERVER) "$(1)"
+	  ssh $(PRODUCTION_SERVER) "$(PRODUCTION_PRE_COMMAND)$(1)"
 
 ifdef PRODUCTION_USE_VIRTUALENV
 USE_VIRTUALENV := source $(PRODUCTION_VIRTUALENV_LOCATION)/$(PRODUCTION_VIRTUALENV_NAME)/bin/activate && export YACS_ENV=production && 
@@ -101,8 +102,14 @@ USE_VIRTUALENV=
 endif
 
 deploy: backup_current create_tarball upload_and_extract_tarball remove_tarball
+	# set up virtualenv
+ifdef PRODUCTION_VIRTUALENV
+	$(call remote,$(CD_PROJECT) && make create_virtualenv PRODUCTION=1)
+endif
 	# install appropriate database drivers
-	$(call remote,$(CD_PROJECT) && make create_virtualenv PRODUCTION=1 && $(USE_VIRTUALENV) make install_requirements PRODUCTION=1 REQUIREMENTS=$(PRODUCTION_REQUIREMENTS))
+ifdef PRODUCTION_REQUIREMENTS
+	$(call remote,$(CD_PROJECT) && $(USE_VIRTUALENV) make install_requirements PRODUCTION=1 REQUIREMENTS=$(PRODUCTION_REQUIREMENTS))
+endif
 	# update production settings
 	$(call remote,$(CD_PROJECT) && rm -f $(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME)/yacs/settings/*.json)
 	scp $(PRODUCTION_SETTINGS) $(PRODUCTION_SERVER):$(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME)/yacs/settings/production.json
