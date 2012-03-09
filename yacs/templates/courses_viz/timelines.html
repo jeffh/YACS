@@ -1,0 +1,297 @@
+{% extends 'site_base.html' %}
+
+{% block title %}Timelines | {% endblock %}
+
+{% block app-title %}{{ block.super }} <span>Visuals</span>{% endblock %}
+
+{% block header %}
+{{ block.super }}
+{% include 'courses_viz/_nav.html' with selected='timelines' %}
+{% endblock header %}
+
+{% block head %}
+{{ block.super }}
+<style>
+  svg {
+    font: 10px sans-serif;
+  }
+
+  .rule line {
+    stroke: #aaa;
+    shape-rendering: crispEdges;
+  }
+
+  .line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
+  }
+  .dropshadow {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 4px;
+  }
+
+  circle.line {
+    fill: #000;
+  }
+</style>
+{% endblock head %}
+
+{% block content %}
+<h2>Departments</h2>
+<div id="viz1">
+  <p style="text-align:center"><img src="{{ STATIC_URL }}img/spinner.gif" alt="Loading" style="margin: 20px 0 20px 0"></p>
+  <p id="status" style="text-align:center"></p>
+</div>
+{% endblock content %}
+
+{% block javascript %}
+<script src="{{ STATIC_URL }}js/libs/underscore-1.2.0.min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/jquery-1.6.4.min.js"></script>
+<script src="{{ STATIC_URL }}d3/d3.v2.js"></script>
+<script src="{{ STATIC_URL }}js/utils.js"></script>
+<script>
+  var semestersURL = "{% url api:v4:semesters %}",
+  departmentsURL = "{% url api:v4:departments %}",
+  coursesURL = "{% url api:v4:courses %}",
+  sectionsURL = "{% url api:v4:sections %}";
+
+  var statusElement = document.getElementById('status');
+
+  function normalizeLinesByX(lines){
+    var ranges = [];
+    _.each($U.range(lines[0].length), function(i){
+      var pts = _.reduce(lines, function(accum, line){
+        accum.push(line[i].y);
+        return accum;
+      }, []);
+      ranges.push([d3.min(pts), d3.max(pts)]);
+    });
+    return _.map(lines, function(line){
+      return _.map(line, function(pt, i){
+        return _.extend(pt, {
+          y: pt.y / ranges[i][1]
+        });
+      });
+    });
+  }
+
+  function computeGraphArea(width, height, options){
+    options = _.extend({
+      padding: 0,
+      offset: [0, 0]
+    }, options);
+    return {
+      x: options.padding + options.offset[0],
+      y: options.padding + options.offset[1],
+      w: width - options.padding - 1 + options.offset[0],
+      h: height - options.padding - 1 + options.offset[1]
+    };
+  }
+
+  function process(selection, options){
+    options = $.extend({
+      tag: 'g',
+      exit: function(sel){ sel.remove(); },
+      enter: function(sel){ return sel.append(options.tag); },
+      selection: function(sel){ }
+    }, options);
+    if (!selection.empty())
+      options.exit(selection.exit());
+    var enter = selection.enter();
+    if (!enter.empty()){
+      var result = options.enter(enter);
+      if (!result.empty()){
+        options.selection(result);
+      }
+    }
+    options.selection(selection);
+    return selection;
+  }
+
+  function drawXRules(selection, xScale, graphArea){
+    selection.append('line')
+      .attr('x1', function(d){ return xScale(d);} )
+      .attr('x2', xScale)
+      .attr("y1", graphArea.y)
+      .attr("y2", graphArea.h);
+  }
+  function drawYRules(selection, yScale, graphArea){
+    selection.append('line')
+      .attr("y1", yScale)
+      .attr("y2", yScale)
+      .attr("x1", graphArea.x)
+      .attr("x2", graphArea.w);
+  }
+
+
+  function renderVisualization(vis, semesters, deptByIDs, numCoursesPerSemByDept){
+    var semesterIDs = _.map(semesters, function(s){ return s.id; });
+    var linesToDraw = [];
+    _.each(numCoursesPerSemByDept, function(numCoursesPerSem, deptID){
+      var data = [];
+      _.each(numCoursesPerSem, function(num, semID){
+        semID = parseInt(semID, 10);
+        data.push({
+          x: semesterIDs.indexOf(semID),
+          y: num,
+          // metadata
+          dept: $U.defaultsTo(deptByIDs[deptID], {}).code,
+          sem: semesters[semesterIDs.indexOf(semID)]
+        });
+      });
+      data = _.sortBy(data, function(d){ return d.x; });
+      linesToDraw.push(data);
+    });
+    linesToDraw = normalizeLinesByX(linesToDraw);
+
+    var
+    width = parseInt($(document.body).width(), 10),
+    height = 500,
+    maxY = d3.max(_.reduce(linesToDraw, function(nums, line){
+      return $U.mergeArrays(nums, _.map(line, function(pt){
+        return pt.y;
+      }));
+    }, []))
+    size = computeGraphArea(width, height, { padding: 50 });
+
+    vis.attr('width', '100%').attr('height', height);
+
+    var
+    x = d3.scale.linear().domain([0, semesters.length-1]).range([size.x, size.w]),
+    y = d3.scale.linear().domain([0, maxY]).range([size.h, size.y])
+    colors = d3.scale.category20b();
+
+    var selection = vis.selectAll('g.x.rule').data(x.ticks(semesters.length - 1));
+    process(selection, {
+      tag: 'g',
+      enter: function(s){ return s.attr('class', 'rule x'); },
+      selection: function(s){ drawXRules(s, x, size); }
+    });
+    process(vis.selectAll('g.y.rule').data(y.ticks(height % 40)), {
+      selection: function(s){ drawYRules(s.attr('class', 'rule y'), y, size); }
+    });
+
+    var line = d3.svg.line()
+    .x(function(d){ return x(d.x); })
+    .y(function(d){ return y(d.y); });
+
+    /*
+    vis.selectAll('path.dropshadow')
+    .data(linesToDraw)
+    .enter().append('svg:path')
+    .attr('class', 'dropshadow')
+    .attr('d', line)
+    .attr('filter', 'url(#FEdropshadow)');
+
+    var lines = vis.selectAll('path.line')
+    .data(linesToDraw)
+    .enter().append('svg:path')
+    .attr('class', 'line')
+    .attr('d', line)
+    .style('stroke', function(d, i){ return colors(i); });
+    */
+
+    process(vis.selectAll('path.dropshadow').data(linesToDraw), {
+      tag: 'svg:path',
+      selection: function(sel){
+        sel.attr('class', 'dropshadow')
+        .attr('d', line)
+        .attr('filter', 'url(#FEdropshadow)');
+      }
+    });
+
+    var lines = process(vis.selectAll('path.line').data(linesToDraw), {
+      tag: 'svg:path',
+      selection: function(sel){
+        sel.attr('d', line)
+        .style('stroke', function(d, i){ return colors(i); });
+      }
+    });
+
+    var originalWidth = vis.select('path.line').attr('stroke-width');
+    var shadowWidth = vis.select('path.dropshadow').attr('stroke-width');
+    var opacity = 0.5
+
+    lines.on('mouseover', function(){
+      var self = this;
+      d3.selectAll('path.line').filter(function(){ return this !== self; })
+      .style('stroke-width', '1px').style('opacity', opacity);
+      d3.selectAll('path.dropshadow').style('stroke-width', '1px');
+      d3.select(this)
+      .style('stroke-width', '10px');
+    }).on('mouseout', function(){
+      d3.selectAll('path.line').style('opacity', 1)
+      .transition()
+      .style('stroke-width', originalWidth);
+      d3.selectAll('path.dropshadow').style('stroke-width', shadowWidth);
+    });
+  }
+
+  // create visualization
+  function createVisualization(semesters, deptByIDs, numCoursesPerSemByDept){
+    $('#viz1').html('');
+    var vis = d3.select('#viz1').append('svg');
+
+    renderVisualization(vis, semesters, deptByIDs, numCoursesPerSemByDept);
+
+    $(window).resize($U.delayFunction(function(){
+      renderVisualization(vis, semesters, deptByIDs, numCoursesPerSemByDept);
+    }, 200));
+  }
+
+  // get data
+  statusElement.innerText = "Downloading semesters ...";
+  d3.json(semestersURL, function(json){
+    $U.assert(json.success, "Failed to download semesters.");
+
+    var semesters = json.result;
+    _.sortBy(semesters, function(s){
+      return s.year * 100 + s.month;
+    });
+
+    statusElement.innerText = "Downloading departments ...";
+    d3.json(departmentsURL, function(json){
+      $U.assert(json.success, "Failed to download departments ...");
+
+      var numCoursesPerSemByDept = {}; // deptID => {semesterID: courseCount}
+      var deptByIDs = {};
+      _.each(json.result, function(dept){
+        deptByIDs[dept.id] = dept;
+      })
+      deptByIDs.length = json.result.length;
+
+      var total = semesters.length * (deptByIDs.length - 1);
+
+      statusElement.innerText = $U.format("Downloading data (0 / %s) ...", total);
+      var barriers = $U.Barrier({
+        count: total,
+        sync: function(i){
+          statusElement.innerText = $U.format("Downloading data (%s / %s) ...", i, total);
+        },
+        complete: function(){
+          statusElement.innerText = "Done!";
+          createVisualization(semesters, deptByIDs, numCoursesPerSemByDept);
+        }
+      });
+
+      var c = 0;
+      _.each(deptByIDs, function(dept, did){
+        (function(c){
+          _.each(semesters, function(semester, i){
+            var sid = semester.id;
+            numCoursesPerSemByDept[did] = {};
+            d3.json(coursesURL + "?semester_id=" + sid + "&department_id=" + did, function(json){
+              $U.assert(json.success, "Failed to download courses ...");
+              numCoursesPerSemByDept[did][sid] = json.result.length;
+              barriers[i * c].notify();
+            });
+          });
+        })(c++);
+      });
+    });
+  });
+</script>
+
+{% endblock javascript %}

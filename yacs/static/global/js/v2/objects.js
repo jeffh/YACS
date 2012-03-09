@@ -325,6 +325,20 @@ var ActivityResponder = Class.extend({
 });
 
 
+// Simply stores it into memory, not persistent
+var MemoryStore = Class.extend({
+  init: function(container){
+    this.container = container;
+  },
+  setItem: function(key, string){ this.container[key] = string; },
+  getItem: function(key){ console.log(key); return this.container[key]; },
+  removeItem: function(key){
+    var value = this.container[key];
+    delete this.container[key];
+    return value;
+  },
+});
+
 // Provides a basic abstraction layer from the storage system
 // Keys can only be strings and values have to be serializable.
 // The default serialize & deserialize functions are JSON.stringify
@@ -722,25 +736,6 @@ var Selection = Class.extend({
   _getSectionElem: function(course_id, crn){
     return $('#' + this.options.section_id_format.format({cid: course_id, crn: crn}));
   },
-  fetchSchedules: function(){
-    var self = this;
-    $.ajax(this.options.scheduleURL, $.extend({
-      type: 'GET',
-      dataType: 'json',
-      success: function(json){
-        var args = [json, self];
-        json.schedules && json.schedules.length ?
-          $(self).trigger('fetchedSchedules', args) :
-          $(self).trigger('fetchedNoSchedules', args);
-      },
-      error: function(xhr, status){
-        var args = [xhr, status, self];
-        xhr.status === 403 ?
-          $(self).trigger('tooManyCRNsForSchedules', args) :
-          $(self).trigger('serverErrorForSchedules', args);
-      }
-    }));
-  },
   refresh: function(){
     // update DOM to reflect selection
     $(this.options.checkbox_selector).checked(false); // this can be a bottleneck if there's enough elements
@@ -795,7 +790,14 @@ var BaseScheduleView = TemplateView.extend({
   },
   getScheduleIndex: function(){ return this.scheduleIndex; },
   setScheduleIndex: function(index){
+    var old = index;
     this.scheduleIndex = index || 0;
+    $(this).trigger({
+      type:'scheduleIndexChanged',
+      sender: this,
+      index: this.scheduleIndex,
+      oldIndex: old
+    })
     return this;
   },
   getContext: function(){
@@ -865,14 +867,21 @@ var ScheduleView = BaseScheduleView.extend({
 
 
 var CourseListView = Backbone.View.extend({
+  beingRemoved: false,
   initialize: function(options){
     this.options.dows = options.dows || 'Monday Tuesday Wednesday Thursday Friday'.split(' ');
-    var courses = options.course_ids;
+    this.options.isReadOnly = options.isReadOnly || false;
+    if (options.selected)
+      this.setSelection(options.selected);
+  },
+  setSelection: function(selection){
+    this.options.selected = selection;
+    var courses = this.options.selected.getCourseIds();
     if(!courses) return;
-
     this.collection = new CourseList();
     var self = this;
     courses.each(function(course_id){
+      if (self.beingRemoved) return;
       var c = new Course({id: course_id});
       c.fetch();
       self.collection.add(c, {slient: true});
@@ -880,14 +889,17 @@ var CourseListView = Backbone.View.extend({
     // don't receive change events until all the models have been fetched.
     var left = courses.length;
     this.collection.bind('change', function(){
+      if (self.beingRemoved) return;
       if (--left <= 0){
         self.render();
         left = 0;
       }
     });
+    if (!courses.length)
+      self.render();
   },
   render: function(){
-    var $target = $(this.options.el).empty(),
+    var $target = $(this.el).empty(),
       tmpl = this.options.template || templateFromElement('#course-template'),
       noneTmpl = this.options.emptyTemplate || templateFromElement('#no-courses-template');
     if (!this.collection.length){
@@ -922,17 +934,12 @@ var CourseListView = Backbone.View.extend({
           var fmt = '{{ 0 }}-{{ 1 }}',
             start = FunctionsContext.time_parts(p.start_time),
             end = FunctionsContext.time_parts(p.end_time)
-          if(start > 12 && end > 12 || start <= 12 && end <= 12){
-            return fmt.format(
-              FunctionsContext.humanize_time(p.start_time),
-              FunctionsContext.humanize_time(p.end_time)
-            );
-          }
           return fmt.format(
-            FunctionsContext.humanize_time(p.start_time),
+            FunctionsContext.humanize_time(p.start_time, {includesAPM: false}),
             FunctionsContext.humanize_time(p.end_time)
           );
         },
+        isReadOnly: self.options.isReadOnly,
         course: course
       };
       $target.append(tmpl(context));
@@ -1128,19 +1135,24 @@ var FunctionsContext = {
     });
     return color_map;
   },
-  humanize_time: function(timestr){
+  humanize_time: function(timestr, options){
+    options = $.extend({
+      includesAPM: true
+    }, options);
     var parts = timestr.split(':'),
         hour = parseInt(parts[0], 10),
         minutes = parseInt(parts[1], 10),
-        apm = 'am';
+        apm = 'AM';
     if (hour === 0){
       hour = 12;
     } else if (hour > 12){
-      apm = 'pm';
+      apm = 'PM';
       hour = hour - 12;
     } else if (hour === 12){
-      apm = 'pm';
+      apm = 'PM';
     }
+    if (!options.includesAPM)
+      apm = '';
     if (minutes !== 0)
       return hour + ":" + (minutes < 10 ? '0' : '') + minutes + apm;
     return hour + apm;
@@ -1166,97 +1178,3 @@ var FunctionsContext = {
   }
 };
 
-var ScheduleUI = Class.extend({
-  options: {
-    selection: null, // object of course_id => crns
-    target: '#schedules',
-    schedulesURL: null,
-    scheduleTemplate: null,
-    thumbnailTemplate: null,
-    noSchedulesTemplate: null,
-    tooManyCRNsTemplate: null,
-    periodHeight: 30,
-    thumbnailPeriodHeight: 30
-  },
-  init: function(options){
-    $.extend(this.options, options);
-    assert(this.options.selection, 'selection option must be specified');
-    assert(this.options.scheduleTemplate, 'scheduleTemplate option must be specified');
-    assert(this.options.thumbnailTemplate, 'thumbnailTemplate option must be specified');
-    assert(this.options.noSchedulesTemplate, 'noSchedulesTemplate option must be specified');
-    assert(this.options.tooManyCRNsTemplate, 'tooManyCRNsTemplate  option must be specified');
-    this.options.scheduleTemplate.extendContext(FunctionsContext);
-    this.options.thumbnailTemplate.extendContext(FunctionsContext);
-    this.options.noSchedulesTemplate.extendContext(FunctionsContext);
-    this.options.tooManyCRNsTemplate.extendContext(FunctionsContext);
-  },
-  fetchSchedules: function(){
-    var self = this;
-    $.ajax(this.options.schedulesURL, {
-      type: 'GET',
-      dataType: 'json',
-      success: function(json){
-        if(json.schedules && json.schedules.length)
-          self.render_schedules(json);
-        else
-          self.render_no_schedules();
-      },
-      error: function(xhr, status){
-        // TODO: show a custom error page
-        if(xhr.status === 403){
-          self.render_too_many_crns();
-        } else {
-          //alert('Failed to get schedules... (are you connected to the internet?)');
-          // TODO: log to the server (if we can)
-          console.error('Failed to save to schedules: ' + xhr.status);
-        }
-      }
-    });
-    return this;
-  },
-  render_too_many_crns: function(){
-    this.options.tooManyCRNsTemplate.renderTo(this.options.target);
-  },
-  render_no_schedules: function(){
-    this.options.noSchedulesTemplate.renderTo(this.options.target);
-  },
-  render_schedules: function(json){
-    console.log('render_schedules', json);
-    var FC = FunctionsContext,
-      self = this,
-      contextExtensions = {
-        color_map: FC.create_color_map(json.schedules[0]),
-        get_period_height: function(){
-          return FC.get_period_height(period, this.is_thumbnail ? thumbnail_period_height : period_height);
-        },
-        get_period_offset: function(){
-          return FC.get_period_offset(period, this.is_thumbnail ? thumbnail_period_height : period_height);
-        }
-      };
-    this.options.scheduleTemplate.extendContext(contextExtensions);
-    this.options.thumbnailTemplate.extendContext(contextExtensions);
-    $(this.options.target).html('');
-
-    //var selected_schedule = get_schedule_id_from_state();
-    var selected_schedule = 0;
-    json.schedules.asyncEach(function(schedule, i){
-      var context = $.extend({}, json, {
-        sid: i + 1,
-        schedule: schedule,
-        is_thumbnail: false
-      });
-      var frag = $(self.options.scheduleTemplate.render(context));
-      context.is_thumbnail = true;
-      var thumb = $(self.options.thumbnailTemplate.render(context));
-      if (i !== selected_schedule) {
-        frag.hide();
-        //thumb.hide(); // TOOD: show if thumbnail mode
-      } else {
-        thumb.addClass('selected');
-      }
-      $('#schedules').append(frag);
-      $('#thumbnails').append(thumb);
-      console.log('rendering ' + (i+1) + ' of ' + context.schedules.length);
-    });
-  }
-});

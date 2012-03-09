@@ -242,6 +242,7 @@ class BaseSettings(SettingsCore):
             'courses',
             'scheduler',
             'api',
+            'courses_viz',
         )
 
         # A sample logging configuration. The only tangible logging
@@ -365,7 +366,7 @@ class BaseSettings(SettingsCore):
                     'devserver.modules.sql.SQLSummaryModule',
                     'devserver.modules.profile.ProfileSummaryModule',
 
-                    'devserver.modules.profile.LineProfilerModule',
+                    #'devserver.modules.profile.LineProfilerModule',
                 )
 
 

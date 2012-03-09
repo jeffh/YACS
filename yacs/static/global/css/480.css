@@ -19,6 +19,8 @@ body {
     width: 295px;
     margin: 0; }
 
+#courses .sections {
+  padding-right: 17px; }
 #courses .seats-left {
   top: 30px; }
 #courses .instructors {
@@ -26,20 +28,14 @@ body {
   font-size: 85%; }
   #courses .instructors ul {
     display: inline;
-    padding: 0;
-    /*
-    width: 300px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    */ }
+    padding: 0; }
   #courses .instructors li {
     margin: 0;
     border: 0;
     display: inline;
     padding: 0 2px;
     background: transparent;
-    color: #333;
+    color: #000;
     text-shadow: transparent 0 0 0;
     border-radius: 2px;
     -moz-border-radius: 2px;
@@ -63,9 +59,9 @@ body {
     -moz-border-radius: 0 0 2px 2px;
     -webkit-border-radius: 0 0 2px 2px; }
 #courses .no-seats .instructors li, #courses .no-seats .kinds li {
-  color: #777; }
+  color: #333; }
 #courses .notes ul {
-  padding: 0 0 0 15px; }
+  padding: 0 0 0 6px; }
 
 #schedules .class {
   width: 83.3333333%;
@@ -82,7 +78,26 @@ body {
       padding-right: 0.3em;
       font-size: 100%; }
 
-#selected_courses .sections {
-  padding-right: 25px; }
-  #selected_courses .sections .days li.item.empty {
-    display: inline; }
+#courses .course .clear, #selected_courses .course .clear {
+  margin-top: 20px; }
+#courses .sections, #selected_courses .sections {
+  padding-right: 17px; }
+  #courses .sections .days, #selected_courses .sections .days {
+    padding-left: 0;
+    clear: none; }
+    #courses .sections .days li.item.empty, #courses .sections .days li.item.selected, #selected_courses .sections .days li.item.empty, #selected_courses .sections .days li.item.selected {
+      display: block;
+      white-space: nowrap;
+      clear: none;
+      float: left;
+      width: 45%;
+      min-width: 230px;
+      margin-left: 17px; }
+    #courses .sections .days li.item.empty, #selected_courses .sections .days li.item.empty {
+      display: none; }
+    #courses .sections .days .short, #selected_courses .sections .days .short {
+      display: none; }
+    #courses .sections .days .long, #selected_courses .sections .days .long {
+      display: block; }
+    #courses .sections .days .times, #selected_courses .sections .days .times {
+      padding: 0; }

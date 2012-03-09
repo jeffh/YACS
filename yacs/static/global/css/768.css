@@ -20,31 +20,57 @@ body {
   overflow: visible;
   text-overflow: clip; }
 
-#courses input {
+#courses input, #selected_courses input {
   /* checkbox */
   top: 7px; }
-#courses li {
+#courses li, #selected_courses li {
   position: relative; }
-#courses .name {
+#courses .name, #selected_courses .name {
   font-size: 120%; }
-#courses .code {
+#courses .code, #selected_courses .code {
   font-size: 100%;
   float: left;
   padding-right: 5px; }
-#courses .seats-left {
+#courses .seats-left, #selected_courses .seats-left {
   font-size: 100%;
   top: 30px; }
-#courses .credits {
+#courses .credits, #selected_courses .credits {
   font-size: 100%;
   color: #555;
   display: block;
   float: left; }
-#courses .instructors {
+#courses .sections .days, #selected_courses .sections .days {
+  clear: left;
+  float: right;
+  position: relative;
+  top: -3em;
+  margin-bottom: -3em; }
+  #courses .sections .days li.item.empty, #courses .sections .days li.item.selected, #selected_courses .sections .days li.item.empty, #selected_courses .sections .days li.item.selected {
+    display: block;
+    min-width: initial;
+    width: 95px;
+    margin-left: 4px;
+    float: left; }
+  #courses .sections .days .long, #selected_courses .sections .days .long {
+    display: block;
+    float: none;
+    width: 96%;
+    border-right: 0; }
+  #courses .sections .days .times, #selected_courses .sections .days .times {
+    text-align: center; }
+    #courses .sections .days .times li, #selected_courses .sections .days .times li {
+      display: block;
+      padding: 0; }
+    #courses .sections .days .times li:after, #selected_courses .sections .days .times li:after {
+      content: ''; }
+#courses .sections .instructors, #selected_courses .sections .instructors {
   font-size: 95%;
-  padding-top: 2px;
-  clear: none; }
-  #courses .instructors li {
-    padding: 0 4px; }
+  float: left;
+  clear: left;
+  margin-left: 18px;
+  font-size: 105%; }
+  #courses .sections .instructors li, #selected_courses .sections .instructors li {
+    padding: 0; }
 
 #schedules {
   float: right;
@@ -59,7 +85,7 @@ body {
     padding-top: 1em;
     /*
     margin-right: 65px;
-    */ }
+     */ }
   #schedules .dayview {
     width: 135px;
     margin: 0 3px;
@@ -220,29 +246,3 @@ body {
       padding: 0; }
     #schedules .dayview .instructor {
       padding-top: 0.5em; }
-
-/* SELECTED COURSES */
-#selected_courses .sections {
-  font-size: 95%; }
-  #selected_courses .sections .section {
-    padding-top: 7px; }
-  #selected_courses .sections .days {
-    font-size: 100%;
-    margin: 0;
-    padding-left: 17px;
-    display: block;
-    clear: both; }
-    #selected_courses .sections .days li.item.empty {
-      display: none; }
-    #selected_courses .sections .days .short {
-      display: none; }
-    #selected_courses .sections .days .long {
-      display: inline; }
-  #selected_courses .sections .time {
-    margin: 0;
-    display: inline; }
-    #selected_courses .sections .time li {
-      float: right;
-      width: 120px; }
-
-/* END SELECTED COURSES */

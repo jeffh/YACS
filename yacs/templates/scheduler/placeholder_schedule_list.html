@@ -11,13 +11,17 @@
 
 {% block header %}
 {{ block.super }}
-{% include '_nav.html' with selected='schedules' %}
+{% include '_nav.html' with selected='schedules' selection=selection %}
 {% endblock header %}
 
 {% block content %}
+{% if selection %}
+{% include 'scheduler/_saved_selection_notification.html' with selection=selection raw_selection=raw_selection sem_year=sem_year sem_month=sem_month %}
+{% endif %}
+
 <div id="thumbnails">
 </div>
-<div id="schedules" data-source="{{ ajax_url }}">
+<div id="schedules" data-source="{{ ajax_url }}" data-start="{{ index }}">
 <p><img src="{{ STATIC_URL }}img/spinner.gif" alt="Loading" style="margin: 20px 0 20px 0"></p>
 <noscript>
     Sorry, javascript is required to view schedules :(

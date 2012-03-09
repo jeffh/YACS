@@ -16,10 +16,7 @@ urlpatterns = patterns('',
     url(r'^semesters/', include('courses.urls')),
     url(r'^semesters/', include('scheduler.urls')),
     url(r'^api/', include('api.urls', namespace='api')),
-    #url(r'^api/', include('api.urls', namespace='api')),
-    # Examples:
-    # url(r'^$', 'views.home', name='home'),
-    # url(r'^timetable/', include('foo.urls')),
+    url(r'^visuals/', include('courses_viz.urls', namespace='courses_viz')),
 
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),

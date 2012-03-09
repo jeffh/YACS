@@ -30,7 +30,7 @@ body {
     }
 }
 
-#courses {
+#courses, #selected_courses {
     input { /* checkbox */
         top: 7px;
     }
@@ -55,13 +55,48 @@ body {
         display: block;
         float: left;
     }
-    .instructors {
-        font-size: 95%;
-        padding-top: 2px;
-        clear: none;
+    .sections {
+        .days {
+            clear: left;
+            float: right;
+            position: relative;
+            top: -3em;
+            margin-bottom: -3em;
 
-        li {
-            padding: 0 4px;
+            li.item {
+                &.empty, &.selected {
+                    display: block;
+                    min-width: initial;
+                    width: 95px;
+                    margin-left: 4px;
+                    float: left;
+                }
+            }
+            .long {
+                display: block;
+                float: none;
+                width: 96%;
+                border-right: 0;
+            }
+            .times {
+                text-align: center;
+                li {
+                    display: block;
+                    padding: 0;
+                }
+                li:after { content: ''; }
+            }
+        }
+        .instructors {
+            font-size: 95%;
+            float: left;
+            clear: left;
+            margin-left: 18px;
+            font-size: 105%;
+
+            li {
+                padding: 0;
+            }
         }
     }
 }
@@ -83,7 +118,7 @@ body {
         padding-top: 1em;
         /*
         margin-right: 65px;
-        */
+         */
     }
     .dayview {
         width: 135px;
@@ -243,41 +278,3 @@ body {
     }
 }
 
-/* SELECTED COURSES */
-#selected_courses {
-    .sections {
-        font-size: 95%;
-        .section {
-            padding-top: 7px;
-        }
-        .days {
-            font-size: 100%;
-            margin: 0;
-            padding-left: 17px;
-            display: block;
-            clear: both;
-
-            li.item {
-                &.empty {
-                    display: none;
-                }
-            }
-
-            .short {
-                display: none;
-            }
-            .long {
-                display: inline;
-            }
-        }
-        .time {
-            margin: 0;
-            display: inline;
-            li {
-                float: right;
-                width: 120px;
-            }
-        }
-    }
-}
-/* END SELECTED COURSES */
