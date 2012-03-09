@@ -79,19 +79,11 @@ class DataFormatter(object):
 
 def wrap_request(render_settings, request, *args, **kwargs):
     def wrap_context(context):
-        data = {
+        return {
             'success': True,
             'result': context,
             'version': kwargs.get('version', 4),
         }
-        if DEBUG:
-            from django.db import connection
-            queries = connection.queries
-            data['DEBUG'] = encoders.default_encoder.encode({
-                'query_count': len(queries),
-                'queries': map(dict, queries),
-            })
-        return data
     formatter = DataFormatter(context_processor=wrap_context)
     formatter.convert_request(render_settings, request, *args, **kwargs)
 
