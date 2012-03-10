@@ -284,7 +284,10 @@ header .alpha {
   border: 1px solid #999;
   padding: 5px 0;
   margin: 0 auto;
-  max-width: 590px; }
+  max-width: 590px;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px; }
   #notifications a:link {
     text-decoration: underline; }
   #notifications p {

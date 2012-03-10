@@ -257,36 +257,28 @@ $.extend(Array.prototype, {
 });
 
 //////////////////////////////// Helper Objects ////////////////////////////////
-var Fuse = Class.extend({
-    timer: null,
-    options: {
-        delay: 200,
-        trigger: function(){},
-        cancelled: function(){}
-    },
-    init: function(options){
-        this.options = $.extend({}, this.options, options);
-    },
-    start: function(delay){
-        this.stop();
-        var self = this;
-        this.timer = setTimeout(function(){
-            self.trigger();
-        }, delay !== undefined ? delay : this.options.delay);
-    },
-    stop: function(suppressCancelEvent){
-        if (this.timer){
-            clearTimeout(this.timer);
-            this.timer = null;
-            if (!suppressCancelEvent)
-                this.options.cancelled.call(this);
-        }
-    },
-    trigger: function(){
-        this.options.trigger.call(this);
-        this.timer = null;
+var DelayedInvocation = function(fn, options){
+  var context = this;
+  var timer = null;
+  var opt = $.extend({
+    delay: 200,
+    cancelled: function(){}
+  }, options);
+  var stop = function(){
+    if (timer){
+      clearTimeout(timer);
+      opt.cancelled.call(context);
     }
-});
+    timer = null;
+  };
+  var invocation = function(){
+    timer = setTimeout(function(){
+      fn.call(this, arguments);
+    }, opt.delay);
+  };
+  invocation.abort = invocation.stop = stop;
+  return invocation;
+};
 
 // handles the associated events for showing activity indicators
 // to the user (aka - we're busy doing something)
@@ -963,19 +955,18 @@ var RealtimeForm = Class.extend({
         cache: false,
         additionalPOST: '',
         additionalGET: '',
-        suppressFormSubmit: false,
         triggerDelay: 200,
         customHandler: null
     },
     init: function(form, options){
         this.options = $.extend({}, this.options, options);
         this.form = $(form);
-        this.fuse = new Fuse({
+        this.callback = DelayedInvocation(this.sendRequest.bind(this), {
             delay: this.options.triggerDelay,
-            trigger: this.sendRequest.bind(this),
             cancelled: this.stopRequest.bind(this)
         });
         this.attachEvents();
+        this._previousValue = this.getMethodData();
     },
     _asQueryString: function(obj){
       var type = $.type(obj);
@@ -1048,21 +1039,19 @@ var RealtimeForm = Class.extend({
         this.showActivityIndicator();
         // call custom hook which can override the default behavior if necessary
         if (this.options.customHandler){
-            if (this.options.customHandler(this.form, this.fuse))
+            if (this.options.customHandler(this.form, this.callback))
                 this.hideActivityIndicator();
         } else {
-            this.fuse.start();
+            this.callback();
         }
-    },
-    formSubmitted: function(evt){
-        if (this.options.suppressFormSubmit){
-            this.initiateRequest();
-        }
-        return !this.options.suppressFormSubmit;
     },
     changed: function(evt){
-        console.log(evt.type, evt);
-        this.initiateRequest();
+        var newValue = this.getMethodData();
+        if (this._previousValue !== newValue){
+          this.initiateRequest();
+          this._previousValue = newValue;
+        }
+        return false;
     },
     showActivityIndicator: function(){
       Utils.sendMessage(this.options.activityResponder, 'show');
@@ -1072,22 +1061,14 @@ var RealtimeForm = Class.extend({
     },
     keyDownSelector: 'input[type=text], input[type=search], textarea',
     detachEvents: function(){
-        if (this.options.suppressFormSubmit && this._formSubmitted)
-            this.form.unbind('submit', this._formSubmit);
-
         if (this._changed){
             var self = this;
             this.form.find('input, textarea, select').each(function(){
                 var $el = $(this);
                 if ($el.is(self.keyDownSelector))
                     $el.unbind('keyup', self._changed);
-                if (this._formSubmitted && $el.is('input[type=search]'))
-                    $el.unbind('search', self._formSubmitted);
-                $el.unbind('change', self._changed);
+                //$el.unbind('change', self._changed);
             });
-        }
-        if (this._formSubmitted){
-            this.form.submit(this._formSubmit);
         }
     },
     attachEvents: function(){
@@ -1100,13 +1081,8 @@ var RealtimeForm = Class.extend({
                 $el.keyup(self._changed);
             if ($el.is('input[type=search]'))
                 $el.bind('search', self._changed);
-            $el.bind('change', self._changed);
+            //$el.bind('change', self._changed);
         });
-
-        if (this.options.suppressFormSubmit){
-            this._formSubmitted = this.formSubmitted.bind(this);
-            this.form.submit(this._formSubmit);
-        }
     }
 });
 

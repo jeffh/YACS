@@ -29,6 +29,7 @@ Scheduler.State = Class.extend({
   },
   load: function(url, index){
     url = url || location.pathname;
+    console.log(url);
     var args = this.parseSchedulesURL(url);
     args.push(index || 0);
     this.loadSchedules.apply(this, args);
@@ -48,7 +49,7 @@ Scheduler.State = Class.extend({
       dataType: 'json',
       success: function(json){
         if(json.schedules && json.schedules.length){
-          function createURL(year, month, slug, index){
+          var createURL = function(year, month, slug, index){
             var url = '/semesters/' + year + '/' + month + '/schedules/';
             if (json.selection_slug){
               url += json.selection_slug + '/';
@@ -106,11 +107,12 @@ Scheduler.State = Class.extend({
 ///////////////////////////////////////////////////
 // Hooks
 
-// realtime search initialization
+// realtime search
 $(function(){
-  var defaultHtml = $('#replacable-with-search').html();
   var searchElement = $('#searchform');
   if(searchElement.length){
+    var defaultHtml = $('#replacable-with-search').html();
+    searchElement.submit(function(){ return false; });
     var SearchForm = new RealtimeForm(searchElement, {
       cache: true,
       updateElement: '#replacable-with-search',
@@ -125,14 +127,18 @@ $(function(){
       }),
       suppressFormSubmit: true,
       customHandler: function(form, fuse){
-        var dept = form.find('#d').val(),
         query = form.find('#q').val();
-        if(query === '' && dept === 'all'){
+        if($.trim(query) === ''){
           $('#replacable-with-search').html(defaultHtml);
+          //Scheduler.selection.refresh();
           return true;
         }
-        fuse.start();
+        fuse();
         return false;
+      },
+      success: function(value){
+        $('#replacable-with-search').html(value);
+        Scheduler.selection.refresh();
       }
     });
   }
@@ -143,16 +149,18 @@ $(function(){
   // if we're pointed to a schedule... disable all saving features
   var isReadOnly = $('#courses').attr('data-readonly');
   // async saves makes the click feel faster
-  var saveFuse = new Fuse({ trigger: function(){ Scheduler.selection.save(); } });
+  var saveFuse = DelayedInvocation(function(){ Scheduler.selection.save(); });
   $('#courses .course > input[type=checkbox], #courses .course .section > input[type=checkbox]').live('change', function(){
     (this.checked ? Scheduler.selection.add(this) : Scheduler.selection.remove(this));
-    saveFuse.start();
+    saveFuse();
   });
   // automatically refresh after any changes
   var refresh = function(){
     Scheduler.selection.refresh();
   };
   $(Scheduler.selection).bind('added', refresh).bind('removed', refresh);
+
+  refresh();
 
   // must be on selected courses page
   if(!$('#selected_courses').length) return;

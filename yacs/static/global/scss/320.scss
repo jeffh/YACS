@@ -234,6 +234,8 @@ header {
     margin: 0 auto;
     max-width: $nav-width * 2;
 
+    @include border-radius(3px);
+
     a:link {
         text-decoration: underline;
     }
