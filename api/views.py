@@ -6,14 +6,14 @@ from django.views.generic import ListView, DetailView
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.conf import settings
 
-from courses.utils import ObjectJSONEncoder, dict_by_attr, DAYS
+from courses.utils import ObjectJSONEncoder, dict_by_attr, DAYS, int_list
 from courses.views import decorators
 from courses import models, views
 from courses import encoder as encoders
 
 from scheduler.models import SectionConflict, Selection, SectionProxy
 from scheduler.domain import (
-    ConflictCache, parse_crns, has_schedule, compute_schedules, period_stats
+    ConflictCache, has_schedule, compute_schedules, period_stats
 )
 
 
@@ -112,34 +112,35 @@ def raw_data(request, data, version=None, ext=None):
 @render()
 def semesters(request, id=None, version=None, ext=None):
     queryset = models.Semester.objects.optional_filter(
-        id__in=request.GET.getlist('id') or None,
-        courses__id__in=request.GET.getlist('course_id') or None,
-        departments__id__in=request.GET.getlist('department_id') or None,
+        id__in=int_list(request.GET.getlist('id')) or None,
+        courses__id__in=int_list(request.GET.getlist('course_id')) or None,
+        departments__id__in=int_list(request.GET.getlist('department_id')) or None,
         year=request.GET.get('year'), month=request.GET.get('month'),
         id=id,
-    )
+    ).distinct()
     return { 'context': get_if_id_present(queryset, id) }
 
 @render()
 def departments(request, id=None, version=None, ext=None):
     queryset = models.Department.objects.optional_filter(
-        id__in=request.GET.getlist('id') or None,
-        semesters__id__in=request.GET.getlist('semester_id') or None,
+        id__in=int_list(request.GET.getlist('id')) or None,
+        semesters__id__in=int_list(request.GET.getlist('semester_id')) or None,
+        courses__id__in=int_list(request.GET.getlist('course_id')) or None,
         code__in=request.GET.getlist('code') or None,
         id=id,
-    )
+    ).distinct()
     return { 'context': get_if_id_present(queryset, id) }
 
 @render()
 def courses(request, id=None, version=None, ext=None):
     queryset = models.Course.objects.optional_filter(
-        semesters__id__in=request.GET.get('semester_id') or None,
+        semesters__id__in=int_list(request.GET.get('semester_id')) or None,
         department__code__in=request.GET.get('department_code') or None,
-        department__id__in=request.GET.get('department_id') or None,
-        number__in=request.GET.get('number') or None,
-        id__in=request.GET.get('id') or None,
+        department__id__in=int_list(request.GET.get('department_id')) or None,
+        number__in=int_list(request.GET.get('number')) or None,
+        id__in=int_list(request.GET.getlist('id')) or None,
         id=id,
-    )
+    ).distinct()
     search_query = request.GET.get('search')
     queryset = queryset.search(search_query)
     return { 'context': get_if_id_present(queryset, id) }
@@ -147,18 +148,19 @@ def courses(request, id=None, version=None, ext=None):
 @render()
 def sections(request, id=None, version=None, ext=None):
     queryset = models.SectionPeriod.objects.optional_filter(
-        semester__id__in=request.GET.getlist('semester_id') or None,
-        section__course__id__in=request.GET.getlist('course_id') or None,
-        section__id__in=request.GET.getlist('id') or None,
-        section__crn__in=request.GET.getlist('crn') or None,
+        semester__id__in=int_list(request.GET.getlist('semester_id')) or None,
+        section__course__id__in=int_list(request.GET.getlist('course_id')) or None,
+        section__id__in=int_list(request.GET.getlist('id')) or None,
+        section__crn__in=int_list(request.GET.getlist('crn')) or None,
         section__id=id,
     ).select_related('section', 'period')
     section_periods = encoders.default_encoder.encode(queryset)
-    sections = []
+    sections = {}
     for section_period in section_periods:
-        sections.append(section_period['section'])
+        section = section_period['section']
+        section = sections.get(section['id'], section)
 
-        section_period['section']['section_times'] = section_period
+        section.setdefault('section_times', []).append(section_period)
         # to prevent infinite recursion
         del section_period['section']
 
@@ -166,21 +168,40 @@ def sections(request, id=None, version=None, ext=None):
         del section_period['period']
         section_period.update(period)
 
-    return { 'context': sections }
+        sections[section['id']] = section
+
+    return { 'context': sections.values() }
 
 
 @render()
 def section_conflicts(request, id=None, version=None, ext=None):
     conflicts = SectionConflict.objects.by_unless_none(
         id=id,
-        id__in=request.GET.getlist('id') or None,
-        crn__in=request.GET.getlist('crn') or None,
+        id__in=int_list(request.GET.getlist('id')) or None,
+        crn__in=int_list(request.GET.getlist('crn')) or None,
     ).values_list('section1__id', 'section2__id')
     mapping = {}
     for s1, s2 in conflicts:
-        mapping.setdefault(s1, []).append(s2)
-        mapping.setdefault(s2, []).append(s1)
-    return { 'context': mapping }
+        mapping.setdefault(s1, set()).add(s2)
+        mapping.setdefault(s2, set()).add(s1)
+    if id is not None:
+        return {
+            'context': {
+                'id': int(id),
+                'conflicts': list(mapping[int(id)])
+            }
+        }
+
+    collection = []
+    ids = set(parse_crns(request.GET.getlist('id')))
+    for section_id, conflicts in mapping.items():
+        if section_id not in ids:
+            continue
+        collection.append({
+            'id': section_id,
+            'conflicts': list(conflicts),
+        })
+    return { 'context': collection }
 
 
 @render()
@@ -190,7 +211,7 @@ def schedules(request, slug=None, version=None):
         selection = Selection.objects.get(slug=slug)
         crns = selection.crns
     else:
-        crns = parse_crns(request.GET.getlist('crn'))
+        crns = int_list(request.GET.getlist('crn'))
 
     if not selection:
         selection, created = Selection.objects.get_or_create(crns=crns)

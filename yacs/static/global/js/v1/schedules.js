@@ -179,8 +179,6 @@ function show_schedules(context){
         clearTimeout(timeout);
     });
 
-    console.log(context);
-
     var selected_schedule = get_schedule_id_from_state();
 
     renderers = [];

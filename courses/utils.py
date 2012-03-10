@@ -58,6 +58,18 @@ def dict_by_attr(collection, attrname, value_attrname=None):
     return mapping
 
 
+def int_list(str_of_integers):
+    if not str_of_integers:
+        return []
+    ints = set()
+    for num in str_of_integers:
+        try:
+            ints.add(int(num))
+        except (ValueError, TypeError):
+            pass
+    return list(ints)
+
+
 def options(amount=None):
     """Provides values for options which can be ORed together.
 

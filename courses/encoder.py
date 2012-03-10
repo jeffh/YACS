@@ -54,8 +54,33 @@ def get_select_related_fields(queryset):
 def get_prefetch_cache(model):
     return getattr(model, '_prefetched_objects_cache', {})
 
+class CoursesEncoderDelegate(object):
+    def encoded_model(self, model, obj):
+        if isinstance(model, models.Period):
+            del obj['days_of_week_flag']
+            obj['days_of_the_week'] = model.days_of_week
+            return
+        return obj
 
 class Encoder(object):
+    """Handles the encoding of objects into basic python data structures.
+
+    Primarily features the ability to encode django models.
+    """
+    def __init__(self, delegate=None):
+        self.delegate = delegate
+
+    def _invoke(self, name, *args, **kwargs):
+        method = getattr(self.delegate, name, None)
+        if callable(method):
+            return method(*args, **kwargs)
+        return None
+
+    def _result_or_obj(self, result, obj):
+        if result is not None:
+            return result
+        return obj
+
     def encode_normal_fields(self, model):
         obj = {}
         for field_name in get_normal_field_names(model):
@@ -92,13 +117,14 @@ class Encoder(object):
         obj.update(self.encode_fk_fields(model))
         obj.update(self.encode_select_related(model, select_related))
         obj.update(self.encode_prefetch_cache(model))
-        return obj
+        return self._result_or_obj(self._invoke('encoded_model', model, obj), obj)
 
     def encode_queryset(self, queryset, read_select_related=True):
         select_related = ()
         if read_select_related:
             select_related = get_select_related_fields(queryset)
-        return [self.encode_model(m, select_related) for m in queryset]
+        obj = [self.encode_model(m, select_related) for m in queryset]
+        return self._result_or_obj(self._invoke('encoded_queryset', queryset, obj), obj)
 
     def encode(self, value):
         if hasattr(value, 'query'): # queryset
@@ -107,12 +133,14 @@ class Encoder(object):
             return self.encode_model(value)
         elif isinstance(value, list) or isinstance(value, tuple):
             if len(value) and hasattr(value[0], '_meta'):
-                return list(map(self.encode_model, value))
+                obj = list(map(self.encode_model, value))
+                return self._result_or_obj(
+                        self._invoke('encoded_list', value, obj), obj)
         elif isinstance(value, dict):
             for key in value.keys():
                 value[key] = self.encode(value[key])
-        return value
+            return self._result_or_obj(self._invoke('encoded_dict', value), value)
+        return self._result_or_obj(self._invoke('encode_value', value), value)
 
-
-default_encoder = Encoder()
+default_encoder = Encoder(CoursesEncoderDelegate())
 

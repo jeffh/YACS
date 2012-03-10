@@ -12,9 +12,10 @@
 
 <head>
 <meta charset="utf-8">
-{% if sem_year and sem_month %}
-<meta name="spinner-url" content="{{ STATIC_URL }}img/spinner.gif">
+{% if semester %}
+<meta name="semester-id" content="{{ semester.id }}">
 {% endif %}
+<meta name="spinner-url" content="{{ STATIC_URL }}img/spinner.gif">
 {% block head %}{% endblock %}
 </head>
 

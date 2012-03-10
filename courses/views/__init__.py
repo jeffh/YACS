@@ -37,6 +37,7 @@ class SelectedCoursesListView(SemesterBasedMixin, TemplateView):
     def get_context_data(self, **kwargs):
         year, month = self.get_year_and_month()
         context = super(SelectedCoursesListView, self).get_context_data(**kwargs)
+        context['semester'] = self.get_semester()
         context['departments'] = models.Department.objects.by_semester(year, month)
         return context
 

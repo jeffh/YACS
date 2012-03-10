@@ -52,7 +52,7 @@
         <span class="name"><%- course.get('name') %></span>
         <span class="secondary">
             <span class="code">
-                <span class="dept"><%- course.get('department').code %></span>
+                <span class="dept"><%- course.get('department').get('code') %></span>
                 <span class="number"><%- course.get('number') %></span>
             </span>
             <span class="credits">
@@ -98,7 +98,7 @@
                             <span class="section-seats-left none">No seats left</span>
                             <% } else { %>
                             <span class="section-seats-left">
-                                <span class="number"><%- section.get('seats_left') %></span> seat<%- section.get('seats_left') === 1 ? '' : 's' %> left
+                                <span class="number"><%- section.getSeatsLeft() %></span> seat<%- section.getSeatsLeft() === 1 ? '' : 's' %> left
                             </span>
                             <% } %>
                             <div class="instructors">
@@ -110,7 +110,7 @@
                             </div>
                         </label>
                         <ul class="days">
-                            <% var times = periodsByDayOfWeek(section.get('periods')); %>
+                            <% var times = periodsByDayOfWeek(section.getPeriods()); %>
                             <% for(var i3=0, l3=days_of_the_week.length; i3<l3; i3++){ var dow = days_of_the_week[i3]; %>
                                 <li class="item <%- times[dow].length ? 'selected' : 'empty' %>">
                                     <span class="short"><%- dow %></span>

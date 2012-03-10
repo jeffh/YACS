@@ -24,15 +24,6 @@ class ConflictCache(object):
         )
 
 
-def parse_crns(str_of_crns):
-    crns = set()
-    for crn in str_of_crns:
-        try:
-            crns.add(int(crn))
-        except (ValueError, TypeError):
-            pass
-    return list(crns)
-
 
 def has_schedule(selected_courses, section_constraint=None):
     schedules = _compute_schedules(

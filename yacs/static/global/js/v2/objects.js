@@ -46,6 +46,24 @@ root.Utils = {
     console.log('time', diff, msg || '');
     return result;
   },
+  param: function(params){
+    var queryParts = [];
+    _.each(params, function(value, key){
+      var t = $.type(value);
+      if(t === 'undefined' || t === 'null'){
+        // do nothing
+      } else if(t === 'array'){
+        _.each(value, function(item){
+          queryParts.push(encodeURI(key) + '=' + encodeURI(item));
+        });
+      } else if (t === 'object'){
+        throw "Cannot parameterize object.";
+      } else {
+        queryParts.push(encodeURI(key) + '=' + encodeURI(value));
+      }
+    });
+    return queryParts.join('&');
+  },
   integer: function(i){ return parseInt(i, 10); },
   getCookie: function(name) {
     var cookieValue = null;
@@ -323,7 +341,7 @@ var MemoryStore = Class.extend({
     this.container = container;
   },
   setItem: function(key, string){ this.container[key] = string; },
-  getItem: function(key){ console.log(key); return this.container[key]; },
+  getItem: function(key){ return this.container[key]; },
   removeItem: function(key){
     var value = this.container[key];
     delete this.container[key];
@@ -447,32 +465,50 @@ var Template = Class.extend({
   }
 });
 
+////////////////////////////// Data Utils ///////////////////////////////
+var getCurrentSemesterID = function(){
+  return parseInt($('meta[name=semester-id]').attr('content'), 10);
+};
+
 //////////////////////////////// Models ////////////////////////////////
 ModelBase = Backbone.Model.extend({
-  parse: function(response){ return response.payload; }
+  parse: function(response){ return response.result || response; }
 });
 
 var Semester = ModelBase.extend({
-  urlRoot: '/api/2/'
+  urlRoot: '/api/4/semesters/'
 });
 
-var Period = ModelBase.extend({ });
+var Department = ModelBase.extend({
+  urlRoot: '/api/4/departments/'
+});
 
 var Section = ModelBase.extend({
-  urlRoot: '/api/2/latest/sections/',
+  urlRoot: '/api/4/sections/',
   getPeriods: function(){
-    return new PeriodList(this.get('periods'));
+    return new PeriodList(this.get('section_times'));
   },
   getInstructors: function(){
     return this.getPeriods().pluck('instructor');
   },
   getKinds: function(){
     return this.getPeriods().pluck('kind');
+  },
+  getSeatsLeft: function(){
+    return this.get('seats_total') - this.get('seats_taken');
+  }
+});
+
+var SectionConflict = ModelBase.extend({
+  urlRoot: '/api/4/conflicts/',
+  conflictsWith: function(sectionID){
+    return _.include(this.get('conflicts'), sectionID);
   }
 });
 
 var Course = ModelBase.extend({
-  urlRoot: '/api/2/latest/courses/',
+  urlRoot: '/api/4/courses/',
+  defaults: {sections: [], department: null, notes: []},
   getSections: function(){
     var sortedSections = _.sortBy(this.get('sections'), function(section){ 
       return section.number;
@@ -486,7 +522,7 @@ var Course = ModelBase.extend({
   },
   getSeatsLeft: function(){
     return this.getSections().reduce(function(a, b){
-      return a + b.get('seats_left');
+      return a + b.getSeatsLeft();
     }, 0);
   },
   getSeatsTaken: function(){
@@ -515,7 +551,8 @@ var Course = ModelBase.extend({
   },
   getNotes: function(){
     return this.getSections().reduce(function(notes, section){
-      section.get('notes').each(function(note){
+      console.log(section);
+      section.get('notes').split('\n').each(function(note){
         notes.push(note);
       });
       return notes;
@@ -537,13 +574,13 @@ var Schedule = ModelBase.extend({
   getCRNsForCourseID: function(cid){ return this.get('mapping')[cid]; }
 });
 
-// TODO: implement
-var SectionConflict = ModelBase.extend({
-  urlRoot: '/api/2/latest/section-conflicts/'
-});
 
 //////////////////////////////// Collections ////////////////////////////////
 var CollectionBase = Backbone.Collection.extend({
+  initialize: function(models, options){
+    this.options = _.extend({semester_ids: getCurrentSemesterID()}, options);
+  },
+  parse: function(response){ return response.result; },
   reload: function(){
     this.each(function(model){ model.fetch(); });
   }
@@ -551,21 +588,62 @@ var CollectionBase = Backbone.Collection.extend({
 
 var SemesterList = CollectionBase.extend({
   model: Semester,
-  url: '/api/2/'
+  url: '/api/4/semesters/'
 });
 
-var PeriodList = CollectionBase.extend({
-  model: Period,
+var DepartmentList = CollectionBase.extend({
+  model: Department,
+  parse: function(response){ return response.result; },
+  url: function(){
+    return '/api/4/departments/?' + Utils.param({
+      id: this.options.ids,
+      course_id: this.options.course_ids,
+      semester_id: this.options.semester_ids,
+      code: this.options.codes
+    });
+  }
 });
+
+// created locally by sections
+var PeriodList = CollectionBase.extend({});
 
 var SectionList = CollectionBase.extend({
   model: Section,
-  url: '/api/2/latest/sections'
+  url: function(){
+    return '/api/4/sections/?' + Utils.param({
+      id: this.options.ids,
+      course_id: this.options.course_ids,
+      semester_id: this.options.semester_ids,
+      crn: this.options.crns
+    });
+  }
 });
 
 var CourseList = CollectionBase.extend({
   model: Course,
-  url: '/api/2/latest/courses/'
+  url: function(){
+    return '/api/4/courses/?' + Utils.param({
+      semester_id: this.options.semester_ids,
+      department_code: this.options.department_codes,
+      department_id: this.options.department_ids,
+      number: this.options.numbers,
+      id: this.options.ids
+    });
+  }
+});
+
+var SectionConflictList = CollectionBase.extend({
+  model: SectionConflict,
+  url: function(){
+    return '/api/4/conflicts/?' + Utils.param({
+      id: this.options.ids
+    });
+  },
+  sections_conflict: function(sid1, sid2){
+    return (this.get(sid1) && this.get(sid1).conflictsWith(sid2)) || (
+      this.get(sid2) && this.get(sid2).conflictsWith(sid1)
+    );
+  }
 });
 
 /*
@@ -868,40 +946,41 @@ var CourseListView = Backbone.View.extend({
   },
   setSelection: function(selection){
     this.options.selected = selection;
-    var courses = this.options.selected.getCourseIds();
+    var courseIDs = this.options.selected.getCourseIds();
     if(!courses) return;
-    this.collection = new CourseList();
     var self = this;
-    courses.each(function(course_id){
-      if (self.beingRemoved) return;
-      var c = new Course({id: course_id});
-      c.fetch();
-      self.collection.add(c, {slient: true});
-    });
-    // don't receive change events until all the models have been fetched.
-    var left = courses.length;
-    this.collection.bind('change', function(){
-      if (self.beingRemoved) return;
-      if (--left <= 0){
+    this.courses = new CourseList(null, {ids: courseIDs});
+    this.sections = new SectionList(null, {course_ids: courseIDs});
+    this.departments = new DepartmentList(null, {course_ids: courseIDs});
+
+    var count = 3;
+    var process = function(){
+      if (--count <= 0){
+        self.courses.each(function(course){
+          course.set('department', self.departments.get(course.get('department_id')));
+          course.set('sections', self.sections.filter(function(section){
+            return section.get('course_id') === course.id;
+          }));
+        });
         self.render();
-        left = 0;
       }
-    });
-    if (!courses.length)
-      self.render();
+    };
+    this.departments.fetch({success: process});
+    this.courses.fetch({success: process});
+    this.sections.fetch({success: process});
+
   },
   render: function(){
     var $target = $(this.el).empty(),
       tmpl = this.options.template || templateFromElement('#course-template'),
       noneTmpl = this.options.emptyTemplate || templateFromElement('#no-courses-template');
-    if (!this.collection.length){
+    if (!this.courses.length){
       $target.html(noneTmpl());
       return this;
     }
 
     var self = this;
-    this.collection.each(function(id){
-      var course = self.collection.get(id);
+    this.courses.each(function(course){
       if (course.isNew()) return;
       var sections = course.sections;
       var context = {
@@ -913,7 +992,7 @@ var CourseListView = Backbone.View.extend({
             remapped_periods[dow] = [];
           });
           _.toArray(periods).each(function(period){
-            period.days_of_the_week.each(function(dow){
+            period.get('days_of_the_week').each(function(dow){
               remapped_periods[dow].push(period);
             });
           });
@@ -923,12 +1002,13 @@ var CourseListView = Backbone.View.extend({
           return self.options.selected.containsCRN(crn);
         },
         displayPeriod: function(p){
+          console.log('displayPeriod', p);
           var fmt = '{{ 0 }}-{{ 1 }}',
-            start = FunctionsContext.time_parts(p.start_time),
-            end = FunctionsContext.time_parts(p.end_time)
+            start = FunctionsContext.time_parts(p.get('start')),
+            end = FunctionsContext.time_parts(p.get('end'))
           return fmt.format(
-            FunctionsContext.humanize_time(p.start_time, {includesAPM: false}),
-            FunctionsContext.humanize_time(p.end_time)
+            FunctionsContext.humanize_time(p.get('start'), {includesAPM: false}),
+            FunctionsContext.humanize_time(p.get('end'))
           );
         },
         isReadOnly: self.options.isReadOnly,
