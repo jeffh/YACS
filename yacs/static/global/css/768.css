@@ -8,7 +8,8 @@ body {
   font-size: 120%;
   height: 1.5em; }
 #departments .disclosure {
-  font-size: 110%; }
+  font-size: 110%;
+  display: none; }
 #departments .deptcode {
   display: block;
   width: 75px;
