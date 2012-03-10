@@ -6,10 +6,15 @@ from django.views.generic import ListView, DetailView
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.conf import settings
 
-from courses.utils import ObjectJSONEncoder, dict_by_attr
+from courses.utils import ObjectJSONEncoder, dict_by_attr, DAYS
 from courses.views import decorators
 from courses import models, views
 from courses import encoder as encoders
+
+from scheduler.models import SectionConflict, Selection, SectionProxy
+from scheduler.domain import (
+    ConflictCache, parse_crns, has_schedule, compute_schedules, period_stats
+)
 
 
 DEBUG = getattr(settings, 'DEBUG', False)
@@ -77,6 +82,7 @@ class DataFormatter(object):
         response = HttpResponse(data, content_type=content_type)
         raise decorators.AlternativeResponse(response)
 
+
 def wrap_request(render_settings, request, *args, **kwargs):
     def wrap_context(context):
         return {
@@ -88,6 +94,10 @@ def wrap_request(render_settings, request, *args, **kwargs):
     formatter.convert_request(render_settings, request, *args, **kwargs)
 
 render = decorators.Renderer(posthook=wrap_request)
+
+
+def paginate(query, page=1, per_page=1000):
+    return query[(page - 1) * per_page:page * per_page]
 
 def get_if_id_present(queryset, id=None):
     if id is not None:
@@ -158,6 +168,58 @@ def sections(request, id=None, version=None, ext=None):
 
     return { 'context': sections }
 
+
+@render()
+def section_conflicts(request, id=None, version=None, ext=None):
+    conflicts = SectionConflict.objects.by_unless_none(
+        id=id,
+        id__in=request.GET.getlist('id') or None,
+        crn__in=request.GET.getlist('crn') or None,
+    ).values_list('section1__id', 'section2__id')
+    mapping = {}
+    for s1, s2 in conflicts:
+        mapping.setdefault(s1, []).append(s2)
+        mapping.setdefault(s2, []).append(s1)
+    return { 'context': mapping }
+
+
+@render()
+def schedules(request, slug=None, version=None):
+    selection = None
+    if slug:
+        selection = Selection.objects.get(slug=slug)
+        crns = selection.crns
+    else:
+        crns = parse_crns(request.GET.getlist('crn'))
+
+    if not selection:
+        selection, created = Selection.objects.get_or_create(crns=crns)
+
+    #timerange, dows = ScheduleGenerator(sections)
+    sections = SectionProxy.objects.filter(crn__in=crns) \
+        .select_related('course').prefetch_periods()
+    selected_courses = dict_by_attr(sections, 'course')
+    conflict_cache = ConflictCache(
+        SectionConflict.objects.as_dictionary([s.id for s in sections]))
+
+    # if check flag given, return only if we have a schedule or not.
+    if request.GET.get('check'):
+        return { 'context': has_schedule(selected_courses, conflict_cache) }
+
+    schedules = compute_schedules(selected_courses, conflict_cache)
+
+    if len(schedules):
+        periods = set(p for s in sections for p in s.get_periods())
+        timerange, dow_used = period_stats(periods)
+
+    return {
+        'context': {
+            'time_range': timerange,
+            'schedules': schedules,
+            'days_of_the_week': DAYS,
+            'slug': selection.slug
+        }
+    }
 
 ###########################################################################
 

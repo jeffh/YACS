@@ -62,21 +62,14 @@ class ConflictMixin(SemesterBasedMixin):
         """Returns a dictionary of section id to a frozen set of section ids
         that conflict with the given section.
         """
-        result = {} # section_id => [section_ids]
-        for conflict in conflicts:
-            result.setdefault(conflict.section1.id, set()).add(conflict.section2.id)
-            result.setdefault(conflict.section2.id, set()).add(conflict.section1.id)
-        # freeze all sets
-        for key in result.keys():
-            result[key] = frozenset(result[key])
-        return result
+        return models.SectionConflict.objects.as_dictionary(conflicts)
 
     def get_sections_by_crns(self, crns):
         "Returns all sections with the provided CRNs."
         year, month = self.get_year_and_month()
         queryset = models.SectionProxy.objects.by_crns(crns, year=year, month=month)
         queryset = queryset.select_related('course', 'course__department')
-        return queryset.by_semester(year, month).prefetch_periods() #queryset.full_select(year, month)
+        return queryset.by_semester(year, month).prefetch_periods()
 
     def inject_conflict_mapping_in_sections(self, sections):
         """Givens the collection of section objects, attaches a conflict attr
@@ -84,8 +77,7 @@ class ConflictMixin(SemesterBasedMixin):
         the given section.
         """
         section_ids = set(s.id for s in sections)
-        conflicts = models.SectionConflict.objects.by_sections(section_ids)
-        conflict_mapping = self.conflict_mapping(conflicts)
+        conflict_mapping = models.SectionConflict.objects.as_dictionary(section_ids)
         empty_set = frozenset() # saves memory
         for section in sections:
             section.conflicts = conflict_mapping.get(section.id) or empty_set
@@ -263,9 +255,6 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
     def get_or_create_selection(self, crns):
         "Creates a Selection model instance if it does not exist."
         selection, created = models.Selection.objects.get_or_create(crns=crns)
-        if created:
-            selection.assign_slug_by_id()
-            selection.save()
         return selection
 
     def get_context_data(self, **kwargs):
@@ -327,7 +316,8 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
         index = int(index) - 1
         assert index >= 0
     except (ValueError, TypeError, AssertionError):
-        return redirect(reverse('schedules', kwargs=dict(year=year, month=month, slug=slug, index=1)))
+        if slug:
+            return redirect(reverse('schedules', kwargs=dict(year=year, month=month, slug=slug, index=1)))
 
     semester = Semester.objects.get(year=year, month=month)
     url = reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?'

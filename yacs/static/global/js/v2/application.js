@@ -173,11 +173,12 @@ $(function(){
       autoload: false
     }).set($.parseJSON($('#courses').attr('data-raw-selection')));
     if (_.isEqual(Scheduler.selection.crns, selection.crns)){
+      $('#courses input[type=checkbox]').removeAttr('disabled');
+      isReadOnly = false;
       // we're equal -- don't say anything
     } else {
       $('#notifications').fadeIn(1000);
       Scheduler.selection = selection;
-      // 
       $('a[data-action=adopt-selection]').bind('click', function(){
         Scheduler.selection = new Selection().set($.parseJSON($(this).attr('data-raw-selection')));
         Scheduler.selection.save();
