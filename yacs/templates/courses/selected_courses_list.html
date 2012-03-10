@@ -6,6 +6,10 @@
 
 {% block head %}
 <meta name="robots" content="NOINDEX, FOLLOW">
+{% if selection %}
+    <meta name="raw_selection" content="{{ raw_selection|escape }}">
+    <meta name="selection_slug" content="{{ selection.slug }}">
+{% endif %}
 {{ block.super }}
 {% endblock %}
 
@@ -19,7 +23,7 @@
 {% include 'scheduler/_saved_selection_notification.html' with selection=selection raw_selection=raw_selection sem_year=sem_year sem_month=sem_month %}
 {% endif %}
 
-<div id="courses" class="listview"{% if selection %} data-readonly="true" data-selection="{{ selection.slug }}" data-raw-selection='{{ raw_selection|escape }}'{% endif %}>
+<div id="courses" class="listview">
     {% csrf_token %}
     <ul id="selected_courses">
       <div style="text-align: center">

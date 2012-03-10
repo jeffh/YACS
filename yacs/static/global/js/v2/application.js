@@ -105,6 +105,16 @@ Scheduler.State = Class.extend({
 });
 
 ///////////////////////////////////////////////////
+// Data fetching
+function getSavedSelection(){
+  var data = $('meta[name=selection-raw]').attr('content');
+  var obj = {};
+  if($.trim(data) !== '')
+    obj = $.parseJSON(data);
+  return obj;
+}
+
+///////////////////////////////////////////////////
 // Hooks
 
 // realtime search
@@ -171,7 +181,7 @@ $(function(){
     var selection = new Selection({
       store: new MemoryStore(),
       autoload: false
-    }).set($.parseJSON($('#courses').attr('data-raw-selection')));
+    }).set(getSavedSelection());
     if (_.isEqual(Scheduler.selection.crns, selection.crns)){
       $('#courses input[type=checkbox]').removeAttr('disabled');
       isReadOnly = false;
@@ -180,7 +190,7 @@ $(function(){
       $('#notifications').fadeIn(1000);
       Scheduler.selection = selection;
       $('a[data-action=adopt-selection]').bind('click', function(){
-        Scheduler.selection = new Selection().set($.parseJSON($(this).attr('data-raw-selection')));
+        Scheduler.selection = new Selection().set(getSavedSelection());
         Scheduler.selection.save();
         // it's easier to just reload the page (letting the link follow through)
         var spinner = $($('img.spinner').get(0)).clone().css({display: 'inline'});
@@ -216,7 +226,10 @@ Scheduler.getURL = function(){
 $(function(){
   if(!$('#schedules').length) return;
   // TODO: check if current selection already matches or not
-  $('#notifications').fadeIn(1000);
+  if (_.isEqual(Scheduler.selection.crns, getSavedSelection()))
+    $('#notifications').hide();
+  else
+    $('#notifications').fadeIn(1000);
   Scheduler.state = new Scheduler.State({root: window.location.pathname});
   Scheduler.state.start();
 });

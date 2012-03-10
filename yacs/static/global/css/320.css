@@ -699,6 +699,11 @@ header .alpha {
     #schedules h1 .view-schedules:hover {
       background: #b42020;
       border-color: #b42020; }
+    #schedules h1 .view-schedules img {
+      position: relative;
+      left: -6px;
+      top: -8px;
+      max-width: none; }
   #schedules h1 .prev-schedule, #schedules h1 .next-schedule {
     text-decoration: none;
     font-size: 150%;

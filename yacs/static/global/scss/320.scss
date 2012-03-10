@@ -731,6 +731,13 @@ header {
 				background: #b42020;
                 border-color: #b42020;
             }
+
+            img {
+                position: relative;
+                left: -6px;
+                top: -8px;
+                max-width: none;
+            }
 		}
 
 		.prev-schedule, .next-schedule {

@@ -4,6 +4,9 @@
 
 {% block head %}
 <meta name="robots" content="NOINDEX, FOLLOW">
+{% if selection %}
+    <meta name="selection-raw" content="{{ raw_selection|escape }}">
+{% endif %}
 {{ block.super }}
 {% endblock %}
 
@@ -34,7 +37,9 @@
 <% var first=(sid===1), last=(sid===schedules.length), secmap = section_mapping[sid]; %>
 <div id="schedule<%- sid %>" class="schedule_wrapper" data-sid="<%- sid %>">
     <h1>
-        <a href="#thumbnails" class="show-thumbnails view-schedules"></a>
+        <a href="#thumbnails" class="show-thumbnails view-schedules">
+            <img src="{{ STATIC_URL }}img/thumbnails.gif" alt="View Thumbnails" />
+        </a>
         <!--
         <a href="#schedule<%- first ? '' : sid - 1 %>" class="prev-schedule<%= (first ? ' disabled' : '') %>"></a>
         -->
