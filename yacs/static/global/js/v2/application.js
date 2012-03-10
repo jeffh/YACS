@@ -108,7 +108,7 @@ Scheduler.State = Class.extend({
 // Data fetching
 function getSavedSelection(){
   var data = $('meta[name=selection-raw]').attr('content');
-  var obj = {};
+  var obj = null;
   if($.trim(data) !== '')
     obj = $.parseJSON(data);
   return obj;
@@ -176,21 +176,23 @@ $(function(){
   if(!$('#selected_courses').length) return;
 
   // load alternative schedule
-  var schedule = $('#courses').attr('data-selection');
+  var schedule = getSavedSelection();
   if (schedule){
     var selection = new Selection({
       store: new MemoryStore(),
       autoload: false
-    }).set(getSavedSelection());
+    }).set(schedule);
     if (_.isEqual(Scheduler.selection.crns, selection.crns)){
       $('#courses input[type=checkbox]').removeAttr('disabled');
       isReadOnly = false;
+      console.log('equal!');
       // we're equal -- don't say anything
     } else {
+      console.log('not equal!');
       $('#notifications').fadeIn(1000);
       Scheduler.selection = selection;
       $('a[data-action=adopt-selection]').bind('click', function(){
-        Scheduler.selection = new Selection().set(getSavedSelection());
+        Scheduler.selection = new Selection().set(schedule);
         Scheduler.selection.save();
         // it's easier to just reload the page (letting the link follow through)
         var spinner = $($('img.spinner').get(0)).clone().css({display: 'inline'});
@@ -225,10 +227,7 @@ Scheduler.getURL = function(){
 // Bootloader for schedules
 $(function(){
   if(!$('#schedules').length) return;
-  // TODO: check if current selection already matches or not
-  if (_.isEqual(Scheduler.selection.crns, getSavedSelection()))
-    $('#notifications').hide();
-  else
+  if (!_.isEqual(Scheduler.selection.crns, getSavedSelection()))
     $('#notifications').fadeIn(1000);
   Scheduler.state = new Scheduler.State({root: window.location.pathname});
   Scheduler.state.start();

@@ -283,7 +283,7 @@ header .alpha {
   background: #ffc;
   border: 1px solid #999;
   padding: 5px 0;
-  margin: 0 auto;
+  margin: 0 auto 10px auto;
   max-width: 590px;
   border-radius: 3px;
   -moz-border-radius: 3px;
