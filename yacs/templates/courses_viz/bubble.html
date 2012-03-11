@@ -1,8 +1,6 @@
-{% extends 'site_base.html' %}
+{% extends 'courses_viz/base.html' %}
 
 {% block title %}Bubbles | {% endblock %}
-
-{% block app-title %}{{ block.super }} <span>Visuals</span>{% endblock %}
 
 {% block header %}
 {{ block.super }}
@@ -48,12 +46,7 @@
 {% endblock content %}
 
 {% block javascript %}
-<script src="{{ STATIC_URL }}js/libs/underscore-1.2.0.min.js"></script>
-<script src="{{ STATIC_URL }}js/libs/jquery-1.6.4.min.js"></script>
-<script src="{{ STATIC_URL }}js/libs/jquery-1.6.4.min.js"></script>
-<script src="{{ STATIC_URL }}js/libs/dragdealer.js"></script>
-<script src="{{ STATIC_URL }}d3/d3.v2.min.js"></script>
-<script src="{{ STATIC_URL }}js/utils.js"></script>
+{{ block.super }}
 <script>
   // This code is kind of messy, but I'll try an annotate it.
   $('#seatsFilterSlider').hide();

@@ -60,7 +60,9 @@
             </span>
             <span class="seats-left">
                 <% if (course.getCRNs().length > 0){ %>
-                    <% if (course.getSeatsLeft() < 30) { %>
+                    <% if (course.getSeatsLeft() <= 0) { %>
+                        No seats left
+                    <% } else if (course.getSeatsLeft() < 30) { %>
                         <%- course.getSeatsLeft() %> seat<%- course.getSeatsLeft() === 1 ? '' : 's' %> left
                     <% } %>
                 <% } else { %>
@@ -94,7 +96,8 @@
                             <span class="section-number">
                                 Section <span class="number"><%- section.get('number') %></span>
                             </span>
-                            <% if(section.get('seats_taken') >= section.get('seats_total')){ %>
+                            <% console.log(section.getSeatsLeft() <= 0) %>
+                            <% if(section.getSeatsLeft() <= 0){ %>
                             <span class="section-seats-left none">No seats left</span>
                             <% } else { %>
                             <span class="section-seats-left">

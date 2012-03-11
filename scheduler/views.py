@@ -101,7 +101,10 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
                     pass
             return crns
         slug = self.request.GET.get('slug')
-        return models.Selection.objects.get(slug=slug).crns
+        try:
+            return models.Selection.objects.get(slug=slug).crns
+        except models.Selection.DoesNotExist:
+            raise Http404
 
     def get_sections(self, crns):
         """Return the collection of section objects that

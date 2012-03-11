@@ -290,6 +290,7 @@ var DelayedInvocation = function(fn, options){
     timer = null;
   };
   var invocation = function(){
+    stop();
     timer = setTimeout(function(){
       fn.call(this, arguments);
     }, opt.delay);
@@ -551,7 +552,6 @@ var Course = ModelBase.extend({
   },
   getNotes: function(){
     return this.getSections().reduce(function(notes, section){
-      console.log(section);
       section.get('notes').split('\n').each(function(note){
         notes.push(note);
       });
@@ -773,12 +773,10 @@ var Selection = Class.extend({
   save: function(){
     assert(this.options.storage, 'Storage must be defined in options to save');
     this.options.storage.set(this.options.storageKey, this.crns);
-    this._trigger(['save'], this);
   },
   load: function(){
     assert(this.options.storage, 'Storage must be defined in options to load');
     this.set(this.options.storage.get(this.options.storageKey) || {});
-    this._trigger(['load'], this);
     return this;
   },
   clear: function(){
@@ -948,6 +946,15 @@ var CourseListView = Backbone.View.extend({
     this.options.selected = selection;
     var courseIDs = this.options.selected.getCourseIds();
     if(!courses) return;
+    // default behavior for emty lists are to fetch everything...
+    // but that is not our selection
+    if (!courseIDs.length){
+      this.courses = new CourseList([]);
+      this.sections = new SectionList([]);
+      this.departments = new DepartmentList([]);
+      this.render();
+      return;
+    }
     var self = this;
     this.courses = new CourseList(null, {ids: courseIDs});
     this.sections = new SectionList(null, {course_ids: courseIDs});
@@ -1002,7 +1009,6 @@ var CourseListView = Backbone.View.extend({
           return self.options.selected.containsCRN(crn);
         },
         displayPeriod: function(p){
-          console.log('displayPeriod', p);
           var fmt = '{{ 0 }}-{{ 1 }}',
             start = FunctionsContext.time_parts(p.get('start')),
             end = FunctionsContext.time_parts(p.get('end'))

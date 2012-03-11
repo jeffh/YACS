@@ -127,6 +127,7 @@ $(function(){
       cache: true,
       updateElement: '#replacable-with-search',
       additionalGET: {partial: 1},
+      triggerDelay: 300,
       activityResponder: new ActivityResponder({
         show: function(){
           $('#search-spinner').show();
@@ -140,7 +141,7 @@ $(function(){
         query = form.find('#q').val();
         if($.trim(query) === ''){
           $('#replacable-with-search').html(defaultHtml);
-          //Scheduler.selection.refresh();
+          Scheduler.selection.refresh();
           return true;
         }
         fuse();
@@ -173,7 +174,9 @@ $(function(){
   refresh();
 
   // must be on selected courses page
-  if(!$('#selected_courses').length) return;
+  if(!$('#selected_courses').length){
+    return;
+  }
 
   // load alternative schedule
   var schedule = getSavedSelection();
