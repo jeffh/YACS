@@ -538,6 +538,57 @@ header .alpha {
   	}
   }
   */ }
+  #courses .course.conflict > * {
+    zoom: 1;
+    filter: alpha(opacity=40);
+    opacity: 0.4; }
+  #courses .course.conflict .conflict {
+    zoom: 1;
+    filter: alpha(opacity=100);
+    opacity: 1; }
+    #courses .course.conflict .conflict .conflicts_with_section {
+      display: none; }
+  #courses .course.conflict .conflicts_with_course {
+    zoom: 1;
+    filter: alpha(opacity=100);
+    opacity: 1; }
+  #courses .section.conflict label > *, #courses .section.conflict ul {
+    zoom: 1;
+    filter: alpha(opacity=40);
+    opacity: 0.4; }
+  #courses .section.conflict label .conflicts_with_section {
+    zoom: 1;
+    filter: alpha(opacity=100);
+    opacity: 1; }
+  #courses .conflicts_with_section {
+    position: absolute;
+    top: 5px;
+    left: 50px;
+    background: #fff;
+    color: #333;
+    rotation: 2deg;
+    -o-transform: rotate(2deg);
+    -ms-transform: rotate(2deg);
+    -webkit-transform: rotate(2deg);
+    -moz-transform: rotate(2deg);
+    -moz-box-shadow: 0 1px 6px #999999;
+    -webkit-box-shadow: 0 1px 6px #999999;
+    box-shadow: 0 1px 6px #999999; }
+  #courses .conflicts_with_course {
+    clear: none;
+    position: absolute;
+    top: 0;
+    right: 17px;
+    padding: 15px 10px;
+    font-size: 130%;
+    background: #fff;
+    color: #333;
+    -moz-box-shadow: 0 3px 6px #999999;
+    -webkit-box-shadow: 0 3px 6px #999999;
+    box-shadow: 0 3px 6px #999999;
+    border-radius: 0 0 3px 3px;
+    -moz-border-radius: 0 0 3px 3px;
+    -webkit-border-radius: 0 0 3px 3px; }
   #courses label {
     vertical-align: middle; }
   #courses input {

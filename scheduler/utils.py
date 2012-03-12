@@ -10,8 +10,8 @@ def slugify(string):
         return slug
 
 
-def deserialize_crns(crns):
-    return tuple(sorted(int(x) for x in crns.split(',') if x))
+def deserialize_numbers(numbers):
+    return tuple(sorted(int(x) for x in numbers.split(',') if x))
 
-def serialize_crns(crns):
-    return ','.join(str(s) for s in crns)
+def serialize_numbers(numbers):
+    return ','.join(str(s) for s in numbers)

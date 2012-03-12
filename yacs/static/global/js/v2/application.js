@@ -3,108 +3,6 @@ Scheduler = {};
 Scheduler.selection = new Selection();
 
 ///////////////////////////////////////////////////
-// Routing for schedules view
-
-Scheduler.State = Class.extend({
-  options: {
-    bindEventTo: window,
-    history: window.history,
-    root: window.location.pathname
-  },
-  init: function(options){
-    this.options = $.extend({}, this.options, options);
-  },
-  mark: function(url, replaceState){
-    if (replaceState)
-      this.options.history.pushState({path: url}, '', url);
-    else
-      this.options.history.replaceState({path: url}, '', url);
-  },
-  start: function(){
-    var self = this;
-    $(this.options.bindEventTo).bind('popstate', function(){
-      var index = parseInt($('#schedules').attr('data-start') || 0, 10);
-      self.load(location.pathname, index);
-    });
-  },
-  load: function(url, index){
-    url = url || location.pathname;
-    console.log(url);
-    var args = this.parseSchedulesURL(url);
-    args.push(index || 0);
-    this.loadSchedules.apply(this, args);
-  },
-  parseSchedulesURL: function(url){
-    var parts = url.split('/');
-    return [parts[2], parts[3], parts[5]];
-  },
-  loadSchedules: function(year, month, slug, index, replaceState){
-    var target = $('#schedules');
-    var thumbnailsContainer = $('#thumbnails').hide();
-    var self = this;
-
-    Scheduler.thumbnails = [];
-    $.ajax(Scheduler.getURL(), {
-      type: 'GET',
-      dataType: 'json',
-      success: function(json){
-        if(json.schedules && json.schedules.length){
-          var createURL = function(year, month, slug, index){
-            var url = '/semesters/' + year + '/' + month + '/schedules/';
-            if (json.selection_slug){
-              url += json.selection_slug + '/';
-              if (index > 0) url += index + '/';
-            }
-            return url;
-          }
-          var loadedURL = createURL(year, month, slug, index);
-
-          // primary schedule view
-          Scheduler.view = new ScheduleView({
-            el: target,
-            json: json,
-            scheduleIndex: 0,
-            thumbnailsContainerEl: thumbnailsContainer
-          }).render();
-
-          $(Scheduler.view).bind('scheduleIndexChanged', function(evt){
-            var url = createURL(year, month, slug, evt.index + 1);
-            self.mark(url, url === loadedURL);
-          });
-
-          // thumbnails
-          thumbnailsContainer.html('');
-          for(var i=0, l=json.schedules.length; i<l; i++){
-            var view = new ThumbnailView({
-              json: json,
-              scheduleIndex: i,
-              scheduleView: Scheduler.view
-            });
-            Scheduler.thumbnails.push(view);
-            thumbnailsContainer.append(view.render().el);
-          }
-          Scheduler.thumbnails[index].selectSchedule();
-
-          return;
-        }
-        // ERROR
-        Scheduler.view = new NoSchedulesView({el: target}).render();
-      },
-      error: function(xhr, status){
-        // TODO: show a custom error page
-        if(xhr.status === 403){
-          Scheduler.view = new TooManyCRNsView({el: target}).render();
-        } else {
-          //alert('Failed to get schedules... (are you connected to the internet?)');
-          // TODO: log to the server (if we can)
-          console.error('Failed to save to schedules: ' + xhr.status);
-        }
-      }
-    });
-  }
-});
-
-///////////////////////////////////////////////////
 // Data fetching
 function getSavedSelection(){
   var data = $('meta[name=selection-raw]').attr('content');
@@ -185,13 +83,13 @@ $(function(){
       store: new MemoryStore(),
       autoload: false
     }).set(schedule);
-    if (_.isEqual(Scheduler.selection.crns, selection.crns)){
+    if (_.isEqual(Scheduler.selection.getRaw(), selection.getRaw())){
       $('#courses input[type=checkbox]').removeAttr('disabled');
       isReadOnly = false;
       console.log('equal!');
       // we're equal -- don't say anything
     } else {
-      console.log('not equal!');
+      console.log('not equal!', Scheduler.selection.getRaw(), selection.getRaw());
       $('#notifications').fadeIn(1000);
       Scheduler.selection = selection;
       $('a[data-action=adopt-selection]').bind('click', function(){
@@ -219,9 +117,9 @@ $(function(){
 Scheduler.getURL = function(){
   var schedulesURL = $('#schedules').attr('data-source');
   if(!schedulesURL) return;
-  if (schedulesURL.indexOf('&crn=') < 0){
+  if (schedulesURL.indexOf('&id=') < 0){
     Scheduler.selection.getCRNs().each(function(crn){
-      schedulesURL += '&crn=' + crn;
+      schedulesURL += '&id=' + crn;
     });
   }
   return schedulesURL;
@@ -230,8 +128,10 @@ Scheduler.getURL = function(){
 // Bootloader for schedules
 $(function(){
   if(!$('#schedules').length) return;
-  if (!_.isEqual(Scheduler.selection.crns, getSavedSelection()))
+  if (!_.isEqual(Scheduler.selection.getRaw(), getSavedSelection()))
     $('#notifications').fadeIn(1000);
-  Scheduler.state = new Scheduler.State({root: window.location.pathname});
-  Scheduler.state.start();
+  Scheduler.view = new ScheduleRootView({
+    baseURL: $('meta[name=schedules-url]').attr('content'),
+    section_ids: Scheduler.selection.getCRNs()
+  }).render();
 });

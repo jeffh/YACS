@@ -23,17 +23,17 @@ from scheduler.scheduling import compute_schedules
 ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')
 SECTION_LIMIT = getattr(settings, 'SECTION_LIMIT', 60)
 
-def compute_selection_dict(crns):
+def compute_selection_dict(sids):
     selection = {}
-    for crn, cid in Section.objects.filter(crn__in=crns).values_list('crn', 'course_id'):
-        selection.setdefault(cid, []).append(crn)
+    for sid, cid in Section.objects.filter(id__in=sids).values_list('id', 'course_id'):
+        selection.setdefault(cid, []).append(sid)
     return selection
 
 class SelectionSelectedCoursesListView(SelectedCoursesListView):
     def get_context_data(self, **kwargs):
         context = super(SelectionSelectedCoursesListView, self).get_context_data(**kwargs)
         selection = context['selection'] = models.Selection.objects.get(slug=self.kwargs.get('slug'))
-        context['raw_selection'] = dumps(compute_selection_dict(selection.crns))
+        context['raw_selection'] = dumps(compute_selection_dict(selection.section_ids))
         return context
 
 class ResponsePayloadException(Exception):
@@ -328,14 +328,14 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
         slug = slug or request.GET.get('slug')
         selection = models.Selection.objects.get(slug=slug)
         prefix = '&crn='
-        url += prefix + prefix.join(map(str, selection.crns))
+        url += prefix + prefix.join(map(str, selection.section_ids))
     except models.Selection.DoesNotExist:
         selection = None
 
     return render_to_response('scheduler/placeholder_schedule_list.html', {
         'ajax_url': url,
         'selection': selection,
-        'raw_selection': dumps(compute_selection_dict(selection.crns)) if selection else None,
+        'raw_selection': dumps(compute_selection_dict(selection.section_ids)) if selection else None,
         'sem_year': semester.year,
         'sem_month': semester.month,
         'index': index,

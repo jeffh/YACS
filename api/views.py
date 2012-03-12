@@ -11,7 +11,7 @@ from courses.views import decorators
 from courses import models, views
 from courses import encoder as encoders
 
-from scheduler.models import SectionConflict, Selection, SectionProxy
+from scheduler.models import SectionProxy, Selection, SectionConflict
 from scheduler.domain import (
     ConflictCache, has_schedule, compute_schedules, period_stats
 )
@@ -179,7 +179,12 @@ def section_conflicts(request, id=None, version=None, ext=None):
         id=id,
         id__in=int_list(request.GET.getlist('id')) or None,
         crn__in=int_list(request.GET.getlist('crn')) or None,
-    ).values_list('section1__id', 'section2__id')
+    )
+    if request.GET.get('as_crns'):
+        conflicts = conflicts.values_list('section1__crn', 'section2__crn')
+    else:
+        conflicts = conflicts.values_list('section1__id', 'section2__id')
+
     mapping = {}
     for s1, s2 in conflicts:
         mapping.setdefault(s1, set()).add(s2)
@@ -193,9 +198,9 @@ def section_conflicts(request, id=None, version=None, ext=None):
         }
 
     collection = []
-    ids = set(parse_crns(request.GET.getlist('id')))
+    ids = set(int_list(request.GET.getlist('id')))
     for section_id, conflicts in mapping.items():
-        if section_id not in ids:
+        if len(ids) > 0 and section_id not in ids:
             continue
         collection.append({
             'id': section_id,
@@ -209,15 +214,15 @@ def schedules(request, slug=None, version=None):
     selection = None
     if slug:
         selection = Selection.objects.get(slug=slug)
-        crns = selection.crns
+        section_ids = selection.section_ids
     else:
-        crns = int_list(request.GET.getlist('crn'))
+        section_ids = int_list(request.GET.getlist('section_id'))
 
     if not selection:
-        selection, created = Selection.objects.get_or_create(crns=crns)
+        selection, created = Selection.objects.get_or_create(
+            section_ids=section_ids)
 
-    #timerange, dows = ScheduleGenerator(sections)
-    sections = SectionProxy.objects.filter(crn__in=crns) \
+    sections = SectionProxy.objects.filter(id__in=section_ids) \
         .select_related('course').prefetch_periods()
     selected_courses = dict_by_attr(sections, 'course')
     conflict_cache = ConflictCache(
@@ -228,17 +233,24 @@ def schedules(request, slug=None, version=None):
         return { 'context': has_schedule(selected_courses, conflict_cache) }
 
     schedules = compute_schedules(selected_courses, conflict_cache)
+    print schedules
 
-    if len(schedules):
-        periods = set(p for s in sections for p in s.get_periods())
-        timerange, dow_used = period_stats(periods)
+    periods = set(p for s in sections for p in s.get_periods())
+    timerange, dow_used = period_stats(periods)
 
     return {
         'context': {
             'time_range': timerange,
             'schedules': schedules,
+            'course_ids': list(set(
+                c.id for c in selected_courses.keys())),
+            'section_ids': list(set(
+                s.id
+                    for sections in selected_courses.values()
+                    for s in sections
+            )),
             'days_of_the_week': DAYS,
-            'slug': selection.slug
+            'id': selection.slug
         }
     }
 

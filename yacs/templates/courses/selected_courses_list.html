@@ -39,12 +39,12 @@
 {# functions: #}
 {# required context: #}
 <script type="text/template" id="course-template">
-<li class="course <%- course.getSeatsLeft() < 1 ? 'no-seats' : '' %><%- course.getCRNs().length < 1 ? 'no-sections' : '' %>">
-    <% if (course.getCRNs().length > 0){ %>
+<li class="course <%- course.getSeatsLeft() < 1 ? 'no-seats' : '' %><%- course.getSectionIDs().length < 1 ? 'no-sections' : '' %>">
+    <% if (course.getSectionIDs().length > 0){ %>
         <input type="checkbox" id="selected_course_<%- course.id %>" name="course_<%- course.id %>"
     <% if (isReadOnly) { %> disabled="disabled" <% } %>
-    <% if (course.getCRNs().some(isSelectedCRN)){ %> checked="checked" <% } %>
-        data-cid="<%- course.id %>" data-crns="<%- course.getCRNs().join(', ') %>" data-crns-full="<%- course.getFullCRNs().join(', ') %>" />
+    <% if (course.getSectionIDs().some(isSelectedCRN)){ %> checked="checked" <% } %>
+        data-cid="<%- course.id %>" data-crns="<%- course.getSectionIDs().join(', ') %>" data-crns-full="<%- course.getSectionIDs().join(', ') %>" />
     <% } else { %>
         <p style="float:left; width: 15px; height: 10px; margin: 0; padding: 0;"></p>
     <% } %>
@@ -59,7 +59,7 @@
                 <%- course.getCreditsDisplay() %>
             </span>
             <span class="seats-left">
-                <% if (course.getCRNs().length > 0){ %>
+                <% if (course.getSectionIDs().length > 0){ %>
                     <% if (course.getSeatsLeft() <= 0) { %>
                         No seats left
                     <% } else if (course.getSeatsLeft() < 30) { %>
@@ -91,12 +91,11 @@
             <ul>
                 <% for(var sections=course.getSections(), i=0, l=sections.length; i<l; i++){ var section = sections.at(i); %>
                     <li class="section<%- section.get('seats_taken') >= section.get('seats_total') ? ' full' : '' %>">
-                    <input type="checkbox" id="selected_course_<%- course.id %>_<%- section.get('crn') %>" name="selected_course_<%- course.id %>_<%- section.get('crn') %>" <%- isSelectedCRN(section.get('crn')) ? ' checked="checked"' : '' %> data-cid="<%- course.id %>" data-crn="<%- section.get('crn')  %>" <% if (isReadOnly) { %> disabled="disabled" <% } %> />
-                        <label for="selected_course_<%- course.id %>_<%- section.get('crn') %>">
+                    <input type="checkbox" id="selected_course_<%- course.id %>_<%- section.id %>" name="selected_course_<%- course.id %>_<%- section.id %>" <%- isSelectedCRN(section.id) ? ' checked="checked"' : '' %> data-cid="<%- course.id %>" data-crn="<%- section.id  %>" <% if (isReadOnly) { %> disabled="disabled" <% } %> />
+                        <label for="selected_course_<%- course.id %>_<%- section.id %>">
                             <span class="section-number">
                                 Section <span class="number"><%- section.get('number') %></span>
                             </span>
-                            <% console.log(section.getSeatsLeft() <= 0) %>
                             <% if(section.getSeatsLeft() <= 0){ %>
                             <span class="section-seats-left none">No seats left</span>
                             <% } else { %>

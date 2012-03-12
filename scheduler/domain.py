@@ -48,7 +48,7 @@ def compute_schedules(selected_courses, section_constraint=None):
     for schedule in schedules:
         s = {}
         for course, section in schedule.items():
-            s[str(course.id)] = section.crn
+            s[str(course.id)] = section.id
         results.append(s)
     return results
 

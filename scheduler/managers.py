@@ -1,14 +1,14 @@
 from django.db.models import Manager
 
 
-from scheduler.utils import slugify, deserialize_crns, serialize_crns
+from scheduler.utils import slugify, deserialize_numbers, serialize_numbers
 
 
 class SelectionManager(Manager):
     def _update_kwargs(self, kwargs):
-        if 'crns' in kwargs:
-            crns = serialize_crns(kwargs.pop('crns'))
-            kwargs['internal_crns'] = crns or []
+        if 'section_ids' in kwargs:
+            section_ids = serialize_numbers(kwargs.pop('section_ids'))
+            kwargs['internal_section_ids'] = section_ids or []
 
         if 'slug' in kwargs:
             kwargs['internal_slug'] = kwargs.pop('slug')
@@ -93,8 +93,8 @@ class SectionConflictManager(Manager):
         Use section_ids, if you want this method to use among_sections() as the queryset.
         Otherwise, pass your own SectionConflict queryset.
         """
-        assert (section_ids is not None) != (queryset is not None)
-        if section_ids:
+        assert (section_ids is not None) != (queryset is not None), "Either section_ids or queryset is provided."
+        if section_ids is not None:
             queryset = self.among_sections(section_ids)
         conflicts = queryset.values_list('section1__id', 'section2__id')
 

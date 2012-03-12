@@ -71,8 +71,13 @@ class Renderer(object):
             raise error, None, traceback
         raise Http404
 
-    def extract_view(self, decorated_view):
-        return decorated_view.raw_view
+    def extract_view(self, decorated_view, original=False):
+        if not original:
+            return decorated_view.raw_view
+        v = decorated_view
+        while hasattr(v, 'raw_view'):
+            v = v.raw_view
+        return v
 
     def assign_headers(self, response, headers):
         for name, value in headers.items():
