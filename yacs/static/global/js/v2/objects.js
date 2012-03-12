@@ -39,12 +39,54 @@ root.Class.extend = function(attributes){
 
 //////////////////////////////// Utility functions ////////////////////////////////
 root.Utils = {
+  andJoin: function(arr, options){
+    options = $.extend({
+      andText: ' and ',
+      itemSeparator: ', '
+    }, options);
+    sb = [];
+    for(var i=0, l=arr.length; i<l; i++){
+      sb.push(arr[i]);
+      if (i < l - 2)
+        sb.push(options.itemSeparator);
+      if (i == l - 2)
+        sb.push(options.andText);
+    }
+    return sb.join('')
+  },
   time: function(fn, context, msg){
     var start = new Date;
     var result = fn.call(context || this);
     var diff = new Date - start;
     console.log('time', diff, msg || '');
     return result;
+  },
+  parseTime: function(timestr){
+    var parts = timestr.split(':'), // hour:min:sec
+      i = Utils.integer;
+    return {
+      hour: i(parts[0]),
+      minute: i(parts[1]),
+      second: i(parts[2])
+    };
+  },
+  param: function(params){
+    var queryParts = [];
+    _.each(params, function(value, key){
+      var t = $.type(value);
+      if(t === 'undefined' || t === 'null'){
+        // do nothing
+      } else if(t === 'array'){
+        _.each(value, function(item){
+          queryParts.push(encodeURI(key) + '=' + encodeURI(item));
+        });
+      } else if (t === 'object'){
+        throw "Cannot parameterize object.";
+      } else {
+        queryParts.push(encodeURI(key) + '=' + encodeURI(value));
+      }
+    });
+    return queryParts.join('&');
   },
   integer: function(i){ return parseInt(i, 10); },
   getCookie: function(name) {
@@ -162,7 +204,7 @@ $.extend(String.prototype, {
         return this.indexOf(str) === 0;
     },
     endsWith: function(str){
-        return this.indexOf(str) === this.length - str.length;
+        return this.substr(this.length - str.length) === str;
     },
     trim: function(){
         return $.trim(this);
@@ -257,36 +299,29 @@ $.extend(Array.prototype, {
 });
 
 //////////////////////////////// Helper Objects ////////////////////////////////
-var Fuse = Class.extend({
-    timer: null,
-    options: {
-        delay: 200,
-        trigger: function(){},
-        cancelled: function(){}
-    },
-    init: function(options){
-        this.options = $.extend({}, this.options, options);
-    },
-    start: function(delay){
-        this.stop();
-        var self = this;
-        this.timer = setTimeout(function(){
-            self.trigger();
-        }, delay !== undefined ? delay : this.options.delay);
-    },
-    stop: function(suppressCancelEvent){
-        if (this.timer){
-            clearTimeout(this.timer);
-            this.timer = null;
-            if (!suppressCancelEvent)
-                this.options.cancelled.call(this);
-        }
-    },
-    trigger: function(){
-        this.options.trigger.call(this);
-        this.timer = null;
+var DelayedInvocation = function(fn, options){
+  var context = this;
+  var timer = null;
+  var opt = $.extend({
+    delay: 200,
+    cancelled: function(){}
+  }, options);
+  var stop = function(){
+    if (timer){
+      clearTimeout(timer);
+      opt.cancelled.call(context);
     }
-});
+    timer = null;
+  };
+  var invocation = function(){
+    stop();
+    timer = setTimeout(function(){
+      fn.call(this, arguments);
+    }, opt.delay);
+  };
+  invocation.abort = invocation.stop = stop;
+  return invocation;
+};
 
 // handles the associated events for showing activity indicators
 // to the user (aka - we're busy doing something)
@@ -331,7 +366,7 @@ var MemoryStore = Class.extend({
     this.container = container;
   },
   setItem: function(key, string){ this.container[key] = string; },
-  getItem: function(key){ console.log(key); return this.container[key]; },
+  getItem: function(key){ return this.container[key]; },
   removeItem: function(key){
     var value = this.container[key];
     delete this.container[key];
@@ -455,35 +490,76 @@ var Template = Class.extend({
   }
 });
 
+////////////////////////////// Data Utils ///////////////////////////////
+var getCurrentSemesterID = function(){
+  return parseInt($('meta[name=semester-id]').attr('content'), 10);
+};
+
+var apiUrls = {
+  semesters: '/api/4/semesters/',
+  departments: '/api/4/departments/',
+  sections: '/api/4/sections/',
+  conflicts: '/api/4/conflicts/',
+  courses: '/api/4/courses/',
+  schedules: '/api/4/schedules/'
+};
+
 //////////////////////////////// Models ////////////////////////////////
 ModelBase = Backbone.Model.extend({
-  parse: function(response){ return response.payload; }
+  parse: function(response){ return response.result || response; }
 });
 
 var Semester = ModelBase.extend({
-  urlRoot: '/api/2/'
+  urlRoot: apiUrls.semesters
 });
 
-var Period = ModelBase.extend({ });
+var Department = ModelBase.extend({
+  urlRoot: apiUrls.departments
+});
+
+var Period = ModelBase.extend({
+  urlRoot: null,
+  getStartTime: function(){
+    return Utils.parseTime(this.get('start'));
+  },
+  getEndTime: function(){
+    return Utils.parseTime(this.get('end'));
+  }
+});
 
 var Section = ModelBase.extend({
-  urlRoot: '/api/2/latest/sections/',
+  urlRoot: apiUrls.sections,
   getPeriods: function(){
-    return new PeriodList(this.get('periods'));
+    return new PeriodList(this.get('section_times'));
   },
   getInstructors: function(){
     return this.getPeriods().pluck('instructor');
   },
   getKinds: function(){
     return this.getPeriods().pluck('kind');
+  },
+  getSeatsLeft: function(){
+    return this.get('seats_total') - this.get('seats_taken');
+  }
+});
+
+var SectionConflict = ModelBase.extend({
+  urlRoot: apiUrls.conflicts,
+  // returns the section ID of the given conflict
+  conflictsWith: function(sectionID){
+    var index = _.indexOf(this.get('conflicts'), sectionID);
+    if (index === -1)
+      return null;
+    return this.get('conflicts')[index];
   }
 });
 
 var Course = ModelBase.extend({
-  urlRoot: '/api/2/latest/courses/',
+  urlRoot: apiUrls.courses,
+  defaults: {sections: [], department: null, notes: []},
   getSections: function(){
     var sortedSections = _.sortBy(this.get('sections'), function(section){ 
-      return section.number;
+      return section.get('number');
     });
     return new SectionList(sortedSections);
   },
@@ -494,7 +570,7 @@ var Course = ModelBase.extend({
   },
   getSeatsLeft: function(){
     return this.getSections().reduce(function(a, b){
-      return a + b.get('seats_left');
+      return a + b.getSeatsLeft();
     }, 0);
   },
   getSeatsTaken: function(){
@@ -503,13 +579,23 @@ var Course = ModelBase.extend({
     }, 0);
   },
   //
+  getSectionIDs: function(){
+    return this.getSections().pluck('id').unique();
+  },
+  getFullSectionIDs: function(){
+    var sections = this.getSections();
+    sections = sections.filter(function(section){
+      return section.getSeatsLeft() <= 0;
+    });
+    return _.pluck(sections, 'id').unique();
+  },
   getCRNs: function(){
     return this.getSections().pluck('crn').unique();
   },
   getFullCRNs: function(){
     var sections = this.getSections();
     sections = sections.filter(function(section){
-      return section.get('seats_left') <= 0;
+      return section.getSeatsLeft() <= 0;
     });
     return _.pluck(sections, 'crn').unique();
   },
@@ -523,7 +609,7 @@ var Course = ModelBase.extend({
   },
   getNotes: function(){
     return this.getSections().reduce(function(notes, section){
-      section.get('notes').each(function(note){
+      section.get('notes').split('\n').each(function(note){
         notes.push(note);
       });
       return notes;
@@ -538,20 +624,70 @@ var Course = ModelBase.extend({
   }
 });
 
-var Schedule = ModelBase.extend({
-  url: function(){ return $('#schedules').attr('data-source'); },
-  getCourseIDs: function(){ return _.keys(this.get('mapping')); },
-  getCRNs: function(){ return _.values(this.get('mapping')); },
-  getCRNsForCourseID: function(cid){ return this.get('mapping')[cid]; }
+var SelectionSchedules = ModelBase.extend({
+  initialize: function(options){
+    this.options = options || {};
+  },
+  url: function(){
+    var url = apiUrls.schedules;
+    if(this.options.id)
+      return url + this.options.id + '/';
+    return url + '?' + Utils.param({
+      section_id: this.options.section_ids
+    });
+  },
+  getSchedule: function(index){
+    return this.get('schedules')[index];
+  },
+
+  setCourses: function(courses){ this.courses = courses; },
+  getCourses: function(){ return this.courses; },
+  setSections: function(sections){ this.sections = sections; },
+  getSections: function(){ return this.sections; },
+  // this output may change...
+  getTimeRange: function(){
+    return this.get('time_range');
+  },
+
+  createTimemap: function(scheduleIndex){
+    var timemap = {}; // [dow][starting-hour]
+    var dows = this.get('days_of_the_week');
+    var timeRange = this.getTimeRange();
+    // create empty structure
+    _.each(dows, function(dow, i){
+      timemap[dow] = {};
+      _.each(timeRange, function(hour){
+        //timemap[dow][hour] = []; // periods
+      });
+    });
+    // get periods for give schedule
+    var schedule = this.getSchedule(scheduleIndex);
+    var sections = [];
+    var self = this;
+    _.each(schedule, function(section_id){
+      sections.push(self.getSections().get(section_id));
+    });
+    // fill them out
+    _.each(sections, function(section){
+      section.getPeriods().each(function(period){
+        _.each(period.get('days_of_the_week'), function(dow){
+          var startingHour = period.getStartTime().hour;
+          timemap[dow][startingHour] = period;
+        });
+      });
+    });
+    return timemap;
+  }
+
 });
 
-// TODO: implement
-var SectionConflict = ModelBase.extend({
-  urlRoot: '/api/2/latest/section-conflicts/'
-});
 
 //////////////////////////////// Collections ////////////////////////////////
 var CollectionBase = Backbone.Collection.extend({
+  initialize: function(models, options){
+    this.options = _.extend({semester_ids: getCurrentSemesterID()}, options);
+  },
+  parse: function(response){ return response.result; },
   reload: function(){
     this.each(function(model){ model.fetch(); });
   }
@@ -559,21 +695,65 @@ var CollectionBase = Backbone.Collection.extend({
 
 var SemesterList = CollectionBase.extend({
   model: Semester,
-  url: '/api/2/'
+  url: '/api/4/semesters/'
 });
 
+var DepartmentList = CollectionBase.extend({
+  model: Department,
+  parse: function(response){ return response.result; },
+  url: function(){
+    return '/api/4/departments/?' + Utils.param({
+      id: this.options.ids,
+      course_id: this.options.course_ids,
+      semester_id: this.options.semester_ids,
+      code: this.options.codes
+    });
+  }
+});
+
+// created locally by sections
 var PeriodList = CollectionBase.extend({
-  model: Period,
+  model: Period
 });
 
 var SectionList = CollectionBase.extend({
   model: Section,
-  url: '/api/2/latest/sections'
+  url: function(){
+    return '/api/4/sections/?' + Utils.param({
+      id: this.options.ids,
+      course_id: this.options.course_ids,
+      semester_id: this.options.semester_ids,
+      crn: this.options.crns
+    });
+  }
 });
 
 var CourseList = CollectionBase.extend({
   model: Course,
-  url: '/api/2/latest/courses/'
+  url: function(){
+    return '/api/4/courses/?' + Utils.param({
+      semester_id: this.options.semester_ids,
+      department_code: this.options.department_codes,
+      department_id: this.options.department_ids,
+      number: this.options.numbers,
+      id: this.options.ids
+    });
+  }
+});
+
+var SectionConflictList = CollectionBase.extend({
+  model: SectionConflict,
+  url: function(){
+    return '/api/4/conflicts/?' + Utils.param({
+      id: this.options.ids,
+      as_crns: this.options.asCRNs
+    });
+  },
+  sectionsConflict: function(sid1, sid2){
+    return (this.get(sid1) && this.get(sid1).conflictsWith(sid2)) || (
+      this.get(sid2) && this.get(sid2).conflictsWith(sid1)
+    );
+  }
 });
 
 /*
@@ -591,13 +771,65 @@ var Selection = Class.extend({
     checkbox_selector: '.course input[type=checkbox]',
     storage: new Storage(),
     storageKey: 'crns',
-    autoload: true
+    autoload: true,
+    version: 2,
+    versionKey: 'version'
   },
   init: function(options){
     this.crns = {};
+    this.conflicts = this._bindToConflictList(new SectionConflictList());
+    this.courses = new CourseList();
     this.options = $.extend({}, this.options, options);
-    if(this.options.autoload)
+    var self = this;
+    this.courses.fetch({
+      success: function(){
+        // lower mem usage by deleting attributes
+        var removeAttrs = 'grade_type description'.split(' ');
+        self.courses.each(function(course){
+          _.each(removeAttrs, function(attr){
+            delete course[attr];
+          });
+        });
+        self.refreshConflicts();
+      }
+    });
+    if(this.options.autoload){
       this.load();
+    }
+  },
+  _bindToConflictList: function(sectionConflictList){
+    var self = this;
+    sectionConflictList.bind('all', function(){
+      self.refreshConflicts();
+    });
+    return sectionConflictList;
+  },
+  // returns true if the given section ID conflicts with a selection's
+  // courses
+  conflictsWith: function(sectionID){
+    var self = this;
+    var conflictedWith = null;
+    // backbone doesn't support breaking out of _.each
+    $.each(self.crns, function(courseID, crns){
+      // we only need one available section to consider it "not conflicting"
+      var conflict = -1;
+      $.each(crns, function(i, crn){
+        conflict = self.conflicts.sectionsConflict(sectionID, crn);
+        if (conflict === null){
+          return false;
+        }
+      });
+      if (conflict !== null){
+        conflictedWith = {
+          courseID: parseInt(courseID, 10),
+          sectionID: conflict
+        };
+        return false;
+      }
+    });
+    if (conflictedWith && conflictedWith.sectionID)
+      return conflictedWith;
+    return null;
   },
   // returns object of course data
   _processCourseElement: function(el){
@@ -627,6 +859,13 @@ var Selection = Class.extend({
     this.crns[course_id] || (this.crns[course_id] = []);
     if (!this.crns[course_id].pushUnique(crn)) return false;
     this._trigger(['changed', 'changed:item'], {type: 'added', cid: course_id, crn: crn});
+    var section_conflict = new SectionConflict({id: crn});
+    if (!this.conflicts.get(section_conflict.id)){
+      var self = this;
+      section_conflict.fetch({success: function(){
+        self.conflicts.add(section_conflict);
+      }});
+    }
     return true;
   },
   addCourse: function(course_elem){
@@ -703,12 +942,24 @@ var Selection = Class.extend({
   save: function(){
     assert(this.options.storage, 'Storage must be defined in options to save');
     this.options.storage.set(this.options.storageKey, this.crns);
-    this._trigger(['save'], this);
+    this.options.storage.set(this.options.versionKey, this.options.version);
+  },
+  getRaw: function(){
+    var selection = {};
+    _.each(this.crns, function(sids, cid){
+      selection[cid] = _.sortBy(sids, function(item){
+        return item;
+      });
+    });
+    return selection;
   },
   load: function(){
     assert(this.options.storage, 'Storage must be defined in options to load');
-    this.set(this.options.storage.get(this.options.storageKey) || {});
-    this._trigger(['load'], this);
+    // drop data if we're a different version.
+    if (this.options.storage.get(this.options.versionKey) === this.options.version)
+      this.set(this.options.storage.get(this.options.storageKey) || {});
+    else
+      console.log('selection cleared. invalid version: ', this.options.storage.get('version'));
     return this;
   },
   clear: function(){
@@ -717,6 +968,10 @@ var Selection = Class.extend({
   },
   set: function(selected_crns){
     this.crns = $.extend({}, selected_crns);
+    this.conflicts = this._bindToConflictList(
+      new SectionConflictList([], {ids: this.getCRNs()})
+    );
+    this.conflicts.fetch();
     return this;
   },
   getCourseIds: function(){
@@ -738,7 +993,8 @@ var Selection = Class.extend({
   },
   refresh: function(){
     // update DOM to reflect selection
-    $(this.options.checkbox_selector).checked(false); // this can be a bottleneck if there's enough elements
+    // this can be a bottleneck if there's enough elements
+    $(this.options.checkbox_selector).checked(false);
     var self = this;
     this.getCourseIds().each(function(cid){
       var crns = self.crns[cid];
@@ -747,6 +1003,79 @@ var Selection = Class.extend({
         self.crns[cid].each(function(crn){
           self._getSectionElem(cid, crn).checked(true);
         });
+      }
+    });
+    self.refreshConflicts();
+  },
+  refreshConflicts: function(){
+    // create width
+    var self = this;
+    var duration = 100;
+
+    var setConflictStyle = function($el, conflictedWith, isCourse){
+      var $parent = $el.parent().addClass('conflict');
+      if (isCourse && !$el.parent().find('> .conflicts_with_course').length){
+        //var course = self._getCourseElem(conflictedWith.courseID).parent().find('.name').text();
+        var courses = [];
+        $parent.find('.section .conflicts_with_section').each(function(){
+          var text = $(this).text().substr('Conflicts with '.length);
+          courses.push(text);
+        });
+        courses = courses.unique();
+        var $text = $('<span class="conflicts_with_course">Conflicts with '
+                      + Utils.andJoin(courses) +'</span>');
+        $parent.find('input[type=checkbox]').attr('disabled', 'disabled');
+        $parent.append($text);
+        $text.hide().slideDown(duration);
+      }
+      else if(!isCourse && !$el.parent().find('.conflicts_with_section').length){
+        // we need the course data to load before we can start
+        if(!self.courses.length) return;
+        var course = self.courses.get(conflictedWith.courseID).get('name');
+        var $text = $('<span class="conflicts_with_section">Conflicts with '
+                      + course +'</span>');
+        $parent.find('label').append($text);
+      }
+    };
+
+    var removeConflictStyle = function($el, isCourse){
+      var $parent = $el.parent().removeClass('conflict');
+      if (isCourse){
+        $parent.find('.conflicts_with_course').slideUp(duration, function(){
+          $(this).remove();
+        });
+
+        $parent.find('input[type=checkbox]').removeAttr('disabled');
+      } else {
+        $parent.find('.conflicts_with_section').remove();
+        $parent.find('input[type=checkbox]').removeAttr('disabled');
+      }
+    };
+
+    $(this.options.checkbox_selector).each(function(){
+      var $el = $(this);
+      var cid = parseInt($el.attr('data-cid'), 10);
+      var crns = $el.attr('data-crns');
+      if (crns && crns !== ''){
+        var count = 0;
+        var conflictedWith = null;
+        var sids = _.map(crns.split(', '), function(x){
+          return parseInt(x, 10);
+        });
+        _.each(sids, function(sid){
+          conflictedWith = self.conflictsWith(sid);
+          if (conflictedWith){
+            ++count;
+            setConflictStyle(self._getSectionElem(cid, sid), conflictedWith, false);
+          } else {
+            removeConflictStyle(self._getSectionElem(cid, sid), false);
+          }
+        });
+        if (count === sids.length){
+          setConflictStyle(self._getCourseElem(cid), conflictedWith, true);
+        } else {
+          removeConflictStyle(self._getCourseElem(cid), true);
+        }
       }
     });
   }
@@ -779,14 +1108,14 @@ var TooManyCRNsView = TemplateView.extend({
 });
 
 var NoSchedulesView = TemplateView.extend({
-  templateSelector: '#thumbnail-template'
+  templateSelector: '#no-schedules-template'
 });
 
 var BaseScheduleView = TemplateView.extend({
   insertionType: 'replaceWith',
   initialize: function(options){
     this.scheduleIndex = options.scheduleIndex || 0;
-    this.period_height = parseInt($(this.templateSelector).attr('data-period-height'), 10)
+    this.period_height = parseInt($(this.templateSelector).attr('data-period-height'), 10);
   },
   getScheduleIndex: function(){ return this.scheduleIndex; },
   setScheduleIndex: function(index){
@@ -801,21 +1130,27 @@ var BaseScheduleView = TemplateView.extend({
     return this;
   },
   getContext: function(){
-    var json = this.options.json,
+    var s = this.options.selectionSchedule,
+      schedules = s.get('schedules'),
       FC = FunctionsContext,
-      self = this,
-      context = {
-        color_map: FC.create_color_map(json.schedules[0]),
-        get_period_height: function(period){
-          return FC.get_period_height(period, self.period_height);
-        },
-        get_period_offset: function(period){
-          return FC.get_period_offset(period, self.period_height);
-        },
-        sid: Utils.integer(_.keys(json.schedules)[self.scheduleIndex]) + 1,
-        schedule: json.schedules[self.scheduleIndex],
-      };
-    return $.extend({}, json, FC, context);
+      self = this;
+    return $.extend({}, FC, {
+      schedules: schedules,
+      time_range: s.get('time_range'),
+      courses: s.getCourses(),
+      sections: s.getSections(),
+      dows: s.get('days_of_the_week'),
+      color_map: FC.create_color_map(schedules[0]),
+      get_period_height: function(period){
+        return FC.get_period_height(period, self.period_height);
+      },
+      get_period_offset: function(period){
+        return FC.get_period_offset(period, self.period_height);
+      },
+      sid: Utils.integer(_.keys(schedules)[self.scheduleIndex]) + 1,
+      schedule: schedules[self.scheduleIndex],
+      timemap: s.createTimemap(self.scheduleIndex)
+    });
   }
 });
 
@@ -865,6 +1200,114 @@ var ScheduleView = BaseScheduleView.extend({
   }
 });
 
+var ScheduleRootView = Backbone.View.extend({
+  events: {
+    'popstate window': 'selectSchedule'
+  },
+  initialize: function(options){
+    this.options = $.extend({
+      id: null,
+      section_ids: [],
+      index: 0,
+      scheduleEl: '#schedules',
+      thumbnailsEl: '#thumbnails',
+      baseURL: '/',
+      history: window.history
+    }, options);
+  },
+  createURI: function(id, index){
+    if (!this.options.baseURL.endsWith('/'))
+      this.options.baseURL += '/';
+    return this.options.baseURL + id + '/' + index + '/';
+  },
+  setState: function(url, replace){
+    if (replace)
+      this.options.history.pushState({path: url}, '', url);
+    else
+      this.options.history.replaceState({path: url}, '', url);
+  },
+  selectSchedule: function(){
+    var index = parseInt($('#schedules').attr('data-start') || 0, 10);
+    this.thumbnails[index].selectSchedule();
+  },
+  _render: function(schedules){
+    var self = this;
+    var loadedURL = this.createURI(schedules.id, this.options.index);
+
+    $(this.options.thumbnailsEl).hide();
+
+    // no schedules :(
+    if (schedules.get('schedules').length < 1){
+      this.scheduleView = new NoSchedulesView({
+        el: this.options.scheduleEl
+      });
+      this.scheduleView.context = {sid: 1};
+      this.scheduleView.render();
+      return;
+    }
+
+    var scheduleView = this.scheduleView = new ScheduleView({
+      el: this.options.scheduleEl,
+      selectionSchedule: schedules,
+      scheduleIndex: this.options.index,
+      thumbnailsContainerEl: this.options.thumbnailsEl
+    }).render();
+
+    $(scheduleView).bind('scheduleIndexChanged', function(evt){
+      var url = self.createURI(schedules.id, evt.index + 1);
+      self.setState(url, url === loadedURL);
+    });
+
+    var thumbnails = $(this.options.thumbnailsEl).html('');
+    this.thumbnails = [];
+    for(var i=0, l=schedules.get('schedules').length; i<l; i++){
+      var view = new ThumbnailView({
+        selectionSchedule: schedules,
+        scheduleIndex: i,
+        scheduleView: scheduleView
+      });
+      this.thumbnails.push(view);
+      thumbnails.append(view.render().el);
+    }
+    this.thumbnails[this.options.index].selectSchedule();
+  },
+  render: function(){
+    var schedules = new SelectionSchedules({
+      id: this.options.id,
+      section_ids: this.options.section_ids || []
+    });
+    var self = this;
+    schedules.fetch({
+      success: function(){
+        var courseIDs = schedules.get('course_ids'),
+          departments = new DepartmentList([], {course_ids: courseIDs}),
+          courses = new CourseList([], {ids: courseIDs}),
+          sections = new SectionList([], {ids: schedules.get('section_ids')}),
+          count = 3;
+        var process = function(){
+          if (--count <= 0){
+            courses.each(function(course){
+              var dept = departments.get(course.get('department_id'));
+              course.set('department', dept);
+            });
+            schedules.setCourses(courses);
+            schedules.setSections(sections);
+            self._render(schedules);
+          }
+        };
+
+        departments.fetch({success: process});
+        courses.fetch({success: process});
+        sections.fetch({success: process});
+      },
+      error: function(){
+        console.log("FAIL", this, arguments);
+      }
+    });
+    return this;
+  }
+});
+
 
 var CourseListView = Backbone.View.extend({
   beingRemoved: false,
@@ -876,40 +1319,50 @@ var CourseListView = Backbone.View.extend({
   },
   setSelection: function(selection){
     this.options.selected = selection;
-    var courses = this.options.selected.getCourseIds();
+    var courseIDs = this.options.selected.getCourseIds();
     if(!courses) return;
-    this.collection = new CourseList();
+    // default behavior for emty lists are to fetch everything...
+    // but that is not our selection
+    if (!courseIDs.length){
+      this.courses = new CourseList([]);
+      this.sections = new SectionList([]);
+      this.departments = new DepartmentList([]);
+      this.render();
+      return;
+    }
     var self = this;
-    courses.each(function(course_id){
-      if (self.beingRemoved) return;
-      var c = new Course({id: course_id});
-      c.fetch();
-      self.collection.add(c, {slient: true});
-    });
-    // don't receive change events until all the models have been fetched.
-    var left = courses.length;
-    this.collection.bind('change', function(){
-      if (self.beingRemoved) return;
-      if (--left <= 0){
+    this.courses = new CourseList(null, {ids: courseIDs});
+    this.sections = new SectionList(null, {course_ids: courseIDs});
+    this.departments = new DepartmentList(null, {course_ids: courseIDs});
+
+    var count = 3;
+    var process = function(){
+      if (--count <= 0){
+        self.courses.each(function(course){
+          course.set('department', self.departments.get(course.get('department_id')));
+          course.set('sections', self.sections.filter(function(section){
+            return section.get('course_id') === course.id;
+          }));
+        });
         self.render();
-        left = 0;
       }
-    });
-    if (!courses.length)
-      self.render();
+    };
+    this.departments.fetch({success: process});
+    this.courses.fetch({success: process});
+    this.sections.fetch({success: process});
+
   },
   render: function(){
     var $target = $(this.el).empty(),
       tmpl = this.options.template || templateFromElement('#course-template'),
       noneTmpl = this.options.emptyTemplate || templateFromElement('#no-courses-template');
-    if (!this.collection.length){
+    if (!this.courses.length){
       $target.html(noneTmpl());
       return this;
     }
 
     var self = this;
-    this.collection.each(function(id){
-      var course = self.collection.get(id);
+    this.courses.each(function(course){
       if (course.isNew()) return;
       var sections = course.sections;
       var context = {
@@ -921,7 +1374,7 @@ var CourseListView = Backbone.View.extend({
             remapped_periods[dow] = [];
           });
           _.toArray(periods).each(function(period){
-            period.days_of_the_week.each(function(dow){
+            period.get('days_of_the_week').each(function(dow){
               remapped_periods[dow].push(period);
             });
           });
@@ -932,11 +1385,11 @@ var CourseListView = Backbone.View.extend({
         },
         displayPeriod: function(p){
           var fmt = '{{ 0 }}-{{ 1 }}',
-            start = FunctionsContext.time_parts(p.start_time),
-            end = FunctionsContext.time_parts(p.end_time)
+            start = FunctionsContext.time_parts(p.get('start')),
+            end = FunctionsContext.time_parts(p.get('end'))
           return fmt.format(
-            FunctionsContext.humanize_time(p.start_time, {includesAPM: false}),
-            FunctionsContext.humanize_time(p.end_time)
+            FunctionsContext.humanize_time(p.get('start'), {includesAPM: false}),
+            FunctionsContext.humanize_time(p.get('end'))
           );
         },
         isReadOnly: self.options.isReadOnly,
@@ -963,19 +1416,18 @@ var RealtimeForm = Class.extend({
         cache: false,
         additionalPOST: '',
         additionalGET: '',
-        suppressFormSubmit: false,
         triggerDelay: 200,
         customHandler: null
     },
     init: function(form, options){
         this.options = $.extend({}, this.options, options);
         this.form = $(form);
-        this.fuse = new Fuse({
+        this.callback = DelayedInvocation(this.sendRequest.bind(this), {
             delay: this.options.triggerDelay,
-            trigger: this.sendRequest.bind(this),
             cancelled: this.stopRequest.bind(this)
         });
         this.attachEvents();
+        this._previousValue = this.getMethodData();
     },
     _asQueryString: function(obj){
       var type = $.type(obj);
@@ -1048,21 +1500,19 @@ var RealtimeForm = Class.extend({
         this.showActivityIndicator();
         // call custom hook which can override the default behavior if necessary
         if (this.options.customHandler){
-            if (this.options.customHandler(this.form, this.fuse))
+            if (this.options.customHandler(this.form, this.callback))
                 this.hideActivityIndicator();
         } else {
-            this.fuse.start();
+            this.callback();
         }
-    },
-    formSubmitted: function(evt){
-        if (this.options.suppressFormSubmit){
-            this.initiateRequest();
-        }
-        return !this.options.suppressFormSubmit;
     },
     changed: function(evt){
-        console.log(evt.type, evt);
-        this.initiateRequest();
+        var newValue = this.getMethodData();
+        if (this._previousValue !== newValue){
+          this.initiateRequest();
+          this._previousValue = newValue;
+        }
+        return false;
     },
     showActivityIndicator: function(){
       Utils.sendMessage(this.options.activityResponder, 'show');
@@ -1072,22 +1522,14 @@ var RealtimeForm = Class.extend({
     },
     keyDownSelector: 'input[type=text], input[type=search], textarea',
     detachEvents: function(){
-        if (this.options.suppressFormSubmit && this._formSubmitted)
-            this.form.unbind('submit', this._formSubmit);
-
         if (this._changed){
             var self = this;
             this.form.find('input, textarea, select').each(function(){
                 var $el = $(this);
                 if ($el.is(self.keyDownSelector))
                     $el.unbind('keyup', self._changed);
-                if (this._formSubmitted && $el.is('input[type=search]'))
-                    $el.unbind('search', self._formSubmitted);
-                $el.unbind('change', self._changed);
+                //$el.unbind('change', self._changed);
             });
-        }
-        if (this._formSubmitted){
-            this.form.submit(this._formSubmit);
         }
     },
     attachEvents: function(){
@@ -1100,13 +1542,8 @@ var RealtimeForm = Class.extend({
                 $el.keyup(self._changed);
             if ($el.is('input[type=search]'))
                 $el.bind('search', self._changed);
-            $el.bind('change', self._changed);
+            //$el.bind('change', self._changed);
         });
-
-        if (this.options.suppressFormSubmit){
-            this._formSubmitted = this.formSubmitted.bind(this);
-            this.form.submit(this._formSubmit);
-        }
     }
 });
 
@@ -1126,7 +1563,11 @@ var FunctionsContext = {
     var parts = FunctionsContext.time_parts(timestr); // hour:min:sec
     return parts.hour * 3600 + parts.minute * 60 + parts.second;
   },
-  get_crns: _.values,
+  get_crns: function(schedule, sections){
+    return _.map(schedule, function(sid){
+      return sections.get(sid).get('crn');
+    });
+  },
   create_color_map: function(schedule, maxcolors){
     var color_map = {},
       maxcolors = maxcolors || 9;
@@ -1165,13 +1606,13 @@ var FunctionsContext = {
     return hour + " " + apm;
   },
   get_period_offset: function(period, height){
-    var start = FunctionsContext.time_parts(period.start_time),
+    var start = FunctionsContext.time_parts(period.get('start')),
         time = start.minute * 60 + start.second;
     return time / 3600.0 * height;
   },
   get_period_height: function(period, height){
-    var time_to_seconds = FunctionsContext.time_to_seconds;
-    var time = time_to_seconds(period.end_time) - time_to_seconds(period.start_time);
+    var t2s = FunctionsContext.time_to_seconds;
+    var time = t2s(period.get('end')) - t2s(period.get('start'));
     //return 25 // 30 min time block
     //return 41.666666667 // 50 min time block
     return time / 3600.0 * height;

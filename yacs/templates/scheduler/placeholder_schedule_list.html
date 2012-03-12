@@ -4,6 +4,9 @@
 
 {% block head %}
 <meta name="robots" content="NOINDEX, FOLLOW">
+{% if selection %}
+    <meta name="selection-raw" content="{{ raw_selection|escape }}">
+{% endif %}
 {{ block.super }}
 {% endblock %}
 
@@ -16,119 +19,121 @@
 
 {% block content %}
 {% if selection %}
-{% include 'scheduler/_saved_selection_notification.html' with selection=selection raw_selection=raw_selection sem_year=sem_year sem_month=sem_month %}
+{% include 'scheduler/_saved_selection_notification.html' with selection=selection sem_year=sem_year sem_month=sem_month %}
 {% endif %}
 
 <div id="thumbnails">
 </div>
-<div id="schedules" data-source="{{ ajax_url }}" data-start="{{ index }}">
+<div id="schedules" data-start="{{ index }}">
 <p><img src="{{ STATIC_URL }}img/spinner.gif" alt="Loading" style="margin: 20px 0 20px 0"></p>
 <noscript>
     Sorry, javascript is required to view schedules :(
 </noscript>
 </div>
 
-{# functions: humanize_time, humanize_hour, get_period_height, get_crns, get_period_offset #}
+{# functions: humanize_time, humanize_hour, get_period_height, #}
+{#            get_crns, get_period_offset #}
 {# defined: schedule, time_range, courses, sections, color_map, sid, dows #}
 <script type="text/template" id="schedule-template" data-period-height="50">
-<% var first=(sid===1), last=(sid===schedules.length), secmap = section_mapping[sid]; %>
-<div id="schedule<%- sid %>" class="schedule_wrapper" data-sid="<%- sid %>">
+  <% var first=(sid===1), last=(sid===schedules.length), secmap = timemap; %>
+  <div id="schedule<%- sid %>" class="schedule_wrapper" data-sid="<%- sid %>">
     <h1>
-        <a href="#thumbnails" class="show-thumbnails view-schedules"></a>
-        <!--
-        <a href="#schedule<%- first ? '' : sid - 1 %>" class="prev-schedule<%= (first ? ' disabled' : '') %>"></a>
-        -->
-        <a name="schedule<%- sid %>">
-            Schedule <%- sid %>
-            <%- (schedules.length > 1) ? '/ '+schedules.length : '' %>
-        </a>
-        <!--
-        <a href="#schedule<%- last ? '' : sid + 1 %>" class="next-schedule<%= (last ? ' disabled' : '') %>"></a>
-        -->
+      <% if (schedules.length > 1){ %>
+      <a href="#thumbnails" class="show-thumbnails view-schedules">
+        <img src="{{ STATIC_URL }}img/thumbnails.gif" alt="View Thumbnails" />
+      </a>
+      <% } %>
+      <a name="schedule<%- sid %>">
+        Schedule <%- sid %>
+        <%- (schedules.length > 1) ? '/ '+schedules.length : '' %>
+      </a>
     </h1>
     <p class="schedule-crns">
-        <%- get_crns(schedule).join(', ') %>
+    <%- get_crns(schedule, sections).join(', ') %>
     </p>
     <p class="share" style="display: none;">
-        <a href="#facebook">Facebook</a>
-        <a href="#link">Permalink</a>
-        <a href="#ics">iCal</a>
+    <a href="#facebook">Facebook</a>
+    <a href="#link">Permalink</a>
+    <a href="#ics">iCal</a>
     </p>
     <div class="schedule">
-        <% for(var j=0, l2=dows.length; j<l2; ++j){ var dow = dows[j], secsforday = secmap[j]; %>
+      <% for(var j=0, l2=dows.length; j<l2; ++j){ var dow = dows[j], secsforday = secmap[dow]; %>
         <div class="dayview">
-            <h2 class="dow"><%- dow %></h2>
-            <div class="hourview">
-                <% for(var k=0, l3=time_range.length; k<l3; ++k) { var hour = time_range[k]; var entry = secsforday && secsforday[hour]; %>
-                    <div class="row">
-                        <span class="hour"><%- humanize_hour(hour) %></span>
-                        <% if(entry) { var cid=entry[0], crn=entry[1], pid=entry[2]; %>
-                            <% var course = courses[cid], section = sections[crn], period = section.periods[pid], height = get_period_height(period); %>
-                            <span style="height: <%- height %>px; margin-top: <%- get_period_offset(period) %>px" class="class
-                            color<%- color_map[course.id] %>
-                            <%- height <= 35 ? 'very' : '' %>
-                            <%- height <= 60 ? 'small' : '' %>
-                            <%- height <= 80 ? 'medium' : '' %>">
-                                <span class="time">
-                                    <span class="start"><%- humanize_time(period.start_time) %></span>
-                                    <span class="sep">-</span>
-                                    <span class="end"><%- humanize_time(period.end_time) %></span>
-                                </span>
-                                <span class="code">
-                                    <%- course.department.code %>
-                                    <%- course.number %>-<%- section.number %>
-                                    <span class="crn">#<%- section.crn %></span>
-                                </span>
-                                <span class="name">
-                                    <%- course.name %>
-                                </span>
-                                <span class="kind">
-                                    <%- period.kind %>
-                                </span>
-                                <span class="instructor">
-                                    <%- period.instructor %>
-                                </span>
-                                <span class="location">
-                                    <%- period.location %>
-                                </span>
-                            </span>
-                        <% } %>
-                    </div>
+          <h2 class="dow"><%- dow %></h2>
+          <div class="hourview">
+            <% for(var k=0, l3=time_range.length; k<l3; ++k) { var hour = time_range[k]; var period = secsforday && secsforday[hour]; %>
+              <div class="row">
+                <span class="hour"><%- humanize_hour(hour) %></span>
+                <% if(period) {
+                  var section = sections.get(period.get('section_id')),
+                    course = courses.get(section.get('course_id')),
+                    height = get_period_height(period);
+                  %>
+                  <span style="height: <%- height %>px; margin-top: <%- get_period_offset(period) %>px" class="class
+                    color<%- color_map[course.id] %>
+                    <%- height <= 35 ? 'very' : '' %>
+                    <%- height <= 60 ? 'small' : '' %>
+                    <%- height <= 80 ? 'medium' : '' %>">
+                    <span class="time">
+                      <span class="start"><%- humanize_time(period.get('start')) %></span>
+                      <span class="sep">-</span>
+                      <span class="end"><%- humanize_time(period.get('end')) %></span>
+                    </span>
+                    <span class="code">
+                      <%- course.get('department').get('code') %>
+                      <%- course.get('number') %>-<%- section.get('number') %>
+                      <span class="crn">#<%- section.get('crn') %></span>
+                    </span>
+                    <span class="name">
+                      <%- course.get('name') %>
+                    </span>
+                    <span class="kind">
+                      <%- period.get('kind') %>
+                    </span>
+                    <span class="instructor">
+                      <%- period.get('instructor') %>
+                    </span>
+                    <span class="location">
+                      <%- period.get('location') %>
+                    </span>
+                  </span>
+                  <% } %>
+              </div>
 
-                <% } %>
-            </div>
+              <% } %>
+          </div>
         </div>
         <% } %>
     </div>
-</div>
+  </div>
 </script>
 
 {# functions: get_period_height #}
 {# defined: schedule, time_range, courses, sections, color_map, sid #}
 <script type="text/template" id="thumbnail-template" data-period-height="8">
-<% var first=(sid===1), last=(sid===schedules.length), secmap = section_mapping[sid]; %>
-{# <div id="schedule_thumbnail<%- sid %>" class="schedule_wrapper thumbnail" data-sid="<%- sid %>"> #}
-    <a class="schedule select-schedule" href="#schedule<%- sid %>">
-        <% for(var j=0, l2=dows.length; j<l2; ++j){ var dow = dows[j]; var secsforday = secmap[j]; %>
-            <div class="day">
-                <% for(var k=0, l3=time_range.length; k<l3; ++k) { var hour = time_range[k]; var entry = secsforday && secsforday[hour]; %>
-                    <div class="row <%- (hour === 12) ? 'noon' : '' %>">
-                        <% if(entry) { %>
-                            <% var cid=entry[0], crn=entry[1], pid=entry[2]; %>
-                            <% var course = courses[cid], section = sections[crn], period = section.periods[pid], height = get_period_height(period); %>
-                            <span style="height: <%- height %>px; margin-top: <%- get_period_offset(period) %>px" class="class
-                            color<%- color_map[course.id] %>
-                            <%- height <= 35 ? 'very' : '' %>
-                            <%- height <= 60 ? 'small' : '' %>
-                            <%- height <= 80 ? 'medium' : '' %>">
-                            </span>
-                        <% } %>
-                    </div>
-                <% } %>
-            </div>
+<% var first=(sid===1), last=(sid===schedules.length), secmap = timemap; %>
+<a class="schedule select-schedule" href="#schedule<%- sid %>">
+  <% for(var j=0, l2=dows.length; j<l2; ++j){ var dow = dows[j]; var secsforday = secmap[dow]; %>
+    <div class="day">
+      <% for(var k=0, l3=time_range.length; k<l3; ++k) { var hour = time_range[k]; var period = secsforday && secsforday[hour]; %>
+        <div class="row <%- (hour === 12) ? 'noon' : '' %>">
+          <% if(period) {
+            var section = sections.get(period.get('section_id')),
+            course = courses.get(section.get('course_id')),
+            height = get_period_height(period);
+            %>
+            <span style="height: <%- height %>px; margin-top: <%- get_period_offset(period) %>px" class="class
+              color<%- color_map[course.id] %>
+              <%- height <= 35 ? 'very' : '' %>
+              <%- height <= 60 ? 'small' : '' %>
+              <%- height <= 80 ? 'medium' : '' %>">
+            </span>
+            <% } %>
+        </div>
         <% } %>
-    </a>
-{#</div> #}
+    </div>
+    <% } %>
+</a>
 </script>
 
 <script type="text/template" id="too-many-crns-template">

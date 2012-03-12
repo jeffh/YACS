@@ -6,6 +6,10 @@
 
 {% block head %}
 <meta name="robots" content="NOINDEX, FOLLOW">
+{% if selection %}
+    <meta name="selection-raw" content="{{ raw_selection|escape }}">
+    <meta name="selection-slug" content="{{ selection.slug }}">
+{% endif %}
 {{ block.super }}
 {% endblock %}
 
@@ -16,10 +20,10 @@
 
 {% block content %}
 {% if selection %}
-{% include 'scheduler/_saved_selection_notification.html' with selection=selection raw_selection=raw_selection sem_year=sem_year sem_month=sem_month %}
+{% include 'scheduler/_saved_selection_notification.html' with selection=selection sem_year=sem_year sem_month=sem_month %}
 {% endif %}
 
-<div id="courses" class="listview"{% if selection %} data-readonly="true" data-selection="{{ selection.slug }}" data-raw-selection="{{ raw_selection|escape }}"{% endif %}>
+<div id="courses" class="listview"{% if selection %} data-readonly="yes"{% endif %}>
     {% csrf_token %}
     <ul id="selected_courses">
       <div style="text-align: center">
@@ -35,12 +39,12 @@
 {# functions: #}
 {# required context: #}
 <script type="text/template" id="course-template">
-<li class="course <%- course.getSeatsLeft() < 1 ? 'no-seats' : '' %><%- course.getCRNs().length < 1 ? 'no-sections' : '' %>">
-    <% if (course.getCRNs().length > 0){ %>
+<li class="course <%- course.getSeatsLeft() < 1 ? 'no-seats' : '' %><%- course.getSectionIDs().length < 1 ? 'no-sections' : '' %>">
+    <% if (course.getSectionIDs().length > 0){ %>
         <input type="checkbox" id="selected_course_<%- course.id %>" name="course_<%- course.id %>"
     <% if (isReadOnly) { %> disabled="disabled" <% } %>
-    <% if (course.getCRNs().some(isSelectedCRN)){ %> checked="checked" <% } %>
-        data-cid="<%- course.id %>" data-crns="<%- course.getCRNs().join(', ') %>" data-crns-full="<%- course.getFullCRNs().join(', ') %>" />
+    <% if (course.getSectionIDs().some(isSelectedCRN)){ %> checked="checked" <% } %>
+        data-cid="<%- course.id %>" data-crns="<%- course.getSectionIDs().join(', ') %>" data-crns-full="<%- course.getSectionIDs().join(', ') %>" />
     <% } else { %>
         <p style="float:left; width: 15px; height: 10px; margin: 0; padding: 0;"></p>
     <% } %>
@@ -48,15 +52,17 @@
         <span class="name"><%- course.get('name') %></span>
         <span class="secondary">
             <span class="code">
-                <span class="dept"><%- course.get('department').code %></span>
+                <span class="dept"><%- course.get('department').get('code') %></span>
                 <span class="number"><%- course.get('number') %></span>
             </span>
             <span class="credits">
                 <%- course.getCreditsDisplay() %>
             </span>
             <span class="seats-left">
-                <% if (course.getCRNs().length > 0){ %>
-                    <% if (course.getSeatsLeft() < 30) { %>
+                <% if (course.getSectionIDs().length > 0){ %>
+                    <% if (course.getSeatsLeft() <= 0) { %>
+                        No seats left
+                    <% } else if (course.getSeatsLeft() < 30) { %>
                         <%- course.getSeatsLeft() %> seat<%- course.getSeatsLeft() === 1 ? '' : 's' %> left
                     <% } %>
                 <% } else { %>
@@ -85,16 +91,16 @@
             <ul>
                 <% for(var sections=course.getSections(), i=0, l=sections.length; i<l; i++){ var section = sections.at(i); %>
                     <li class="section<%- section.get('seats_taken') >= section.get('seats_total') ? ' full' : '' %>">
-                    <input type="checkbox" id="selected_course_<%- course.id %>_<%- section.get('crn') %>" name="selected_course_<%- course.id %>_<%- section.get('crn') %>" <%- isSelectedCRN(section.get('crn')) ? ' checked="checked"' : '' %> data-cid="<%- course.id %>" data-crn="<%- section.get('crn')  %>" <% if (isReadOnly) { %> disabled="disabled" <% } %> />
-                        <label for="selected_course_<%- course.id %>_<%- section.get('crn') %>">
+                    <input type="checkbox" id="selected_course_<%- course.id %>_<%- section.id %>" name="selected_course_<%- course.id %>_<%- section.id %>" <%- isSelectedCRN(section.id) ? ' checked="checked"' : '' %> data-cid="<%- course.id %>" data-crn="<%- section.id  %>" <% if (isReadOnly) { %> disabled="disabled" <% } %> />
+                        <label for="selected_course_<%- course.id %>_<%- section.id %>">
                             <span class="section-number">
                                 Section <span class="number"><%- section.get('number') %></span>
                             </span>
-                            <% if(section.get('seats_taken') >= section.get('seats_total')){ %>
+                            <% if(section.getSeatsLeft() <= 0){ %>
                             <span class="section-seats-left none">No seats left</span>
                             <% } else { %>
                             <span class="section-seats-left">
-                                <span class="number"><%- section.get('seats_left') %></span> seat<%- section.get('seats_left') === 1 ? '' : 's' %> left
+                                <span class="number"><%- section.getSeatsLeft() %></span> seat<%- section.getSeatsLeft() === 1 ? '' : 's' %> left
                             </span>
                             <% } %>
                             <div class="instructors">
@@ -106,7 +112,7 @@
                             </div>
                         </label>
                         <ul class="days">
-                            <% var times = periodsByDayOfWeek(section.get('periods')); %>
+                            <% var times = periodsByDayOfWeek(section.getPeriods()); %>
                             <% for(var i3=0, l3=days_of_the_week.length; i3<l3; i3++){ var dow = days_of_the_week[i3]; %>
                                 <li class="item <%- times[dow].length ? 'selected' : 'empty' %>">
                                     <span class="short"><%- dow %></span>

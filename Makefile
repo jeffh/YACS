@@ -1,5 +1,5 @@
 ### configurable vars ###
-APPS=api courses scheduler
+APPS=api courses courses_viz scheduler
 
 # Requirements file to use
 DEPLOY_REQUIREMENTS=requirements/deployment.txt
@@ -7,7 +7,7 @@ DEV_REQUIREMENTS=requirements/development.txt
 # override
 REQUIREMENTS=
 
-DEPLOY=api courses scheduler lib requirements yacs manage.py Makefile
+DEPLOY=api courses courses_viz scheduler lib requirements yacs manage.py Makefile
 
 # certain commands accept arguments
 ARGS=
@@ -20,9 +20,12 @@ STATIC_CACHE=yacs/static/root
 
 # executables
 PYTHON := `which python`
+PYTHON_VERSION=
 NOSETESTS := `which nosetests`
 PIP := `which pip`
 VIRTUALENV := `which virtualenv`
+
+PIP_ARGS=
 
 # syncing operations for git
 # usually you put the appropriate database driver here
@@ -72,25 +75,26 @@ scss:
 	sass --watch yacs/static/global/scss:yacs/static/global/css
 
 clean:
-	echo "Removing all *.pyc files."
+	@echo "Removing all *.pyc files."
 	find . -name "*.pyc" | xargs rm
-	echo "Removing all *.pyo files."
+	@echo "Removing all *.pyo files."
 	find . -name "*.pyo" | xargs rm
 	# python 3
-	echo "Removing all __pycache__ directories."
+	@echo "Removing all __pycache__ directories."
 	find . -name "__pycache__" -type directory | xargs rm -r
 	# django
-	echo "Removing collected static files."
+	@echo "Removing collected static files."
 	rm -r $(STATIC_CACHE)
 	# deployment
-	echo "Removing deployment cruft"
+	@echo "Removing deployment cruft"
 	rm -f $(TEMP_ARCHIVE_NAME).tar.gz $(TEMP_ARCHIVE_NAME).tar
 
 ##### END simple commands #####
 
 ##### remote commands - intended for server operation #####
 
-CD_PROJECT := cd $(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME)
+PRODUCTION_FULLPATH=$(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME)
+CD_PROJECT=cd $(PRODUCTION_FULLPATH)
 
 remote = \
 	  ssh $(PRODUCTION_SERVER) "$(PRODUCTION_PRE_COMMAND)$(1)"
@@ -101,7 +105,23 @@ else
 USE_VIRTUALENV=
 endif
 
-deploy: backup_current create_tarball upload_and_extract_tarball remove_tarball
+WF_restart: override PRODUCTION_DIR_NAME=yacs
+WF_restart: override PRODUCTION_ROOT=~/webapps/yacs
+WF_restart:
+	$(call remote,$(CD_PROJECT) && $(PRODUCTION_FULLPATH)/../apache2/bin/restart)
+
+WF_deploy: override PRODUCTION_USE_VIRTUALENV=
+WF_deploy: override PRODUCTION_USE_VIRTUALENV=
+WF_deploy: override USE_VIRTUALENV=
+WF_deploy: override PRODUCTION_DIR_NAME=yacs
+WF_deploy: override PRODUCTION_ROOT=~/webapps/yacs
+WF_deploy: override PYTHON_VERSION=2.7
+WF_deploy: override PRODUCTION_SETTINGS=yacs/settings/staging.json
+WF_deploy: \
+	PIP_ARGS+=--install-option="--install-scripts=$(PRODUCTION_FULLPATH)/bin/../" \
+	--install-option="--install-lib=$(PRODUCTION_FULLPATH)/lib/python2.7"
+
+WF_deploy deploy: backup_current create_tarball upload_and_extract_tarball remove_tarball
 	# set up virtualenv
 ifdef PRODUCTION_VIRTUALENV
 	$(call remote,$(CD_PROJECT) && make create_virtualenv PRODUCTION=1)
@@ -111,13 +131,13 @@ ifdef PRODUCTION_REQUIREMENTS
 	$(call remote,$(CD_PROJECT) && $(USE_VIRTUALENV) make install_requirements PRODUCTION=1 REQUIREMENTS=$(PRODUCTION_REQUIREMENTS))
 endif
 	# update production settings
-	$(call remote,$(CD_PROJECT) && rm -f $(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME)/yacs/settings/*.json)
-	scp $(PRODUCTION_SETTINGS) $(PRODUCTION_SERVER):$(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME)/yacs/settings/production.json
+	$(call remote,$(CD_PROJECT) && rm -f $(PRODUCTION_FULLPATH)/yacs/settings/*.json)
+	scp $(PRODUCTION_SETTINGS) $(PRODUCTION_SERVER):$(PRODUCTION_FULLPATH)/yacs/settings/production.json
 	# perform regular pip install, syncdb, migrate, collectstatic
-	$(call remote,$(CD_PROJECT) && $(USE_VIRTUALENV) make update_environment PRODUCTION=1)
+	$(call remote,$(CD_PROJECT) && $(USE_VIRTUALENV) make update_environment PRODUCTION=1 PIP_ARGS='$(PIP_ARGS)' PYTHON_VERSION=$(PYTHON_VERSION))
 
 perform_data_refresh:
-	$(call remote,$(CD_PROJECT) && $(USE_VIRTUALENV) make refresh_data PRODUCTION=1)
+	$(call remote,$(CD_PROJECT) && $(USE_VIRTUALENV) make refresh_data PRODUCTION=1 PIP_ARGS='$(PIP_ARGS)' PYTHON_VERSION=$(PYTHON_VERSION))
 
 create_tarball: remove_tarball
 	tar -cf $(TEMP_ARCHIVE_NAME).tar --exclude="*.pyc" --exclude="__pycache__" --exclude="*.pyo" --exclude=".*" $(DEPLOY)
@@ -126,20 +146,20 @@ create_tarball: remove_tarball
 remove_tarball:
 	rm -f $(TEMP_ARCHIVE_NAME).tar $(TEMP_ARCHIVE_NAME).tar.gz
 
-backup_current: remove_backup
-	$(call remote,mkdir -p $(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME) && mv -f $(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME) $(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME)_tmp)
+backup_current:
+	$(call remote,mkdir -p $(PRODUCTION_FULLPATH) && mv -f $(PRODUCTION_FULLPATH) $(PRODUCTION_FULLPATH)_tmp)
 
 restore_backup:
-	$(call remote,mkdir -p $(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME)_tmp && mv -f $(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME)_tmp $(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME))
+	$(call remote,mkdir -p $(PRODUCTION_FULLPATH)_tmp && mv -f $(PRODUCTION_FULLPATH)_tmp $(PRODUCTION_FULLPATH))
 
 remove_backup:
-	$(call remote,rm -rf $(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME)_tmp)
+	$(call remote,rm -rf $(PRODUCTION_FULLPATH)_tmp)
 
 upload_and_extract_tarball:
 	@echo "Creating directory"
-	$(call remote,mkdir -p $(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME))
+	$(call remote,mkdir -p $(PRODUCTION_FULLPATH))
 	@echo "Uploading repo"
-	scp $(TEMP_ARCHIVE_NAME).tar.gz $(PRODUCTION_SERVER):$(PRODUCTION_ROOT)/$(PRODUCTION_DIR_NAME)
+	scp $(TEMP_ARCHIVE_NAME).tar.gz $(PRODUCTION_SERVER):$(PRODUCTION_FULLPATH)
 	@echo "Extracting repository and bootstrapping..."
 	$(call remote,$(CD_PROJECT) && tar -zxvf $(TEMP_ARCHIVE_NAME).tar.gz)
 
@@ -157,28 +177,34 @@ update_environment: install_requirements syncdb collectstatic
 
 install_requirements:
 ifneq ("$(FORCE_UPGRADE)", "")
-	$(PIP) install -r $(REQUIREMENTS) --upgrade
+	$(PIP) install -r $(REQUIREMENTS) --upgrade $(PIP_ARGS)
 else
-	$(PIP) install -r $(REQUIREMENTS)
+	$(PIP) install -r $(REQUIREMENTS) $(PIP_ARGS)
+endif
+
+ifdef PRODUCTION
+PYTHON_EXEC = export YACS_ENV=production && $(PYTHON)$(PYTHON_VERSION)
+else
+PYTHON_EXEC = $(PYTHON)$(PYTHON_VERSION)
 endif
 
 syncdb:
-	$(PYTHON) manage.py syncdb --noinput
-	$(PYTHON) manage.py migrate
+	$(PYTHON_EXEC) manage.py syncdb --noinput
+	$(PYTHON_EXEC) manage.py migrate
 
 collectstatic:
-	$(PYTHON) manage.py collectstatic --noinput
+	$(PYTHON_EXEC) manage.py collectstatic --noinput
 
 refresh_data: update_courses create_section_cache create_robots_txt
 
 update_courses:
-	$(PYTHON) manage.py import_course_data $(ARGS)
+	$(PYTHON_EXEC) manage.py import_course_data $(ARGS)
 
 create_robots_txt:
-	$(PYTHON) manage.py sync_robots_data $(ARGS)
+	$(PYTHON_EXEC) manage.py sync_robots_data $(ARGS)
 
 create_section_cache:
-	$(PYTHON) manage.py create_section_cache
+	$(PYTHON_EXEC) manage.py create_section_cache
 
 ##### END remote commands #####
 
@@ -197,7 +223,7 @@ end_coverage:
 	coverage html
 
 test_django:
-	$(prefix)$(PYTHON) manage.py test --failfast $(APPS)
+	$(prefix)$(PYTHON_EXEC) manage.py test --failfast $(APPS)
 
 test_lib:
 	$(prefix)$(NOSETESTS) -x -w lib

@@ -23,17 +23,17 @@ from scheduler.scheduling import compute_schedules
 ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')
 SECTION_LIMIT = getattr(settings, 'SECTION_LIMIT', 60)
 
-def compute_selection_dict(crns):
+def compute_selection_dict(sids):
     selection = {}
-    for crn, cid in Section.objects.filter(crn__in=crns).values_list('crn', 'course_id'):
-        selection.setdefault(cid, []).append(crn)
+    for sid, cid in Section.objects.filter(id__in=sids).values_list('id', 'course_id'):
+        selection.setdefault(cid, []).append(sid)
     return selection
 
 class SelectionSelectedCoursesListView(SelectedCoursesListView):
     def get_context_data(self, **kwargs):
         context = super(SelectionSelectedCoursesListView, self).get_context_data(**kwargs)
         selection = context['selection'] = models.Selection.objects.get(slug=self.kwargs.get('slug'))
-        context['raw_selection'] = dumps(compute_selection_dict(selection.crns))
+        context['raw_selection'] = dumps(compute_selection_dict(selection.section_ids))
         return context
 
 class ResponsePayloadException(Exception):
@@ -62,21 +62,14 @@ class ConflictMixin(SemesterBasedMixin):
         """Returns a dictionary of section id to a frozen set of section ids
         that conflict with the given section.
         """
-        result = {} # section_id => [section_ids]
-        for conflict in conflicts:
-            result.setdefault(conflict.section1.id, set()).add(conflict.section2.id)
-            result.setdefault(conflict.section2.id, set()).add(conflict.section1.id)
-        # freeze all sets
-        for key in result.keys():
-            result[key] = frozenset(result[key])
-        return result
+        return models.SectionConflict.objects.as_dictionary(conflicts)
 
     def get_sections_by_crns(self, crns):
         "Returns all sections with the provided CRNs."
         year, month = self.get_year_and_month()
         queryset = models.SectionProxy.objects.by_crns(crns, year=year, month=month)
         queryset = queryset.select_related('course', 'course__department')
-        return queryset.by_semester(year, month).prefetch_periods() #queryset.full_select(year, month)
+        return queryset.by_semester(year, month).prefetch_periods()
 
     def inject_conflict_mapping_in_sections(self, sections):
         """Givens the collection of section objects, attaches a conflict attr
@@ -84,8 +77,7 @@ class ConflictMixin(SemesterBasedMixin):
         the given section.
         """
         section_ids = set(s.id for s in sections)
-        conflicts = models.SectionConflict.objects.by_sections(section_ids)
-        conflict_mapping = self.conflict_mapping(conflicts)
+        conflict_mapping = models.SectionConflict.objects.as_dictionary(section_ids)
         empty_set = frozenset() # saves memory
         for section in sections:
             section.conflicts = conflict_mapping.get(section.id) or empty_set
@@ -109,7 +101,10 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
                     pass
             return crns
         slug = self.request.GET.get('slug')
-        return models.Selection.objects.get(slug=slug).crns
+        try:
+            return models.Selection.objects.get(slug=slug).crns
+        except models.Selection.DoesNotExist:
+            raise Http404
 
     def get_sections(self, crns):
         """Return the collection of section objects that
@@ -263,9 +258,6 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
     def get_or_create_selection(self, crns):
         "Creates a Selection model instance if it does not exist."
         selection, created = models.Selection.objects.get_or_create(crns=crns)
-        if created:
-            selection.assign_slug_by_id()
-            selection.save()
         return selection
 
     def get_context_data(self, **kwargs):
@@ -327,22 +319,19 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
         index = int(index) - 1
         assert index >= 0
     except (ValueError, TypeError, AssertionError):
-        return redirect(reverse('schedules', kwargs=dict(year=year, month=month, slug=slug, index=1)))
+        if slug:
+            return redirect(reverse('schedules', kwargs=dict(year=year, month=month, slug=slug, index=1)))
 
     semester = Semester.objects.get(year=year, month=month)
-    url = reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?'
     try:
         slug = slug or request.GET.get('slug')
         selection = models.Selection.objects.get(slug=slug)
-        prefix = '&crn='
-        url += prefix + prefix.join(map(str, selection.crns))
     except models.Selection.DoesNotExist:
         selection = None
 
     return render_to_response('scheduler/placeholder_schedule_list.html', {
-        'ajax_url': url,
         'selection': selection,
-        'raw_selection': dumps(compute_selection_dict(selection.crns)) if selection else None,
+        'raw_selection': dumps(compute_selection_dict(selection.section_ids)) if selection else None,
         'sem_year': semester.year,
         'sem_month': semester.month,
         'index': index,

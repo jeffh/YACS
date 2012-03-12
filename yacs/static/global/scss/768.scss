@@ -15,6 +15,7 @@ body {
     }
     .disclosure {
         font-size: 110%;
+        display: none;
     }
     .deptcode {
         display: block;
@@ -31,6 +32,15 @@ body {
 }
 
 #courses, #selected_courses {
+    .conflicts_with_section {
+        font-size: 100%;
+        top: 5px;
+    }
+    .conflicts_with_course {
+        font-size: 120%;
+        max-width: 600px;
+    }
+
     input { /* checkbox */
         top: 7px;
     }
@@ -61,7 +71,7 @@ body {
             float: right;
             position: relative;
             top: -3em;
-            margin-bottom: -3em;
+            margin-bottom: -2em;
 
             li.item {
                 &.empty, &.selected {

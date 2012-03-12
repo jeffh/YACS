@@ -14,6 +14,14 @@ $transition-type: ease-in-out;
 	transition: $args;
 }
 
+@mixin rotate($deg){
+    rotation: $deg;
+    -o-transform: rotate($deg);
+    -ms-transform: rotate($deg);
+    -webkit-transform: rotate($deg);
+    -moz-transform: rotate($deg);
+}
+
 @mixin opacity($opacity) {
     zoom: 1;
     filter: alpha(opacity=$opacity * 100);

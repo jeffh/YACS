@@ -379,6 +379,16 @@ class Course(models.Model):
         return _process(set(sp.section.notes for sp in self.section_times))
 
     @property
+    def section_ids(self):
+        notify_if_missing_prefetch(self, 'sections')
+        return set(section.id for section in self.sections.all())
+
+    @property
+    def full_section_ids(self):
+        notify_if_missing_prefetch(self, 'sections')
+        return set(s.id for s in self.sections.all() if s.seats_taken >= s.seats_total)
+
+    @property
     def crns(self):
         notify_if_missing_prefetch(self, 'sections')
         return set(section.crn for section in self.sections.all())

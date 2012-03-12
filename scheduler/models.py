@@ -7,7 +7,7 @@ from courses import models as courses
 from courses import managers as courses_managers
 from courses.utils import dict_by_attr
 from scheduler import managers
-from scheduler.utils import slugify, deserialize_crns, serialize_crns
+from scheduler.utils import slugify, deserialize_numbers, serialize_numbers
 
 
 
@@ -15,7 +15,7 @@ class Selection(models.Model):
     """Represents a unique set of selected CRNs. It also offers a unique URL for each set.
     """
     internal_slug = models.CharField(max_length=200, db_index=True, blank=True, default="")
-    internal_crns = models.CharField(max_length=255)
+    internal_section_ids = models.CommaSeparatedIntegerField(max_length=255)
 
     objects = managers.SelectionManager()
 
@@ -24,12 +24,12 @@ class Selection(models.Model):
         self.slug = self.pk
 
     @property
-    def crns(self):
-        return deserialize_crns(self.internal_crns)
+    def section_ids(self):
+        return deserialize_numbers(self.internal_section_ids)
 
-    @crns.setter
-    def crns(self, crns):
-        self.internal_crns = serialize_crns(crns)
+    @section_ids.setter
+    def section_ids(self, section_ids):
+        self.internal_section_ids = serialize_numbers(section_ids)
 
     @property
     def slug(self):
@@ -40,7 +40,7 @@ class Selection(models.Model):
         self.internal_slug = slugify(string)
 
     def __unicode__(self):
-        return "%r, %r" % (self.slug, self.crns)
+        return "%r, %r" % (self.slug, self.section_ids)
 
 
 # Django bug? Using a proxy causes tests to fail (looking for database NAME).

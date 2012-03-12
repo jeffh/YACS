@@ -25,11 +25,11 @@
 
 {% with sections=course.sections.all %}
   {% with seats_left_for_course=sections|seats_left %}
-    <li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}{% if course.crns|length < 1 %} no-sections{% endif %}">
-        {% if course.crns|length > 0 %}
+    <li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}{% if course.section_ids|length < 1 %} no-sections{% endif %}">
+        {% if course.section_ids|length > 0 %}
         <input type="checkbox" id="selected_course_{{ course.id }}" name="course_{{ course.id }}"
         {% if course in selected_courses %} checked="checked" {% endif %}
-        data-cid="{{ course.id }}" data-crns="{{ course.crns|join }}" data-crns-full="{{ course.full_crns|join }}" />
+        data-cid="{{ course.id }}" data-crns="{{ course.section_ids|join }}" data-crns-full="{{ course.full_section_ids|join }}" />
         {% else %}
         <p style="float:left; width: 15px; height: 10px; margin: 0; padding: 0;"></p>
         {% endif %}
@@ -45,7 +45,7 @@
                     {{ course.credits_display }}
                 </span>
                 <span class="seats-left">
-                    {% if course.crns|length > 0 %}
+                    {% if course.section_ids|length > 0 %}
                         {% if seats_left_for_course < 30 %}
                         {{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
                         {% endif %}
@@ -81,8 +81,8 @@
           <ul>
             {% for section in sections %}
             <li class="section{% if section.is_full %} full{% endif %}">
-            <input type="checkbox" id="selected_course_{{ course.id }}_{{ section.crn }}" name="selected_course_{{ course.id }}_{{ section.crn }}"{% if section.crn in selected_section_ids %} checked="checked"{% endif %} data-cid="{{ course.id }}" data-crn="{{ section.crn }}" />
-            <label for="selected_course_{{ course.id }}_{{ section.crn }}">
+            <input type="checkbox" id="selected_course_{{ course.id }}_{{ section.id }}" name="selected_course_{{ course.id }}_{{ section.id }}"{% if section.id in selected_section_ids %} checked="checked"{% endif %} data-cid="{{ course.id }}" data-crn="{{ section.id }}" />
+            <label for="selected_course_{{ course.id }}_{{ section.id }}">
               <span class="section-number">
                 Section <span class="number">{{ section.number }}</span>
               </span>
