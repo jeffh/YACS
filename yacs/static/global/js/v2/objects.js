@@ -1030,7 +1030,7 @@ var Selection = Class.extend({
       }
       else if(!isCourse && !$el.parent().find('.conflicts_with_section').length){
         // we need the course data to load before we can start
-        if(!self.courses) return;
+        if(!self.courses.length) return;
         var course = self.courses.get(conflictedWith.courseID).get('name');
         var $text = $('<span class="conflicts_with_section">Conflicts with '
                       + course +'</span>');
