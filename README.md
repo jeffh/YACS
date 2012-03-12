@@ -27,12 +27,14 @@ Which will download code into a YACS folder where you run this command.
 
 ### Dependencies
 
-YACS is built on top of [Django][] 1.4. Thus, it requires a database driver to run.
+YACS is built on top of [Django][] 1.4rc1. Thus, it requires a database driver to run.
 Install the appropriate driver and its database, or just use the bundled SQLite.
+
+[Django]: https://www.djangoproject.com/ "Django Web Framework"
 
 ### Setup (Development)
 
-1. YACS uses a lot of dependencies. It relies on [pip][] to install them. Then simply do:
+1. YACS uses a lot of dependencies. It relies on [pip][] to install them. Simply do:
 
     `pip install -r requirements/development.txt`
 
@@ -64,11 +66,7 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
 6. ???
 7. Profit?
 
-[Django]: http://djangoproject.com/ "Django Web Framework"
-[postgres]: http://www.postgresql.org/ "PostgreSQL"
 [pip]: http://www.pip-installer.org/en/latest/index.html
-[distribute]: http://pypi.python.org/pypi/distribute
-[setuptools]: http://pypi.python.org/pypi/setuptools
 [local]: http://localhost:8000/
 
 ## Project layout
