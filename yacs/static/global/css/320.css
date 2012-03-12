@@ -516,7 +516,7 @@ header .alpha {
 
 /* END SELECTED_COURSES */
 /* COURSES */
-#courses {
+#courses, #selected_courses {
   margin-top: 1em;
   /*
   .no-seats {
@@ -538,34 +538,41 @@ header .alpha {
   	}
   }
   */ }
-  #courses .course.conflict > * {
+  #courses .course.conflict > *, #selected_courses .course.conflict > * {
     zoom: 1;
     filter: alpha(opacity=40);
     opacity: 0.4; }
-  #courses .course.conflict .conflict {
+  #courses .course.conflict .conflict, #selected_courses .course.conflict .conflict {
     zoom: 1;
     filter: alpha(opacity=100);
     opacity: 1; }
-    #courses .course.conflict .conflict .conflicts_with_section {
+    #courses .course.conflict .conflict .conflicts_with_section, #selected_courses .course.conflict .conflict .conflicts_with_section {
       display: none; }
-  #courses .course.conflict .conflicts_with_course {
+  #courses .course.conflict .conflicts_with_course, #selected_courses .course.conflict .conflicts_with_course {
     zoom: 1;
     filter: alpha(opacity=100);
     opacity: 1; }
-  #courses .section.conflict label > *, #courses .section.conflict ul {
+  #courses .section.conflict ul, #selected_courses .section.conflict ul {
     zoom: 1;
     filter: alpha(opacity=40);
     opacity: 0.4; }
-  #courses .section.conflict label .conflicts_with_section {
+  #courses .section.conflict label span, #courses .section.conflict label div, #selected_courses .section.conflict label span, #selected_courses .section.conflict label div {
+    zoom: 1;
+    filter: alpha(opacity=40);
+    opacity: 0.4; }
+  #courses .section.conflict label .conflicts_with_section, #selected_courses .section.conflict label .conflicts_with_section {
     zoom: 1;
     filter: alpha(opacity=100);
     opacity: 1; }
-  #courses .conflicts_with_section {
+  #courses .conflicts_with_section, #selected_courses .conflicts_with_section {
+    font-size: 90%;
+    padding: 2px 5px;
     position: absolute;
-    top: 5px;
+    top: 15px;
     left: 50px;
     background: #fff;
     color: #333;
+    z-index: 10;
     rotation: 2deg;
     -o-transform: rotate(2deg);
     -ms-transform: rotate(2deg);
@@ -574,13 +581,13 @@ header .alpha {
     -moz-box-shadow: 0 1px 6px #999999;
     -webkit-box-shadow: 0 1px 6px #999999;
     box-shadow: 0 1px 6px #999999; }
-  #courses .conflicts_with_course {
+  #courses .conflicts_with_course, #selected_courses .conflicts_with_course {
     clear: none;
     position: absolute;
     top: 0;
     right: 17px;
     padding: 15px 10px;
-    font-size: 130%;
+    font-size: 90%;
     background: #fff;
     color: #333;
     -moz-box-shadow: 0 3px 6px #999999;
@@ -589,24 +596,24 @@ header .alpha {
     border-radius: 0 0 3px 3px;
     -moz-border-radius: 0 0 3px 3px;
     -webkit-border-radius: 0 0 3px 3px; }
-  #courses label {
+  #courses label, #selected_courses label {
     vertical-align: middle; }
-  #courses input {
+  #courses input, #selected_courses input {
     /* checkbox */
     position: relative;
     top: 8px;
     float: left; }
-  #courses li {
+  #courses li, #selected_courses li {
     position: relative;
     border-bottom: 1px solid #d0d0d0; }
-    #courses li:first-child {
+    #courses li:first-child, #selected_courses li:first-child {
       border-top: 1px solid #d0d0d0; }
-  #courses .padded {
+  #courses .padded, #selected_courses .padded {
     padding: 4px 8px;
     display: block; }
-  #courses a:link, #courses a:visited {
+  #courses a:link, #courses a:visited, #selected_courses a:link, #selected_courses a:visited {
     border: 0; }
-  #courses h2 {
+  #courses h2, #selected_courses h2 {
     text-align: center;
     clear: none;
     color: #333;
@@ -614,29 +621,29 @@ header .alpha {
     letter-spacing: 1px;
     padding: 0 0 5px 0;
     text-shadow: 1px 1px 0 #fff; }
-  #courses .name {
+  #courses .name, #selected_courses .name {
     padding-left: 2px;
     width: 90%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: noclip; }
-  #courses .disclosure {
+  #courses .disclosure, #selected_courses .disclosure {
     float: none;
     position: absolute;
     right: 0;
     top: -1px;
     /* TODO: add COURSE DETAIL */
     display: none; }
-  #courses .code {
+  #courses .code, #selected_courses .code {
     font-size: 85%;
     color: #940000; }
-    #courses .code .dept {
+    #courses .code .dept, #selected_courses .code .dept {
       margin-right: 0.2em; }
-  #courses .credits, #courses .seats-left {
+  #courses .credits, #courses .seats-left, #selected_courses .credits, #selected_courses .seats-left {
     color: #222;
     font-size: 90%;
     padding-left: 3px; }
-  #courses .credits {
+  #courses .credits, #selected_courses .credits {
     display: inline;
     padding-right: 3px;
     /*
@@ -645,31 +652,31 @@ header .alpha {
     border-radius: 2px;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px; }
-  #courses .seats-left {
+  #courses .seats-left, #selected_courses .seats-left {
     float: right;
     font-size: 85%;
     position: absolute;
     right: 17px;
     top: 25px; }
-  #courses .secondary {
+  #courses .secondary, #selected_courses .secondary {
     clear: left;
     display: block;
     margin-top: -2px;
     padding-left: 13px;
     text-shadow: 1px 1px 0 #fff; }
-  #courses .no-sections a:link, #courses .no-sections a:visited, #courses .no-sections .padded {
+  #courses .no-sections a:link, #courses .no-sections a:visited, #courses .no-sections .padded, #selected_courses .no-sections a:link, #selected_courses .no-sections a:visited, #selected_courses .no-sections .padded {
     color: #555555; }
-    #courses .no-sections a:link .name, #courses .no-sections a:visited .name, #courses .no-sections .padded .name {
+    #courses .no-sections a:link .name, #courses .no-sections a:visited .name, #courses .no-sections .padded .name, #selected_courses .no-sections a:link .name, #selected_courses .no-sections a:visited .name, #selected_courses .no-sections .padded .name {
       color: #555555; }
-    #courses .no-sections a:link .credits, #courses .no-sections a:visited .credits, #courses .no-sections .padded .credits {
+    #courses .no-sections a:link .credits, #courses .no-sections a:visited .credits, #courses .no-sections .padded .credits, #selected_courses .no-sections a:link .credits, #selected_courses .no-sections a:visited .credits, #selected_courses .no-sections .padded .credits {
       color: #555555; }
-    #courses .no-sections a:link .seats-left, #courses .no-sections a:visited .seats-left, #courses .no-sections .padded .seats-left {
+    #courses .no-sections a:link .seats-left, #courses .no-sections a:visited .seats-left, #courses .no-sections .padded .seats-left, #selected_courses .no-sections a:link .seats-left, #selected_courses .no-sections a:visited .seats-left, #selected_courses .no-sections .padded .seats-left {
       color: #555; }
-    #courses .no-sections a:link .code, #courses .no-sections a:visited .code, #courses .no-sections .padded .code {
+    #courses .no-sections a:link .code, #courses .no-sections a:visited .code, #courses .no-sections .padded .code, #selected_courses .no-sections a:link .code, #selected_courses .no-sections a:visited .code, #selected_courses .no-sections .padded .code {
       color: #544; }
-  #courses .no-sections .secondary {
+  #courses .no-sections .secondary, #selected_courses .no-sections .secondary {
     padding-left: 10px; }
-  #courses a:link:hover, #courses a:visited:hover {
+  #courses a:link:hover, #courses a:visited:hover, #selected_courses a:link:hover, #selected_courses a:visited:hover {
     background: #fff;
     background: -moz-linear-gradient(left, rgba(255, 255, 255, 0) 0%, white 50%, rgba(255, 255, 255, 0) 100%);
     /* FF3.6+ */
@@ -688,26 +695,26 @@ header .alpha {
     text-decoration: none;
     color: #940000;
     text-shadow: #fff 1px 1px 0; }
-    #courses a:link:hover .name, #courses a:link:hover .code, #courses a:visited:hover .name, #courses a:visited:hover .code {
+    #courses a:link:hover .name, #courses a:link:hover .code, #courses a:visited:hover .name, #courses a:visited:hover .code, #selected_courses a:link:hover .name, #selected_courses a:link:hover .code, #selected_courses a:visited:hover .name, #selected_courses a:visited:hover .code {
       color: #940000; }
-    #courses a:link:hover .credits, #courses a:visited:hover .credits {
+    #courses a:link:hover .credits, #courses a:visited:hover .credits, #selected_courses a:link:hover .credits, #selected_courses a:visited:hover .credits {
       background: transparent; }
-    #courses a:link:hover .disclosure, #courses a:visited:hover .disclosure {
+    #courses a:link:hover .disclosure, #courses a:visited:hover .disclosure, #selected_courses a:link:hover .disclosure, #selected_courses a:visited:hover .disclosure {
       color: #940000; }
-  #courses a:link:active, #courses a:visited:active, #courses a.selected {
+  #courses a:link:active, #courses a:visited:active, #courses a.selected, #selected_courses a:link:active, #selected_courses a:visited:active, #selected_courses a.selected {
     color: #fff;
     text-shadow: transparent 0 0 0; }
-  #courses .instructors, #courses .kinds {
+  #courses .instructors, #courses .kinds, #selected_courses .instructors, #selected_courses .kinds {
     display: none; }
-  #courses .notes {
+  #courses .notes, #selected_courses .notes {
     display: block;
     clear: left;
     color: #444; }
-    #courses .notes ul {
+    #courses .notes ul, #selected_courses .notes ul {
       padding: 0 0 0 0; }
-      #courses .notes ul li {
+      #courses .notes ul li, #selected_courses .notes ul li {
         border: 0; }
-  #courses .tinyspinner {
+  #courses .tinyspinner, #selected_courses .tinyspinner {
     position: absolute;
     top: 30px;
     left: 0; }

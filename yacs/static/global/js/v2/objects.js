@@ -39,6 +39,21 @@ root.Class.extend = function(attributes){
 
 //////////////////////////////// Utility functions ////////////////////////////////
 root.Utils = {
+  andJoin: function(arr, options){
+    options = $.extend({
+      andText: ' and ',
+      itemSeparator: ', '
+    }, options);
+    sb = [];
+    for(var i=0, l=arr.length; i<l; i++){
+      sb.push(arr[i]);
+      if (i < l - 2)
+        sb.push(options.itemSeparator);
+      if (i == l - 2)
+        sb.push(options.andText);
+    }
+    return sb.join('')
+  },
   time: function(fn, context, msg){
     var start = new Date;
     var result = fn.call(context || this);
@@ -763,9 +778,24 @@ var Selection = Class.extend({
   init: function(options){
     this.crns = {};
     this.conflicts = this._bindToConflictList(new SectionConflictList());
+    this.courses = new CourseList();
     this.options = $.extend({}, this.options, options);
-    if(this.options.autoload)
+    var self = this;
+    this.courses.fetch({
+      success: function(){
+        // lower mem usage by deleting attributes
+        var removeAttrs = 'grade_type description'.split(' ');
+        self.courses.each(function(course){
+          _.each(removeAttrs, function(attr){
+            delete course[attr];
+          });
+        });
+        self.refreshConflicts();
+      }
+    });
+    if(this.options.autoload){
       this.load();
+    }
   },
   _bindToConflictList: function(sectionConflictList){
     var self = this;
@@ -985,15 +1015,25 @@ var Selection = Class.extend({
     var setConflictStyle = function($el, conflictedWith, isCourse){
       var $parent = $el.parent().addClass('conflict');
       if (isCourse && !$el.parent().find('> .conflicts_with_course').length){
-        var course = self._getCourseElem(conflictedWith.courseID).parent().find('.name').text();
-        var $text = $('<span class="conflicts_with_course">Conflicts with ' + course +'</span>');
+        //var course = self._getCourseElem(conflictedWith.courseID).parent().find('.name').text();
+        var courses = [];
+        $parent.find('.section .conflicts_with_section').each(function(){
+          var text = $(this).text().substr('Conflicts with '.length);
+          courses.push(text);
+        });
+        courses = courses.unique();
+        var $text = $('<span class="conflicts_with_course">Conflicts with '
+                      + Utils.andJoin(courses) +'</span>');
         $parent.find('input[type=checkbox]').attr('disabled', 'disabled');
         $parent.append($text);
         $text.hide().slideDown(duration);
       }
       else if(!isCourse && !$el.parent().find('.conflicts_with_section').length){
-        var course = self._getCourseElem(conflictedWith.courseID).parent().find('.name').text();
-        var $text = $('<span class="conflicts_with_section">Conflicts with ' + course +'</span>');
+        // we need the course data to load before we can start
+        if(!self.courses) return;
+        var course = self.courses.get(conflictedWith.courseID).get('name');
+        var $text = $('<span class="conflicts_with_section">Conflicts with '
+                      + course +'</span>');
         $parent.find('label').append($text);
       }
     };

@@ -509,7 +509,7 @@ header {
 /* END SELECTED_COURSES */
 
 /* COURSES */
-#courses {
+#courses, #selected_courses {
 	margin-top: 1em;
 
     .course.conflict {
@@ -525,19 +525,25 @@ header {
         }
     }
     .section.conflict {
-        label > *, ul {
-            @include opacity(0.4);
-        }
-        label .conflicts_with_section {
-            @include opacity(1);
+        ul { @include opacity(0.4); }
+        label {
+            span, div {
+                @include opacity(0.4);
+            }
+            .conflicts_with_section {
+                @include opacity(1);
+            }
         }
     }
     .conflicts_with_section {
+        font-size: 90%;
+        padding: 2px 5px;
         position: absolute;
-        top: 5px;
+        top: 15px;
         left: 50px;
         background: #fff;
         color: #333;
+        z-index: 10;
 
         @include rotate(2deg);
         @include box-shadow(0 1px 6px #999);
@@ -548,7 +554,7 @@ header {
         top: 0;
         right: 17px;
         padding: 15px 10px;
-        font-size: 130%;
+        font-size: 90%;
         background: #fff;
         color: #333;
 

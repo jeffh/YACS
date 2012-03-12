@@ -21,6 +21,12 @@ body {
   overflow: visible;
   text-overflow: clip; }
 
+#courses .conflicts_with_section, #selected_courses .conflicts_with_section {
+  font-size: 100%;
+  top: 5px; }
+#courses .conflicts_with_course, #selected_courses .conflicts_with_course {
+  font-size: 120%;
+  max-width: 600px; }
 #courses input, #selected_courses input {
   /* checkbox */
   top: 7px; }
@@ -45,7 +51,7 @@ body {
   float: right;
   position: relative;
   top: -3em;
-  margin-bottom: -3em; }
+  margin-bottom: -2em; }
   #courses .sections .days li.item.empty, #courses .sections .days li.item.selected, #selected_courses .sections .days li.item.empty, #selected_courses .sections .days li.item.selected {
     display: block;
     min-width: initial;
