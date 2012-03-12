@@ -64,6 +64,7 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
 6. ???
 7. Profit?
 
+[Django]: http://djangoproject.com/ "Django Web Framework"
 [postgres]: http://www.postgresql.org/ "PostgreSQL"
 [pip]: http://www.pip-installer.org/en/latest/index.html
 [distribute]: http://pypi.python.org/pypi/distribute
