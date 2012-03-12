@@ -9,7 +9,7 @@ Send questions and comments to [@jeffhui][] or huij@rpi.edu.
 If you're an RPI student and just want to use it. Go to [me][yacsme]
 
 [@jeffhui]: http://twitter.com/jeffhui "Twitter: @jeffhui"
-[yacsme]: http://me/ "YACS - The usable online course scheduler"
+[yacsme]: http://yacs.me/ "YACS - The usable online course scheduler"
 
 ## Setup
 YACS is actively developed on [Python][] 2.7. So go get that installed first. As good python practice, you should put this project inside a virtualenv, but that's not covered here.
