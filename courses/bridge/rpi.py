@@ -7,7 +7,9 @@ import logging
 import logging.handlers
 import sys
 import datetime
+import rpi_calendars
 from contextlib import closing
+from icalendar import Calendar, Event
 
 from courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment)
@@ -15,7 +17,6 @@ from courses.signals import sections_modified
 
 # TODO: remove import *
 from catalogparser import *
-
 
 logger = logging.getLogger(__file__)
 logger.setLevel(logging.DEBUG)
@@ -311,19 +312,55 @@ def import_catalog(a=False):
 
 def add_cross_listing():
     from itertools import product
-    cross_list = {}
-    courses = Course.objects.all()
+    courses = Course.objects.all().prefetch_related('sections')
     for c in courses:
         sections = c.sections.all()
+        cross_list = set()
         for s1, s2 in product(sections, sections):
             if s1 != s2 and s1.conflicts_with(s2) and s1.instructors == s2.instructors:
-                if c.id not in cross_list.keys():
-                    cross_list[c.id] = set()
-                cross_list[c.id].add(str(s1.id))
-                cross_list[c.id].add(str(s2.id))
-    for i in cross_list.keys():
-        course = courses.get(id=i)
-        sc = SectionCrosslisting(semester=Semester.objects.get(id=course.semesters), ref=",".join(cross_list[i]))
-        for s in cross_list[i]:
-            course.sections.get(id=s).crosslisted = sc.id
+                cross_list.add(str(s1.id))
+                cross_list.add(str(s2.id))
+        sc = SectionCrosslisting(semester=Semester.objects.get(id=s1.semester), ref=",".join(cross_list[i]))
+        for s in cross_list:
+            courses.sections.get(id=s).crosslisted = sc.id
 
+def export_schedule(crns):
+    weekday_offset = {'Sunday':6, 'Monday':7, 'Tuesday':8, 'Wednesday':9, 'Thursday':10, 'Friday':11, 'Saturday':12}
+    calendar = Calendar()
+    calendar.add('prodid', '-//Course Schedule//EN')
+    calendar.add('version', '2.0')
+    sections = Section.objects.filter(crn__in=crns).prefetch_related('periods', 'section_times', 'section_times__period', 'course', 'semester')
+    semester_start = datetime.datetime(sections[0].semester.year, sections[0].semester.month, 1)
+    print str(semester_start.date()).replace('-', '/')
+    found = False
+    semester_end = semester_start + datetime.timedelta(150)
+    print semester_start.date(), semester_end.date()
+    events = list(rpi_calendars.filter_related_events(rpi_calendars.download_events(str(semester_start.date()).replace('-','/'), str(semester_end.date()).replace('-','/'))))
+    for e in events:
+        if re.search(str(sections[0].semester.name.split(' ')[0])+' '+str(sections[0].semester.year), e.name) != None:
+            print "found semester start"
+            semester_start = e.start
+            found = True
+        if re.search("(No classes) (.*)", e.name) != None and found:
+            print "found semester end"
+            semester_end = e.start
+            break
+    for s in sections:
+        print s.periods.all()
+        for p in s.periods.all():
+            event = Event()
+            begin = semester_start + datetime.timedelta(weekday_offset[p.days_of_week[0]] - semester_start.weekday())
+            event.add('summary', '%s - %s (%s)' % (s.course.code, s.course.name, s.crn))
+            event.add('dtstart', datetime.datetime(semester_start.year, semester_start.month, semester_start.day, p.start.hour, p.start.minute))
+            event.add('dtend', datetime.datetime(semester_start.year, semester_start.month, semester_start.day, p.end.hour, p.end.minute))
+            days = []
+            for d in p.days_of_week:
+                days.append(d[:2])
+            print days
+            event.add('rrule', dict(
+                freq='weekly',
+                interval=1,
+                byday=days,
+                until=datetime.datetime(semester_end.year, semester_end.month, semester_end.day, p.end.hour, p.end.minute)))
+            calendar.add_component(event)
+    print calendar.to_ical()

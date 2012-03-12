@@ -23,8 +23,8 @@ with settings as s:
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'yacs',
-            'USER': 'timetable',
-            'PASSWORD': 'thereisn0sp00n',
+            'USER': 'padawanyacs',
+            'PASSWORD': 'yacs2012',
             'HOST': 'localhost',
             'PORT': '',
             'OPTIONS': {
