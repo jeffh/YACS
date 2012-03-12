@@ -1,18 +1,20 @@
 # YACS
 Sane Course Scheduling.
 
-YACS is a web-based course schedule with an emphasis on usability. It is also flexible enough to work with other school course data.
+YACS is a web-based course schedule with an emphasis on usability.
+It is also flexible enough to work with other school course data.
 
-by Jeff Hui.
 Send questions and comments to [@jeffhui][] or huij@rpi.edu.
 
-If you're an RPI student and just want to use it. Go to [me][yacsme]
+If you're an RPI student and just want to use it. Go to [yacs.me][yacsme]
 
 [@jeffhui]: http://twitter.com/jeffhui "Twitter: @jeffhui"
 [yacsme]: http://yacs.me/ "YACS - The usable online course scheduler"
 
 ## Setup
-YACS is actively developed on [Python][] 2.7. So go get that installed first. As good python practice, you should put this project inside a virtualenv, but that's not covered here.
+YACS is actively developed on [Python][] 2.7. So go get that installed first.
+It's good python practice to put this project inside a [virtualenv][],
+but that's beyond the scope of this README.
 
 You can download an archive from the top-right of the github page or clone the repo:
 
@@ -20,49 +22,48 @@ You can download an archive from the top-right of the github page or clone the r
 
 Which will download code into a YACS folder where you run this command.
 
-1. Install [Postgres][postgres]. Last time I checked, SQLite was too slow even for development.
-2. Install [distribute][distribute] or [setuptools][setuptools] which PIP depends on. If you have the easy_install command, you have setuptools installed. To install distribute, do:
+[Python]: http://python.org/
+[virtualenv]: http://www.virtualenv.org/en/latest/index.html
 
-    ```
-    wget http://python-distribute.org/distribute_setup.py
-    python distribute_setup.py
-    ```
+### Dependencies
 
-3. Install [pip][]:
+YACS is built on top of [Django][] 1.4. Thus, it requires a database driver to run.
+Install the appropriate driver and its database, or just use the bundled SQLite.
 
-    ```
-    wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py
-    python get-pip.py
-    ```
+### Setup (Development)
 
-4. Using pip, you can automatically install all the other dependencies by doing:
+1. YACS uses a lot of dependencies. It relies on [pip][] to install them. Then simply do:
 
-    `pip install -r dev_requirements.txt`
+    `pip install -r requirements/development.txt`
 
-    And pip should do the rest! If you get errors for psycopg2, you can install that manually and remove it from dev_requirements.txt before re-running the command above.
+   Which will install all the dependencies YACS needs (minus the database driver).
 
-5. Edit settings/overrides.py to point to your settings for your PostgreSQL database.
 
-6. CD into the project and run the following to set up the database.
-   When calling syncdb, you'll be ask to create a superuser, it is purely optional, only
-   the debug-toolbar is visible for logged in super-users.
+2. Edit `s.DATABASES` variable in the `yacs/settings/development.py` file to your
+   appropriate database settings.
+
+3. Run the following commands. When calling syncdb, you'll be ask to create a superuser,
+   it is purely optional, only the debug-toolbar is visible for logged in super-users.
 
     ```
     python manage.py syncdb
     python manage.py migrate
     ```
 
-7. Run this command to import the course data from RPI:
+4. Next we need to get some data. Run these commands to import the course data from RPI
+   (These will take awhile).
 
-    `python manage.py import_course_data`
+    ```
+    python manage.py import_course_data
+    python manage.py import_catalog_data
+    ```
 
-8. Run the dev server using: `python manage.py runserver`
+5. Check it out by running the dev server `python manage.py runserver` and pointing your
+   browser to [http://localhost:8000/][local] and viola!
 
-9. Point your browser to [http://localhost:8000/][local] and viola!
-10. ???
-11. Profit?
+6. ???
+7. Profit?
 
-[Python]: http://python.org/
 [postgres]: http://www.postgresql.org/ "PostgreSQL"
 [pip]: http://www.pip-installer.org/en/latest/index.html
 [distribute]: http://pypi.python.org/pypi/distribute
@@ -72,36 +73,16 @@ Which will download code into a YACS folder where you run this command.
 ## Project layout
 Currently the project is laid out as follows:
 
-- **api**: The old api application based on Piston. Deprecated and soon to be removed because of the vague errors when debugging this app caused by Piston.
-- **courses**: The courses application. Contains the schema and manages the storage of course data.
-- **deployment**: Some deployment code helper. Not ready for prime-time.
+- **api**: API application. Where all  API related code is. Relies on courses and scheduler app.
+- **courses**: The courses application. Contains the schema and manages the storage of course data. Also contains course-data-displaying views.
+- **courses_viz**: An application that stores visualization of course data. (Part of Introduction to Visualization class)
 - **lib**: Contains library code that can, be potentially, separated into an independent project. To enforce this separability, this folder is added to the sys.path for absolute imports
-- **newapi**: This new api application is here. Piggy-backs the majority of its code from courses to generate the API output.
 - **scheduler**: This app handles course scheduling. Relies on the courses app for all the course data.
-- **settings**: Project settings folder (unlike normal Django projects). Partitioned into separate files for easier deployments.
-- **static**: Where all static media resides (js, css, imgs, sass, etc.)
-- **templates**: Where all the templates are for this project. This is used for displaying all the pages.
-- **dev_requirements.txt**: All the required dependencies for development
-- **requirements.txt**: All the required dependencies for deployment. May be deprecated in favor of just using dev_requirements.txt
-- **fabfile.py**: Configuration for Fabric. Like a Makefile or Rakefile.
+- **yacs**: Project files. Contains settings, root urls, templates, static files, etc.
+- **test_reports**: Only appears when tests are executed. Used to see the test coverage.
+- **requirements**: Contains various requirement files for PIP.
+- **Makefile**: Used for running tests, cleaning python caches and deployment.
 - **manage.py**: Django's CLI.
-- **urls.py**: Where all the incoming URLs are routed to.
-
-## Fabric Commands
-Fabric is a python-variant of make or rake. When installing using dev_requirements.txt, it got installed.
-
-There are some pretty nice commands you can view by doing:
-
-    fab -l  # that's an L
-
-But many of these don't quite work (very environment specific), the ones that are safe to use are listed here:
-
-- **fab test** - Runs all unit tests for this project. But sometimes there are stale python object files (pyc or pyo), so use…
-- **fab clean** - Removes all pyc, pyo and pycache files.
-- **fab loc** - A nice shortcut to get the general line of code count. This does not include some json files in the templates dir. Makes me cry everytime to see how large this number is.
-- **fab scss** - A shortcut for running [Sass][sass]. *Sass must be installed manually*.
-
-[sass]: http://sass-lang.com/
 
 ## Help
 This project is still evolving. There are still issues to tackle. Go to the [GitHub issues][issues] page to see them all.
