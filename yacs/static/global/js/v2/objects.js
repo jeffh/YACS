@@ -770,7 +770,6 @@ var Selection = Class.extend({
   _bindToConflictList: function(sectionConflictList){
     var self = this;
     sectionConflictList.bind('all', function(){
-      console.log(this, arguments);
       self.refreshConflicts();
     });
     return sectionConflictList;
@@ -795,7 +794,6 @@ var Selection = Class.extend({
           courseID: parseInt(courseID, 10),
           sectionID: conflict
         };
-        console.log(conflictedWith.courseID, conflictedWith.sectionID);
         return false;
       }
     });
@@ -1060,7 +1058,6 @@ var TemplateView = Backbone.View.extend({
   },
   render: function(){
     this.onRender();
-    console.log(this.getContext());
     $(this.el).html(this.getTemplate().render(this.getContext()));
     return this;
   }
@@ -1200,7 +1197,6 @@ var ScheduleRootView = Backbone.View.extend({
     $(this.options.thumbnailsEl).hide();
 
     // no schedules :(
-    console.log(schedules.get('schedules').length);
     if (schedules.get('schedules').length < 1){
       this.scheduleView = new NoSchedulesView({
         el: this.options.scheduleEl
