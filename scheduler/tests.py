@@ -55,6 +55,7 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
         # conflicts: (0, 1), (2, 3), (5, 6)
 
         self.section1 = create_section(
+            id=1,
             course=self.course1,
             crn=1000,
             number=1,
@@ -67,6 +68,7 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
             ],
         )
         self.section2 = create_section(
+            id=2,
             course=self.course1,
             crn=1001,
             number=2,
@@ -78,8 +80,9 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
             ],
         )
         self.section3 = create_section(
+            id=3,
             course=self.course2,
-            crn=1003,
+            crn=1002,
             number=1,
             seats_taken=4,
             seats_total=6,
@@ -89,8 +92,9 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
             ],
         )
         self.section4 = create_section(
+            id=4,
             course=self.course2,
-            crn=1004,
+            crn=1003,
             number=2,
             seats_taken=7,
             seats_total=6,
@@ -103,23 +107,6 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
         # its do to get(models.Section, ...) but not sure where
         #models.Semester.objects.filter(id__gt=self.semester.id).delete()
         cache_conflicts(semester=self.semester)
-
-    def get_ajax_schedules_from_crns(self, crns):
-        return self.get('ajax-schedules', year=2011, month=1, get='?crn=' + '&crn='.join(map(str, crns)))
-
-    def test_get_ajax_check(self):
-        "/2012/1/schedules/ajax/?check=1&crn=95069&_=132124919995"
-        pass # TODO
-
-    def test_get_ajax_schedules_for_full_sections(self):
-        "/2011/1/schedules/ajax/?crn=1004"
-        response = self.get_ajax_schedules_from_crns([1004])
-        self.assertEqual(response.status_code, 200)
-
-        obj = loads(response.content)
-        schedules = obj['schedules']
-        self.assertEqual(len(schedules), 1)
-        self.assertEqual(schedules[0], {'2': 1004})
 
     def test_get_schedules(self):
         "/2011/1/schedules/"
@@ -137,14 +124,4 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
         "/2011/1/schedules/MQ/1/"
         response = self.get('schedules', year=2011, month=1, slug='MQ', index=1)
         self.assertEqual(response.status_code, 200)
-
-    def test_get_ajax_schedules(self):
-        "/2011/1/schedules/ajax/?crn=1000&crn=1001&crn=1003"
-        response = self.get_ajax_schedules_from_crns([1000, 1001, 1003])
-        self.assertEqual(response.status_code, 200)
-
-        obj = loads(response.content)
-        schedules = obj['schedules']
-        self.assertEqual(len(schedules), 1)
-        self.assertEqual(schedules[0], {'1': 1001, '2': 1003})
 

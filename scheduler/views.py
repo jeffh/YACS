@@ -323,17 +323,13 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
             return redirect(reverse('schedules', kwargs=dict(year=year, month=month, slug=slug, index=1)))
 
     semester = Semester.objects.get(year=year, month=month)
-    url = reverse('ajax-schedules', kwargs=dict(year=year, month=month)) + '?'
     try:
         slug = slug or request.GET.get('slug')
         selection = models.Selection.objects.get(slug=slug)
-        prefix = '&crn='
-        url += prefix + prefix.join(map(str, selection.section_ids))
     except models.Selection.DoesNotExist:
         selection = None
 
     return render_to_response('scheduler/placeholder_schedule_list.html', {
-        'ajax_url': url,
         'selection': selection,
         'raw_selection': dumps(compute_selection_dict(selection.section_ids)) if selection else None,
         'sem_year': semester.year,
