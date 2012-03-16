@@ -331,11 +331,9 @@ def export_schedule(crns):
     calendar.add('version', '2.0')
     sections = Section.objects.filter(crn__in=crns).prefetch_related('periods', 'section_times', 'section_times__period', 'course', 'semester')
     semester_start = datetime.datetime(sections[0].semester.year, sections[0].semester.month, 1)
-    print str(semester_start.date()).replace('-', '/')
     found = False
     current = datetime.datetime.now()
     semester_end = semester_start + datetime.timedelta(150)
-    print semester_start.date(), semester_end.date()
     events = list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url_by_range(str(semester_start.date()).replace('-',''), str(current.date()).replace('-','')))))
     events.extend(list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url(356)))))
     for e in events:
@@ -366,3 +364,4 @@ def export_schedule(crns):
                 until=datetime.datetime(semester_end.year, semester_end.month, semester_end.day, p.end.hour, p.end.minute)))
             calendar.add_component(event)
     print calendar.to_ical()
+    return calendar.to_ical()
