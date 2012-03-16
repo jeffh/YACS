@@ -333,9 +333,11 @@ def export_schedule(crns):
     semester_start = datetime.datetime(sections[0].semester.year, sections[0].semester.month, 1)
     print str(semester_start.date()).replace('-', '/')
     found = False
+    current = datetime.datetime.now()
     semester_end = semester_start + datetime.timedelta(150)
     print semester_start.date(), semester_end.date()
-    events = list(rpi_calendars.filter_related_events(rpi_calendars.download_events(str(semester_start.date()).replace('-','/'), str(semester_end.date()).replace('-','/'))))
+    events = list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url_by_range(str(semester_start.date()).replace('-',''), str(current.date()).replace('-','')))))
+    events.extend(list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url(356)))))
     for e in events:
         if re.search(str(sections[0].semester.name.split(' ')[0])+' '+str(sections[0].semester.year), e.name) != None:
             print "found semester start"
