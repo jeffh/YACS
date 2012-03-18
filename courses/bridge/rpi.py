@@ -308,7 +308,7 @@ def import_catalog(a=False):
                 c.description = catalog[key]['description']
             c.name = catalog[key]['title']
             c.save()
-    add_cross_listing()
+    #add_cross_listing()
 
 def add_cross_listing():
     from itertools import product
@@ -325,7 +325,7 @@ def add_cross_listing():
             courses.sections.get(id=s).crosslisted = sc.id
 
 def export_schedule(crns):
-    weekday_offset = {'Sunday':6, 'Monday':7, 'Tuesday':8, 'Wednesday':9, 'Thursday':10, 'Friday':11, 'Saturday':12}
+    weekday_offset = {'Sunday':6, 'Monday':0, 'Tuesday':1, 'Wednesday':2, 'Thursday':3, 'Friday':4, 'Saturday':5}
     calendar = Calendar()
     calendar.add('prodid', '-//Course Schedule//EN')
     calendar.add('version', '2.0')
@@ -335,24 +335,41 @@ def export_schedule(crns):
     current = datetime.datetime.now()
     semester_end = semester_start + datetime.timedelta(150)
     events = list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url_by_range(str(semester_start.date()).replace('-',''), str(current.date()).replace('-','')))))
-    events.extend(list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url(356)))))
+    events.extend(list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url()))))
+    days_off = []
+    break_start = None
+    break_end = None
+    import pdb
     for e in events:
+        print e
         if re.search(str(sections[0].semester.name.split(' ')[0])+' '+str(sections[0].semester.year), e.name) != None:
-            print "found semester start"
+            print "found semester start", e, e.start
             semester_start = e.start
             found = True
-        if re.search("(No classes) (.*)", e.name) != None and found:
-            print "found semester end"
+        if re.search(".*(no classes).*", e.name.lower()) != None and found:
+            days_off.append([datetime.date(e.start.year, e.start.month, e.start.day),])
+        if re.search(".*(spring break)|(thanksgiving).*", e.name.lower())!= None and found:
+            break_start = e.start
+        if re.search(".*(classes resume).*", e.name.lower())!= None and break_start != None:
+            break_end = e.start
+        if re.search("(.*)study-review days", str(e.name).lower()) != None and found:
+            print "found semester end", e, e.start
             semester_end = e.start
             break
+    length = break_end - break_start
+    for i in range(length.days+1):
+        days_off.append([(break_start+datetime.timedelta(i)).date(),])
     for s in sections:
         print s.periods.all()
         for p in s.periods.all():
             event = Event()
-            begin = semester_start + datetime.timedelta(weekday_offset[p.days_of_week[0]] - semester_start.weekday())
+            offset = weekday_offset[p.days_of_week[0]] - semester_start.weekday()
+            if offset < 0:
+                offset = 7 + offset
+            begin = semester_start + datetime.timedelta(offset)
             event.add('summary', '%s - %s (%s)' % (s.course.code, s.course.name, s.crn))
-            event.add('dtstart', datetime.datetime(semester_start.year, semester_start.month, semester_start.day, p.start.hour, p.start.minute))
-            event.add('dtend', datetime.datetime(semester_start.year, semester_start.month, semester_start.day, p.end.hour, p.end.minute))
+            event.add('dtstart', datetime.datetime(begin.year, begin.month, begin.day, p.start.hour, p.start.minute))
+            event.add('dtend', datetime.datetime(begin.year, begin.month, begin.day, p.end.hour, p.end.minute))
             days = []
             for d in p.days_of_week:
                 days.append(d[:2])
@@ -362,6 +379,8 @@ def export_schedule(crns):
                 interval=1,
                 byday=days,
                 until=datetime.datetime(semester_end.year, semester_end.month, semester_end.day, p.end.hour, p.end.minute)))
+            #pdb.set_trace()
+            event.add('exdate', days_off)
             calendar.add_component(event)
     print calendar.to_ical()
     return calendar.to_ical()

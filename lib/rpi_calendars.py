@@ -37,11 +37,9 @@ class Event(object):
         )
 
 def get_url(num=356):
-     return "http://events.rpi.edu/webcache/v1.0/jsonDays/" + str(num) + "/list-json/%28catuid%3D%2700f18254-27fe1f37-0127-fe1f37da-00000001%27%7Ccatuid%3D%2700f18254-27fe1f37-0127-fe1f38b8-0000000d%27%7Ccatuid%3D%2700f18254-27fe2c4a-0127-ffb38044-00001a40%27%29/no--object.json"
+    return "http://events.rpi.edu/webcache/v1.0/jsonDays/" + str(num) + "/list-json/%28catuid%3D%2700f18254-27fe1f37-0127-fe1f37da-00000001%27%29/no--object.json"
 
 def get_url_by_range(start, end):
-    print"http://events.rpi.edu/webcache/v1.0/jsonRange/"+start+"/"+end+"/list-json/(catuid='00f18254-27fe1f37-0127-fe1f37da-00000001')/no--object.json"
-
     return "http://events.rpi.edu/webcache/v1.0/jsonRange/"+start+"/"+end+"/list-json/%28catuid%3D%2700f18254-27fe1f37-0127-fe1f37da-00000001%27%29/no--object.json"
 def get_json(url):
     with closing(urllib2.urlopen(url)) as handle:
