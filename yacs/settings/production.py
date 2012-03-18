@@ -30,7 +30,7 @@ with settings as s:
     def set_admin_media(s):
         s.ADMIN_MEDIA_PREFIX = s.STATIC_URL + 'admin/'
 
-    settings.DEBUG_TOOLBAR_PANELS = (
+    s.DEBUG_TOOLBAR_PANELS = (
         'debug_toolbar.panels.version.VersionDebugPanel',
         'debug_toolbar.panels.timer.TimerDebugPanel',
         'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
