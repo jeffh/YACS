@@ -332,6 +332,7 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
     return render_to_response('scheduler/placeholder_schedule_list.html', {
         'selection': selection,
         'raw_selection': dumps(compute_selection_dict(selection.section_ids)) if selection else None,
+        'semester': semester,
         'sem_year': semester.year,
         'sem_month': semester.month,
         'index': index,

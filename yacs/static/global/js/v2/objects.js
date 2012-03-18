@@ -1379,9 +1379,14 @@ var ScheduleRootView = Backbone.View.extend({
           }
         };
 
-        departments.fetch({success: process});
-        courses.fetch({success: process});
-        sections.fetch({success: process});
+        if (courseIDs.length){
+          departments.fetch({success: process});
+          courses.fetch({success: process});
+          sections.fetch({success: process});
+        } else {
+          count = 0;
+          process();
+        }
       },
       error: function(){
         log(["FAIL", this, arguments], this, arguments);
