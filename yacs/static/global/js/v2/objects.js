@@ -1026,10 +1026,13 @@ var Selection = Class.extend({
     });
     return selection;
   },
+  _isValidVersion: function(version){
+    return version === this.options.version;
+  },
   load: function(){
     assert(this.options.storage, 'Storage must be defined in options to load');
     // drop data if we're a different version.
-    if (this.options.storage.get(this.options.versionKey) === this.options.version)
+    if (this._isValidVersion(this.options.storage.get(this.options.versionKey)))
       this.set(this.options.storage.get(this.options.storageKey) || {});
     else {
       log(['selection cleared. invalid version: ', this.options.storage.get('version')], this, arguments);

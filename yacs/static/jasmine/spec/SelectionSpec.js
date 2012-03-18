@@ -147,6 +147,7 @@ describe('Selection', function(){
     it('should load from storage', function(){
       var selection = {1: [1, 2, 3], 2: [4, 5]};
       spyOn(storage, 'get').andReturn(selection);
+      spyOn(sel, '_isValidVersion').andReturn(selection);
 
       expect(sel.load().crns).toEqual(selection);
     });
