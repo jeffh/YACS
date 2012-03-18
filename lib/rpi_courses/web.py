@@ -23,22 +23,31 @@ def get(url, last_modified=None):
     except urllib2.URLError:
         return ""
 
-
-def list_sis_files(url_base=SIS_URL):
-    today = datetime.datetime.now()
+def list_sis_files_for_date(date=None, url_base=SIS_URL):
+    date = date or datetime.datetime.now()
     format = '%szs%.4d%.2d.htm'
     base = []
     months = (1, 5, 9)
     prev_m = None
     for m in months:
-        if m >= today.month:
-            base.append(format % (url_base, today.year, m))
-            if prev_m and prev_m < today.month:
-                base.append(format % (url_base, today.year, prev_m))
+        if m >= date.month:
+            base.append(format % (url_base, date.year, m))
+            if prev_m and prev_m < date.month:
+                base.append(format % (url_base, date.year, prev_m))
         prev_m = m
     if not base:
-        base.append(format % (url_base, today.year + 1, 1))
+        base.append(format % (url_base, date.year + 1, 1))
     return base
+
+
+def list_sis_files(url_base=SIS_URL):
+    date = datetime.date(year=2011, month=1, day=1)
+    today = datetime.date.today()
+    urls = []
+    while date.year <= today.year:
+        urls.extend(list_sis_files_for_date(date, url_base=url_base))
+        date = datetime.date(year=date.year+1, month=1, day=1)
+    return urls
 
 
 def list_rocs_files(url=ROCS_URL):

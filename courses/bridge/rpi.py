@@ -208,13 +208,14 @@ class ROCSRPIImporter(object):
             crosslisting_obj, created = SectionCrosslisting.objects.get_or_create(semester=semester_obj, ref=refid)
             Section.objects.filter(crn__in=crosslisting.crns).update(crosslisted=crosslisting_obj)
 
+
 class SISRPIImporter(ROCSRPIImporter):
 
     def get_files(self, latest_semester):
-        from rpi_courses import list_sis_files
-        get_files = list_sis_files
+        from rpi_courses import list_sis_files_for_date
+        get_files = list_sis_files_for_date
 
-        files = list_sis_files()
+        files = list_sis_files_for_date()
         if latest_semester:
             files.append(latest_semester.ref)
 
@@ -269,26 +270,20 @@ class SISRPIImporter(ROCSRPIImporter):
                     sections_modified.send(sender=self, semester=semester_obj)
 
 
-def import_data(force=False):
+def import_latest_semester(force=False):
     "Imports RPI data into the database."
     logger.debug('Update Time: %r' % datetime.datetime.now())
-    period_count = Period.objects.count()
-    Period.objects.all().delete()
-    logger.debug('Removed %r periods!' % period_count)
+    #period_count = Period.objects.count()
+    #Period.objects.all().delete()
+    #logger.debug('Removed %r periods!' % period_count)
     #ROCSRPIImporter().sync() # slower.. someone manually updates this I think?
     SISRPIImporter().sync(force=force)
 
-def import_all_data():
-    urls = [
-        'http://sis.rpi.edu/reg/zs201201.htm',
-        'http://sis.rpi.edu/reg/zs201109.htm',
-        'http://sis.rpi.edu/reg/zs201101.htm',
-        'http://sis.rpi.edu/reg/rocs/201001.xml',
-        'http://sis.rpi.edu/reg/rocs/201005.xml',
-        'http://sis.rpi.edu/reg/rocs/201009.xml',
-        'http://sis.rpi.edu/reg/rocs/201101.xml',
-        'http://sis.rpi.edu/reg/rocs/201105.xml',
-    ]
+def import_all_semesters(force=False):
+    from rpi_courses import list_sis_files, list_rocs_files
+    urls = []
+    urls.extend(list_sis_files())
+    urls.extend(list_rocs_files())
     for url in urls:
         print url
         if 'rocs' in url:
@@ -296,6 +291,13 @@ def import_all_data():
         else:
             importer = SISRPIImporter()
         importer.sync(get_files=lambda *a, **k: [url])
+
+def import_data(force=False, all=False):
+    if all:
+        print 'Importing all semesters'
+        import_all_semesters(force=force)
+    else:
+        import_latest_semester(force=force)
 
 def import_catalog(a=False):
     catalog = parse_catalog(a)
