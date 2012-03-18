@@ -11,6 +11,8 @@ def slugify(string):
 
 
 def deserialize_numbers(numbers):
+    if numbers == '[]':
+        return []
     return tuple(sorted(int(x) for x in numbers.split(',') if x))
 
 def serialize_numbers(numbers):
