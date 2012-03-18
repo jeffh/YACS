@@ -105,6 +105,10 @@ else
 USE_VIRTUALENV=
 endif
 
+WF_remove_backup: override PRODUCTION_DIR_NAME=yacs
+WF_remove_backup: override PRODUCTION_ROOT=~/webapps/yacs
+WF_remove_backup: override PRODUCTION_ROOT=~/webapps/yacs
+
 WF_restart: override PRODUCTION_DIR_NAME=yacs
 WF_restart: override PRODUCTION_ROOT=~/webapps/yacs
 WF_restart:
@@ -152,7 +156,7 @@ backup_current:
 restore_backup:
 	$(call remote,mkdir -p $(PRODUCTION_FULLPATH)_tmp && mv -f $(PRODUCTION_FULLPATH)_tmp $(PRODUCTION_FULLPATH))
 
-remove_backup:
+WF_remove_backup remove_backup:
 	$(call remote,rm -rf $(PRODUCTION_FULLPATH)_tmp)
 
 upload_and_extract_tarball:
