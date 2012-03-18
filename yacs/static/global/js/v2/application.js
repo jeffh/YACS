@@ -1,5 +1,5 @@
 // require: objects.js
-Scheduler = {};
+var Scheduler = {};
 Scheduler.selection = new Selection();
 
 ///////////////////////////////////////////////////
@@ -86,10 +86,10 @@ $(function(){
     if (_.isEqual(Scheduler.selection.getRaw(), selection.getRaw())){
       $('#courses input[type=checkbox]').removeAttr('disabled');
       isReadOnly = false;
-      console.log('equal!');
+      log(['equal!']);
       // we're equal -- don't say anything
     } else {
-      console.log('not equal!', Scheduler.selection.getRaw(), selection.getRaw());
+      log(['not equal!', Scheduler.selection.getRaw(), selection.getRaw()], this);
       $('#notifications').fadeIn(1000);
       Scheduler.selection = selection;
       $('a[data-action=adopt-selection]').bind('click', function(){

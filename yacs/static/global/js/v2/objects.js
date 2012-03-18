@@ -1,3 +1,76 @@
+var DEBUG_POSTFIX = 'debug';
+var DEBUG = location.search.indexOf('&' + DEBUG_POSTFIX) >= 0 || location.search.indexOf('?' + DEBUG_POSTFIX) >= 0;
+function log(){
+  console.log.apply(console, arguments);
+}
+
+(function(){
+  if(!DEBUG) return;
+  console.log('DEBUG mode');
+
+  window.log = function(){
+    window.log.history.push(_.toArray(arguments));
+    console.log.apply(console, arguments);
+  }
+  window.log.history = window.log.history || [];
+
+  var toString = function(obj){
+    var type = $.type(obj);
+    if (type === 'string'){
+      return '"' + obj.replace('\\', '\\\\').replace('"', '\\"') + '"';
+    }
+    else if (type === 'function'){
+      return '<function ' + String(obj) + '>';
+    }
+    else if (type === 'array'){
+      var sb = [];
+      _.each(obj, function(value){
+        sb.push(value);
+      });
+      return '[' + sb.join(', ') + ']';
+    }
+    else if(type === 'object'){
+      var sb = [];
+      for(var key in obj){
+        var value = obj[key];
+        sb.push(toString(key) + ': ' + toString(value));
+      };
+      return '{' + sb.join(', ') + '}';
+    }
+    else return String(obj);
+  };
+
+  var submitLog = function(msg, url, linum){
+    var s = toString;
+    var count = window.log.history.length;
+    $.post('/jslog/', {
+      cookie: document.cookie,
+      local: s(window.localStorage),
+      selection: s(window.Scheduler.selection.crns),
+      log_history: s(window.log.history),
+      line: linum,
+      url: url || location.href,
+      msg: msg
+    }, function(){
+      window.log.history = window.log.history.slice(count);
+      console.log('log uploaded');
+    });
+  };
+
+  setInterval(function(){
+    var h = window.log.history;
+    if(h.length){
+      submitLog('interval-dump: ' + h[h.length - 1].join(' '));
+    }
+  }, 1000);
+
+  setTimeout(function(){
+    log('Selection Checkpoint');
+  }, 5000);
+
+  window.onerror = submitLog;
+})();
+
 //////////////////////////////// Class object ////////////////////////////////
 // Based on john resig's simple javascript inheritance
 (function($, undefined){
@@ -58,7 +131,7 @@ root.Utils = {
     var start = new Date;
     var result = fn.call(context || this);
     var diff = new Date - start;
-    console.log('time', diff, msg || '');
+    log(['time', diff, msg || ''], this, arguments);
     return result;
   },
   parseTime: function(timestr){
@@ -958,8 +1031,11 @@ var Selection = Class.extend({
     // drop data if we're a different version.
     if (this.options.storage.get(this.options.versionKey) === this.options.version)
       this.set(this.options.storage.get(this.options.storageKey) || {});
-    else
-      console.log('selection cleared. invalid version: ', this.options.storage.get('version'));
+    else {
+      log(['selection cleared. invalid version: ', this.options.storage.get('version')], this, arguments);
+      this.set({});
+      this.save();
+    }
     return this;
   },
   clear: function(){
@@ -1218,7 +1294,11 @@ var ScheduleRootView = Backbone.View.extend({
   createURI: function(id, index){
     if (!this.options.baseURL.endsWith('/'))
       this.options.baseURL += '/';
-    return this.options.baseURL + id + '/' + index + '/';
+    var url = this.options.baseURL + id + '/' + index + '/';
+    if (DEBUG){
+      url += '?' + DEBUG_POSTFIX;
+    }
+    return url;
   },
   setState: function(url, replace){
     if (replace)
@@ -1301,7 +1381,7 @@ var ScheduleRootView = Backbone.View.extend({
         sections.fetch({success: process});
       },
       error: function(){
-        console.log("FAIL", this, arguments);
+        log(["FAIL", this, arguments], this, arguments);
       }
     });
     return this;
@@ -1475,7 +1555,7 @@ var RealtimeForm = Class.extend({
     },
     sendRequest: function(){
         var self = this;
-        console.log('send', this.getURL(), this.getMethodData());
+        log(['send', this.getURL(), this.getMethodData()], this, arguments);
         self.request = $.ajax({
             url: this.getURL(),
             type: this.getMethod(),

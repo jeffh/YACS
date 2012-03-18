@@ -243,6 +243,7 @@ class BaseSettings(SettingsCore):
             'scheduler',
             'api',
             'courses_viz',
+            'jslog',
         )
 
         # A sample logging configuration. The only tangible logging
