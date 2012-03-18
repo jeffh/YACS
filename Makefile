@@ -1,5 +1,5 @@
 ### configurable vars ###
-APPS=api courses courses_viz scheduler
+APPS=api courses courses_viz scheduler jslog
 
 # Requirements file to use
 DEPLOY_REQUIREMENTS=requirements/deployment.txt
@@ -7,7 +7,7 @@ DEV_REQUIREMENTS=requirements/development.txt
 # override
 REQUIREMENTS=
 
-DEPLOY=api courses courses_viz scheduler lib requirements yacs manage.py Makefile
+DEPLOY=$(APPS) lib requirements yacs manage.py Makefile
 
 # certain commands accept arguments
 ARGS=
