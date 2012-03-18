@@ -54,7 +54,7 @@ body {
   margin-bottom: -2em; }
   #courses .sections .days li.item.empty, #courses .sections .days li.item.selected, #selected_courses .sections .days li.item.empty, #selected_courses .sections .days li.item.selected {
     display: block;
-    min-width: initial;
+    min-width: inherit;
     width: 95px;
     margin-left: 4px;
     float: left; }

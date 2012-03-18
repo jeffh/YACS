@@ -76,7 +76,7 @@ body {
             li.item {
                 &.empty, &.selected {
                     display: block;
-                    min-width: initial;
+                    min-width: inherit;
                     width: 95px;
                     margin-left: 4px;
                     float: left;

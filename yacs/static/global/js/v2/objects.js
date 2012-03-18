@@ -1013,6 +1013,8 @@ var Selection = Class.extend({
     var duration = 100;
 
     var setConflictStyle = function($el, conflictedWith, isCourse){
+      // we need the course data to load before we can start
+      if(!self.courses.length) return;
       var $parent = $el.parent().addClass('conflict');
       if (isCourse && !$el.parent().find('> .conflicts_with_course').length){
         //var course = self._getCourseElem(conflictedWith.courseID).parent().find('.name').text();
@@ -1029,8 +1031,6 @@ var Selection = Class.extend({
         $text.hide().slideDown(duration);
       }
       else if(!isCourse && !$el.parent().find('.conflicts_with_section').length){
-        // we need the course data to load before we can start
-        if(!self.courses.length) return;
         var course = self.courses.get(conflictedWith.courseID).get('name');
         var $text = $('<span class="conflicts_with_section">Conflicts with '
                       + course +'</span>');
@@ -1320,7 +1320,7 @@ var CourseListView = Backbone.View.extend({
   setSelection: function(selection){
     this.options.selected = selection;
     var courseIDs = this.options.selected.getCourseIds();
-    if(!courses) return;
+    if(!courseIDs) return;
     // default behavior for emty lists are to fetch everything...
     // but that is not our selection
     if (!courseIDs.length){
