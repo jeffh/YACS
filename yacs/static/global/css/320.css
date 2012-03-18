@@ -51,7 +51,7 @@ a:link:hover, a:visited:hover {
 p {
   padding: 0 5px; }
 
-.clear {
+.clear, .clearfix {
   clear: both; }
 
 .text-center {

@@ -46,7 +46,7 @@ a:link:hover, a:visited:hover {
 p {
 	padding: 0 5px;
 }
-.clear { clear: both; }
+.clear, .clearfix { clear: both; }
 .text-center {
 	text-align: center;
 }
