@@ -6,7 +6,6 @@ django-debug-toolbar==0.9.4
 django-devserver==0.3.1
 django-extensions==0.8
 django-jasmine==0.3.2
-django-robots==0.8.1
 docutils==0.8.1
 factory-boy==1.1.2
 icalendar==3.0.1b2

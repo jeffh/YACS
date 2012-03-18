@@ -236,7 +236,6 @@ class BaseSettings(SettingsCore):
             # third-party apps
             'south',
             'django_extensions',
-            'robots',
             'debug_toolbar',
             # local apps
             'courses',
