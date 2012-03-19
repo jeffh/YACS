@@ -10,6 +10,7 @@ import datetime
 import rpi_calendars
 from contextlib import closing
 from icalendar import Calendar, Event
+from django.http import HttpResponse
 
 from courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment)
@@ -339,28 +340,23 @@ def export_schedule(crns):
     days_off = []
     break_start = None
     break_end = None
-    import pdb
     for e in events:
-        print e
         if re.search(str(sections[0].semester.name.split(' ')[0])+' '+str(sections[0].semester.year), e.name) != None:
-            print "found semester start", e, e.start
             semester_start = e.start
             found = True
         if re.search(".*(no classes).*", e.name.lower()) != None and found:
-            days_off.append([datetime.date(e.start.year, e.start.month, e.start.day),])
+            days_off.append(e.start.date())
         if re.search(".*(spring break)|(thanksgiving).*", e.name.lower())!= None and found:
             break_start = e.start
         if re.search(".*(classes resume).*", e.name.lower())!= None and break_start != None:
             break_end = e.start
         if re.search("(.*)study-review days", str(e.name).lower()) != None and found:
-            print "found semester end", e, e.start
             semester_end = e.start
             break
     length = break_end - break_start
-    for i in range(length.days+1):
-        days_off.append([(break_start+datetime.timedelta(i)).date(),])
+    for i in range(length.days):
+        days_off.append((break_start+datetime.timedelta(i)).date())
     for s in sections:
-        print s.periods.all()
         for p in s.periods.all():
             event = Event()
             offset = weekday_offset[p.days_of_week[0]] - semester_start.weekday()
@@ -373,14 +369,12 @@ def export_schedule(crns):
             days = []
             for d in p.days_of_week:
                 days.append(d[:2])
-            print days
             event.add('rrule', dict(
                 freq='weekly',
                 interval=1,
                 byday=days,
                 until=datetime.datetime(semester_end.year, semester_end.month, semester_end.day, p.end.hour, p.end.minute)))
-            #pdb.set_trace()
-            event.add('exdate', days_off)
+            event.add('exdate', [days_off,])
             calendar.add_component(event)
-    print calendar.to_ical()
-    return calendar.to_ical()
+    output = calendar.to_ical()
+    return HttpResponse(output.replace("EXDATE", "EXDATE;VALUE=DATE"), content_type="ics")
