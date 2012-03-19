@@ -1014,7 +1014,10 @@ header {
 
         &.selected {
             .day {
-                background: #e0e0e0;
+                background: #ccc;
+                .row {
+                  border-color: #999;
+                }
             }
             &:hover {
                 .day {
@@ -1089,18 +1092,19 @@ header {
 	}
 	.day {
 		float: left;
-		width: 20px;
+		width: 15px;
 		padding: 1px;
 	}
+    $row-height: 6px;
 	.row {
         $bcolor: $border-color - #222;
 
-		height: 8px;
+		height: $row-height;
 		border-bottom: 1px solid $bcolor;
 		&:first-child {
 			border-top: 1px solid $bcolor;
 			border-bottom: 1px solid $bcolor;
-			height: 9px;
+			height: $row-height + 1px;
 		}
 		&:last-child {
 			border-bottom: 1px solid $bcolor;

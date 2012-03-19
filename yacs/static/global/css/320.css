@@ -943,7 +943,9 @@ header .alpha {
   -webkit-box-shadow: 1px 1px 10px #999999;
   box-shadow: 1px 1px 10px #999999; }
   #thumbnails .thumbnail.selected .day {
-    background: #e0e0e0; }
+    background: #ccc; }
+    #thumbnails .thumbnail.selected .day .row {
+      border-color: #999; }
   #thumbnails .thumbnail.selected:hover .day {
     background: inherit; }
   #thumbnails .thumbnail.selected:hover .row {
@@ -992,10 +994,10 @@ header .alpha {
       border-color: #e49e58; }
 #thumbnails .day {
   float: left;
-  width: 20px;
+  width: 15px;
   padding: 1px; }
 #thumbnails .row {
-  height: 8px;
+  height: 6px;
   border-bottom: 1px solid #aeaeae;
   /*
   &.noon {
@@ -1005,7 +1007,7 @@ header .alpha {
   #thumbnails .row:first-child {
     border-top: 1px solid #aeaeae;
     border-bottom: 1px solid #aeaeae;
-    height: 9px; }
+    height: 7px; }
   #thumbnails .row:last-child {
     border-bottom: 1px solid #aeaeae; }
 #thumbnails .class {
