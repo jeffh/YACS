@@ -1112,19 +1112,16 @@ header {
 		&:last-child {
 			border-bottom: 1px solid $bcolor;
 		}
-		/*
-		&.noon {
-			background: #d0d0d0;
+		&.prenoon {
+          border-bottom: 1px solid #666;
 		}
-		*/
-
 	}
 	.class {
 		display: block;
 		position: relative;
 		z-index: 1000;
 
-		@include border-radius(2px);
+		/*@include border-radius(2px);*/
 		$darken: #222;
 
 		&.color1 {

@@ -116,7 +116,7 @@
   <% for(var j=0, l2=dows.length; j<l2; ++j){ var dow = dows[j]; var secsforday = secmap[dow]; %>
     <div class="day">
       <% for(var k=0, l3=time_range.length; k<l3; ++k) { var hour = time_range[k]; var period = secsforday && secsforday[hour]; %>
-        <div class="row <%- (hour === 12) ? 'noon' : '' %>">
+        <div class="row <%- (hour === 11) ? 'prenoon' : '' %> <%- (hour === 12) ? 'noon' : '' %> <%- (hour > 12) ? 'afternoon': '' %>">
           <% if(period) {
             var section = sections.get(period.get('section_id')),
             course = courses.get(section.get('course_id')),

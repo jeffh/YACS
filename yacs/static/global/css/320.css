@@ -1002,25 +1002,20 @@ header .alpha {
     padding: 1px; }
   #thumbnails .row {
     height: 6px;
-    border-bottom: 1px solid #aeaeae;
-    /*
-    &.noon {
-    	background: #d0d0d0;
-    }
-    */ }
+    border-bottom: 1px solid #aeaeae; }
     #thumbnails .row:first-child {
       border-top: 1px solid #aeaeae;
       border-bottom: 1px solid #aeaeae;
       height: 7px; }
     #thumbnails .row:last-child {
       border-bottom: 1px solid #aeaeae; }
+    #thumbnails .row.prenoon {
+      border-bottom: 1px solid #666; }
   #thumbnails .class {
     display: block;
     position: relative;
     z-index: 1000;
-    border-radius: 2px;
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px; }
+    /*@include border-radius(2px);*/ }
     #thumbnails .class.color1 {
       background: #b59696;
       border-color: #9a7171; }
