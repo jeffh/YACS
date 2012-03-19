@@ -1,5 +1,5 @@
 // require: objects.js
-Scheduler = {};
+var Scheduler = {};
 Scheduler.selection = new Selection();
 
 ///////////////////////////////////////////////////
@@ -80,16 +80,18 @@ $(function(){
   var schedule = getSavedSelection();
   if (schedule){
     var selection = new Selection({
+      isReadOnly: isReadOnly,
       store: new MemoryStore(),
       autoload: false
     }).set(schedule);
     if (_.isEqual(Scheduler.selection.getRaw(), selection.getRaw())){
       $('#courses input[type=checkbox]').removeAttr('disabled');
       isReadOnly = false;
-      console.log('equal!');
+      selection.options.isReadOnly = false;
+      log(['equal!']);
       // we're equal -- don't say anything
     } else {
-      console.log('not equal!', Scheduler.selection.getRaw(), selection.getRaw());
+      log(['not equal!', Scheduler.selection.getRaw(), selection.getRaw()], this);
       $('#notifications').fadeIn(1000);
       Scheduler.selection = selection;
       $('a[data-action=adopt-selection]').bind('click', function(){
@@ -134,4 +136,17 @@ $(function(){
     baseURL: $('meta[name=schedules-url]').attr('content'),
     section_ids: Scheduler.selection.getCRNs()
   }).render();
+
+  // set arrow keys to cycle between
+  $(window).bind('keydown', function(evt){
+    console.log(evt.keyCode);
+    switch(evt.keyCode){
+      case 39: // right arrow
+        Scheduler.view.nextSchedule();
+        break;
+      case 37: // left arrow
+        Scheduler.view.prevSchedule();
+        break;
+    }
+  });
 });

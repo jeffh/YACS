@@ -1,3 +1,76 @@
+var DEBUG_POSTFIX = 'debug';
+var DEBUG = location.search.indexOf('&' + DEBUG_POSTFIX) >= 0 || location.search.indexOf('?' + DEBUG_POSTFIX) >= 0;
+function log(){
+  console.log.apply(console, arguments);
+}
+
+(function(){
+  if(!DEBUG) return;
+  console.log('DEBUG mode');
+
+  window.log = function(){
+    window.log.history.push(_.toArray(arguments));
+    console.log.apply(console, arguments);
+  }
+  window.log.history = window.log.history || [];
+
+  var toString = function(obj){
+    var type = $.type(obj);
+    if (type === 'string'){
+      return '"' + obj.replace('\\', '\\\\').replace('"', '\\"') + '"';
+    }
+    else if (type === 'function'){
+      return '<function ' + String(obj) + '>';
+    }
+    else if (type === 'array'){
+      var sb = [];
+      _.each(obj, function(value){
+        sb.push(value);
+      });
+      return '[' + sb.join(', ') + ']';
+    }
+    else if(type === 'object'){
+      var sb = [];
+      for(var key in obj){
+        var value = obj[key];
+        sb.push(toString(key) + ': ' + toString(value));
+      };
+      return '{' + sb.join(', ') + '}';
+    }
+    else return String(obj);
+  };
+
+  var submitLog = function(msg, url, linum){
+    var s = toString;
+    var count = window.log.history.length;
+    $.post('/jslog/', {
+      cookie: document.cookie,
+      local: s(window.localStorage),
+      selection: s(window.Scheduler.selection.crns),
+      log_history: s(window.log.history),
+      line: linum,
+      url: url || location.href,
+      msg: msg
+    }, function(){
+      window.log.history = window.log.history.slice(count);
+      console.log('log uploaded');
+    });
+  };
+
+  setInterval(function(){
+    var h = window.log.history;
+    if(h.length){
+      submitLog('interval-dump: ' + h[h.length - 1].join(' '));
+    }
+  }, 1000);
+
+  setTimeout(function(){
+    log('Selection Checkpoint');
+  }, 5000);
+
+  window.onerror = submitLog;
+})();
+
 //////////////////////////////// Class object ////////////////////////////////
 // Based on john resig's simple javascript inheritance
 (function($, undefined){
@@ -58,7 +131,7 @@ root.Utils = {
     var start = new Date;
     var result = fn.call(context || this);
     var diff = new Date - start;
-    console.log('time', diff, msg || '');
+    log(['time', diff, msg || ''], this, arguments);
     return result;
   },
   parseTime: function(timestr){
@@ -112,6 +185,28 @@ root.Utils = {
   },
   property: function(name){
     return function(obj){ return obj[name]; };
+  },
+  iterate: function(collection, options){
+    options = _.extend({}, {
+      delay: 0.01,
+      batchSize: 1000,
+      batch: function(){},
+      complete: function(){},
+      each: function(){}
+    }, options);
+    for(var i=0, l=collection.length; i<l; i+=options.batchSize){
+      setTimeout((function(start, stop){
+        return function(){
+          for(var j=start; j<stop; j++){
+            options.each.call(collection[j], collection[j], j);
+          }
+          options.batch.call(collection, collection, start, stop);
+        };
+      })(i, Math.min(i + options.batchSize, l)), options.delay * i);
+    }
+    setTimeout(function(){
+      options.complete.call(collection, collection);
+    }, options.delay * collection.length);
   }
 }
 
@@ -773,7 +868,8 @@ var Selection = Class.extend({
     storageKey: 'crns',
     autoload: true,
     version: 2,
-    versionKey: 'version'
+    versionKey: 'version',
+    isReadOnly: false // makes all checkboxes disabled if true
   },
   init: function(options){
     this.crns = {};
@@ -953,13 +1049,19 @@ var Selection = Class.extend({
     });
     return selection;
   },
+  _isValidVersion: function(version){
+    return version === this.options.version;
+  },
   load: function(){
     assert(this.options.storage, 'Storage must be defined in options to load');
     // drop data if we're a different version.
-    if (this.options.storage.get(this.options.versionKey) === this.options.version)
+    if (this._isValidVersion(this.options.storage.get(this.options.versionKey)))
       this.set(this.options.storage.get(this.options.storageKey) || {});
-    else
-      console.log('selection cleared. invalid version: ', this.options.storage.get('version'));
+    else {
+      log(['selection cleared. invalid version: ', this.options.storage.get('version')], this, arguments);
+      this.set({});
+      this.save();
+    }
     return this;
   },
   clear: function(){
@@ -1052,30 +1154,36 @@ var Selection = Class.extend({
       }
     };
 
-    $(this.options.checkbox_selector).each(function(){
-      var $el = $(this);
-      var cid = parseInt($el.attr('data-cid'), 10);
-      var crns = $el.attr('data-crns');
-      if (crns && crns !== ''){
-        var count = 0;
-        var conflictedWith = null;
-        var sids = _.map(crns.split(', '), function(x){
-          return parseInt(x, 10);
-        });
-        _.each(sids, function(sid){
-          conflictedWith = self.conflictsWith(sid);
-          if (conflictedWith){
-            ++count;
-            setConflictStyle(self._getSectionElem(cid, sid), conflictedWith, false);
+    Utils.iterate($(this.options.checkbox_selector), {
+      each: function(){
+        var $el = $(this);
+        var cid = parseInt($el.attr('data-cid'), 10);
+        var crns = $el.attr('data-crns');
+        if (crns && crns !== ''){
+          var count = 0;
+          var conflictedWith = null;
+          var sids = _.map(crns.split(', '), function(x){
+            return parseInt(x, 10);
+          });
+          _.each(sids, function(sid){
+            conflictedWith = self.conflictsWith(sid);
+            if (conflictedWith){
+              ++count;
+              setConflictStyle(self._getSectionElem(cid, sid), conflictedWith, false);
+            } else {
+              removeConflictStyle(self._getSectionElem(cid, sid), false);
+            }
+          });
+          if (count === sids.length){
+            setConflictStyle(self._getCourseElem(cid), conflictedWith, true);
           } else {
-            removeConflictStyle(self._getSectionElem(cid, sid), false);
+            removeConflictStyle(self._getCourseElem(cid), true);
           }
-        });
-        if (count === sids.length){
-          setConflictStyle(self._getCourseElem(cid), conflictedWith, true);
-        } else {
-          removeConflictStyle(self._getCourseElem(cid), true);
         }
+      },
+      complete: function(){
+        if (self.options.isReadOnly)
+          $(this.options.checkbox_selector).attr('disabled', 'disabled');
       }
     });
   }
@@ -1166,10 +1274,15 @@ var ThumbnailView = BaseScheduleView.extend({
       'data-sid': "" + this.scheduleIndex
     });
   },
-  selectSchedule: function(){
+  selectSchedule: function(options){
+    var opt = $.extend({
+      autohideThumbnails: true
+    }, options);
     var scheduleView = this.options.scheduleView;
     $('#schedule_thumbnail' + scheduleView.getScheduleIndex()).removeClass('selected');
-    scheduleView.setScheduleIndex(this.scheduleIndex).render().hideThumbnails();
+    scheduleView = scheduleView.setScheduleIndex(this.scheduleIndex).render();
+    if (opt.autohideThumbnails)
+      scheduleView.hideThumbnails();
     $(this.el).addClass('selected');
     return false;
   }
@@ -1218,7 +1331,11 @@ var ScheduleRootView = Backbone.View.extend({
   createURI: function(id, index){
     if (!this.options.baseURL.endsWith('/'))
       this.options.baseURL += '/';
-    return this.options.baseURL + id + '/' + index + '/';
+    var url = this.options.baseURL + id + '/' + index + '/';
+    if (DEBUG){
+      url += '?' + DEBUG_POSTFIX;
+    }
+    return url;
   },
   setState: function(url, replace){
     if (replace)
@@ -1226,9 +1343,21 @@ var ScheduleRootView = Backbone.View.extend({
     else
       this.options.history.replaceState({path: url}, '', url);
   },
-  selectSchedule: function(){
-    var index = parseInt($('#schedules').attr('data-start') || 0, 10);
+  selectSchedule: function(index){
+    index = (index !== undefined ?
+             index :
+             parseInt($('#schedules').attr('data-start') || 0, 10));
     this.thumbnails[index].selectSchedule();
+  },
+  nextSchedule: function(){
+    var index = this.scheduleView.getScheduleIndex() + 1;
+    if(index < this.thumbnails.length)
+      this.thumbnails[index].selectSchedule({autohideThumbnails: false});
+  },
+  prevSchedule: function(){
+    var index = this.scheduleView.getScheduleIndex() - 1;
+    if(index >= 0)
+      this.thumbnails[index].selectSchedule({autohideThumbnails: false});
   },
   _render: function(schedules){
     var self = this;
@@ -1260,16 +1389,20 @@ var ScheduleRootView = Backbone.View.extend({
 
     var thumbnails = $(this.options.thumbnailsEl).html('');
     this.thumbnails = [];
-    for(var i=0, l=schedules.get('schedules').length; i<l; i++){
-      var view = new ThumbnailView({
-        selectionSchedule: schedules,
-        scheduleIndex: i,
-        scheduleView: scheduleView
-      });
-      this.thumbnails.push(view);
-      thumbnails.append(view.render().el);
-    }
-    this.thumbnails[this.options.index].selectSchedule();
+    Utils.iterate(schedules.get('schedules'), {
+      each: function(schedule, i){
+        var view = new ThumbnailView({
+          selectionSchedule: schedules,
+          scheduleIndex: i,
+          scheduleView: scheduleView
+        });
+        self.thumbnails.push(view);
+        thumbnails.append(view.render().el);
+      },
+      complete: function(){
+        self.thumbnails[self.options.index].selectSchedule();
+      }
+    });
   },
   render: function(){
     var schedules = new SelectionSchedules({
@@ -1296,12 +1429,17 @@ var ScheduleRootView = Backbone.View.extend({
           }
         };
 
-        departments.fetch({success: process});
-        courses.fetch({success: process});
-        sections.fetch({success: process});
+        if (courseIDs.length){
+          departments.fetch({success: process});
+          courses.fetch({success: process});
+          sections.fetch({success: process});
+        } else {
+          count = 0;
+          process();
+        }
       },
       error: function(){
-        console.log("FAIL", this, arguments);
+        log(["FAIL", this, arguments], this, arguments);
       }
     });
     return this;
@@ -1475,7 +1613,7 @@ var RealtimeForm = Class.extend({
     },
     sendRequest: function(){
         var self = this;
-        console.log('send', this.getURL(), this.getMethodData());
+        log(['send', this.getURL(), this.getMethodData()], this, arguments);
         self.request = $.ajax({
             url: this.getURL(),
             type: this.getMethod(),

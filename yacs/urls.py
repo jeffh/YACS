@@ -8,7 +8,7 @@ from courses.sitemaps import sitemaps
 from courses.views.newviews import redirect_to_latest_semester
 
 urlpatterns = patterns('',
-    url(r'^robots\.txt$', include('robots.urls'), name='robots'),
+    url(r'^robots\.txt$', 'courses.views.newviews.robots_txt'),
     url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}, name='sitemap'),
 
     url(r'^$', redirect_to_latest_semester, name='index'),
@@ -20,6 +20,7 @@ urlpatterns = patterns('',
 
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^', include('jslog.urls')),
 )
 
 

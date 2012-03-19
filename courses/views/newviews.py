@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
 from django.views.generic import TemplateView
+from django.contrib.sites.models import Site
 
 from courses import models
 from courses.utils import DAYS
@@ -8,6 +9,16 @@ from courses.views.decorators import Renderer
 
 render = Renderer(template_prefix='courses/')
 
+
+@render(template_prefix='', template_name='robots.txt')
+def robots_txt(request):
+    return {
+        'context': {
+            'semesters': models.Semester.objects.all(),
+            'site': Site.objects.get_current()
+        },
+        'mimetype': 'text/plain',
+    }
 
 ################ VIEWS loaded by the a normal browser ###########################
 

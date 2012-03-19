@@ -1,5 +1,5 @@
 ### configurable vars ###
-APPS=api courses courses_viz scheduler
+APPS=api courses courses_viz scheduler jslog
 
 # Requirements file to use
 DEPLOY_REQUIREMENTS=requirements/deployment.txt
@@ -7,7 +7,7 @@ DEV_REQUIREMENTS=requirements/development.txt
 # override
 REQUIREMENTS=
 
-DEPLOY=api courses courses_viz scheduler lib requirements yacs manage.py Makefile
+DEPLOY=$(APPS) lib requirements yacs manage.py Makefile
 
 # certain commands accept arguments
 ARGS=
@@ -105,6 +105,10 @@ else
 USE_VIRTUALENV=
 endif
 
+WF_remove_backup: override PRODUCTION_DIR_NAME=yacs
+WF_remove_backup: override PRODUCTION_ROOT=~/webapps/yacs
+WF_remove_backup: override PRODUCTION_ROOT=~/webapps/yacs
+
 WF_restart: override PRODUCTION_DIR_NAME=yacs
 WF_restart: override PRODUCTION_ROOT=~/webapps/yacs
 WF_restart:
@@ -152,7 +156,7 @@ backup_current:
 restore_backup:
 	$(call remote,mkdir -p $(PRODUCTION_FULLPATH)_tmp && mv -f $(PRODUCTION_FULLPATH)_tmp $(PRODUCTION_FULLPATH))
 
-remove_backup:
+WF_remove_backup remove_backup:
 	$(call remote,rm -rf $(PRODUCTION_FULLPATH)_tmp)
 
 upload_and_extract_tarball:

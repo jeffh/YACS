@@ -110,13 +110,13 @@
 
 {# functions: get_period_height #}
 {# defined: schedule, time_range, courses, sections, color_map, sid #}
-<script type="text/template" id="thumbnail-template" data-period-height="8">
+<script type="text/template" id="thumbnail-template" data-period-height="6">
 <% var first=(sid===1), last=(sid===schedules.length), secmap = timemap; %>
 <a class="schedule select-schedule" href="#schedule<%- sid %>">
   <% for(var j=0, l2=dows.length; j<l2; ++j){ var dow = dows[j]; var secsforday = secmap[dow]; %>
     <div class="day">
       <% for(var k=0, l3=time_range.length; k<l3; ++k) { var hour = time_range[k]; var period = secsforday && secsforday[hour]; %>
-        <div class="row <%- (hour === 12) ? 'noon' : '' %>">
+        <div class="row <%- (hour === 11) ? 'prenoon' : '' %> <%- (hour === 12) ? 'noon' : '' %> <%- (hour > 12) ? 'afternoon': '' %>">
           <% if(period) {
             var section = sections.get(period.get('section_id')),
             course = courses.get(section.get('course_id')),

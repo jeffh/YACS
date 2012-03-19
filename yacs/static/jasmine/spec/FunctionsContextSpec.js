@@ -74,22 +74,22 @@ describe('FunctionsContext', function(){
   describe('humanize_time', function(){
     it('should return a 12-hour time format from hh:mm:ss format', function(){
       var result = NS.humanize_time('05:20:13');
-      expect(result).toEqual('5:20am');
+      expect(result).toEqual('5:20AM');
     });
 
     it('should return a 12-hour time format when hour > 12', function(){
       var result = NS.humanize_time('14:20:13');
-      expect(result).toEqual('2:20pm');
+      expect(result).toEqual('2:20PM');
     });
 
     it('should return 12-midnight for 00:00:00', function(){
       var result = NS.humanize_time('00:00:00');
-      expect(result).toEqual('12am');
+      expect(result).toEqual('12AM');
     });
 
     it('should return 12-noon for 12:00:00', function(){
       var result = NS.humanize_time('12:00:00');
-      expect(result).toEqual('12pm');
+      expect(result).toEqual('12PM');
     });
   });
 

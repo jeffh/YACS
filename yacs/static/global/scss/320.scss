@@ -1007,14 +1007,16 @@ header {
 	}
 	.thumbnail {
         border: 1px solid #999;
-        margin: 0 5px 10px 0;
+        margin: 0 3px 5px 0;
 		float: left;
-        @include border-radius(3px);
         @include box-shadow(1px 1px 10px #999);
 
         &.selected {
             .day {
-                background: #e0e0e0;
+                background: #ccc;
+                .row {
+                  border-color: #999;
+                }
             }
             &:hover {
                 .day {
@@ -1087,37 +1089,38 @@ header {
 			}
 		}
 	}
+    /* If you change .day width, don't forget to change .row height
+     * and thumbnail-template's data-period-height in placeholder_scheduler_list
+     */
 	.day {
 		float: left;
-		width: 20px;
+		width: 15px;
 		padding: 1px;
 	}
+    $row-height: 6px;
 	.row {
         $bcolor: $border-color - #222;
 
-		height: 8px;
+		height: $row-height;
 		border-bottom: 1px solid $bcolor;
 		&:first-child {
 			border-top: 1px solid $bcolor;
 			border-bottom: 1px solid $bcolor;
-			height: 9px;
+			height: $row-height + 1px;
 		}
 		&:last-child {
 			border-bottom: 1px solid $bcolor;
 		}
-		/*
-		&.noon {
-			background: #d0d0d0;
+		&.prenoon {
+          border-bottom: 1px solid #666;
 		}
-		*/
-
 	}
 	.class {
 		display: block;
 		position: relative;
 		z-index: 1000;
 
-		@include border-radius(2px);
+		/*@include border-radius(2px);*/
 		$darken: #222;
 
 		&.color1 {

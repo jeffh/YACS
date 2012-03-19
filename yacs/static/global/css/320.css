@@ -929,119 +929,117 @@ header .alpha {
         #schedules .class.medium.small.very .location {
           display: none; }
 
-#thumbnails h1 {
-  text-align: center;
-  font-size: 130%; }
-#thumbnails .thumbnail {
-  border: 1px solid #999;
-  margin: 0 5px 10px 0;
-  float: left;
-  border-radius: 3px;
-  -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-  -moz-box-shadow: 1px 1px 10px #999999;
-  -webkit-box-shadow: 1px 1px 10px #999999;
-  box-shadow: 1px 1px 10px #999999; }
-  #thumbnails .thumbnail.selected .day {
-    background: #e0e0e0; }
-  #thumbnails .thumbnail.selected:hover .day {
-    background: inherit; }
-  #thumbnails .thumbnail.selected:hover .row {
-    border-color: #aeaeae; }
-    #thumbnails .thumbnail.selected:hover .row:first-child {
+#thumbnails {
+  /* If you change .day width, don't forget to change .row height
+   * and thumbnail-template's data-period-height in placeholder_scheduler_list
+   */ }
+  #thumbnails h1 {
+    text-align: center;
+    font-size: 130%; }
+  #thumbnails .thumbnail {
+    border: 1px solid #999;
+    margin: 0 3px 5px 0;
+    float: left;
+    -moz-box-shadow: 1px 1px 10px #999999;
+    -webkit-box-shadow: 1px 1px 10px #999999;
+    box-shadow: 1px 1px 10px #999999; }
+    #thumbnails .thumbnail.selected .day {
+      background: #ccc; }
+      #thumbnails .thumbnail.selected .day .row {
+        border-color: #999; }
+    #thumbnails .thumbnail.selected:hover .day {
+      background: inherit; }
+    #thumbnails .thumbnail.selected:hover .row {
       border-color: #aeaeae; }
-  #thumbnails .thumbnail:hover {
-    cursor: pointer; }
-    #thumbnails .thumbnail:hover .day {
-      background: #822; }
-    #thumbnails .thumbnail:hover .row {
-      border-bottom: 1px solid #b55;
-      /*
-      &.noon {
-      	background: #a44;
-      }
-      */ }
-      #thumbnails .thumbnail:hover .row:first-child {
-        border-top: 1px solid #b55; }
-    #thumbnails .thumbnail:hover .class.color1 {
-      background: #d7b8b8;
-      border-color: #bc9393; }
-    #thumbnails .thumbnail:hover .class.color2 {
-      background: #b8d7b8;
-      border-color: #93bc93; }
-    #thumbnails .thumbnail:hover .class.color3 {
-      background: #b8b8d7;
-      border-color: #9393bc; }
-    #thumbnails .thumbnail:hover .class.color4 {
-      background: #d7d6b7;
-      border-color: #bcb192; }
-    #thumbnails .thumbnail:hover .class.color5 {
-      background: #bccbd7;
-      border-color: #97a6bc; }
-    #thumbnails .thumbnail:hover .class.color6 {
-      background: #d7c2d5;
-      border-color: #bc9db0; }
-    #thumbnails .thumbnail:hover .class.color7 {
-      background: #d0d7cd;
-      border-color: #b5b2a8; }
-    #thumbnails .thumbnail:hover .class.color8 {
-      background: #a7d7cb;
-      border-color: #8cb2a6; }
-    #thumbnails .thumbnail:hover .class.color9 {
-      background: #ffc37d;
-      border-color: #e49e58; }
-#thumbnails .day {
-  float: left;
-  width: 20px;
-  padding: 1px; }
-#thumbnails .row {
-  height: 8px;
-  border-bottom: 1px solid #aeaeae;
-  /*
-  &.noon {
-  	background: #d0d0d0;
-  }
-  */ }
-  #thumbnails .row:first-child {
-    border-top: 1px solid #aeaeae;
-    border-bottom: 1px solid #aeaeae;
-    height: 9px; }
-  #thumbnails .row:last-child {
+      #thumbnails .thumbnail.selected:hover .row:first-child {
+        border-color: #aeaeae; }
+    #thumbnails .thumbnail:hover {
+      cursor: pointer; }
+      #thumbnails .thumbnail:hover .day {
+        background: #822; }
+      #thumbnails .thumbnail:hover .row {
+        border-bottom: 1px solid #b55;
+        /*
+        &.noon {
+        	background: #a44;
+        }
+        */ }
+        #thumbnails .thumbnail:hover .row:first-child {
+          border-top: 1px solid #b55; }
+      #thumbnails .thumbnail:hover .class.color1 {
+        background: #d7b8b8;
+        border-color: #bc9393; }
+      #thumbnails .thumbnail:hover .class.color2 {
+        background: #b8d7b8;
+        border-color: #93bc93; }
+      #thumbnails .thumbnail:hover .class.color3 {
+        background: #b8b8d7;
+        border-color: #9393bc; }
+      #thumbnails .thumbnail:hover .class.color4 {
+        background: #d7d6b7;
+        border-color: #bcb192; }
+      #thumbnails .thumbnail:hover .class.color5 {
+        background: #bccbd7;
+        border-color: #97a6bc; }
+      #thumbnails .thumbnail:hover .class.color6 {
+        background: #d7c2d5;
+        border-color: #bc9db0; }
+      #thumbnails .thumbnail:hover .class.color7 {
+        background: #d0d7cd;
+        border-color: #b5b2a8; }
+      #thumbnails .thumbnail:hover .class.color8 {
+        background: #a7d7cb;
+        border-color: #8cb2a6; }
+      #thumbnails .thumbnail:hover .class.color9 {
+        background: #ffc37d;
+        border-color: #e49e58; }
+  #thumbnails .day {
+    float: left;
+    width: 15px;
+    padding: 1px; }
+  #thumbnails .row {
+    height: 6px;
     border-bottom: 1px solid #aeaeae; }
-#thumbnails .class {
-  display: block;
-  position: relative;
-  z-index: 1000;
-  border-radius: 2px;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px; }
-  #thumbnails .class.color1 {
-    background: #b59696;
-    border-color: #9a7171; }
-  #thumbnails .class.color2 {
-    background: #96b596;
-    border-color: #719a71; }
-  #thumbnails .class.color3 {
-    background: #9696b5;
-    border-color: #71719a; }
-  #thumbnails .class.color4 {
-    background: #b5b495;
-    border-color: #9a8f70; }
-  #thumbnails .class.color5 {
-    background: #9aa9b5;
-    border-color: #75849a; }
-  #thumbnails .class.color6 {
-    background: #b5a0b3;
-    border-color: #9a7b8e; }
-  #thumbnails .class.color7 {
-    background: #aeb5ab;
-    border-color: #939086; }
-  #thumbnails .class.color8 {
-    background: #85b5a9;
-    border-color: #6a9084; }
-  #thumbnails .class.color9 {
-    background: #dda15b;
-    border-color: #c27c36; }
+    #thumbnails .row:first-child {
+      border-top: 1px solid #aeaeae;
+      border-bottom: 1px solid #aeaeae;
+      height: 7px; }
+    #thumbnails .row:last-child {
+      border-bottom: 1px solid #aeaeae; }
+    #thumbnails .row.prenoon {
+      border-bottom: 1px solid #666; }
+  #thumbnails .class {
+    display: block;
+    position: relative;
+    z-index: 1000;
+    /*@include border-radius(2px);*/ }
+    #thumbnails .class.color1 {
+      background: #b59696;
+      border-color: #9a7171; }
+    #thumbnails .class.color2 {
+      background: #96b596;
+      border-color: #719a71; }
+    #thumbnails .class.color3 {
+      background: #9696b5;
+      border-color: #71719a; }
+    #thumbnails .class.color4 {
+      background: #b5b495;
+      border-color: #9a8f70; }
+    #thumbnails .class.color5 {
+      background: #9aa9b5;
+      border-color: #75849a; }
+    #thumbnails .class.color6 {
+      background: #b5a0b3;
+      border-color: #9a7b8e; }
+    #thumbnails .class.color7 {
+      background: #aeb5ab;
+      border-color: #939086; }
+    #thumbnails .class.color8 {
+      background: #85b5a9;
+      border-color: #6a9084; }
+    #thumbnails .class.color9 {
+      background: #dda15b;
+      border-color: #c27c36; }
 
 /* END SCHEDULES */
 /* FOOTER */

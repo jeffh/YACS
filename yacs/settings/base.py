@@ -236,13 +236,13 @@ class BaseSettings(SettingsCore):
             # third-party apps
             'south',
             'django_extensions',
-            'robots',
             'debug_toolbar',
             # local apps
             'courses',
             'scheduler',
             'api',
             'courses_viz',
+            'jslog',
         )
 
         # A sample logging configuration. The only tangible logging

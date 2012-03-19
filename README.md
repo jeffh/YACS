@@ -35,9 +35,7 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
 ### Setup (Development)
 
 1. YACS uses a lot of dependencies. It relies on [pip][] to install them. Simply do:
-
     `pip install -r requirements/development.txt`
-
    Which will install all the dependencies YACS needs (minus the database driver).
 
 
