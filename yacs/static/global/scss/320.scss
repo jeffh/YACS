@@ -1007,7 +1007,7 @@ header {
 	}
 	.thumbnail {
         border: 1px solid #999;
-        margin: 0 5px 10px 0;
+        margin: 0 3px 5px 0;
 		float: left;
         @include border-radius(3px);
         @include box-shadow(1px 1px 10px #999);
@@ -1090,6 +1090,9 @@ header {
 			}
 		}
 	}
+    /* If you change .day width, don't forget to change .row height
+     * and thumbnail-template's data-period-height in placeholder_scheduler_list
+     */
 	.day {
 		float: left;
 		width: 15px;
