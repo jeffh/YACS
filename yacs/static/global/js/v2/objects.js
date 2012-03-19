@@ -185,6 +185,28 @@ root.Utils = {
   },
   property: function(name){
     return function(obj){ return obj[name]; };
+  },
+  iterate: function(collection, options){
+    options = _.extend({}, {
+      delay: 0.01,
+      batchSize: 1000,
+      batch: function(){},
+      complete: function(){},
+      each: function(){}
+    }, options);
+    for(var i=0, l=collection.length; i<l; i+=options.batchSize){
+      setTimeout((function(start, stop){
+        return function(){
+          for(var j=start; j<stop; j++){
+            options.each.call(collection[j], collection[j], j);
+          }
+          options.batch.call(collection, collection, start, stop);
+        };
+      })(i, Math.min(i + options.batchSize, l)), options.delay * i);
+    }
+    setTimeout(function(){
+      options.complete.call(collection, collection);
+    }, options.delay * collection.length);
   }
 }
 
@@ -1132,34 +1154,38 @@ var Selection = Class.extend({
       }
     };
 
-    var checkboxes = $(this.options.checkbox_selector).each(function(){
-      var $el = $(this);
-      var cid = parseInt($el.attr('data-cid'), 10);
-      var crns = $el.attr('data-crns');
-      if (crns && crns !== ''){
-        var count = 0;
-        var conflictedWith = null;
-        var sids = _.map(crns.split(', '), function(x){
-          return parseInt(x, 10);
-        });
-        _.each(sids, function(sid){
-          conflictedWith = self.conflictsWith(sid);
-          if (conflictedWith){
-            ++count;
-            setConflictStyle(self._getSectionElem(cid, sid), conflictedWith, false);
+    Utils.iterate($(this.options.checkbox_selector), {
+      each: function(){
+        var $el = $(this);
+        var cid = parseInt($el.attr('data-cid'), 10);
+        var crns = $el.attr('data-crns');
+        if (crns && crns !== ''){
+          var count = 0;
+          var conflictedWith = null;
+          var sids = _.map(crns.split(', '), function(x){
+            return parseInt(x, 10);
+          });
+          _.each(sids, function(sid){
+            conflictedWith = self.conflictsWith(sid);
+            if (conflictedWith){
+              ++count;
+              setConflictStyle(self._getSectionElem(cid, sid), conflictedWith, false);
+            } else {
+              removeConflictStyle(self._getSectionElem(cid, sid), false);
+            }
+          });
+          if (count === sids.length){
+            setConflictStyle(self._getCourseElem(cid), conflictedWith, true);
           } else {
-            removeConflictStyle(self._getSectionElem(cid, sid), false);
+            removeConflictStyle(self._getCourseElem(cid), true);
           }
-        });
-        if (count === sids.length){
-          setConflictStyle(self._getCourseElem(cid), conflictedWith, true);
-        } else {
-          removeConflictStyle(self._getCourseElem(cid), true);
         }
+      },
+      complete: function(){
+        if (self.options.isReadOnly)
+          $(this.options.checkbox_selector).attr('disabled', 'disabled');
       }
     });
-    if (this.options.isReadOnly)
-      checkboxes.attr('disabled', 'disabled');
   }
 });
 
@@ -1363,16 +1389,20 @@ var ScheduleRootView = Backbone.View.extend({
 
     var thumbnails = $(this.options.thumbnailsEl).html('');
     this.thumbnails = [];
-    for(var i=0, l=schedules.get('schedules').length; i<l; i++){
-      var view = new ThumbnailView({
-        selectionSchedule: schedules,
-        scheduleIndex: i,
-        scheduleView: scheduleView
-      });
-      this.thumbnails.push(view);
-      thumbnails.append(view.render().el);
-    }
-    this.thumbnails[this.options.index].selectSchedule();
+    Utils.iterate(schedules.get('schedules'), {
+      each: function(schedule, i){
+        var view = new ThumbnailView({
+          selectionSchedule: schedules,
+          scheduleIndex: i,
+          scheduleView: scheduleView
+        });
+        self.thumbnails.push(view);
+        thumbnails.append(view.render().el);
+      },
+      complete: function(){
+        self.thumbnails[self.options.index].selectSchedule();
+      }
+    });
   },
   render: function(){
     var schedules = new SelectionSchedules({
