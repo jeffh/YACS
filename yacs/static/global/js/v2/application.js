@@ -80,12 +80,14 @@ $(function(){
   var schedule = getSavedSelection();
   if (schedule){
     var selection = new Selection({
+      isReadOnly: isReadOnly,
       store: new MemoryStore(),
       autoload: false
     }).set(schedule);
     if (_.isEqual(Scheduler.selection.getRaw(), selection.getRaw())){
       $('#courses input[type=checkbox]').removeAttr('disabled');
       isReadOnly = false;
+      selection.options.isReadOnly = false;
       log(['equal!']);
       // we're equal -- don't say anything
     } else {

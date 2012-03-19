@@ -846,7 +846,8 @@ var Selection = Class.extend({
     storageKey: 'crns',
     autoload: true,
     version: 2,
-    versionKey: 'version'
+    versionKey: 'version',
+    isReadOnly: false // makes all checkboxes disabled if true
   },
   init: function(options){
     this.crns = {};
@@ -1131,7 +1132,7 @@ var Selection = Class.extend({
       }
     };
 
-    $(this.options.checkbox_selector).each(function(){
+    var checkboxes = $(this.options.checkbox_selector).each(function(){
       var $el = $(this);
       var cid = parseInt($el.attr('data-cid'), 10);
       var crns = $el.attr('data-crns');
@@ -1157,6 +1158,8 @@ var Selection = Class.extend({
         }
       }
     });
+    if (this.options.isReadOnly)
+      checkboxes.attr('disabled', 'disabled');
   }
 });
 
