@@ -134,4 +134,17 @@ $(function(){
     baseURL: $('meta[name=schedules-url]').attr('content'),
     section_ids: Scheduler.selection.getCRNs()
   }).render();
+
+  // set arrow keys to cycle between
+  $(window).bind('keydown', function(evt){
+    console.log(evt.keyCode);
+    switch(evt.keyCode){
+      case 39: // right arrow
+        Scheduler.view.nextSchedule();
+        break;
+      case 37: // left arrow
+        Scheduler.view.prevSchedule();
+        break;
+    }
+  });
 });

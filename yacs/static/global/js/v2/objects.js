@@ -1245,10 +1245,15 @@ var ThumbnailView = BaseScheduleView.extend({
       'data-sid': "" + this.scheduleIndex
     });
   },
-  selectSchedule: function(){
+  selectSchedule: function(options){
+    var opt = $.extend({
+      autohideThumbnails: true
+    }, options);
     var scheduleView = this.options.scheduleView;
     $('#schedule_thumbnail' + scheduleView.getScheduleIndex()).removeClass('selected');
-    scheduleView.setScheduleIndex(this.scheduleIndex).render().hideThumbnails();
+    scheduleView = scheduleView.setScheduleIndex(this.scheduleIndex).render();
+    if (opt.autohideThumbnails)
+      scheduleView.hideThumbnails();
     $(this.el).addClass('selected');
     return false;
   }
@@ -1309,9 +1314,21 @@ var ScheduleRootView = Backbone.View.extend({
     else
       this.options.history.replaceState({path: url}, '', url);
   },
-  selectSchedule: function(){
-    var index = parseInt($('#schedules').attr('data-start') || 0, 10);
+  selectSchedule: function(index){
+    index = (index !== undefined ?
+             index :
+             parseInt($('#schedules').attr('data-start') || 0, 10));
     this.thumbnails[index].selectSchedule();
+  },
+  nextSchedule: function(){
+    var index = this.scheduleView.getScheduleIndex() + 1;
+    if(index < this.thumbnails.length)
+      this.thumbnails[index].selectSchedule({autohideThumbnails: false});
+  },
+  prevSchedule: function(){
+    var index = this.scheduleView.getScheduleIndex() - 1;
+    if(index >= 0)
+      this.thumbnails[index].selectSchedule({autohideThumbnails: false});
   },
   _render: function(schedules){
     var self = this;
