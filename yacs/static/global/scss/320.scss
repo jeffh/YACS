@@ -249,6 +249,17 @@ header {
 
 /* LISTVIEW */
 .listview {
+    margin-top: 1em;
+
+	h2 {
+		text-align: center;
+		clear: none;
+		color: #333;
+		font-weight: 200;
+		letter-spacing: 1px;
+		padding: 0 0 5px 0;
+		text-shadow: 1px 1px 0 #fff;
+	}
 	p {
 		padding: 5px;
 	}
@@ -314,8 +325,6 @@ header {
 
 /* DEPARTMENTS */
 #departments {
-	margin-top: 1em;
-
 	.deptcode {
 		font-size: 110%;
 	}
@@ -584,15 +593,6 @@ header {
 	}
 	a:link, a:visited {
 		border: 0;
-	}
-	h2 {
-		text-align: center;
-		clear: none;
-		color: #333;
-		font-weight: 200;
-		letter-spacing: 1px;
-		padding: 0 0 5px 0;
-		text-shadow: 1px 1px 0 #fff;
 	}
 	.name {
 		padding-left: 2px;
