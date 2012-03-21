@@ -207,7 +207,23 @@ root.Utils = {
     setTimeout(function(){
       options.complete.call(collection, collection);
     }, options.delay * collection.length);
-  }
+  },
+  requiresTruncation: function(string, max){
+    return string && string.length > max;
+  },
+  truncate: function(string, max){
+    if (string.substring(0, max) === string)
+      return string;
+    return string.substring(0, max - 3) + '...';
+  },
+  reverseTruncate: function(string, max){
+    if (string.substring(max) === string)
+      return string;
+    return string.substring(max);
+  },
+  boldTopicsInclude: function(string){
+    return string.replace('Topics include', '<strong>Topics include</strong>');
+  },
 }
 
 })(jQuery);
@@ -244,20 +260,27 @@ $(document).ajaxSend(function(event, xhr, settings) {
     }
 });
 
-function activateSummaries(){
-  $('.has-summary').each(function(){
+function createSummaries(){
+  $('.summarize').each(function(){
     var $el = $(this);
-    $el.find('.short').show();
-    $el.find('.full').hide();
+    var truncationSize = 130;
+    if (Utils.requiresTruncation($el.text(), truncationSize)){
+      var summaryHTML = Utils.boldTopicsInclude(
+          Utils.truncate($el.text(), truncationSize)) + 
+          ' (<a href="" class="read-more">more</a>)';
+      $el.addClass('has-summary')
+      .data('fulltext', Utils.boldTopicsInclude($el.text()))
+      .data('summary', summaryHTML);
+      $el.html(summaryHTML);
+    }
   });
 }
 
 $(function(){
-  activateSummaries();
+  createSummaries();
   $('.read-more').live('click', function(){
-    $(this).parents('.short').fadeOut(100, function(){
-      $(this).parents('.has-summary').find('.full').fadeIn(100);
-    });
+    var $el = $(this).parents('.summarize');
+    $el.text($el.data('fulltext'));
     return false;
   });
 });
@@ -1564,7 +1587,7 @@ var CourseListView = Backbone.View.extend({
       };
       $target.append(tmpl(context));
     });
-    activateSummaries();
+    createSummaries();
     return this;
   }
 });

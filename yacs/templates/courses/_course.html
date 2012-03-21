@@ -37,19 +37,9 @@
             {% endif %}
           </span>
           {% if course.description %}
-            {% if course.description|requires_truncation:125 %}
-              <div class="description has-summary">
-                <p class="short">
-                  {{ course.description|truncatechars:125|bold_topics_include|safe }}
-                  (<a href="" class="read-more">more</a>)
-                </p>
-                <p class="full">{{ course.description|bold_topics_include|safe }}</p>
-              </div>
-            {% else %}
-            <div class="description">
-              <p class="full">{{ course.description|bold_topics_include|safe }}</p>
-            </div>
-            {% endif %}
+          <div class="description summarize">
+            {{ course.description }}
+          </div>
           {% endif %}
           <div class="kinds">
             <ul>

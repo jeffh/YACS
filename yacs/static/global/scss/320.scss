@@ -665,10 +665,8 @@ header {
       display: block;
       clear: both;
       padding-left: 5px;
+      padding-bottom: 5px;
 
-      .has-summary {
-        .full { display: none; }
-      }
       .read-more {
         display: inline;
         background: transparent;

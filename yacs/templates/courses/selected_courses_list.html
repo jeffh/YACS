@@ -73,18 +73,9 @@
             <% } %>
         </span>
         <% if (course.get('description').length) { %>
-            <% if (requires_truncation(course.get('description'), 125)) { %>
-              <div class="description has-summary">
-                <p class="short">
-                <%= bold_topics_include(truncate(course.get('description'), 125)) %>
-                (<a href="" class="read-more">more</a>)
-                </p>
-                <p class="full">
-                <%= bold_topics_include(course.get('description')) %>
-                </p>
-              </div>
-            <% } else { %>
-            <% } %>
+          <div class="description summarize">
+            <%= course.get('description') %>
+          </div>
         <% } %>
         <div class="kinds">
             <ul>
