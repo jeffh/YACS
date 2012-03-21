@@ -1,8 +1,6 @@
-from yacs.settings.base import BaseSettings
+from yacs.settings.base import settings
 
 __all__ = ['settings']
-
-settings = BaseSettings()
 
 with settings as s:
     s.DEBUG = True
