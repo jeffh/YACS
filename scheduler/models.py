@@ -16,6 +16,7 @@ class Selection(models.Model):
     """
     internal_slug = models.CharField(max_length=200, db_index=True, blank=True, default="")
     internal_section_ids = models.CommaSeparatedIntegerField(max_length=255)
+    api_cache = models.TextField(default='', blank=True)
 
     objects = managers.SelectionManager()
 
