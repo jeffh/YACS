@@ -1,5 +1,5 @@
-# YACS
-Sane Course Scheduling.
+# YACS [![Build Status](https://secure.travis-ci.org/jeffh/YACS.png?branch=master)](http://travis-ci.org/jeffh/YACS)
+Simple, Sane Course Scheduling.
 
 YACS is a web-based course schedule with an emphasis on usability.
 It is also flexible enough to work with other school course data.
