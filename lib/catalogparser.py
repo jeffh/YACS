@@ -34,7 +34,8 @@ def get_course_ids(department_page):
 def get_course_detail(course_page):
     course_page = re.sub('<br */?>', '\n', course_page)
     soup = BeautifulSoup(course_page, convertEntities=BeautifulSoup.HTML_ENTITIES)
-    title = re.search('([\w+\s]+) (\d+\w+) \- (.*)', soup.findAll('h1')[0].contents[0])
+    title_text = soup.findAll('h1 h2 h3 h4 h5 h6'.split(' '))[0].text
+    title = re.search('([\w+\s]+) (\d+\w+) \- (.*)', title_text)
     course = {
         'department': title.group(1),
         'num': title.group(2),
