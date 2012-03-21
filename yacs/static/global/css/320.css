@@ -665,7 +665,7 @@ header .alpha {
     display: block;
     clear: both;
     padding-left: 5px; }
-    #courses .description .short, #selected_courses .description .short {
+    #courses .description .has-summary .full, #selected_courses .description .has-summary .full {
       display: none; }
     #courses .description .read-more, #selected_courses .description .read-more {
       display: inline;

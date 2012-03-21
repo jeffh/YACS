@@ -666,10 +666,9 @@ header {
       clear: both;
       padding-left: 5px;
 
-      .short {
-        display: none;
+      .has-summary {
+        .full { display: none; }
       }
-      .full {}
       .read-more {
         display: inline;
         background: transparent;
