@@ -73,6 +73,7 @@ Currently the project is laid out as follows:
 - **api**: API application. Where all  API related code is. Relies on courses and scheduler app.
 - **courses**: The courses application. Contains the schema and manages the storage of course data. Also contains course-data-displaying views.
 - **courses_viz**: An application that stores visualization of course data. (Part of Introduction to Visualization class)
+- **jslog**: An application that can record basic JS data for debugging.
 - **lib**: Contains library code that can, be potentially, separated into an independent project. To enforce this separability, this folder is added to the sys.path for absolute imports
 - **scheduler**: This app handles course scheduling. Relies on the courses app for all the course data.
 - **yacs**: Project files. Contains settings, root urls, templates, static files, etc.
