@@ -244,6 +244,7 @@ def schedules(request, slug=None, version=None):
     periods = set(p for s in sections for p in s.get_periods())
     timerange, dow_used = period_stats(periods)
 
+    # note: if you change this, caches will have to be updated somehow
     context = {
         'time_range': timerange,
         'schedules': schedules,
