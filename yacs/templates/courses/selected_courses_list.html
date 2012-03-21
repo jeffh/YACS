@@ -58,33 +58,49 @@
             <span class="credits">
                 <%- course.getCreditsDisplay() %>
             </span>
-            <span class="seats-left">
-                <% if (course.getSectionIDs().length > 0){ %>
-                    <% if (course.getSeatsLeft() <= 0) { %>
-                        No seats left
-                    <% } else if (course.getSeatsLeft() < 30) { %>
-                        <%- course.getSeatsLeft() %> seat<%- course.getSeatsLeft() === 1 ? '' : 's' %> left
-                    <% } %>
-                <% } else { %>
-                    No Sections
-                <% } %>
-            </span>
-            <div class="kinds">
-                <ul>
-                    <% for(var kinds=course.getKinds(), i=0, l=kinds.length; i<l; i++){ %>
-                        <li><%- kinds[i] %></li>
-                    <% } %>
-                </ul>
-            </div>
-            <div class="notes">
-                <ul>
-                    <% for(var notes=course.getNotes(), i=0, l=notes.length; i<l; i++){ %>
-                        <li><%- notes[i] %><li>
-                    <% } %>
-                </ul>
-            </div>
         </span>
     </label>
+    <span class="secondary">
+        <span class="seats-left">
+            <% if (course.getSectionIDs().length > 0){ %>
+                <% if (course.getSeatsLeft() <= 0) { %>
+                    No seats left
+                <% } else if (course.getSeatsLeft() < 30) { %>
+                    <%- course.getSeatsLeft() %> seat<%- course.getSeatsLeft() === 1 ? '' : 's' %> left
+                <% } %>
+            <% } else { %>
+                No Sections
+            <% } %>
+        </span>
+        <% if (course.get('description').length) { %>
+            <% if (requires_truncation(course.get('description'), 125)) { %>
+              <div class="description has-summary">
+                <p class="short">
+                <%= bold_topics_include(truncate(course.get('description'), 125)) %>
+                (<a href="" class="read-more">more</a>)
+                </p>
+                <p class="full">
+                <%= bold_topics_include(course.get('description')) %>
+                </p>
+              </div>
+            <% } else { %>
+            <% } %>
+        <% } %>
+        <div class="kinds">
+            <ul>
+                <% for(var kinds=course.getKinds(), i=0, l=kinds.length; i<l; i++){ %>
+                    <li><%- kinds[i] %></li>
+                <% } %>
+            </ul>
+        </div>
+        <div class="notes">
+            <ul>
+                <% for(var notes=course.getNotes(), i=0, l=notes.length; i<l; i++){ %>
+                    <li><%- notes[i] %><li>
+                <% } %>
+            </ul>
+        </div>
+    </span>
     <% if (alwaysShowSections){ %>
     <span class="sections">
         <% if(course.getSections().length){ %>

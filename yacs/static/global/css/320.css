@@ -540,9 +540,6 @@ header .alpha {
   		.seats-left {
   			color: #555;
   		}
-  		.code {
-  			color: #544;
-  		}
   	}
   }
   */ }
@@ -664,6 +661,22 @@ header .alpha {
     margin-top: -2px;
     padding-left: 13px;
     text-shadow: 1px 1px 0 #fff; }
+  #courses .description, #selected_courses .description {
+    display: block;
+    clear: both;
+    padding-left: 5px; }
+    #courses .description .short, #selected_courses .description .short {
+      display: none; }
+    #courses .description .read-more, #selected_courses .description .read-more {
+      display: inline;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      text-decoration: underline; }
+      #courses .description .read-more:hover, #selected_courses .description .read-more:hover {
+        background: transparent;
+        text-decoration: underline; }
   #courses .no-sections a:link, #courses .no-sections a:visited, #courses .no-sections .padded, #selected_courses .no-sections a:link, #selected_courses .no-sections a:visited, #selected_courses .no-sections .padded {
     color: #555555; }
     #courses .no-sections a:link .name, #courses .no-sections a:visited .name, #courses .no-sections .padded .name, #selected_courses .no-sections a:link .name, #selected_courses .no-sections a:visited .name, #selected_courses .no-sections .padded .name {
@@ -672,8 +685,6 @@ header .alpha {
       color: #555555; }
     #courses .no-sections a:link .seats-left, #courses .no-sections a:visited .seats-left, #courses .no-sections .padded .seats-left, #selected_courses .no-sections a:link .seats-left, #selected_courses .no-sections a:visited .seats-left, #selected_courses .no-sections .padded .seats-left {
       color: #555; }
-    #courses .no-sections a:link .code, #courses .no-sections a:visited .code, #courses .no-sections .padded .code, #selected_courses .no-sections a:link .code, #selected_courses .no-sections a:visited .code, #selected_courses .no-sections .padded .code {
-      color: #544; }
   #courses .no-sections .secondary, #selected_courses .no-sections .secondary {
     padding-left: 10px; }
   #courses a:link:hover, #courses a:visited:hover, #selected_courses a:link:hover, #selected_courses a:visited:hover {

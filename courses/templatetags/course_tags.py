@@ -12,6 +12,21 @@ def remove_zero_prefix(timestr):
         return timestr[1:]
     return timestr
 
+@register.filter
+def bold_topics_include(string):
+    return string.replace('Topics include', '<strong>Topics include</strong>')
+
+@register.filter
+def requires_truncation(string, summary_size):
+    tstr = string.lower().strip()
+    return len(tstr[:summary_size].strip()) != len(tstr.strip())
+
+@register.filter
+def reverse_truncatechars(string, start):
+    """Inverse of truncate chars. Instead of the first x characters,
+    excludes the first nth characters.
+    """
+    return string[start:]
 
 @register.filter
 def toJSON(obj):

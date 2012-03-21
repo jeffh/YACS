@@ -244,6 +244,24 @@ $(document).ajaxSend(function(event, xhr, settings) {
     }
 });
 
+function activateSummaries(){
+  $('.has-summary').each(function(){
+    var $el = $(this);
+    $el.find('.short').show();
+    $el.find('.full').hide();
+  });
+}
+
+$(function(){
+  activateSummaries();
+  $('.read-more').live('click', function(){
+    $(this).parents('.short').fadeOut(100, function(){
+      $(this).parents('.has-summary').find('.full').fadeIn(100);
+    });
+    return false;
+  });
+});
+
 //////////////////////////////// Extensions ////////////////////////////////
 // yes, not portable. But this is an app. I get to do whatever I want!
 $.extend(Function.prototype, {
@@ -1521,6 +1539,17 @@ var CourseListView = Backbone.View.extend({
         isSelectedCRN: function(crn){
           return self.options.selected.containsCRN(crn);
         },
+        requires_truncation: function(string, max){
+          return !string || string.length > max;
+        },
+        truncate: function(string, max){
+          if (string.substring(0, max) === string)
+            return string;
+          return string.substring(0, max - 3) + '...';
+        },
+        bold_topics_include: function(string){
+          return string.replace('Topics include', '<strong>Topics include</strong>');
+        },
         displayPeriod: function(p){
           var fmt = '{{ 0 }}-{{ 1 }}',
             start = FunctionsContext.time_parts(p.get('start')),
@@ -1535,6 +1564,7 @@ var CourseListView = Backbone.View.extend({
       };
       $target.append(tmpl(context));
     });
+    activateSummaries();
     return this;
   }
 });

@@ -15,44 +15,61 @@
         {% endif %}
         <img src="{{ STATIC_URL }}img/tinyspinner.gif" class="tinyspinner" alt="" style="display: none" />
         <label class="padded" for="selected_course_{{ course.id }}">
-            <span class="name">{{ course.name }}</span>
-            <span class="secondary">
-                <span class="code">
-                    <span class="dept">{{ course.department.code }}</span>
-                    <span class="number">{{ course.number }}</span>
-                </span>
-                <span class="credits">
-                    {{ course.credits_display }}
-                </span>
-                <span class="seats-left">
-                    {% if course.section_ids|length > 0 %}
-                        {% if seats_left_for_course < 30 %}
-                        {{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
-                        {% endif %}
-                    {% else %}
-                        No Sections
-                    {% endif %}
-                </span>
-                <div class="kinds">
-                    <ul>
-                        {% for kind in course.kinds %}
-                        <li>
-                            {{ kind }}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div class="notes">
-                    <ul>
-                        {% for note in course.notes %}
-                        <li>
-                            {{ note }}
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+          <span class="name">{{ course.name }}</span>
+          <div class="secondary">
+            <span class="code">
+              <span class="dept">{{ course.department.code }}</span>
+              <span class="number">{{ course.number }}</span>
             </span>
+            <span class="credits">
+              {{ course.credits_display }}
+            </span>
+          </div>
         </label>
+        <span class="secondary">
+          <span class="seats-left">
+            {% if course.section_ids|length > 0 %}
+            {% if seats_left_for_course < 30 %}
+            {{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
+            {% endif %}
+            {% else %}
+            No Sections
+            {% endif %}
+          </span>
+          {% if course.description %}
+            {% if course.description|requires_truncation:125 %}
+              <div class="description has-summary">
+                <p class="short">
+                  {{ course.description|truncatechars:125|bold_topics_include|safe }}
+                  (<a href="" class="read-more">more</a>)
+                </p>
+                <p class="full">{{ course.description|bold_topics_include|safe }}</p>
+              </div>
+            {% else %}
+            <div class="description">
+              <p class="full">{{ course.description|bold_topics_include|safe }}</p>
+            </div>
+            {% endif %}
+          {% endif %}
+          <div class="kinds">
+            <ul>
+              {% for kind in course.kinds %}
+              <li>
+              {{ kind }}
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div class="notes">
+            <ul>
+              {% for note in course.notes %}
+              <li>
+              {{ note }}
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </span>
         {% if always_show_sections and sections %}
         <span class="sections">
           <ul>
