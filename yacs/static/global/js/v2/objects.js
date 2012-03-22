@@ -1438,10 +1438,9 @@ var ScheduleRootView = Backbone.View.extend({
           scheduleView: scheduleView
         });
         self.thumbnails.push(view);
+        if (i === self.options.index)
+          view.selectSchedule();
         thumbnails.append(view.render().el);
-      },
-      complete: function(){
-        self.thumbnails[self.options.index].selectSchedule();
       }
     });
   },
