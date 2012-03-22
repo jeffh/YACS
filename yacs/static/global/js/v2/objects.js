@@ -194,7 +194,11 @@ root.Utils = {
       complete: function(){},
       each: function(){}
     }, options);
+    var state = {isDone: false, hasAborted: false, index: 0};
     for(var i=0, l=collection.length; i<l; i+=options.batchSize){
+      state.index = i;
+      if(state.hasAborted) break;
+
       setTimeout((function(start, stop){
         return function(){
           for(var j=start; j<stop; j++){
@@ -205,8 +209,13 @@ root.Utils = {
       })(i, Math.min(i + options.batchSize, l)), options.delay * i);
     }
     setTimeout(function(){
+      state.isDone = true;
       options.complete.call(collection, collection);
     }, options.delay * collection.length);
+
+    return _.extend(state, {
+      abort: function(){ state.hasAborted = true; }
+    });
   },
   requiresTruncation: function(string, max){
     return string && string.length > max;
@@ -917,9 +926,11 @@ var Selection = Class.extend({
     this.conflicts = this._bindToConflictList(new SectionConflictList());
     this.courses = new CourseList();
     this.options = $.extend({}, this.options, options);
+    this.isDestroyed = false;
     var self = this;
     this.courses.fetch({
       success: function(){
+        if(self.isDestroyed) return;
         // lower mem usage by deleting attributes
         var removeAttrs = 'grade_type description'.split(' ');
         self.courses.each(function(course){
@@ -933,6 +944,11 @@ var Selection = Class.extend({
     if(this.options.autoload){
       this.load();
     }
+  },
+  destroy: function(){
+    if (this._refreshState && !this._refreshState.isDone)
+      this._refreshState.abort();
+    this.isDestroyed = true;
   },
   _bindToConflictList: function(sectionConflictList){
     var self = this;
@@ -1135,6 +1151,7 @@ var Selection = Class.extend({
     return $('#' + this.options.section_id_format.format({cid: course_id, crn: crn}));
   },
   refresh: function(){
+    if(this.isDestroyed) return;
     // update DOM to reflect selection
     // this can be a bottleneck if there's enough elements
     $(this.options.checkbox_selector).checked(false);
@@ -1151,6 +1168,7 @@ var Selection = Class.extend({
     self.refreshConflicts();
   },
   refreshConflicts: function(){
+    if(this.isDestroyed) return;
     // create width
     var self = this;
     var duration = 100;
@@ -1195,8 +1213,15 @@ var Selection = Class.extend({
       }
     };
 
-    Utils.iterate($(this.options.checkbox_selector), {
+    if (this._refreshState && !this._refreshState.isDone)
+      this._refreshState.abort();
+
+    if (this.options.isReadOnly === "yes")
+      console.trace();
+
+    this._refreshState = Utils.iterate($(this.options.checkbox_selector), {
       each: function(){
+        if(self.isDestroyed) return;
         var $el = $(this);
         var cid = parseInt($el.attr('data-cid'), 10);
         var crns = $el.attr('data-crns');

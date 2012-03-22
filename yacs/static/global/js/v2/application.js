@@ -77,6 +77,8 @@ $(function(){
   // load alternative schedule
   var schedule = getSavedSelection();
   if (schedule){
+    // prevents async binded events from doing anything
+    Scheduler.selection.destroy();
     var selection = new Selection({
       isReadOnly: isReadOnly,
       store: new MemoryStore(),
@@ -153,7 +155,6 @@ $(function(){
 
   // set arrow keys to cycle between
   $(window).bind('keydown', function(evt){
-    console.log(evt.keyCode);
     switch(evt.keyCode){
       case 39: // right arrow
         Scheduler.view.nextSchedule();
