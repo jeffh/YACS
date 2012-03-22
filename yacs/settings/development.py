@@ -20,8 +20,8 @@ with settings as s:
     s.DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'yacs',
-            'USER': 'padawanyacs',
+            'NAME': '',
+            'USER': '',
             'PASSWORD': 'yacs2012',
             'HOST': 'localhost',
             'PORT': '',
