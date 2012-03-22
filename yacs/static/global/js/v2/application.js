@@ -25,6 +25,9 @@ $(function(){
       cache: true,
       updateElement: '#replacable-with-search',
       additionalGET: {partial: 1},
+      complete: function(){
+        createSummaries();
+      },
       triggerDelay: 300,
       activityResponder: new ActivityResponder({
         show: function(){
@@ -71,11 +74,6 @@ $(function(){
 
   refresh();
 
-  // must be on selected courses page
-  if(!$('#selected_courses').length){
-    return;
-  }
-
   // load alternative schedule
   var schedule = getSavedSelection();
   if (schedule){
@@ -106,6 +104,11 @@ $(function(){
         $(this).unbind();
       });
     }
+  }
+
+  // must be on selected courses page
+  if(!$('#selected_courses').length){
+    return;
   }
 
   Scheduler.courseListView = new CourseListView({

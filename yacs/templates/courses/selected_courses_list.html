@@ -20,7 +20,7 @@
 
 {% block content %}
 {% if selection %}
-{% include 'scheduler/_saved_selection_notification.html' with selection=selection sem_year=sem_year sem_month=sem_month %}
+{% include 'scheduler/_saved_selection_notification.html' with type='selection' sem_year=sem_year sem_month=sem_month %}
 {% endif %}
 
 <div id="courses" class="listview"{% if selection %} data-readonly="yes"{% endif %}>
