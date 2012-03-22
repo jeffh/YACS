@@ -1224,7 +1224,7 @@ var Selection = Class.extend({
       },
       complete: function(){
         if (self.options.isReadOnly)
-          $(this.options.checkbox_selector).attr('disabled', 'disabled');
+          $(self.options.checkbox_selector).attr('disabled', 'disabled');
       }
     });
   }

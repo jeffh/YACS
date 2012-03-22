@@ -219,6 +219,7 @@ def schedules(request, slug=None, version=None):
     else:
         section_ids = int_list(request.GET.getlist('section_id'))
 
+    created = False
     if not selection:
         selection, created = Selection.objects.get_or_create(
             section_ids=section_ids)
