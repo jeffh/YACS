@@ -1,10 +1,8 @@
-from yacs.settings.base import BaseSettings
+from yacs.settings.base import settings
 import os
 import json
 
 __all__ = ['settings']
-
-settings = BaseSettings()
 
 with open(os.environ.get('YACS_SETTINGS', settings.relative_path('settings', 'production.json')), 'r') as handle:
     data = json.loads(handle.read())

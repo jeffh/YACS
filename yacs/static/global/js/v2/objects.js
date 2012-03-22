@@ -207,7 +207,23 @@ root.Utils = {
     setTimeout(function(){
       options.complete.call(collection, collection);
     }, options.delay * collection.length);
-  }
+  },
+  requiresTruncation: function(string, max){
+    return string && string.length > max;
+  },
+  truncate: function(string, max){
+    if (string.substring(0, max) === string)
+      return string;
+    return string.substring(0, max - 3) + '...';
+  },
+  reverseTruncate: function(string, max){
+    if (string.substring(max) === string)
+      return string;
+    return string.substring(max);
+  },
+  boldTopicsInclude: function(string){
+    return string.replace('Topics include', '<strong>Topics include</strong>');
+  },
 }
 
 })(jQuery);
@@ -242,6 +258,31 @@ $(document).ajaxSend(function(event, xhr, settings) {
     if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
         xhr.setRequestHeader("X-CSRFToken", Utils.CSRFToken());
     }
+});
+
+function createSummaries(){
+  $('.summarize').each(function(){
+    var $el = $(this);
+    var truncationSize = 130;
+    if (Utils.requiresTruncation($el.text(), truncationSize)){
+      var summaryHTML = Utils.boldTopicsInclude(
+          Utils.truncate($el.text(), truncationSize)) + 
+          ' (<a href="" class="read-more">more</a>)';
+      $el.addClass('has-summary')
+      .data('fulltext', Utils.boldTopicsInclude($el.text()))
+      .data('summary', summaryHTML);
+      $el.html(summaryHTML);
+    }
+  });
+}
+
+$(function(){
+  createSummaries();
+  $('.read-more').live('click', function(){
+    var $el = $(this).parents('.summarize');
+    $el.text($el.data('fulltext'));
+    return false;
+  });
 });
 
 //////////////////////////////// Extensions ////////////////////////////////
@@ -1521,6 +1562,17 @@ var CourseListView = Backbone.View.extend({
         isSelectedCRN: function(crn){
           return self.options.selected.containsCRN(crn);
         },
+        requires_truncation: function(string, max){
+          return !string || string.length > max;
+        },
+        truncate: function(string, max){
+          if (string.substring(0, max) === string)
+            return string;
+          return string.substring(0, max - 3) + '...';
+        },
+        bold_topics_include: function(string){
+          return string.replace('Topics include', '<strong>Topics include</strong>');
+        },
         displayPeriod: function(p){
           var fmt = '{{ 0 }}-{{ 1 }}',
             start = FunctionsContext.time_parts(p.get('start')),
@@ -1535,6 +1587,7 @@ var CourseListView = Backbone.View.extend({
       };
       $target.append(tmpl(context));
     });
+    createSummaries();
     return this;
   }
 });

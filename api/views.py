@@ -1,6 +1,7 @@
 import mimetypes
 import plistlib
 import xmlrpclib
+import json
 
 from django.views.generic import ListView, DetailView
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseServerError
@@ -232,27 +233,36 @@ def schedules(request, slug=None, version=None):
     if request.GET.get('check'):
         return { 'context': has_schedule(selected_courses, conflict_cache) }
 
+    # check the cache
+    if not created and selection.api_cache:
+        print selection.api_cache
+        return { 'context': json.loads(selection.api_cache) }
+
     schedules = compute_schedules(selected_courses, conflict_cache)
     print schedules
 
     periods = set(p for s in sections for p in s.get_periods())
     timerange, dow_used = period_stats(periods)
 
-    return {
-        'context': {
-            'time_range': timerange,
-            'schedules': schedules,
-            'course_ids': list(set(
-                c.id for c in selected_courses.keys())),
-            'section_ids': list(set(
-                s.id
-                    for sections in selected_courses.values()
-                    for s in sections
-            )),
-            'days_of_the_week': DAYS,
-            'id': selection.slug
-        }
+    # note: if you change this, caches will have to be updated somehow
+    context = {
+        'time_range': timerange,
+        'schedules': schedules,
+        'course_ids': list(set(
+            c.id for c in selected_courses.keys())),
+        'section_ids': list(set(
+            s.id
+                for sections in selected_courses.values()
+                for s in sections
+        )),
+        'days_of_the_week': list(DAYS),
+        'id': selection.slug
     }
+
+    selection.api_cache = json.dumps(context)
+    selection.save()
+
+    return { 'context': context }
 
 ###########################################################################
 

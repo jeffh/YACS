@@ -314,6 +314,7 @@ def import_catalog(a=False):
                 c.description = catalog[key]['description']
             c.name = catalog[key]['title']
             c.save()
+    # uses >1GB of ram - currently unacceptable
     #add_cross_listing()
 
 def add_cross_listing():

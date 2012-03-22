@@ -249,6 +249,17 @@ header {
 
 /* LISTVIEW */
 .listview {
+    margin-top: 1em;
+
+	h2 {
+		text-align: center;
+		clear: none;
+		color: #333;
+		font-weight: 200;
+		letter-spacing: 1px;
+		padding: 0 0 5px 0;
+		text-shadow: 1px 1px 0 #fff;
+	}
 	p {
 		padding: 5px;
 	}
@@ -314,8 +325,6 @@ header {
 
 /* DEPARTMENTS */
 #departments {
-	margin-top: 1em;
-
 	.deptcode {
 		font-size: 110%;
 	}
@@ -585,15 +594,6 @@ header {
 	a:link, a:visited {
 		border: 0;
 	}
-	h2 {
-		text-align: center;
-		clear: none;
-		color: #333;
-		font-weight: 200;
-		letter-spacing: 1px;
-		padding: 0 0 5px 0;
-		text-shadow: 1px 1px 0 #fff;
-	}
 	.name {
 		padding-left: 2px;
 		width: 90%;
@@ -658,12 +658,29 @@ header {
 			.seats-left {
 				color: #555;
 			}
-			.code {
-				color: #544;
-			}
 		}
 	}
 	*/
+    .description {
+      display: block;
+      clear: both;
+      padding-left: 5px;
+      padding-bottom: 5px;
+
+      .read-more {
+        display: inline;
+        background: transparent;
+        border: 0;
+        padding: 0;
+        margin: 0;
+        text-decoration: underline;
+
+        &:hover {
+          background: transparent;
+          text-decoration: underline;
+        }
+      }
+    }
 	.no-sections {
 		$the-color: #555;
 		a:link, a:visited, .padded {
@@ -676,9 +693,6 @@ header {
 			}
 			.seats-left {
 				color: #555;
-			}
-			.code {
-				color: #544;
 			}
 		}
         .secondary {

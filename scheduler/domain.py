@@ -62,6 +62,6 @@ def period_stats(periods):
         dow_used = dow_used.union(period.days_of_week)
 
     timerange = range(min_time.hour -1 , max_time.hour + 2)
-    return timerange, sorted_daysofweek(dow_used)
+    return list(timerange), sorted_daysofweek(dow_used)
 
 
