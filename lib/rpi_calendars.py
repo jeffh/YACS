@@ -3,6 +3,7 @@ import urllib2
 import json
 import re
 
+import pytz
 from dateutil.parser import parse as parse_datetime
 
 
@@ -17,8 +18,8 @@ class Event(object):
         return cls(
             obj['summary'],
             obj['guid'],
-            parse_datetime(obj['start']['utcdate']),
-            parse_datetime(obj['end']['utcdate']),
+            parse_datetime(obj['start']['utcdate']).replace(tzinfo=pytz.timezone("America/New_York")).astimezone(pytz.utc),
+            parse_datetime(obj['end']['utcdate']).replace(tzinfo=pytz.timezone("America/New_York")).astimezone(pytz.utc),
             obj['start']['allday'] == 'true'
         )
 

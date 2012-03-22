@@ -3,7 +3,6 @@
   function toggleDescription(e)
   {
     description = e.parentNode.getElementsByClassName("description")[0];
-    alert(description.style.display);
     if (description.style.display == "inline")
       description.style.display = "none";
     else
@@ -18,18 +17,16 @@
 <style>
   span.description { display: none }
 </style>
-{% spaceless %}
 {# requires context of: selected_courses, course, sem_year, sem_month #}
 {# optional context of: always_show_sections=False #}
 {% load course_tags %}
 
-{% with sections=course.sections.all %}
-  {% with seats_left_for_course=sections|seats_left %}
-    <li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}{% if course.section_ids|length < 1 %} no-sections{% endif %}">
-        {% if course.section_ids|length > 0 %}
+{% with seats_left_for_course=course.all_sections|seats_left %}
+    <li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}{% if course.crns|length < 1 %} no-sections{% endif %}" >
+        {% if course.crns|length > 0 %}
         <input type="checkbox" id="selected_course_{{ course.id }}" name="course_{{ course.id }}"
         {% if course in selected_courses %} checked="checked" {% endif %}
-        data-cid="{{ course.id }}" data-crns="{{ course.section_ids|join }}" data-crns-full="{{ course.full_section_ids|join }}" />
+        data-cid="{{ course.id }}" data-crns="{{ course.crns|join }}" data-crns-full="{{ course.full_crns|join }}" />
         {% else %}
         <p style="float:left; width: 15px; height: 10px; margin: 0; padding: 0;"></p>
         {% endif %}
@@ -45,7 +42,7 @@
                     {{ course.credits_display }}
                 </span>
                 <span class="seats-left">
-                    {% if course.section_ids|length > 0 %}
+                    {% if course.crns|length > 0 %}
                         {% if seats_left_for_course < 30 %}
                         {{ seats_left_for_course }} seat{{ seats_left_for_course|pluralize }} left
                         {% endif %}
@@ -75,60 +72,6 @@
           </label>
         <span class="description">
           {{ course.description }}
-        </label>
-        {% if always_show_sections and sections %}
-        <span class="sections">
-          <ul>
-            {% for section in sections %}
-            <li class="section{% if section.is_full %} full{% endif %}">
-            <input type="checkbox" id="selected_course_{{ course.id }}_{{ section.id }}" name="selected_course_{{ course.id }}_{{ section.id }}"{% if section.id in selected_section_ids %} checked="checked"{% endif %} data-cid="{{ course.id }}" data-crn="{{ section.id }}" />
-            <label for="selected_course_{{ course.id }}_{{ section.id }}">
-              <span class="section-number">
-                Section <span class="number">{{ section.number }}</span>
-              </span>
-              {% comment %}
-              (<span class="crn">{{ section.crn }}</span>) -
-              {% endcomment %}
-              {% if not section.is_full %}
-              <span class="section-seats-left">
-                <span class="number">{{ section.seats_left }}</span> seat{{ section.seats_left|pluralize }} left
-              </span>
-              {% else %}
-              <span class="section-seats-left none">
-                No seats left
-              </span>
-              {% endif %}
-              <div class="instructors">
-                <ul>
-                  {% for instructor in section.instructors %}
-                  <li>{{ instructor }}</li>
-                  {% endfor %}
-                </ul>
-              </div>
-            </label>
-            <ul class="days">
-              {% with times=section.get_periods|period_dow_buckets %}
-                {% for dow in days_of_the_week %}
-                  {% with periods=times|get:dow %}
-                  <li class="item {% if periods %}selected{% else %}empty{% endif %}">
-                  <span class="short">{{ dow|dow_short }}</span>
-                  <span class="long">{{ dow }}</span>
-                  <ul class="times">
-                    {% for period in periods %}
-                    <li>{{ period|display_period }}</li>
-                    {% endfor %}
-                  </ul>
-                  </li>
-                  {% endwith %}
-                {% endfor %}
-              {% endwith %}
-            </ul>
-            </li>
-            {% endfor %}
-          </ul>
         </span>
-        {% endwith %}
     </li>
-  {% endwith %}
 {% endwith %}
-{% endspaceless %}

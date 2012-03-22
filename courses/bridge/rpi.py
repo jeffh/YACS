@@ -9,7 +9,10 @@ import sys
 import datetime
 import rpi_calendars
 from contextlib import closing
+
 from icalendar import Calendar, Event
+import pytz
+
 from django.http import HttpResponse
 
 from courses.models import (Semester, Course, Department, Section,
@@ -330,12 +333,12 @@ def add_cross_listing():
 def export_schedule(crns):
     weekday_offset = {'Sunday':6, 'Monday':0, 'Tuesday':1, 'Wednesday':2, 'Thursday':3, 'Friday':4, 'Saturday':5}
     calendar = Calendar()
-    calendar.add('prodid', '-//Course Schedule//EN')
+    calendar.add('prodid', '-//YACS Course Schedule//EN')
     calendar.add('version', '2.0')
     sections = Section.objects.filter(crn__in=crns).prefetch_related('periods', 'section_times', 'section_times__period', 'course', 'semester')
-    semester_start = datetime.datetime(sections[0].semester.year, sections[0].semester.month, 1)
+    semester_start = datetime.datetime(sections[0].semester.year, sections[0].semester.month, 1, 0, tzinfo=pytz.timezone("America/New_York")).astimezone(pytz.utc)
     found = False
-    current = datetime.datetime.now()
+    current = datetime.datetime.utcnow()
     semester_end = semester_start + datetime.timedelta(150)
     events = list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url_by_range(str(semester_start.date()).replace('-',''), str(current.date()).replace('-','')))))
     events.extend(list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url()))))
@@ -347,7 +350,7 @@ def export_schedule(crns):
             semester_start = e.start
             found = True
         if re.search(".*(no classes).*", e.name.lower()) != None and found:
-            days_off.append(e.start.date())
+            days_off.append([e.start.date(),])
         if re.search(".*(spring break)|(thanksgiving).*", e.name.lower())!= None and found:
             break_start = e.start
         if re.search(".*(classes resume).*", e.name.lower())!= None and break_start != None:
@@ -357,7 +360,7 @@ def export_schedule(crns):
             break
     length = break_end - break_start
     for i in range(length.days):
-        days_off.append((break_start+datetime.timedelta(i)).date())
+        days_off.append([(break_start+datetime.timedelta(i)).date(),])
     for s in sections:
         for p in s.periods.all():
             event = Event()
@@ -366,8 +369,8 @@ def export_schedule(crns):
                 offset = 7 + offset
             begin = semester_start + datetime.timedelta(offset)
             event.add('summary', '%s - %s (%s)' % (s.course.code, s.course.name, s.crn))
-            event.add('dtstart', datetime.datetime(begin.year, begin.month, begin.day, p.start.hour, p.start.minute))
-            event.add('dtend', datetime.datetime(begin.year, begin.month, begin.day, p.end.hour, p.end.minute))
+            event.add('dtstart', datetime.datetime(begin.year, begin.month, begin.day, p.start.hour, p.start.minute, tzinfo=pytz.timezone("America/New_York")).astimezone(pytz.utc))
+            event.add('dtend', datetime.datetime(begin.year, begin.month, begin.day, p.end.hour, p.end.minute, tzinfo=pytz.timezone("America/New_York")).astimezone(pytz.utc))
             days = []
             for d in p.days_of_week:
                 days.append(d[:2])
@@ -375,8 +378,9 @@ def export_schedule(crns):
                 freq='weekly',
                 interval=1,
                 byday=days,
-                until=datetime.datetime(semester_end.year, semester_end.month, semester_end.day, p.end.hour, p.end.minute)))
-            event.add('exdate', [days_off,])
+                until=datetime.datetime(semester_end.year, semester_end.month, semester_end.day, p.end.hour, p.end.minute, tzinfo=pytz.timezone("America/New_York")).astimezone(pytz.utc)))
+            event.add('exdate', days_off)
             calendar.add_component(event)
-    output = calendar.to_ical()
-    return HttpResponse(output.replace("EXDATE", "EXDATE;VALUE=DATE"), content_type="ics")
+    output = calendar.to_ical().replace("EXDATE", "EXDATE;VALUE=DATE")
+    print output
+    return output

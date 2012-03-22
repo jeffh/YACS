@@ -338,7 +338,7 @@ class BaseSettings(SettingsCore):
         )
 
         settings.DEBUG_TOOLBAR_CONFIG = {
-            'INTERCEPT_REDIRECTS': False,
+            'INTERCEPT_REDIRECTS': True,
             'SHOW_TOOLBAR_CALLBACK': debug_toolbar_callback,
             'HIDE_DJANGO_SQL': False,
         }

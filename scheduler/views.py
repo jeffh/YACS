@@ -343,39 +343,8 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
 ## TODO -- implement me
 
 def icalendar(request, year, month):
-    "Exports a given calendar into ics format."
-    # TODO: gather all courses for schedule
-    cal = Calendar()
-    cal.add('prodid', ICAL_PRODID)
-    cal.add('version', '2.0') # ical spec version
-
-    # TODO: define instead of using placeholders
-    sections = None # placeholder
-    for section in sections:
-        periods = None # placeholder
-        for period in periods:
-            event = Event()
-            event.add('summary', '%s - %s (%s)' % (section.course.code, section.course.name, section.crn))
-
-            # datetime of the first event occurrence
-            event.add('dtstart', datetime.now())
-            event.add('dtend', datetime.now())
-
-            # recurrence rule
-            event.add('rrule', dict(
-                freq='weekly',
-                interval=1, # every week
-                byday='mo tu we th fr'.spit(' '),
-                until=datetime.now()
-            ))
-            # dates to exclude
-            #event.add('exdate', (datetime.now(),))
-
-            event.add('location', section.section_period.location)
-            event.add('uid', '%s_%s_%s' % (year, month, section.crn))
-
-
-            cal.add_component(event)
-    response = HttpResponse(cal.as_string())
+    from courses.bridge.rpi import export_schedule
+    requested_crns = request.GET.getlist('crn')
+    response = HttpResponse(export_schedule(requested_crns))
     response['Content-Type'] = 'text/calendar'
     return response
