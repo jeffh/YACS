@@ -11,7 +11,7 @@ function log(){
   window.log = function(){
     window.log.history.push(_.toArray(arguments));
     console.log.apply(console, arguments);
-  }
+  };
   window.log.history = window.log.history || [];
 
   var toString = function(obj){
