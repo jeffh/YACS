@@ -12,6 +12,17 @@ function getSavedSelection(){
   return obj;
 }
 
+// hidden feature: clear the user's selection
+$(function(){
+  var params = location.search;
+  if(params.contains('?clear') || params.contains('&clear')){
+    if (confirm('Are you sure you want to clear your selection?')){
+      Scheduler.selection.clear();
+      location.href = '.';
+    }
+  }
+});
+
 ///////////////////////////////////////////////////
 // Hooks
 
