@@ -122,7 +122,7 @@ WF_deploy: override PRODUCTION_ROOT=~/webapps/yacs
 WF_deploy: override PYTHON_VERSION=2.7
 WF_deploy: override PRODUCTION_SETTINGS=yacs/settings/staging.json
 WF_deploy: \
-	PIP_ARGS+=--install-option="--install-scripts=$(PRODUCTION_FULLPATH)/bin/../" \
+	PIP_ARGS+=--install-option="--install-scripts=$(PRODUCTION_FULLPATH)/bin/" \
 	--install-option="--install-lib=$(PRODUCTION_FULLPATH)/lib/python2.7"
 
 WF_deploy deploy: backup_current create_tarball upload_and_extract_tarball remove_tarball
