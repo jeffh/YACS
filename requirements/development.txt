@@ -1,5 +1,5 @@
 BeautifulSoup==3.2.1
-http://www.djangoproject.com/download/1.4-rc-2/tarball/#egg=django
+Django==1.4
 South==0.7.3
 coverage==3.5.1
 django-debug-toolbar==0.9.4
