@@ -1187,7 +1187,8 @@ var Selection = Class.extend({
         courses = courses.unique();
         var $text = $('<span class="conflicts_with_course">Conflicts with '
                       + Utils.andJoin(courses) +'</span>');
-        $parent.find('input[type=checkbox]').attr('disabled', 'disabled');
+        // disallows users to uncheck checkboxes
+        //$parent.find('input[type=checkbox]').attr('disabled', 'disabled');
         $parent.append($text);
         $text.hide().slideDown(duration);
       }
