@@ -61,9 +61,14 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
 5. Check it out by running the dev server `python manage.py runserver` and pointing your
    browser to [http://localhost:8000/][local] and viola!
 
-6. ???
-7. Profit?
+6. (Optional) If you plan on editing the CSS. YACS uses [SASS][] to generate the CSS.
+   You'll have to install that. Once you have, use `make scss` to make sass
+   automatically update the stylesheets as you change them.
 
+7. ???
+8. Profit?
+
+[SASS]: http://sass-lang.com/
 [pip]: http://www.pip-installer.org/en/latest/index.html
 [local]: http://localhost:8000/
 
