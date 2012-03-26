@@ -5,7 +5,7 @@ from django.db import models, transaction, connection
 from courses.signals import robots_signal
 from courses import models as courses
 from courses import managers as courses_managers
-from courses.utils import dict_by_attr
+from courses.utils import dict_by_attr, Synchronizer
 from scheduler import managers
 from scheduler.utils import slugify, deserialize_numbers, serialize_numbers
 
@@ -93,25 +93,26 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
     # trash existing conflict data...
     if not semester:
         semester = courses.Semester.objects.get(year=semester_year, month=semester_month)
-    SectionConflict.objects.filter(semester=semester).delete()
+    #SectionConflict.objects.filter(semester=semester).delete()
+    Syncer = Synchronizer(SectionConflict)
 
-    #sections = courses.Section.objects.select_related('course', 'semester').full_select(semester_year, semester_month)
     sections = courses.Section.objects .select_related('course', 'semester') \
             .by_semester(semester).prefetch_periods()
     section_courses = dict_by_attr(sections, 'course')
-    query = ["insert into scheduler_sectionconflict (section1_id, section2_id, semester_id) values "]
+
+    mapping = {}
+    for id, sid1, sid2 in SectionConflict.objects.filter(semester=semester).values_list('id', 'section1', 'section2'):
+        mapping[(sid1, sid2)] = id
+
+    conflicts = []
 
     def log(msg):
         if stdout:
             sys.stdout.write(msg)
             sys.stdout.flush()
 
-    def perform_insert(query):
-        querystring = ''.join(query)
-        querystring = querystring[:-1] + ";"
-        cursor = connection.cursor()
-        cursor.execute(querystring)
-        transaction.commit_unless_managed()
+    def perform_insert(conflicts):
+        SectionConflict.objects.bulk_create(conflicts)
 
     count = 0
     for course1, course2 in itertools.combinations(section_courses.keys(), 2):
@@ -125,12 +126,17 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
                     log('.')
                 if sql:
                     if count % 10000 == 0:
-                        perform_insert(query)
-                        query = query[:1]
+                        perform_insert(conflicts)
+                        conflicts = []
                         log('.')
-                    query += ["(", str(section1.id), ", ", str(section2.id), ", ", str(semester.id), "),"]
+                    if mapping.get((section1.id, section2.id), None) is None:
+                        conflicts.append(
+                            SectionConflict(section1=section1, section2=section2, semester=semester)
+                        )
+                    else:
+                        Syncer.exclude_id(mapping[(section1.id, section2.id)])
                 else:
-                    SectionConflict.objects.create(
+                    Syncer.get_or_create(
                         section1=section1,
                         section2=section2,
                         semester=semester,
@@ -138,8 +144,9 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
 
     log('\n')
 
-    if sql:
-        perform_insert(query)
+    if sql and conflicts:
+        perform_insert(conflicts)
+    Syncer.trim(semester=semester)
 
 
 # attach to signals

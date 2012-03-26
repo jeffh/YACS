@@ -957,8 +957,7 @@ var Selection = Class.extend({
     });
     return sectionConflictList;
   },
-  // returns true if the given section ID conflicts with a selection's
-  // courses
+  // returns true if the given section ID conflicts with a selection's courses
   conflictsWith: function(sectionID){
     var self = this;
     var conflictedWith = null;

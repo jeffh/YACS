@@ -18,6 +18,7 @@ from django.http import HttpResponse
 from courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment)
 from courses.signals import sections_modified
+from courses.utils import Synchronizer
 
 # TODO: remove import *
 from catalogparser import *
@@ -37,7 +38,6 @@ except AttributeError:
 logger.addHandler(NullHandler())
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
-
 class ROCSRPIImporter(object):
     """Handles the importation of RPI course data into the database."""
 
@@ -53,7 +53,12 @@ class ROCSRPIImporter(object):
 
         self.sections_changed = False
 
-    def sync(self, get_files=None, get_catalog=None, foo=234234):
+        self.SectionPeriod = Synchronizer(SectionPeriod)
+
+    def clear_unused(self, semester):
+        self.SectionPeriod.trim(semester=semester)
+
+    def sync(self, get_files=None, get_catalog=None):
         "Performs the updating of the database data from RPI's SIS"
         if get_files is None:
             from rpi_courses import list_rocs_xml_files
@@ -91,6 +96,8 @@ class ROCSRPIImporter(object):
                     logger.debug(' EXISTS SEMESTER ' + repr(semester_obj))
                 if self.sections_changed:
                     sections_modified.send(sender=self, semester=semester_obj)
+
+                self.clear_unused(semester_obj)
 
     def create_courses(self, catalog, semester_obj):
         "Inserts all the course data, including section information, into the database from the catalog."
@@ -177,7 +184,7 @@ class ROCSRPIImporter(object):
                 end=period.end_time,
                 days_of_week_flag=self.compute_dow(period.days),
             )
-            sectionperiod_obj, created = SectionPeriod.objects.get_or_create(
+            sectionperiod_obj, created = self.SectionPeriod.get_or_create(
                 period=period_obj,
                 section=section_obj,
                 semester=semester_obj,
@@ -273,6 +280,8 @@ class SISRPIImporter(ROCSRPIImporter):
                     logger.debug(' EXISTS SEMESTER ' + repr(semester_obj))
                 if self.sections_changed:
                     sections_modified.send(sender=self, semester=semester_obj)
+
+                self.clear_unused(semester_obj)
 
 
 def import_latest_semester(force=False):

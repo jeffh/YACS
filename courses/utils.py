@@ -93,3 +93,27 @@ def options(amount=None):
 def capitalized(string):
     "Capitalizes the first character in the given string."
     return string[0:1].upper() + string[1:].lower()
+
+class Synchronizer(object):
+    "Handles the creation of models. Can delete models that were not 'created'."
+    def __init__(self, model):
+        self.model = model
+        self.ids_used = set()
+
+    def exclude_id(self, id):
+        self.ids_used.add(id)
+
+    def get_or_create(self, **kwargs):
+        model, created = self.model.objects.get_or_create(**kwargs)
+        self.exclude_id(model.id)
+        return model, created
+
+    def create(self, **kwargs):
+        model = self.model.objects.create(**kwargs)
+        self.exclude_id(model.id)
+        return model
+
+    def trim(self, **filter):
+        "Removes models that were not get_or_create'd. Can optionally be filtered."
+        self.model.objects.exclude(id__in=self.ids_used).filter(**filter).delete()
+
