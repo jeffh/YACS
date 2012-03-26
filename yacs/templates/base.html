@@ -30,16 +30,16 @@
 {% block header %}
 <h1>{% block app-title %}YACS{% endblock %}</h1>
 {% endblock %}
+
+<ul role="navigation" class="navbar">
+  <li><a href="mailto:huij@rpi.edu?subject=YACS">Feedback</a></li>
+</ul>
 </header>
 
 <div class="content clearfix">
 
 <div role="main" class="main">
 {% block content %}{% endblock %}
-</div>
-
-<div role="complementary">
-{% block sidebar %}{% endblock %}
 </div>
 
 </div>

@@ -206,6 +206,19 @@ header {
 		}
 	}
 }
+
+.navbar {
+  position: absolute;
+  right: 15px;
+  top: 5px;
+  list-style-type: none;
+
+  li {
+    a:link, a:link:visited {
+      color: #944;
+    }
+  }
+}
 /* END HEADER */
 
 /* SEARCHBOX */

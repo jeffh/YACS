@@ -4,6 +4,9 @@ body {
   /* TODO: remove me after 992 is implemented */
   /* @include transition(all $transition-fast $transition-type);*/ }
 
+.navbar {
+  font-size: 90%; }
+
 #departments li a:link, #departments li a:visited {
   font-size: 120%;
   height: 1.5em; }

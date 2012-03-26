@@ -6,6 +6,10 @@ body {
     /* @include transition(all $transition-fast $transition-type);*/
 }
 
+.navbar {
+  font-size: 90%;
+}
+
 #departments {
     li {
         a:link, a:visited {

@@ -263,6 +263,14 @@ header .alpha {
       background: linear-gradient(top, #741010 0%, #b42020 100%);
       /* W3C */ }
 
+.navbar {
+  position: absolute;
+  right: 15px;
+  top: 5px;
+  list-style-type: none; }
+  .navbar li a:link, .navbar li a:link:visited {
+    color: #944; }
+
 /* END HEADER */
 /* SEARCHBOX */
 .searchform {
