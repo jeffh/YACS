@@ -1,20 +1,24 @@
 import re
 
-from django.contrib.sessions.middleware import SessionMiddleware as OriginalSessionMiddleware
-from django.contrib.auth.middleware import AuthenticationMiddleware as OriginalAuthenticationMiddleware
-from django.contrib.messages.middleware import MessageMiddleware as OriginalMessageMiddleware
+from django.contrib.sessions.middleware import SessionMiddleware as SessionMW
+from django.contrib.auth.middleware import AuthenticationMiddleware as AuthMW
+from django.contrib.messages.middleware import MessageMiddleware as MessageMW
 from django.conf import settings
 
-from  debug_toolbar.middleware import DebugToolbarMiddleware as OriginalDebugToolbarMiddleware
+from debug_toolbar.middleware import DebugToolbarMiddleware as DebugToolbarMW
 
 
-EXCLUDED = [re.compile(url) for url in getattr(settings, 'SESSION_EXCLUDED_URLS', [])]
+EXCLUDED = [
+    re.compile(url) for url in getattr(settings, 'SESSION_EXCLUDED_URLS', [])
+]
+
 
 def is_excluded(path):
     for regexp in EXCLUDED:
         if regexp.search(path):
             return True
     return False
+
 
 class WrapRequestResponse(object):
     def process_request(self, request):
@@ -29,14 +33,18 @@ class WrapRequestResponse(object):
                 'process_response',
                 lambda req, rep: response)(request, response)
 
-class SessionMiddleware(WrapRequestResponse, OriginalSessionMiddleware):
+
+class SessionMiddleware(WrapRequestResponse, SessionMW):
     pass
 
-class AuthenticationMiddleware(WrapRequestResponse, OriginalAuthenticationMiddleware):
+
+class AuthenticationMiddleware(WrapRequestResponse, AuthMW):
     pass
 
-class MessageMiddleware(WrapRequestResponse, OriginalMessageMiddleware):
+
+class MessageMiddleware(WrapRequestResponse, MessageMW):
     pass
 
-class DebugToolbarMiddleware(WrapRequestResponse, OriginalDebugToolbarMiddleware):
+
+class DebugToolbarMiddleware(WrapRequestResponse, DebugToolbarMW):
     pass
