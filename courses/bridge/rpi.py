@@ -106,7 +106,7 @@ class ROCSRPIImporter(object):
                 )
             )
             if not created:
-                course_obj.name = course.name
+                #course_obj.name = course.name
                 course_obj.min_credits, course_obj.max_credits = course.cred
                 course_obj.grade_type = course.grade_type
                 course_obj.save()
