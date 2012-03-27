@@ -34,8 +34,6 @@ class DataFormatter(object):
 
     def get_context_type_from_extension(self, ext):
         filetype = 'file.' + (ext or '')
-        print filetype
-        print mimetypes.guess_type('file.' + (ext or ''), strict=False)
         return mimetypes.guess_type('file.' + (ext or ''), strict=False)[0]
 
     def convert_data_to_json(self, context):
@@ -135,10 +133,10 @@ def departments(request, id=None, version=None, ext=None):
 @render()
 def courses(request, id=None, version=None, ext=None):
     queryset = models.Course.objects.optional_filter(
-        semesters__id__in=int_list(request.GET.get('semester_id')) or None,
-        department__code__in=request.GET.get('department_code') or None,
-        department__id__in=int_list(request.GET.get('department_id')) or None,
-        number__in=int_list(request.GET.get('number')) or None,
+        semesters__id__in=int_list(request.GET.getlist('semester_id')) or None,
+        department__code__in=request.GET.getlist('department_code') or None,
+        department__id__in=int_list(request.GET.getlist('department_id')) or None,
+        number__in=int_list(request.GET.getlist('number')) or None,
         id__in=int_list(request.GET.getlist('id')) or None,
         id=id,
     ).distinct()
@@ -171,6 +169,8 @@ def sections(request, id=None, version=None, ext=None):
 
         sections[section['id']] = section
 
+    if id is not None:
+        return { 'context': sections.values()[0] }
     return { 'context': sections.values() }
 
 
