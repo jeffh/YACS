@@ -6,7 +6,7 @@ It is also flexible enough to work with other school course data.
 
 Send questions and comments to [@jeffhui][] or huij@rpi.edu.
 
-If you're an RPI student and just want to use it. Go to [yacs.me][yacsme]
+If you're an RPI student and looking to use it, go to [yacs.me][yacsme]
 
 [@jeffhui]: http://twitter.com/jeffhui "Twitter: @jeffhui"
 [yacsme]: http://yacs.me/ "YACS - The usable online course scheduler"
@@ -50,12 +50,13 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
     python manage.py migrate
     ```
 
-4. Next we need to get some data. Run these commands to import the course data from RPI
+4. Next we need to get some data. Run these commands to import and setup the data for use.
    (These will take awhile).
 
     ```
-    python manage.py import_course_data
-    python manage.py import_catalog_data
+    python manage.py import_course_data   # imports from RPI SIS
+    python manage.py import_catalog_data  # imports from RPI course catalog
+    python manage.py create_section_cache # creates cache for generating schedules
     ```
 
 5. Check it out by running the dev server `python manage.py runserver` and pointing your
