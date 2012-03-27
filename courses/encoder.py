@@ -58,8 +58,14 @@ class CoursesEncoderDelegate(object):
     def encoded_model(self, model, obj):
         if isinstance(model, models.Period):
             del obj['days_of_week_flag']
+            del obj['id']
             obj['days_of_the_week'] = model.days_of_week
             return
+        if isinstance(model, models.SectionPeriod):
+            del obj['period_id']
+            del obj['section_id']
+            del obj['semester_id']
+            del obj['id']
         return obj
 
 class Encoder(object):
@@ -138,7 +144,7 @@ class Encoder(object):
                         self._invoke('encoded_list', value, obj), obj)
         elif isinstance(value, dict):
             for key in value.keys():
-                value[key] = self.encode(value[key])
+                value[unicode(key)] = self.encode(value[key])
             return self._result_or_obj(self._invoke('encoded_dict', value), value)
         return self._result_or_obj(self._invoke('encode_value', value), value)
 

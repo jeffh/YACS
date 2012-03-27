@@ -10,16 +10,16 @@ class SemesterFactory(factory.Factory):
 
     year = factory.Sequence(lambda n: 2009 + int(n))
     month = 1
-    name = factory.Sequence(lambda n: 'Semester %s' % n)
-    ref = factory.LazyAttribute(lambda s: 'Semester%s-%s.xml' % (s.year, s.month))
+    name = factory.Sequence(lambda n: u'Semester %03d' % int(n))
+    ref = factory.LazyAttribute(lambda s: u'Semester%s-%s.xml' % (s.year, s.month))
     date_updated = factory.LazyAttribute(lambda s: datetime.datetime.now())
 
 
 class DepartmentFactory(factory.Factory):
     FACTORY_FOR = models.Department
 
-    name = factory.Sequence(lambda n: 'Department %s' % n)
-    code = factory.Sequence(lambda n: 'DEPT%s' % n)
+    name = factory.Sequence(lambda n: u'Department %03d' % int(n))
+    code = factory.Sequence(lambda n: u'DEPT%03d' % int(n))
 
 
 class PeriodFactory(factory.Factory):
@@ -34,14 +34,14 @@ class SectionCrosslistingFactory(factory.Factory):
     FACTORY_FOR = models.SectionCrosslisting
 
     semester = factory.LazyAttribute(lambda s: SemesterFactory())
-    ref = factory.Sequence(lambda n: 'ref-%s' % n)
+    ref = factory.Sequence(lambda n: u'ref-%s' % n)
 
 
 class SectionFactory(factory.Factory):
     FACTORY_FOR = models.Section
 
-    number = factory.Sequence(lambda n: n)
-    crn = factory.Sequence(lambda n: n)
+    number = factory.Sequence(unicode)
+    crn = factory.Sequence(int)
     course = factory.LazyAttribute(lambda s: CourseFactory())
     semester = factory.LazyAttribute(lambda s: SemesterFactory())
 
@@ -53,9 +53,10 @@ class SectionFactory(factory.Factory):
 class CourseFactory(factory.Factory):
     FACTORY_FOR = models.Course
 
-    name = 'Course'
-    number = factory.Sequence(lambda n: n)
+    name = u'Course'
+    number = factory.Sequence(int)
     department = factory.LazyAttribute(lambda s: DepartmentFactory())
+    description = u'Just another description'
     #semesters =
 
     min_credits = 4
@@ -75,9 +76,9 @@ class SectionPeriodFactory(factory.Factory):
     period = factory.LazyAttribute(lambda s: PeriodFactory())
     section = factory.LazyAttribute(lambda s: SectionFactory())
     semester = factory.LazyAttribute(lambda s: SemesterFactory())
-    instructor = 'Goldschmit'
-    location = 'DCC 1337'
-    kind = 'LEC'
+    instructor = u'Goldschmit'
+    location = u'DCC 1337'
+    kind = u'LEC'
 
 
 class SemesterDepartmentFactory(factory.Factory):
