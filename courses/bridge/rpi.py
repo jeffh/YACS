@@ -294,10 +294,10 @@ def import_latest_semester(force=False):
     SISRPIImporter().sync(force=force)
 
 def import_all_semesters(force=False):
-    from rpi_courses import list_sis_files, list_rocs_files
+    from rpi_courses import list_sis_files, list_rocs_xml_files
     urls = []
     urls.extend(list_sis_files())
-    urls.extend(list_rocs_files())
+    urls.extend(list_rocs_xml_files())
     for url in urls:
         print url
         if 'rocs' in url:
