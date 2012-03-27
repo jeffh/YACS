@@ -2,7 +2,9 @@ import os
 import sys
 from datetime import timedelta
 
+
 __all__ = ['Settings', 'settings']
+
 
 class SettingsInterface(object):
     def __init__(self, settings_core):
@@ -50,10 +52,10 @@ class Settings(object):
         self.init(SettingsInterface(self))
 
     def init(self, settings):
-        pass # override by child
+        pass  # override by child
 
     def pretransfer(self):
-        pass # override by child
+        pass  # override by child
 
     def relative_path(self, *paths):
         return os.path.normpath(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', *paths))
@@ -252,7 +254,7 @@ with settings as s:
     s.LOGGING = {
         'version': 1,
         'disable_existing_loggers': True,
-        'formatters':{
+        'formatters': {
             'default': {
                 'format': '[%(asctime)s] %(levelname)s (%(module)s): %(message)s'
             },
@@ -280,9 +282,9 @@ with settings as s:
         },
         'loggers': {
             'django': {
-                'handlers':['null'],
+                'handlers': ['null'],
                 'propagate': True,
-                'level':'INFO',
+                'level': 'INFO',
             },
             'django.request': {
                 'handlers': ['mail_admins'],
@@ -367,5 +369,3 @@ with settings as s:
 
                 #'devserver.modules.profile.LineProfilerModule',
             )
-
-

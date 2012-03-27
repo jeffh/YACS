@@ -12,8 +12,10 @@ def set_prefetch_cache(model, field, cache):
 # using the fancy queryset manager technique, as describe:
 # http://adam.gomaa.us/blog/2009/feb/16/subclassing-django-querysets/index.html
 
+
 class QuerySetManager(Manager):
     use_for_related_fields = True
+
     def __init__(self, queryset_class=QuerySet):
         super(QuerySetManager, self).__init__()
         self.queryset_class = queryset_class
@@ -31,12 +33,14 @@ class QuerySetManager(Manager):
     def __getattr__(self, attr):
         return getattr(self.get_query_set(), attr)
 
+
 class OptionalFilterMixin(object):
     def optional_filter(self, **kwargs):
         for key, value in kwargs.items():
             if value is None:
                 del kwargs[key]
         return self.filter(**kwargs)
+
 
 class SerializableQuerySet(OptionalFilterMixin, QuerySet):
 
@@ -52,6 +56,7 @@ class SerializableQuerySet(OptionalFilterMixin, QuerySet):
 class SemesterBasedQuerySet(SerializableQuerySet):
     YEAR_QUERY_PARAM = 'semesters__year__exact'
     MONTH_QUERY_PARAM = 'semesters__month__exact'
+
     def by_semester(self, year_or_sem=None, month=None):
         qs = self
 
@@ -111,6 +116,7 @@ def reverse_select_related(dict):
 class SectionQuerySet(SemesterBasedQuerySet):
     YEAR_QUERY_PARAM = 'semester__year__exact'
     MONTH_QUERY_PARAM = 'semester__month__exact'
+
     def prefetch_periods(self):
         return self.prefetch_related('periods', 'section_times', 'section_times__period')
 
@@ -140,7 +146,6 @@ class CourseQuerySet(SemesterBasedQuerySet):
         return Q(department__name__icontains=query) | Q(department__code__icontains=query) | \
             Q(name__icontains=query) | Q(number__contains=query) | \
             Q(sections__section_times__instructor__icontains=query)
-
 
     def full_select(self, year=None, month=None, amount=None):
         """Returns all courses in the given queryset, plus Sections, Periods, and SectionPeriod data.
@@ -180,7 +185,6 @@ class CourseQuerySet(SemesterBasedQuerySet):
             result.append(course)
         return result
 
-
     def _search_Q(self, query, dept_code=None):
         "Returns a composed set of django.db.models.Q objects for searching courses."
         from courses.models import Department
@@ -204,4 +208,3 @@ class CourseQuerySet(SemesterBasedQuerySet):
 
     def search(self, query=None, dept=None):
         return self.filter(self._search_Q(query or '', dept)).distinct()
-

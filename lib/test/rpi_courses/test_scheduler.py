@@ -6,11 +6,13 @@ from csp import Problem
 
 from constants import XML_SCHEDULE_TEST_FILE, XML_SCHEDULE_TEST_CONFLICT_FILE
 
+
 with open(XML_SCHEDULE_TEST_FILE) as f:
     SCHEDULE_CONTENTS = f.read()
 
 with open(XML_SCHEDULE_TEST_CONFLICT_FILE) as f:
     CONFLICT_CONTENTS = f.read()
+
 
 class TestTimeRange(unittest.TestCase):
     "Time range of [1200, 1300]"
@@ -36,6 +38,7 @@ class TestTimeRange(unittest.TestCase):
     def test_time_range_does_not_contain(self):
         "should not contain time range of [1100, 1150]."
         self.assertNotIn(((0,), 1100, 1150), self.tr)
+
 
 class TestMakeSchedules(unittest.TestCase):
     "Scheduler from XML fixture"
@@ -176,6 +179,7 @@ class TestMakeConflictableSchedules(unittest.TestCase):
             for r2 in result:
                 if r != r2:
                     self.assertNotEqual(r, r2)
+
 
 if __name__ == '__main__':
     unittest.main()

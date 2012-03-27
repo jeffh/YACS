@@ -20,8 +20,8 @@ class Problem(object):
         return self._solver_instance.solutions_seen
 
     def reset(self):
-        self._variables = {} # variable: list-domain-of-variable
-        self._constraints = [] # (constraint_function, variables)
+        self._variables = {}  # variable: list-domain-of-variable
+        self._constraints = []  # (constraint_function, variables)
         self._restore_point = None
 
     def add_variable(self, variable, domain):
@@ -69,4 +69,3 @@ class Problem(object):
             'c': self._constraints,
             's': self._solver_instance.__class__,
         }
-

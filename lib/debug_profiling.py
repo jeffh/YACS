@@ -8,6 +8,7 @@ from django.conf import settings
 from django.template import Template, Context
 from debug_toolbar.panels import DebugPanel
 
+
 class ProfilingPanel(DebugPanel):
     """
     Panel that runs the hotshot profiler during the request.

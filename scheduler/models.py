@@ -10,7 +10,6 @@ from scheduler import managers
 from scheduler.utils import slugify, deserialize_numbers, serialize_numbers
 
 
-
 class Selection(models.Model):
     """Represents a unique set of selected CRNs. It also offers a unique URL for each set.
     """
@@ -59,6 +58,7 @@ SectionProxy = courses.Section
 #        # self.conflicts has to be set by the view....
 #        return section.id in self.conflicts
 
+
 class SectionConflict(models.Model):
     """The relationship where a section conflicts with another section.
 
@@ -87,6 +87,8 @@ class SectionConflict(models.Model):
 
 
 # TODO: move into manager
+
+
 def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=True, stdout=False):
     assert (semester_year and semester_month) or semester, "Semester year & month must be provided or the semester object."
     import sys
@@ -154,4 +156,3 @@ def sitemap_for_scheduler(sender, semester, rule, **kwargs):
     url = sender.get_or_create_url('schedules', year=semester.year, month=semester.month)
     rule.disallowed.add(url)
 robots_signal.connect(sitemap_for_scheduler, dispatch_uid='scheduler.sitemap_for_scheduler')
-

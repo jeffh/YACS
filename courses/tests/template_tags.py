@@ -7,7 +7,6 @@ from courses.templatetags.course_tags import remove_zero_prefix, get, display_pe
 from courses.tests.factories import PeriodFactory
 
 
-
 __all__ = ['RemoveZeroPrefixTest', 'GetTest', 'DowShortTest']
 
 
@@ -88,4 +87,3 @@ class DowShortTest(TestCase):
     def test_convert_tuple(self):
         collection = ('Monday', 'Wednesday', 'Thursday')
         self.assertEqual(dow_short(collection), ('Mo', 'We', 'Th'))
-

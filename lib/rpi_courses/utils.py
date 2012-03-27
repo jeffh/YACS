@@ -10,7 +10,7 @@ def safeInt(n, warn_only=False):
     """
     if str(n).startswith('0'):
         if not warn_only:
-            raise TypeError("Unsafe Int: "+str(n))
+            raise TypeError("Unsafe Int: " + str(n))
         print "Unsafe Int: %s" % n
         return int(n)
     try:
@@ -47,17 +47,12 @@ class FrozenDict(collections.Mapping):
         return self._d[key]
 
     def __setitem__(self, key, value):
-        raise TypeError, "FrozenDict is immutable."
+        raise TypeError("FrozenDict is immutable.")
 
     def __repr__(self):
         return "FrozenDict(%r)" % self._d
 
     def __hash__(self):
-        # It would have been simpler and maybe more obvious to
-        # use hash(tuple(sorted(self._d.iteritems()))) from this discussion
-        # so far, but this solution is O(n). I don't know what kind of
-        # n we are going to run into, but sometimes it's hard to resist the
-        # urge to optimize when it will gain improved algorithmic performance.
         if self._hash is None:
             self._hash = 0
             for key, value in self.iteritems():
@@ -66,4 +61,3 @@ class FrozenDict(collections.Mapping):
         return self._hash
 
 FrozenDict.FROZEN_TYPES[dict] = FrozenDict
-

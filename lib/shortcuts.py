@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils.simplejson import loads
 
+
 class ShortcutTestCase(TestCase):
     def get(self, url_name, *args, **kwargs):
         status = kwargs.pop('status_code', None)
@@ -54,13 +55,11 @@ class ShortcutTestCase(TestCase):
             print "Got:", response
             raise
 
-
     def _process_headers(self, kwargs):
         headers = {}
         for key, value in kwargs.items():
             if key.startswith('HTTP_'):
                 headers[key.upper().replace('-', '_')] = value
             else:
-                headers['HTTP_'+key.upper().replace('-', '_')] = value
+                headers['HTTP_' + key.upper().replace('-', '_')] = value
         return headers
-

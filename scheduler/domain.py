@@ -4,8 +4,10 @@ from courses.utils import DAYS, sorted_daysofweek
 
 from scheduler.scheduling import compute_schedules as _compute_schedules
 
+
 class ConflictCache(object):
     _EMPTY_SET = frozenset()
+
     def __init__(self, conflict_mapping):
         self.conflict_mapping = conflict_mapping
 
@@ -22,7 +24,6 @@ class ConflictCache(object):
             section2_id in self[section1_id] or
             section1_id in self[section2_id]
         )
-
 
 
 def has_schedule(selected_courses, section_constraint=None):
@@ -52,6 +53,7 @@ def compute_schedules(selected_courses, section_constraint=None):
         results.append(s)
     return results
 
+
 def period_stats(periods):
     if len(periods) < 1:
         return range(8, 20), DAYS[:5]
@@ -61,7 +63,5 @@ def period_stats(periods):
         max_time = max(max_time or period.end, period.end)
         dow_used = dow_used.union(period.days_of_week)
 
-    timerange = range(min_time.hour -1 , max_time.hour + 2)
+    timerange = range(min_time.hour - 1, max_time.hour + 2)
     return list(timerange), sorted_daysofweek(dow_used)
-
-

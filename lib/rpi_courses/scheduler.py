@@ -137,12 +137,13 @@ class Scheduler(object):
         """Internal use. Creates all constraints in the problem instance for the given
         courses.
         """
-        for i,course1 in enumerate(courses):
-            for j,course2 in enumerate(courses):
+        for i, course1 in enumerate(courses):
+            for j, course2 in enumerate(courses):
                 if i <= j:
                     continue
                 self.p.add_constraint(self.section_constraint, [course1, course2])
             self.p.add_constraint(self.time_conflict, [course1])
+
 
 def compute_schedules(courses=None, excluded_times=(), free_sections_only=True, problem=None, return_generator=False, section_constraint=None):
     """

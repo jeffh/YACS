@@ -24,4 +24,3 @@ class SemesterSitemap(Sitemap):
 sitemaps = {
     'semesters': SemesterSitemap,
 }
-

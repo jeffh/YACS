@@ -44,6 +44,7 @@ class OptionsTest(TestCase):
 class ExtendedGetAttrTest(TestCase):
     SampleObject = namedtuple('SampleObject', ('a', 'b'))
     NestedSampleObject = namedtuple('NestedSampleObject', ('c', 'd'))
+
     def test_single_attr(self):
         o = self.SampleObject(1, 2)
         self.assertEqual(utils.extended_getattr(o, 'a'), 1)
@@ -74,8 +75,9 @@ class ExtendedGetAttrTest(TestCase):
 
 class DictByAttrTest(TestCase):
     SampleObject = namedtuple('SampleObject', ('a', 'b', 'c'))
+
     def test_mapping(self):
-        items = [self.SampleObject(i, i+1, i+2) for i in range(10)]
+        items = [self.SampleObject(i, i + 1, i + 2) for i in range(10)]
         ordered = utils.dict_by_attr(items, 'a')
         self.assertEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], ordered.keys())
         self.assertEqual([(0, 1, 2)], ordered[0])
@@ -90,7 +92,7 @@ class DictByAttrTest(TestCase):
         self.assertEqual([(9, 10, 11)], ordered[9])
 
     def test_mapping_in_groups(self):
-        items = [self.SampleObject(i % 3, i+1, i+2) for i in range(10)]
+        items = [self.SampleObject(i % 3, i + 1, i + 2) for i in range(10)]
         ordered = utils.dict_by_attr(items, 'a')
         self.assertEqual([0, 1, 2], ordered.keys())
         self.assertEqual([(0, 1, 2), (0, 4, 5), (0, 7, 8), (0, 10, 11)], ordered[0])
@@ -98,7 +100,7 @@ class DictByAttrTest(TestCase):
         self.assertEqual([(2, 3, 4), (2, 6, 7), (2, 9, 10), ], ordered[2])
 
     def test_mapping_with_lambda(self):
-        items = [self.SampleObject(i, i+1, i+2) for i in range(10)]
+        items = [self.SampleObject(i, i + 1, i + 2) for i in range(10)]
         ordered = utils.dict_by_attr(items, lambda o: o.a)
         self.assertEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], ordered.keys())
         self.assertEqual([(0, 1, 2)], ordered[0])
@@ -113,7 +115,7 @@ class DictByAttrTest(TestCase):
         self.assertEqual([(9, 10, 11)], ordered[9])
 
     def test_mapping_with_value(self):
-        items = [self.SampleObject(i, i+1, i+2) for i in range(10)]
+        items = [self.SampleObject(i, i + 1, i + 2) for i in range(10)]
         ordered = utils.dict_by_attr(items, 'a', 'b')
         self.assertEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], ordered.keys())
         self.assertEqual([1], ordered[0])
@@ -126,4 +128,3 @@ class DictByAttrTest(TestCase):
         self.assertEqual([8], ordered[7])
         self.assertEqual([9], ordered[8])
         self.assertEqual([10], ordered[9])
-

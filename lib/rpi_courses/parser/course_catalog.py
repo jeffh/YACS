@@ -4,7 +4,7 @@ import urllib2
 from BeautifulSoup import BeautifulStoneSoup
 
 from rpi_courses.web import get
-from rpi_courses.parser.features import * # all object postfixed with '_feature' will get used.
+from rpi_courses.parser.features import *  # all object postfixed with '_feature' will get used.
 
 
 class CourseCatalog(object):
@@ -89,4 +89,3 @@ class CourseCatalog(object):
         course = self.find_course(partial)
         crosslisted = self.crosslisted_with(course.crn)
         return (course,) + tuple(map(self.find_course_by_crn, crosslisted))
-

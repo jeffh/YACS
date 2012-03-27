@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 
 __all__ = ['Renderer', 'login_required', 'staff_required']
 
+
 def staff_required(fn):
     @login_required
     @wraps(fn)
@@ -18,6 +19,7 @@ def staff_required(fn):
             raise PermissionDenied("You are not an admin")
         return fn(request, *args, **kwargs)
     return wrapper
+
 
 class AlternativeResponse(Exception):
     def __init__(self, response):
@@ -68,7 +70,7 @@ class Renderer(object):
 
     def handle_error(self, error, traceback):
         if settings.DEBUG:
-            raise error, None, traceback
+            raise (error, None, traceback)  # remove tuple, if this is broken
         raise Http404
 
     def extract_view(self, decorated_view, original=False):
@@ -98,5 +100,3 @@ class Renderer(object):
                 context,
                 context_instance=RequestContext(request),
                 mimetype=settings['mimetype'])
-
-

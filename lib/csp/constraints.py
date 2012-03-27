@@ -38,10 +38,9 @@ class Constraint(BaseConstraint):
 
     def __call__(self, *args, **kwargs):
         if len(args) + len(kwargs) < len(self._vars):
-            raise TypeError, "Constraint Function requires %r arguments" % len(self._vars)
+            raise TypeError("Constraint Function requires %r arguments" % len(self._vars))
         return self._func(*args, **kwargs)
 
     def __len__(self):
         "How constrainting this constraint is."
         return min(self._search_spaces)
-

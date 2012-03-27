@@ -2,11 +2,13 @@ import logging
 import logging.handlers
 import sys
 
+
 DEBUG = True
 LOG_FILENAME = 'logging'
 
 logger = logging.getLogger('rpi_courses')
 logger.setLevel(logging.DEBUG)
+
 
 if hasattr(logging, 'NullHandler'):
     NullHandler = logging.NullHandler
@@ -28,8 +30,6 @@ if DEBUG:
     handler = logging.StreamHandler(sys.stderr)
     handler.setLevel(logging.ERROR)
     logger.addHandler(handler)
-
-
 
 SIS_URL = "http://sis.rpi.edu/reg/"
 # where ROCS's xml files are located.
@@ -91,4 +91,3 @@ DEPARTMENTS = dict(
     USNA="Naval Science (Navy ROTC)",
     WRIT="Writing",
 )
-

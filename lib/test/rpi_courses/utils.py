@@ -1,5 +1,6 @@
 import unittest
 
+
 class TestCaseForModel(unittest.TestCase):
     def assertPeriodEquals(self, period1, period2):
         """
@@ -14,10 +15,10 @@ class TestCaseForModel(unittest.TestCase):
 
     def assertIn(self, item, collection):
         assert item in collection
-    
+
     def assertPeriodEqual(self, period1, period2):
         self.assertPeriodEquals(period1, period2)
-    
+
     def assertPeriodsEqual(self, periods1, periods2):
         """
         Invokes self.assertSectionEquals to two tuples of periods.
@@ -25,7 +26,7 @@ class TestCaseForModel(unittest.TestCase):
         self.assertEquals(len(periods1), len(periods2))
         for i in range(len(periods1)):
             self.assertPeriodEquals(periods1[i], periods2[i])
-    
+
     def assertPeriodsEquals(self, periods1, periods2):
         self.assertPeriodsEqual(period1, period2)
 
@@ -39,10 +40,10 @@ class TestCaseForModel(unittest.TestCase):
         self.assertEquals(section1.seats_total, section2.seats_total)
         self.assertEquals(section1.notes, section2.notes)
         self.assertPeriodsEqual(section1.periods, section2.periods)
-    
+
     def assertSectionEqual(self, section1, section2):
         self.assertSectionEquals(section1, section2)
-    
+
     def assertSectionsEquals(self, sections1, sections2):
         """
         Invokes self.assertSectionEquals to two tuples of sections.
@@ -50,7 +51,7 @@ class TestCaseForModel(unittest.TestCase):
         self.assertEquals(len(sections1), len(sections2))
         for i in range(len(sections1)):
             self.assertSectionEquals(sections1[i], sections2[i])
-            
+
     def assertSectionsEqual(self, sections1, sections2):
         self.assertSectionsEquals(sections1, sections2)
 
@@ -66,6 +67,6 @@ class TestCaseForModel(unittest.TestCase):
         # but we only want to know if the course is pass/fail anyway
         self.assertEquals(course1.is_pass_or_fail, course2.is_pass_or_fail)
         self.assertSectionsEqual(course1.sections, course2.sections)
-        
+
     def assertCourseEqual(self, course1, course2):
         self.assertCourseEquals(course1, course2)

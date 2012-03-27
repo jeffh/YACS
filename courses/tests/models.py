@@ -312,7 +312,7 @@ class SectionPeriodTest(TestCase):
         period = PeriodFactory.build()
         period.toJSON = Mock(return_value={'lol': 1})
         sp = SectionPeriodFactory.build(
-            id = None,
+            id=None,
             instructor='foo',
             location='bar',
             kind='fizz',
@@ -336,4 +336,3 @@ class SectionPeriodTest(TestCase):
 
         self.assertFalse(sp1.conflicts_with(sp2))
         period1.conflicts_with.assert_called_with(period2)
-

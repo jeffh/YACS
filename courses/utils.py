@@ -1,11 +1,14 @@
 from json import dumps, JSONEncoder
 import datetime
 
-DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']#, 'Saturday', 'Sunday']
+DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']  # , 'Saturday', 'Sunday']
+
+
 def sorted_daysofweek(dow, days=DAYS):
     "Sorts list of days of the week to what we're expected."
     dow = set(dow)
     return [d for d in days if d in dow]
+
 
 class ObjectJSONEncoder(JSONEncoder):
     def default(self, o):
@@ -15,18 +18,22 @@ class ObjectJSONEncoder(JSONEncoder):
             return o.isoformat()
         return super(ObjectJSONEncoder, self).default(o)
 
+
 class ExtendedAttributeError(AttributeError):
     def __init__(self, msg, obj, full_attr, error_attr):
         super(ExtendedAttributeError, self).__init__(msg % {
             'obj': obj,
-            'full_attr': full_attr, # the full path we were trying to access
-            'error_attr': error_attr, # the attr access that caused the error
+            'full_attr': full_attr,  # the full path we were trying to access
+            'error_attr': error_attr,  # the attr access that caused the error
         })
         self.obj = obj
         self.full_attr = full_attr
         self.error_attr = error_attr
 
+
 _NONE = object()
+
+
 def extended_getattr(obj, attrpath, default=_NONE):
     """Like getattr, but allows the attrname to be a dot-path notation::
 
@@ -39,6 +46,7 @@ def extended_getattr(obj, attrpath, default=_NONE):
         if value is _NONE:
             raise ExtendedAttributeError("%(obj)r does not have attribute %(error_attr)r when trying to walk %(full_attr)r", value, attrpath, name)
     return value
+
 
 def dict_by_attr(collection, attrname, value_attrname=None):
     """Creates a dictionary of a collection using a specific attribute name of each item as the key.
@@ -90,9 +98,11 @@ def options(amount=None):
         return generator()
     return [v for _, v in zip(range(amount), generator())]
 
+
 def capitalized(string):
     "Capitalizes the first character in the given string."
     return string[0:1].upper() + string[1:].lower()
+
 
 class Synchronizer(object):
     """Handles the creation of models.
@@ -133,4 +143,3 @@ class Synchronizer(object):
             if not ids_to_delete:
                 return
         qs.filter(**filter).delete()
-

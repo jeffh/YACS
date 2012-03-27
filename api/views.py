@@ -26,6 +26,7 @@ mimetypes.add_type('application/x-plist', '.plist')
 mimetypes.add_type('application/x-binary-plist', '.bplist')
 mimetypes.add_type('application/x-binary-plist', '.biplist')
 
+
 class DataFormatter(object):
     def __init__(self, encoder=None, context_processor=None, default_content_type='application/json'):
         self.encoder = encoder or encoders.default_encoder
@@ -98,15 +99,18 @@ render = decorators.Renderer(posthook=wrap_request)
 def paginate(query, page=1, per_page=1000):
     return query[(page - 1) * per_page:page * per_page]
 
+
 def get_if_id_present(queryset, id=None):
     if id is not None:
         return queryset.get()
     else:
         return queryset
 
+
 @render()
 def raw_data(request, data, version=None, ext=None):
-    return { 'context': data }
+    return {'context': data}
+
 
 @render()
 def semesters(request, id=None, version=None, ext=None):
@@ -117,7 +121,8 @@ def semesters(request, id=None, version=None, ext=None):
         year=request.GET.get('year'), month=request.GET.get('month'),
         id=id,
     ).distinct()
-    return { 'context': get_if_id_present(queryset, id) }
+    return {'context': get_if_id_present(queryset, id)}
+
 
 @render()
 def departments(request, id=None, version=None, ext=None):
@@ -128,7 +133,8 @@ def departments(request, id=None, version=None, ext=None):
         code__in=request.GET.getlist('code') or None,
         id=id,
     ).distinct()
-    return { 'context': get_if_id_present(queryset, id) }
+    return {'context': get_if_id_present(queryset, id)}
+
 
 @render()
 def courses(request, id=None, version=None, ext=None):
@@ -142,7 +148,8 @@ def courses(request, id=None, version=None, ext=None):
     ).distinct()
     search_query = request.GET.get('search')
     queryset = queryset.search(search_query)
-    return { 'context': get_if_id_present(queryset, id) }
+    return {'context': get_if_id_present(queryset, id)}
+
 
 @render()
 def sections(request, id=None, version=None, ext=None):
@@ -170,8 +177,8 @@ def sections(request, id=None, version=None, ext=None):
         sections[section['id']] = section
 
     if id is not None:
-        return { 'context': sections.values()[0] }
-    return { 'context': sections.values() }
+        return {'context': sections.values()[0]}
+    return {'context': sections.values()}
 
 
 @render()
@@ -207,7 +214,7 @@ def section_conflicts(request, id=None, version=None, ext=None):
             'id': section_id,
             'conflicts': list(conflicts),
         })
-    return { 'context': collection }
+    return {'context': collection}
 
 
 @render()
@@ -232,12 +239,12 @@ def schedules(request, slug=None, version=None):
 
     # if check flag given, return only if we have a schedule or not.
     if request.GET.get('check'):
-        return { 'context': has_schedule(selected_courses, conflict_cache) }
+        return {'context': has_schedule(selected_courses, conflict_cache)}
 
     # check the cache
     if not created and selection.api_cache:
         print selection.api_cache
-        return { 'context': json.loads(selection.api_cache) }
+        return {'context': json.loads(selection.api_cache)}
 
     schedules = compute_schedules(selected_courses, conflict_cache)
     print schedules
@@ -263,7 +270,7 @@ def schedules(request, slug=None, version=None):
     selection.api_cache = json.dumps(context)
     selection.save()
 
-    return { 'context': context }
+    return {'context': context}
 
 ###########################################################################
 
@@ -347,6 +354,7 @@ class APIMixin(views.AjaxJsonResponseMixin):
     # override mixin method
     def should_filter_by_semester(self):
         return self.get_api_version() < 3
+
 
 class ObjectList(APIMixin, ListView):
     def get_queryset(self):
@@ -438,4 +446,3 @@ class SectionDetailView(APIMixin, views.SemesterBasedMixin, DetailView):
             return self.get_queryset()[0]
         except IndexError:
             raise models.Section.DoesNotExist
-

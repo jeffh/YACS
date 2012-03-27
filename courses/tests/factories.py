@@ -63,6 +63,7 @@ class CourseFactory(factory.Factory):
     max_credits = 4
     grade_type = ''
 
+
 class OfferedForFactory(factory.Factory):
     FACTORY_FOR = models.OfferedFor
 
@@ -86,6 +87,3 @@ class SemesterDepartmentFactory(factory.Factory):
 
     department = factory.LazyAttribute(lambda s: DepartmentFactory())
     semester = factory.LazyAttribute(lambda s: SemesterFactory())
-
-
-

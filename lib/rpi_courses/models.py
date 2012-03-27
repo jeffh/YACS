@@ -18,7 +18,7 @@ class ReadOnly(object):
     """
     def __getattr__(self, key):
         if not key.startswith('_') and not key.endswith('__'):
-            value = getattr(self, '_'+key)
+            value = getattr(self, '_' + key)
 
             the_type = type(value)
             if the_type == list:
@@ -27,9 +27,9 @@ class ReadOnly(object):
                 return FrozenDict(the_type)
 
             return value
-        raise AttributeError, "type object %r has no attribute %r" % (
+        raise AttributeError("type object %r has no attribute %r" % (
             self.__class__.__name__, key
-        )
+        ))
 
 
 class CrossListing(ReadOnly):
@@ -94,7 +94,7 @@ class Period(ReadOnly):
         days = []
         for elem in tag.findAll(recursive=False):
             if elem.name != 'day':
-                raise TypeError, "Unknown tag found: "+str(elem)
+                raise TypeError("Unknown tag found: " + str(elem))
             days.append(elem.string)
         return Period(
             tag['type'], tag['instructor'], tag['start'], tag['end'],
@@ -186,7 +186,6 @@ class Section(ReadOnly):
     #        self.periods, self.notes) == (other.crn, other.num, \
     #        other.seats_taken, other.periods, self.notes)
 
-
     def __hash__(self):
         if self.__hash is None:
             result = hash(self.crn)
@@ -209,7 +208,7 @@ class Section(ReadOnly):
         notes = []
         for elem in tag.findAll(recursive=False):
             if elem.name not in ('period', 'note'):
-                raise TypeError, "Unknown tag found: "+str(elem)
+                raise TypeError("Unknown tag found: " + str(elem))
             if elem.name == 'note':
                 notes.append(elem.string.strip())
             elif elem.name == 'period':
@@ -353,4 +352,3 @@ class Course(ReadOnly):
             tag['name'], tag['dept'], int(tag['num']), tag['credmin'],
             tag['credmax'], tag['gradetype'], [s for s in sections if s.is_valid]
         )
-

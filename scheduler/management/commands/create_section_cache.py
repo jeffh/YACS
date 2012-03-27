@@ -24,5 +24,3 @@ class Command(BaseCommand):
             for semester in semesters:
                 print "Computing conflicts for %d-%d..." % (semester.year, semester.month)
                 models.cache_conflicts(semester=semester, sql=options.get('sql'))
-
-

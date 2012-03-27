@@ -218,7 +218,7 @@ test: prefix=coverage run -a
 # we can't run with python arg
 test: PYTHON=
 test: begin_coverage test_only end_coverage
-test_only: test_django test_lib
+test_only: test_django test_lib pep8
 
 begin_coverage:
 	coverage erase
@@ -231,6 +231,9 @@ test_django:
 
 test_lib:
 	$(prefix)$(NOSETESTS) -x -w lib
+
+pep8:
+	pep8 . --exclude=migrations --statistics --count --ignore=E501
 
 ##### END Testing Operations #####
 

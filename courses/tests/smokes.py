@@ -17,6 +17,7 @@ from courses.tests.factories import (SemesterFactory, SemesterDepartmentFactory,
 
 class BasicSchema(ShortcutTestCase):
     urls = 'yacs.urls'
+
     def setUp(self):
         semester = SemesterFactory.create(year=2011, month=1)
         course = CourseFactory.create(pk=2)
@@ -34,8 +35,10 @@ class BasicSchema(ShortcutTestCase):
 
         self.semester, self.course, self.cs_dept, self.ecse_dept = semester, course, cs_dept, ecse_dept
 
+
 def ids(list_of_dicts):
     return [e.id for e in list_of_dicts]
+
 
 class ListDepartmentsIntegrationTests(BasicSchema):
     def test_list_departments(self):
@@ -101,4 +104,3 @@ class SearchTest(BasicSchema):
         self.assertIn(self.course1, courses)
         self.assertIn(self.course2, courses)
         self.assertNotIn(self.course3, courses)
-

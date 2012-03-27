@@ -26,4 +26,3 @@ def record(request):
     eids = [entry.id for entry in models.Entry.objects.all()[:30]]
     models.Entry.objects.exclude(id__in=eids).delete()
     return HttpResponse('ok')
-

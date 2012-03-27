@@ -124,4 +124,3 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
         "/2011/1/schedules/MQ/1/"
         response = self.get('schedules', year=2011, month=1, slug='MQ', index=1)
         self.assertEqual(response.status_code, 200)
-

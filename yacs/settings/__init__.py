@@ -3,6 +3,7 @@ import sys
 
 from django.core.exceptions import ImproperlyConfigured
 
+
 is_running_tests = 'test' in sys.argv
 if is_running_tests:
     environment = 'test'
@@ -22,4 +23,3 @@ else:
     raise ImproperlyConfigured('YACS_ENV environmental variable needs to be set, unless tests are running.')
 
 settings.transfer(globals())
-

@@ -11,8 +11,10 @@ from courses.tests.factories import (
 
 ################# API 4 #####################
 
+
 class TestAPI4Semesters(ShortcutTestCase):
     urls = 'api.urls'
+
     def setUp(self):
         self.s1 = SemesterFactory.create(year=2011)
         self.s2 = SemesterFactory.create(year=2012, month=9)
@@ -42,7 +44,8 @@ class TestAPI4Semesters(ShortcutTestCase):
 
     def test_get_semesters_by_ids(self):
         s3 = SemesterFactory.create()
-        json = self.json_get('v4:semesters', get='?id=%d&id=%d' % (s3.id, self.s2.id))
+        json = self.json_get(
+            'v4:semesters', get='?id=%d&id=%d' % (s3.id, self.s2.id))
 
         # for some odd reason, accuracy is lost for datetimes.
         for row in json['result']:
@@ -70,9 +73,8 @@ class TestAPI4Semesters(ShortcutTestCase):
         self.assertEqual(json, {
             u"version": 4,
             u"success": True,
-            u"result": [ self.as_dict(self.s2) ],
+            u"result": [self.as_dict(self.s2)],
         })
-
 
     def test_get_semester_by_dept(self):
         d1 = DepartmentFactory.create()
@@ -88,7 +90,7 @@ class TestAPI4Semesters(ShortcutTestCase):
         self.assertEqual(json, {
             u"version": 4,
             u"success": True,
-            u"result": [ self.as_dict(self.s1) ],
+            u"result": [self.as_dict(self.s1)],
         })
 
     def test_get_semester_by_month(self):
@@ -101,7 +103,7 @@ class TestAPI4Semesters(ShortcutTestCase):
         self.assertEqual(json, {
             u"version": 4,
             u"success": True,
-            u"result": [ self.as_dict(self.s1) ],
+            u"result": [self.as_dict(self.s1)],
         })
 
     def test_get_semester_by_year(self):
@@ -114,7 +116,7 @@ class TestAPI4Semesters(ShortcutTestCase):
         self.assertEqual(json, {
             u"version": 4,
             u"success": True,
-            u"result": [ self.as_dict(self.s2) ],
+            u"result": [self.as_dict(self.s2)],
         })
 
     def test_get_semester(self):
@@ -152,6 +154,7 @@ class TestAPI4Semesters(ShortcutTestCase):
 
 class TestAPI4Departments(ShortcutTestCase):
     urls = 'api.urls'
+
     def as_dict(self, dept):
         return {
             u"code": dept.code,
@@ -171,7 +174,9 @@ class TestAPI4Departments(ShortcutTestCase):
 
     def test_get_departments_by_ids(self):
         d1, d2, d3 = DepartmentFactory.create_batch(3)
-        json = self.json_get('v4:departments', get='?id=%d&id=%d' % (d1.id, d2.id), status_code=200)
+        json = self.json_get(
+            'v4:departments', get='?id=%d&id=%d' % (d1.id, d2.id),
+            status_code=200)
 
         self.assertEqual(json, {
             u"version": 4,
@@ -186,14 +191,14 @@ class TestAPI4Departments(ShortcutTestCase):
         d1, d2, d3 = DepartmentFactory.create_batch(3)
         d4 = DepartmentFactory.create(code='FOO')
 
-        json = self.json_get('v4:departments', get='?code=FOO', status_code=200)
+        json = self.json_get(
+            'v4:departments', get='?code=FOO', status_code=200)
 
         self.assertEqual(json, {
             u"version": 4,
             u"success": True,
-            u"result": [ self.as_dict(d4) ]
+            u"result": [self.as_dict(d4)]
         })
-
 
     def test_get_departments_by_courses(self):
         d1, d2, d3 = DepartmentFactory.create_batch(3)
@@ -201,7 +206,10 @@ class TestAPI4Departments(ShortcutTestCase):
         c2 = CourseFactory.create(department=d2)
         c3 = CourseFactory.create(department=d3)
 
-        json = self.json_get('v4:departments', get='?course_id=%d&course_id=%d' % (c1.id, c2.id), status_code=200)
+        json = self.json_get(
+            'v4:departments',
+            get='?course_id=%d&course_id=%d' % (c1.id, c2.id),
+            status_code=200)
 
         self.assertEqual(json, {
             u"version": 4,
@@ -212,7 +220,6 @@ class TestAPI4Departments(ShortcutTestCase):
             ]
         })
 
-
     def test_get_departments_by_semester(self):
         s1, s2 = SemesterFactory.create_batch(2)
         d1, d2, d3 = DepartmentFactory.create_batch(3)
@@ -220,7 +227,10 @@ class TestAPI4Departments(ShortcutTestCase):
         SemesterDepartmentFactory.create(semester=s1, department=d2)
         SemesterDepartmentFactory.create(semester=s2, department=d3)
 
-        json = self.json_get('v4:departments', get='?semester_id=%d' % s1.id, status_code=200)
+        json = self.json_get(
+            'v4:departments',
+            get='?semester_id=%d' % s1.id,
+            status_code=200)
 
         self.assertEqual(json, {
             u"version": 4,
@@ -282,7 +292,8 @@ class TestAPI4Courses(ShortcutTestCase):
         c1, c2 = CourseFactory.create_batch(2)
         d = DepartmentFactory.create(name='Computer Science')
         c3, c4 = CourseFactory.create_batch(2, department=d)
-        json = self.json_get('v4:courses', get='?search=Computer', status_code=200)
+        json = self.json_get(
+            'v4:courses', get='?search=Computer', status_code=200)
         self.maxDiff = None
         self.assertEqual(json, {
             u"version": 4,
@@ -297,23 +308,25 @@ class TestAPI4Courses(ShortcutTestCase):
         c1, c2 = CourseFactory.create_batch(2)
         d = DepartmentFactory.create(code='CSCI')
         c3 = CourseFactory.create(department=d)
-        json = self.json_get('v4:courses', get='?search=CS', status_code=200)
+        json = self.json_get(
+            'v4:courses', get='?search=CS', status_code=200)
         self.maxDiff = None
         self.assertEqual(json, {
             u"version": 4,
             u"success": True,
-            u"result": [ self.to_dict(c3) ],
+            u"result": [self.to_dict(c3)],
         })
 
     def test_search_name(self):
         c1, c2 = CourseFactory.create_batch(2)
         c3 = CourseFactory.create(name="Cakes for Dummies")
-        json = self.json_get('v4:courses', get='?search=cakes dum', status_code=200)
+        json = self.json_get(
+            'v4:courses', get='?search=cakes dum', status_code=200)
         self.maxDiff = None
         self.assertEqual(json, {
             u"version": 4,
             u"success": True,
-            u"result": [ self.to_dict(c3) ],
+            u"result": [self.to_dict(c3)],
         })
 
     def test_search_instructor(self):
@@ -349,7 +362,8 @@ class TestAPI4Courses(ShortcutTestCase):
         d = DepartmentFactory.create(code='CSCI')
         c1, c2 = CourseFactory.create_batch(2, department=d)
         c3, c4 = CourseFactory.create_batch(2)
-        json = self.json_get('v4:courses', get='?department_code=%s' % d.code, status_code=200)
+        json = self.json_get(
+            'v4:courses', get='?department_code=%s' % d.code, status_code=200)
         self.maxDiff = None
         self.assertEqual(json, {
             u"version": 4,
@@ -364,7 +378,8 @@ class TestAPI4Courses(ShortcutTestCase):
         d = DepartmentFactory.create(code='CSCI')
         c1, c2 = CourseFactory.create_batch(2, department=d)
         c3, c4 = CourseFactory.create_batch(2)
-        json = self.json_get('v4:courses', get='?department_id=%s' % d.id, status_code=200)
+        json = self.json_get(
+            'v4:courses', get='?department_id=%s' % d.id, status_code=200)
         self.assertEqual(json, {
             u"version": 4,
             u"success": True,
@@ -396,10 +411,12 @@ class TestAPI4Courses(ShortcutTestCase):
             u"result": self.to_dict(c1),
         })
 
-
     def test_get_courses_by_ids(self):
         c1, c2, c3, c4 = CourseFactory.create_batch(4)
-        json = self.json_get('v4:courses', get='?id=%d&id=%d' % (c1.id, c3.id), status_code=200)
+        json = self.json_get(
+            'v4:courses',
+            get='?id=%d&id=%d' % (c1.id, c3.id),
+            status_code=200)
         self.assertEqual(json, {
             u"version": 4,
             u"success": True,
@@ -416,15 +433,18 @@ class TestAPI4Sections(ShortcutTestCase):
     def to_dict(self, obj):
         section = obj.section
         period = obj.period
+
         def time_format(t):
             return u"%02d:%02d:%02d" % (
                 t.hour, t.minute, t.second
             )
+
         return {
             u"course_id": section.course_id,
             u"seats_total": section.seats_total,
             u"crosslisted_id": section.crosslisted_id,
-            u"semester_id": section.semester.id, # obj.semester.id is another id
+            # obj.semester.id is another id
+            u"semester_id": section.semester.id,
             u"id": obj.id,
             u"notes": unicode(section.notes),
             u"section_times": [
@@ -460,7 +480,8 @@ class TestAPI4Sections(ShortcutTestCase):
         sem = SemesterFactory.create()
         s1, s2 = SectionPeriodFactory.create_batch(2, semester=sem)
         s3, s4 = SectionPeriodFactory.create_batch(2)
-        json = self.json_get('v4:sections', get='?semester_id=%d' % sem.id, status_code=200)
+        json = self.json_get(
+            'v4:sections', get='?semester_id=%d' % sem.id, status_code=200)
         self.assertEqual(json, {
             u"version": 4,
             u"success": True,
@@ -476,7 +497,8 @@ class TestAPI4Sections(ShortcutTestCase):
         s1 = SectionPeriodFactory.create(section=sec1)
         s2 = SectionPeriodFactory.create(section=sec2)
         s3, s4 = SectionPeriodFactory.create_batch(2)
-        json = self.json_get('v4:sections', get='?course_id=%d' % c1.id, status_code=200)
+        json = self.json_get(
+            'v4:sections', get='?course_id=%d' % c1.id, status_code=200)
         self.assertEqual(json, {
             u"version": 4,
             u"success": True,
@@ -498,7 +520,10 @@ class TestAPI4Sections(ShortcutTestCase):
 
     def test_get_sections_by_ids(self):
         s1, s2, s3, s4 = SectionPeriodFactory.create_batch(4)
-        json = self.json_get('v4:sections', get='?id=%d&id=%d' % (s1.id, s3.id), status_code=200)
+        json = self.json_get(
+            'v4:sections',
+            get='?id=%d&id=%d' % (s1.id, s3.id),
+            status_code=200)
         self.assertEqual(json, {
             u"version": 4,
             u"success": True,
@@ -510,7 +535,10 @@ class TestAPI4Sections(ShortcutTestCase):
 
     def test_get_sections_by_crn(self):
         s1, s2, s3, s4 = SectionPeriodFactory.create_batch(4)
-        json = self.json_get('v4:sections', get='?crn=%d&crn=%d' % (s1.section.crn, s3.section.crn), status_code=200)
+        json = self.json_get(
+            'v4:sections',
+            get='?crn=%d&crn=%d' % (s1.section.crn, s3.section.crn),
+            status_code=200)
         self.assertEqual(json, {
             u"version": 4,
             u"success": True,
@@ -525,14 +553,22 @@ class TestAPI4Sections(ShortcutTestCase):
 class TestAPI4SectionConflicts(ShortcutTestCase):
     urls = 'api.urls'
 
+
 class TestAPI4Selection(ShortcutTestCase):
     urls = 'api.urls'
 
 ################# API 2 #####################
 
+
 class TestLatestAPI2(object):
-    fixtures = ['semesters.json', 'courses/fixtures/calc1.json', 'courses/fixtures/intro-to-cs.json', 'courses/fixtures/data-structures.json']
+    fixtures = [
+        'semesters.json',
+        'courses/fixtures/calc1.json',
+        'courses/fixtures/intro-to-cs.json',
+        'courses/fixtures/data-structures.json'
+    ]
     urls = 'api.urls'
+
     def fields(self, dicts, field):
         return list(d[field] for d in dicts)
 
@@ -547,11 +583,21 @@ class TestLatestAPI2(object):
         json = self.json_get('v2:departments', status_code=200)
         self.assertEqual(json['status'], 'OK')
         self.assertEqual(len(json['payload']), 3)
-        self.assertEqual(self.fields(json['payload'], 'code'), ['CSCI', 'ECSE', 'MATH'])
-        self.assertEqual(self.fields(json['payload'], 'name'), ['Computer Science', 'Electrical, Computer, and Systems Engineering', 'Mathematics'])
+        self.assertEqual(
+            self.fields(json['payload'], 'code'),
+            ['CSCI', 'ECSE', 'MATH']
+        )
+        self.assertEqual(
+            self.fields(json['payload'], 'name'),
+            [
+                'Computer Science',
+                'Electrical, Computer, and Systems Engineering',
+                'Mathematics'
+            ])
 
     def test_get_courses_by_dept(self):
-        json = self.json_get('v2:courses-by-dept', code='CSCI', status_code=200)
+        json = self.json_get(
+            'v2:courses-by-dept', code='CSCI', status_code=200)
         self.assertEqual(json['status'], 'OK')
         dept = json['payload']
         self.assertEqual(dept['code'], 'CSCI')
@@ -559,13 +605,17 @@ class TestLatestAPI2(object):
         self.assertEqual(len(dept['courses']), 2)
 
     def test_get_courses_via_search(self):
-        json = self.json_get('v2:search-all-courses', get='?q=CSCI', status_code=200)
+        json = self.json_get(
+            'v2:search-all-courses', get='?q=CSCI', status_code=200)
         self.assertEqual(json['status'], 'OK')
         results = json['payload']
         self.assertEqual(len(results), 2)
-        self.assertEqual([r['name'] for r in results], ['INTRO TO COMPUTER PROGRAMMING', 'DATA STRUCTURES'])
+        self.assertEqual(
+            [r['name'] for r in results],
+            ['INTRO TO COMPUTER PROGRAMMING', 'DATA STRUCTURES'])
 
-        json = self.json_get('v2:search-all-courses', get='?q=CALCULUS', status_code=200)
+        json = self.json_get(
+            'v2:search-all-courses', get='?q=CALCULUS', status_code=200)
         self.assertEqual(json['status'], 'OK')
         results = json['payload']
         self.assertEqual(len(results), 1)
@@ -575,20 +625,30 @@ class TestLatestAPI2(object):
         json = self.json_get('v2:courses', status_code=200)
         self.assertEqual(json['status'], 'OK')
         self.assertEqual(len(json['payload']), 3)
-        self.assertSetEqual(set(c['name'] for c in json['payload']), set(['CALCULUS I', 'INTRO TO COMPUTER PROGRAMMING', 'DATA STRUCTURES']))
+        self.assertSetEqual(
+            set(c['name'] for c in json['payload']),
+            set([
+                'CALCULUS I',
+                'INTRO TO COMPUTER PROGRAMMING',
+                'DATA STRUCTURES'
+            ]))
 
     def test_get_course(self):
         json = self.json_get('v2:course', cid=96, status_code=200)
         self.assertEqual(json['status'], 'OK')
         obj = json['payload']
         self.assertEqual(obj['name'], 'CALCULUS I')
-        self.assertEqual(obj['department'], dict(code=u'MATH', name=u'Mathematics'))
+        self.assertEqual(
+            obj['department'],
+            dict(code=u'MATH', name=u'Mathematics'))
         self.assertEqual(obj['number'], 1010)
         self.assertEqual(obj['min_credits'], 4)
         self.assertEqual(obj['max_credits'], 4)
 
     def test_get_course_by_code(self):
-        json = self.json_get('v2:course-by-code', code='CSCI', number=1010, status_code=200)
+        json = self.json_get(
+            'v2:course-by-code',
+            code='CSCI', number=1010, status_code=200)
         self.assertEqual(json['status'], 'OK')
         obj = json['payload']
         self.assertEqual(obj['name'], 'INTRO TO COMPUTER PROGRAMMING')
@@ -598,14 +658,17 @@ class TestLatestAPI2(object):
 
     # TODO: make more comprehensive
     def test_get_course_sections_by_code(self):
-        json = self.json_get('v2:sections', code='CSCI', number=1010, status_code=200)
+        json = self.json_get(
+            'v2:sections', code='CSCI', number=1010, status_code=200)
 
     # TODO: make more comprehensive
     def test_get_course_sections_by_course_id(self):
         json = self.json_get('v2:sections', cid=224, status_code=200)
 
     def test_get_section_through_code(self):
-        json = self.json_get('v2:section', code='CSCI', number=1010, secnum=1, status_code=200)
+        json = self.json_get(
+            'v2:section', code='CSCI', number=1010, secnum=1,
+            status_code=200)
         self.assertEqual(json['status'], 'OK')
         obj = json['payload']
         self.assertEqual(obj['number'], '1')
@@ -644,8 +707,10 @@ class TestLatestAPI2(object):
 
 # yeah, I know, not the best practice to be doing this.. but I'm short on time!
 class TestLatestAPI2ViaYearAndMonth(TestLatestAPI2):
+
     def json_get(self, *args, **kwargs):
-        return super(TestLatestAPIViaYearAndMonth, self).json_get(*args, year=2011, month=9, **kwargs)
+        return super(TestLatestAPIViaYearAndMonth, self) \
+                .json_get(*args, year=2011, month=9, **kwargs)
 
 
 # TODO: make more comprehensive
@@ -659,15 +724,18 @@ class TestSemesterAPI2(ShortcutTestCase):
         self.assertEqual(models.Semester.objects.count(), len(obj))
 
     def test_get_semesters_by_year(self):
-        json = self.json_get('v2:semesters-by-year', year=2011, status_code=200)
+        json = self.json_get(
+            'v2:semesters-by-year', year=2011, status_code=200)
 
 
 class TestSemesterAPI2WithFactory(ShortcutTestCase):
     urls = 'api.urls'
+
     def test_get_semesters_with_one_semester(self):
         semester = SemesterFactory.create()
         json = self.json_get('v2:semesters', status_code=200)
         obj = json['payload']
         expected_item = semester.toJSON()
-        expected_item['date_updated'] = expected_item['date_updated'].isoformat()
+        date_updated = expected_item['date_updated']
+        expected_item['date_updated'] = date_updated.isoformat()
         self.assertEqual([expected_item], obj)

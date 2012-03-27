@@ -3,11 +3,15 @@ from BeautifulSoup import BeautifulSoup
 import datetime
 import urllib2
 
-from ..web import get
-from features import * # all object postfixed with '_feature' will get used.
+from rpi_courses.web import get
+from features import *  # all object postfixed with '_feature' will get used.
 
 import re
+
+
 RE_DIV = re.compile(r'</?div[^>]*?>', re.I)
+
+
 def _remove_divs(string):
     # Some of the DIV formatting even breaks beautiful soup!
     # like this snippet:
@@ -21,6 +25,7 @@ def _remove_divs(string):
     #  </TD>
     # when we actually want all TR > TD, the soup misses this... because of the invalid closing DIV tags...
     return RE_DIV.sub('', string)
+
 
 class CourseCatalog(object):
     """Represents the RPI course catalog.

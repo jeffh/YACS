@@ -16,12 +16,13 @@ catalog = None
 # from BeautifulSoup import BeautifulSoup; soup = BeautifulSoup(open('lib/test/rpi_courses/test_data/sis_courses.html').read())
 # from rpi_courses.sis_parser import CourseCatalog; catalog = CourseCatalog.from_file('lib/test/rpi_courses/test_data/sis_courses.html')
 
+
 class TestCatalog(TestCaseForModel):
     def setUp(self):
         global catalog
         if catalog is None:
             catalog = CourseCatalog.from_string(CONTENTS)
-        self.catalog = catalog#CourseCatalog.from_string(CONTENTS)
+        self.catalog = catalog
 
 #    def test_crosslisting(self):
 #        crns = self.catalog.crosslisted_with(76093)
@@ -103,7 +104,7 @@ class TestCatalog(TestCaseForModel):
                 periods=[models.Period(
                     type='LEC', instructor='Walf',
                     start=1400, end=1550, location='',
-                    int_days=(1,4),
+                    int_days=(1, 4),
                 )],
                 notes=['MEETS WITH COGS 4967']
             )]
@@ -269,7 +270,7 @@ class TestCatalog(TestCaseForModel):
                     periods=[models.Period(
                         type='LEC', instructor='Fahey',
                         start=1000, end=1150, location='',
-                        int_days=(0,3)
+                        int_days=(0, 3)
                     )],
                     notes=[]
                 ),
@@ -278,7 +279,7 @@ class TestCatalog(TestCaseForModel):
                     periods=[models.Period(
                         type='LEC', instructor='Carcasole',
                         start=1000, end=1150, location='',
-                        int_days=(1,4)
+                        int_days=(1, 4)
                     )],
                     notes=[]
                 ),
@@ -287,7 +288,7 @@ class TestCatalog(TestCaseForModel):
                     periods=[models.Period(
                         type='LEC', instructor='Thero',
                         start=1200, end=1350, location='',
-                        int_days=(0,3)
+                        int_days=(0, 3)
                     )],
                     notes=[]
                 )
@@ -306,7 +307,7 @@ class TestCatalog(TestCaseForModel):
                     periods=[models.Period(
                         type='LEC', instructor='Chow',
                         start=1200, end=1320, location='',
-                        int_days=(1,4)
+                        int_days=(1, 4)
                     )],
                     notes=[]
                 )
@@ -325,7 +326,7 @@ class TestCatalog(TestCaseForModel):
                     periods=[models.Period(
                         type='LEC', instructor='Saulnier',
                         start=1600, end=1720, location='',
-                        int_days=(0,3)
+                        int_days=(0, 3)
                     )],
                     notes=['MEETS WITH ECSE 6560']
                 )
@@ -333,6 +334,7 @@ class TestCatalog(TestCaseForModel):
         )
 
         self.assertCourseEquals(course, expected_course)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -23,11 +23,13 @@ from scheduler.scheduling import compute_schedules
 ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')
 SECTION_LIMIT = getattr(settings, 'SECTION_LIMIT', 60)
 
+
 def compute_selection_dict(sids):
     selection = {}
     for sid, cid in Section.objects.filter(id__in=sids).values_list('id', 'course_id'):
         selection.setdefault(cid, []).append(sid)
     return selection
+
 
 class SelectionSelectedCoursesListView(SelectedCoursesListView):
     def get_context_data(self, **kwargs):
@@ -35,6 +37,7 @@ class SelectionSelectedCoursesListView(SelectedCoursesListView):
         selection = context['selection'] = models.Selection.objects.get(slug=self.kwargs.get('slug'))
         context['raw_selection'] = dumps(compute_selection_dict(selection.section_ids))
         return context
+
 
 class ResponsePayloadException(Exception):
     "This exception is raised if a special form of HttpResponse is wanted to be returned (eg - JSON error response)."
@@ -78,7 +81,7 @@ class ConflictMixin(SemesterBasedMixin):
         """
         section_ids = set(s.id for s in sections)
         conflict_mapping = models.SectionConflict.objects.as_dictionary(section_ids)
-        empty_set = frozenset() # saves memory
+        empty_set = frozenset()  # saves memory
         for section in sections:
             section.conflicts = conflict_mapping.get(section.id) or empty_set
 
@@ -170,7 +173,7 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
             max_time = max(max_time or period.end, period.end)
             dow_used = dow_used.union(period.days_of_week)
 
-        timerange = range(min_time.hour -1 , max_time.hour + 2)
+        timerange = range(min_time.hour - 1, max_time.hour + 2)
         return timerange, sorted_daysofweek(dow_used)
 
     def get_is_thumbnail(self):
@@ -182,10 +185,10 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
     def section_mapping(self, selected_courses, schedules, periods):
         "Builds the data structure of the data for faster display in the template (less looping)."
         timerange, dows = self.period_stats(periods)
-        section_mapping = {} # [schedule-index][dow][starting-hour]
+        section_mapping = {}  # [schedule-index][dow][starting-hour]
         dow_mapping = dict((d, i) for i, d in enumerate(DAYS))
         for i, schedule in enumerate(schedules):
-            the_dows = section_mapping[i+1] = {}
+            the_dows = section_mapping[i + 1] = {}
             for section in schedule.values():
                 for j, period in enumerate(section.get_periods()):
                     for dow in period.days_of_week:
@@ -203,11 +206,11 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
     def section_mapping_for_thumbnails(self, selected_courses, schedules, periods):
         "Builds the data structure of the data for faster display in the template (less looping)."
         timerange, dows = self.period_stats(periods)
-        section_mapping = {} # [schedule-index][hour][starting-hour]
+        section_mapping = {}  # [schedule-index][hour][starting-hour]
         dow_mapping = dict((d, i) for i, d in enumerate(DAYS))
         # TODO: fixme -- change to new section_mapping
         for i, schedule in enumerate(schedules):
-            the_dows = section_mapping[i+1] = {}
+            the_dows = section_mapping[i + 1] = {}
             for section in schedule.values():
                 for j, period in enumerate(section.get_periods()):
                     for dow in period.days_of_week:
@@ -302,6 +305,7 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
 class JsonComputeSchedules(AjaxJsonResponseMixin, ComputeSchedules):
     "Simply provides a JSON output format for the ComputeSchedules view."
     json_content_prefix = ''
+
     def get_is_ajax(self):
         return True
 
@@ -338,9 +342,8 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
         'index': index,
     }, RequestContext(request))
 
-
-
 ## TODO -- implement me
+
 
 def icalendar(request, year, month):
     from courses.bridge.rpi import export_schedule

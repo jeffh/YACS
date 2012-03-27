@@ -100,6 +100,7 @@ class Solution(object):
         return self._len
 
     _DoesNotExist = object()
+
     def __getitem__(self, key):
         result = self.new.get(key, self._DoesNotExist)
         if result is self._DoesNotExist:
@@ -122,7 +123,7 @@ class BaseSolver(SolverInterface):
         self.record_solutions = record_solutions
 
     def _iter_reset(self):
-        self._solutions_seen = 0 # self._start
+        self._solutions_seen = 0  # self._start
         self._found_solutions_at = {}
 
     def _record_solution(self, solution):
@@ -155,7 +156,7 @@ class BruteForceSolver(BaseSolver):
         """Returns the size of each domain for a simple constraint size computation.
         This is used to pick the most constraining constraint first.
         """
-        return tuple(len(domain) for name,domain in self._vars.iteritems())
+        return tuple(len(domain) for name, domain in self._vars.iteritems())
 
     def satisfies_constraints(self, possible_solution):
         """Return True if the given solution is satisfied by all the constraints."""
@@ -169,7 +170,7 @@ class BruteForceSolver(BaseSolver):
         """Returns the size of each domain for a simple constraint size computation.
         This is used to pick the most constraining constraint first.
         """
-        return tuple(len(domain) for name,domain in self._vars.iteritems())
+        return tuple(len(domain) for name, domain in self._vars.iteritems())
 
     def set_conditions(self, variables, constraints):
         """Problem provided data.
@@ -192,7 +193,7 @@ class BruteForceSolver(BaseSolver):
         keys = self._vars.keys()
         for result in product(*self._vars.values()):
             possible_solution = {}
-            for i,v in enumerate(result):
+            for i, v in enumerate(result):
                 possible_solution[keys[i]] = v
             yield possible_solution
 
@@ -297,7 +298,7 @@ class BacktrackingSolver(BruteForceSolver):
         """
         self._iter_reset()
         self.seen = set()
-        self._solutions_seen = 0 #self._start
+        self._solutions_seen = 0
         iterator = self._next(Solution())
         for i in range(self._start):
             iterator.next()
@@ -307,4 +308,3 @@ class BacktrackingSolver(BruteForceSolver):
 
 
 DefaultSolver = BruteForceSolver
-

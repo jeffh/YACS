@@ -9,8 +9,10 @@ import unittest
 from time import mktime
 from constants import XML_FILE, XML_PARSER_FILE
 
+
 with open(XML_PARSER_FILE) as f:
     CONTENTS = f.read()
+
 
 class TestCatalog(TestCaseForModel):
     def setUp(self):
@@ -86,7 +88,7 @@ class TestCatalog(TestCaseForModel):
                     periods=[models.Period(
                         type='LEC', instructor='Fahey',
                         start=1000, end=1150, location='CARNEG 206',
-                        int_days=(0,3)
+                        int_days=(0, 3)
                     )],
                     notes=[]
                 ),
@@ -95,7 +97,7 @@ class TestCatalog(TestCaseForModel):
                     periods=[models.Period(
                         type='LEC', instructor='Carcasole',
                         start=1000, end=1150, location='CARNEG 101',
-                        int_days=(1,4)
+                        int_days=(1, 4)
                     )],
                     notes=[]
                 )
@@ -103,6 +105,7 @@ class TestCatalog(TestCaseForModel):
         )
 
         self.assertCourseEquals(course, expected_course)
+
 
 if __name__ == '__main__':
     unittest.main()

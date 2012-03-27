@@ -12,14 +12,17 @@ def remove_zero_prefix(timestr):
         return timestr[1:]
     return timestr
 
+
 @register.filter
 def bold_topics_include(string):
     return string.replace('Topics include', '<strong>Topics include</strong>')
+
 
 @register.filter
 def requires_truncation(string, summary_size):
     tstr = string.lower().strip()
     return len(tstr[:summary_size].strip()) != len(tstr.strip())
+
 
 @register.filter
 def reverse_truncatechars(string, start):
@@ -27,6 +30,7 @@ def reverse_truncatechars(string, start):
     excludes the first nth characters.
     """
     return string[start:]
+
 
 @register.filter
 def toJSON(obj):
@@ -51,8 +55,10 @@ def get(obj, key):
 def display_period(period):
     fmt = "%s-%s"
     start_format, end_format = "%I", "%I"
-    if period.start.minute != 0: start_format += ':%M'
-    if period.end.minute != 0: end_format += ':%M'
+    if period.start.minute != 0:
+        start_format += ':%M'
+    if period.end.minute != 0:
+        end_format += ':%M'
     end_format += " %p"
     return fmt % (
         remove_zero_prefix(period.start.strftime(start_format)).lower(),

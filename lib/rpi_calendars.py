@@ -37,20 +37,27 @@ class Event(object):
             self.name, self.guid, self.start, self.end, self.is_all_day
         )
 
+
 def get_url(num=356):
     return "http://events.rpi.edu/webcache/v1.0/jsonDays/" + str(num) + "/list-json/%28catuid%3D%2700f18254-27fe1f37-0127-fe1f37da-00000001%27%29/no--object.json"
 
+
 def get_url_by_range(start, end):
-    return "http://events.rpi.edu/webcache/v1.0/jsonRange/"+start+"/"+end+"/list-json/%28catuid%3D%2700f18254-27fe1f37-0127-fe1f37da-00000001%27%29/no--object.json"
+    return "http://events.rpi.edu/webcache/v1.0/jsonRange/" + start + "/" + end + "/list-json/%28catuid%3D%2700f18254-27fe1f37-0127-fe1f37da-00000001%27%29/no--object.json"
+
+
 def get_json(url):
     with closing(urllib2.urlopen(url)) as handle:
         return json.loads(handle.read())
 
+
 def get_events(obj):
     return list(map(Event.from_dict, obj['bwEventList']['events']))
 
+
 def download_events(url):
     return get_events(get_json(url))
+
 
 class EventNameParser(object):
     def __init__(self):

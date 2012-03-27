@@ -101,6 +101,7 @@ class TemplateBaseOverride(object):
 
 class SemesterBasedMixin(TemplateBaseOverride):
     fetch_semester = False
+
     def get_year_and_month(self):
         """Returns a tuple of the current semester's year and month.
 

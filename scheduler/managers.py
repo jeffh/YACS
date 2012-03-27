@@ -1,6 +1,5 @@
 from django.db.models import Manager
 
-
 from scheduler.utils import slugify, deserialize_numbers, serialize_numbers
 
 
@@ -98,7 +97,7 @@ class SectionConflictManager(Manager):
             queryset = self.among_sections(section_ids)
         conflicts = queryset.values_list('section1__id', 'section2__id')
 
-        result = {} # section_id => [section_ids]
+        result = {}  # section_id => [section_ids]
         for s1, s2 in conflicts:
             result.setdefault(s1, []).append(s2)
             result.setdefault(s2, []).append(s1)
@@ -106,5 +105,3 @@ class SectionConflictManager(Manager):
         for key in result.keys():
             result[key] = frozenset(result[key])
         return result
-
-

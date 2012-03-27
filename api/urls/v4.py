@@ -48,4 +48,3 @@ urlpatterns = patterns('',
     url(r'^/schedules/(?P<slug>[A-Za-z0-9_-]+)/$', views.schedules, api4, name='schedules'),
     url(r'^/schedules/(?P<slug>[A-Za-z0-9_-]+)' + ext_re, views.schedules, api4, name='schedules'),
 )
-

@@ -145,6 +145,7 @@ class CourseDetailView(SemesterBasedMixin, DetailView):
                 .select_related('department') \
                 .full_select(year, month, amount=1)[0]
 
+
 class RedirectToLatestSemesterRedirectView(SemesterBasedMixin, RedirectView):
     "Simply redirects to the latest semester."
     url_name = 'departments'
@@ -155,4 +156,3 @@ class RedirectToLatestSemesterRedirectView(SemesterBasedMixin, RedirectView):
     def get_redirect_url(self, **kwargs):
         semester = self.get_semester()
         return reverse(self.url_name, kwargs=dict(year=semester.year, month=semester.month))
-

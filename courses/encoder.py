@@ -4,42 +4,52 @@ from django.db.models import Model
 
 from courses import models
 
+
 def get_fields(model):
     return model._meta.fields
+
 
 def get_fk_fields(model):
     return [f for f in get_fields(model) if f.rel]
 
+
 def get_normal_fields(model):
     return [f for f in get_fields(model) if not f.rel]
+
 
 def get_field_names(model):
     return [f.name for f in get_fields(model)]
 
+
 def get_normal_field_names(model):
     return [f.name for f in get_normal_fields(model)]
 
+
 def get_fk_field_names(model):
     return [f.name for f in get_fk_fields(model)]
+
 
 def generate_select_related(model, max_depth=1):
     if max_depth < 1:
         return {}
     select_related = {}
     for field in get_fields(model):
-        if field.rel: # related (foreign key) field
+        if field.rel:  # related (foreign key) field
             parent_model = field.related.parent_model
-            select_related[field.name] = generate_select_related(parent_model, max_depth-1)
+            select_related[field.name] = generate_select_related(parent_model, max_depth - 1)
         else:
             select_related[field.name] = {}
     return select_related
+
 
 def has_deferred_fields(queryset):
     fields, is_excluded = queryset.query.deferred_loading
     return not (is_excluded and not fields)
 
+
 def requires_manually_related_scan(queryset):
     return queryset.query.select_related == True
+
 
 def get_select_related_fields(queryset):
     model = queryset.model
@@ -51,8 +61,10 @@ def get_select_related_fields(queryset):
         return generate_select_related(model, depth)
     return queryset.query.select_related
 
+
 def get_prefetch_cache(model):
     return getattr(model, '_prefetched_objects_cache', {})
+
 
 class CoursesEncoderDelegate(object):
     def encoded_model(self, model, obj):
@@ -67,6 +79,7 @@ class CoursesEncoderDelegate(object):
             del obj['semester_id']
             del obj['id']
         return obj
+
 
 class Encoder(object):
     """Handles the encoding of objects into basic python data structures.
@@ -106,7 +119,7 @@ class Encoder(object):
             # if a model instance
             if hasattr(value, '_meta'):
                 obj[field_name] = self.encode_model(value, subfields)
-            else: # just a normal field
+            else:  # just a normal field
                 obj[field_name] = value
         return obj
 
@@ -133,9 +146,9 @@ class Encoder(object):
         return self._result_or_obj(self._invoke('encoded_queryset', queryset, obj), obj)
 
     def encode(self, value):
-        if hasattr(value, 'query'): # queryset
+        if hasattr(value, 'query'):  # queryset
             return self.encode_queryset(value)
-        elif hasattr(value, '_meta'): # model
+        elif hasattr(value, '_meta'):  # model
             return self.encode_model(value)
         elif isinstance(value, list) or isinstance(value, tuple):
             if len(value) and hasattr(value[0], '_meta'):
@@ -149,4 +162,3 @@ class Encoder(object):
         return self._result_or_obj(self._invoke('encode_value', value), value)
 
 default_encoder = Encoder(CoursesEncoderDelegate())
-

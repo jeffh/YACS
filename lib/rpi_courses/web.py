@@ -23,6 +23,7 @@ def get(url, last_modified=None):
     except urllib2.URLError:
         return ""
 
+
 def list_sis_files_for_date(date=None, url_base=SIS_URL):
     date = date or datetime.datetime.now()
     format = '%szs%.4d%.2d.htm'
@@ -46,7 +47,7 @@ def list_sis_files(url_base=SIS_URL):
     urls = []
     while date.year <= today.year:
         urls.extend(list_sis_files_for_date(date, url_base=url_base))
-        date = datetime.date(year=date.year+1, month=1, day=1)
+        date = datetime.date(year=date.year + 1, month=1, day=1)
     return urls
 
 
@@ -62,7 +63,7 @@ def list_rocs_files(url=ROCS_URL):
             continue
         if elem.string.lower() == 'parent directory':
             continue
-        files.append(url+elem['href'])
+        files.append(url + elem['href'])
     return files
 
 
@@ -74,4 +75,3 @@ def is_xml(filename):
 def list_rocs_xml_files(url=ROCS_URL):
     "Gets all the xml files."
     return list(filter(is_xml, list_rocs_files(url)))
-

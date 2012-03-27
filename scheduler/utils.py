@@ -15,5 +15,6 @@ def deserialize_numbers(numbers):
         return []
     return tuple(sorted(int(x) for x in numbers.split(',') if x))
 
+
 def serialize_numbers(numbers):
     return ','.join(str(s) for s in numbers)

@@ -18,7 +18,7 @@ from django.http import HttpResponse
 from courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment)
 from courses.signals import sections_modified
-from courses.utils import Synchronizer
+from courses.utils import Synchronizer, DAYS
 
 # TODO: remove import *
 from catalogparser import *
@@ -38,10 +38,11 @@ except AttributeError:
 logger.addHandler(NullHandler())
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
+
 class ROCSRPIImporter(object):
     """Handles the importation of RPI course data into the database."""
-
     FILE_RE = re.compile(r'(\d+)\.xml')
+
     def __init__(self):
         self.semesters = {}  # semester.ref: semester obj
         for semester in Semester.objects.filter(ref__startswith='http://sis.rpi.edu/reg/rocs/'):
@@ -76,7 +77,7 @@ class ROCSRPIImporter(object):
                 catalog = get_catalog(filename)
 
                 if self.latest_semester and semester == self.latest_semester and catalog.datetime <= self.latest_semester.date_updated:
-                    continue # already up-to-date
+                    continue  # already up-to-date
 
                 logger.debug('found catalog for: %r %r' % (catalog.year, catalog.month))
 
@@ -119,7 +120,7 @@ class ROCSRPIImporter(object):
                 course_obj.save()
             OfferedFor.objects.get_or_create(course=course_obj, semester=semester_obj)
             self.create_sections(course, course_obj, semester_obj)
-            logger.debug((' + ' if created else '   ' ) + course.name)
+            logger.debug((' + ' if created else '   ') + course.name)
 
     def create_sections(self, course, course_obj, semester_obj):
         "Inserts all section data, including time period information, into the database from the catalog."
@@ -136,10 +137,6 @@ class ROCSRPIImporter(object):
                     course=course_obj,
                 )
             )
-            #SemesterSection.objects.get_or_create(
-            #    semester=semester_obj,
-            #    section=section_obj,
-            #)
 
             if not created:
                 section_obj.number = section.num
@@ -168,7 +165,7 @@ class ROCSRPIImporter(object):
         """Assists in converting rpi_course's representation of days of the week to the database kind."""
         value = 0
         for dow in days_of_week:
-           value = value | self.DOW_MAPPER.get(dow, 0)
+            value = value | self.DOW_MAPPER.get(dow, 0)
         return value
 
     def create_timeperiods(self, semester_obj, section, section_obj):
@@ -213,7 +210,7 @@ class ROCSRPIImporter(object):
         )
         return dept
 
-    def create_crosslistings(self, semester_obj , crosslistings):
+    def create_crosslistings(self, semester_obj, crosslistings):
         "Creates all crosslisting information into the database for all the sections."
         for crosslisting in crosslistings:
             refid = ','.join(map(str, sorted(tuple(crosslisting.crns))))
@@ -222,7 +219,6 @@ class ROCSRPIImporter(object):
 
 
 class SISRPIImporter(ROCSRPIImporter):
-
     def get_files(self, latest_semester):
         from rpi_courses import list_sis_files_for_date
         get_files = list_sis_files_for_date
@@ -233,7 +229,6 @@ class SISRPIImporter(ROCSRPIImporter):
 
         now = datetime.datetime.now()
         return list(set(files))
-
 
     def sync(self, get_files=None, get_catalog=None, force=False):
         if get_files is None:
@@ -260,8 +255,8 @@ class SISRPIImporter(ROCSRPIImporter):
                     logger.debug("Failed to fetch url (%r)" % (filename))
                     continue
 
-                if not force and self.latest_semester and semester == self.latest_semester: # and catalog.datetime <= self.latest_semester.date_updated:
-                    continue # already up-to-date
+                if not force and self.latest_semester and semester == self.latest_semester:
+                    continue  # already up-to-date
 
                 semester_obj, created = Semester.objects.get_or_create(
                     year=catalog.year,
@@ -293,6 +288,7 @@ def import_latest_semester(force=False):
     #ROCSRPIImporter().sync() # slower.. someone manually updates this I think?
     SISRPIImporter().sync(force=force)
 
+
 def import_all_semesters(force=False):
     from rpi_courses import list_sis_files, list_rocs_xml_files
     urls = []
@@ -306,6 +302,7 @@ def import_all_semesters(force=False):
             importer = SISRPIImporter()
         importer.sync(get_files=lambda *a, **k: [url])
 
+
 def import_data(force=False, all=False):
     if all:
         print 'Importing all semesters'
@@ -313,11 +310,12 @@ def import_data(force=False, all=False):
     else:
         import_latest_semester(force=force)
 
+
 def import_catalog(a=False):
     catalog = parse_catalog(a)
     courses = Course.objects.all()
     for c in courses:
-        key = str(c.department.code)+str(c.number)
+        key = str(c.department.code) + str(c.number)
         if key in catalog.keys():
             if 'description' in catalog[key].keys() and catalog[key]['description'] != "":
                 c.description = catalog[key]['description']
@@ -325,6 +323,7 @@ def import_catalog(a=False):
             c.save()
     # uses >1GB of ram - currently unacceptable
     #add_cross_listing()
+
 
 def add_cross_listing():
     from itertools import product
@@ -340,8 +339,11 @@ def add_cross_listing():
         for s in cross_list:
             courses.sections.get(id=s).crosslisted = sc.id
 
+
 def export_schedule(crns):
-    weekday_offset = {'Sunday':6, 'Monday':0, 'Tuesday':1, 'Wednesday':2, 'Thursday':3, 'Friday':4, 'Saturday':5}
+    weekday_offset = {}
+    for i, day in enumerate(DAYS):
+        weekday_offset[day] = i
     calendar = Calendar()
     calendar.add('prodid', '-//YACS Course Schedule//EN')
     calendar.add('version', '2.0')
@@ -350,27 +352,27 @@ def export_schedule(crns):
     found = False
     current = datetime.datetime.utcnow()
     semester_end = semester_start + datetime.timedelta(150)
-    events = list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url_by_range(str(semester_start.date()).replace('-',''), str(current.date()).replace('-','')))))
+    events = list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url_by_range(str(semester_start.date()).replace('-', ''), str(current.date()).replace('-', '')))))
     events.extend(list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url()))))
     days_off = []
     break_start = None
     break_end = None
     for e in events:
-        if re.search(str(sections[0].semester.name.split(' ')[0])+' '+str(sections[0].semester.year), e.name) != None:
+        if re.search(str(sections[0].semester.name.split(' ')[0]) + ' ' + str(sections[0].semester.year), e.name) != None:
             semester_start = e.start
             found = True
         if re.search(".*(no classes).*", e.name.lower()) != None and found:
-            days_off.append([e.start.date(),])
-        if re.search(".*(spring break)|(thanksgiving).*", e.name.lower())!= None and found:
+            days_off.append([e.start.date()])
+        if re.search(".*(spring break)|(thanksgiving).*", e.name.lower()) != None and found:
             break_start = e.start
-        if re.search(".*(classes resume).*", e.name.lower())!= None and break_start != None:
+        if re.search(".*(classes resume).*", e.name.lower()) != None and break_start != None:
             break_end = e.start
         if re.search("(.*)study-review days", str(e.name).lower()) != None and found:
             semester_end = e.start
             break
     length = break_end - break_start
     for i in range(length.days):
-        days_off.append([(break_start+datetime.timedelta(i)).date(),])
+        days_off.append([(break_start + datetime.timedelta(i)).date()])
     for s in sections:
         for p in s.periods.all():
             event = Event()

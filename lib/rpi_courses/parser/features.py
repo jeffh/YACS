@@ -63,4 +63,3 @@ def course_feature(catalog, soup):
     catalog.courses = courses
     catalog.courses
     logger.info('Catalog has %d courses' % len(courses))
-

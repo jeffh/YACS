@@ -4,10 +4,11 @@ from rpi_courses import web
 from mock import patch
 from constants import HTML
 
+
 class TestListUnits(unittest.TestCase):
     def setUp(self):
         self.url = "http://sis.rpi.edu/reg/rocs/"
-        self.expected_files = map(lambda x: self.url+x, [
+        self.expected_files = map(lambda x: self.url + x, [
             '201001.xml',
             '201005.xml',
             '201009.xml',
@@ -39,8 +40,8 @@ class TestListUnits(unittest.TestCase):
 
         mock.assert_called()
 
-        self.expected_files.remove(self.url+'201009.xml_old')
-        self.expected_files.remove(self.url+'testrocs.txt')
+        self.expected_files.remove(self.url + '201009.xml_old')
+        self.expected_files.remove(self.url + 'testrocs.txt')
 
         self.assertEqual(files, self.expected_files)
 

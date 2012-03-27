@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class IPAddress(models.Model):
     address = models.IPAddressField()
     useragent = models.CharField(max_length=255, default='')
@@ -11,6 +12,7 @@ class IPAddress(models.Model):
 
     def __unicode__(self):
         return "<IPAddress: %s - %s>" % (self.address, self.useragent)
+
 
 class Entry(models.Model):
     address = models.ForeignKey(IPAddress, default=None, null=True, blank=True)
@@ -28,4 +30,3 @@ class Entry(models.Model):
 
     def __unicode__(self):
         return u"<Entry: %r: %r>" % (self.address, self.message or '')
-

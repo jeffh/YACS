@@ -3,11 +3,14 @@ import unittest
 from mock import Mock
 
 # utility helpers
+
+
 def assertEqualContents(actual, expected):
     for sol in actual:
         assert sol in expected, 'actual %r not in expected %r' % (sol, expected)
     for sol in expected:
         assert sol in actual, 'expected %r not in actual %r' % (sol, actual)
+
 
 def assertIterEqual(iter1, iter2):
     iter1, iter2 = iter(iter1), iter(iter2)
@@ -30,8 +33,6 @@ def assertIterEqual(iter1, iter2):
     return True
 
 
-
-# unit tests
 class BruteForceSolverTest(unittest.TestCase):
     def setUp(self):
         self.s = BruteForceSolver()
@@ -88,6 +89,7 @@ class BruteForceSolverTest(unittest.TestCase):
         it = iter(self.s)
         value = next(it)
         self.assertFalse(value in values, 'Iterator was not restored properly.')
+
 
 class BacktrackingSolverTest(unittest.TestCase):
     def setUp(self):
@@ -189,7 +191,7 @@ class PointConstraintIntegrationTest(unittest.TestCase):
     def test_should_have_non_equal_permutations_or_sum_to_3(self):
         expected = self.result((0, 1), (0, 2), (1, 0), (2, 0))
         self.p.add_constraint(lambda x, y: x != y, ['x', 'y'])
-        self.p.add_constraint(lambda x, y: x+y != 3, ['x', 'y'], [0, 0])
+        self.p.add_constraint(lambda x, y: x + y != 3, ['x', 'y'], [0, 0])
         assertEqualContents(self.p.get_solutions(), expected)
 
     def test_should_have_non_equal_permutations_while_x_is_lte_1(self):
@@ -197,6 +199,7 @@ class PointConstraintIntegrationTest(unittest.TestCase):
         self.p.add_constraint(lambda x, y: x != y, ['x', 'y'])
         self.p.add_constraint(lambda x: x <= 1, ['x'], [0])
         assertEqualContents(self.p.get_solutions(), expected)
+
 
 class PointConstaintIntegrationTestForBacktracker(unittest.TestCase):
     def setUp(self):
@@ -240,7 +243,7 @@ class PointConstaintIntegrationTestForBacktracker(unittest.TestCase):
     def test_should_have_non_equal_permutations_or_sum_to_3(self):
         expected = self.result((0, 1), (0, 2), (1, 0), (2, 0))
         self.p.add_constraint(lambda x, y: x != y, ['x', 'y'])
-        self.p.add_constraint(lambda x, y: x+y != 3, ['x', 'y'], [0, 0])
+        self.p.add_constraint(lambda x, y: x + y != 3, ['x', 'y'], [0, 0])
         assertEqualContents(self.p.get_solutions(), expected)
 
     def test_should_have_non_equal_permutations_while_x_is_lte_1(self):
@@ -347,11 +350,12 @@ class SolverAccuracyIntegrationTest(unittest.TestCase):
     def test_naive_solver(self):
         p = self.setup_problem(Problem(BruteForceSolver()))
         assertEqualContents(self.answer, p.get_solutions())
-        self.assertEqual(p.solutions_seen, 300) # visited entire problem space
+        self.assertEqual(p.solutions_seen, 300)  # visited entire problem space
 
     def test_backtracking_solver(self):
         p = self.setup_problem(Problem(BacktrackingSolver()))
         assertEqualContents(self.answer, p.get_solutions())
+
 
 if __name__ == '__main__':
     unittest.main()

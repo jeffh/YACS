@@ -100,4 +100,3 @@ class CourseQuerySetTest(TestCase):
     def test_search_by_query(self):
         courses = models.Course.objects.search('another').get()
         self.assertEqual(self.course3, courses)
-

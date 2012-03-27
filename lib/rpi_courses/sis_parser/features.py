@@ -9,6 +9,7 @@ from rpi_courses.utils import FrozenDict, safeInt
 from rpi_courses.config import logger, DEBUG
 from rpi_courses.models import CrossListing, Course, Period, Section
 
+
 def timestamp_feature(catalog, soup):
     """The datetime the xml file was last modified.
     """
@@ -17,6 +18,7 @@ def timestamp_feature(catalog, soup):
     catalog.timestamp = int(float(soup.title.text)) + epoch
     catalog.datetime = datetime.datetime.fromtimestamp(catalog.timestamp)
     logger.info('Catalog last updated on %s' % catalog.datetime)
+
 
 def semester_feature(catalog, soup):
     """The year and semester information that this xml file hold courses for.
@@ -49,6 +51,7 @@ def semester_feature(catalog, soup):
 #
 #    logger.info('Catalog has %d course crosslistings' % len(catalog.crosslistings))
 
+
 def course_feature(catalog, soup):
     """Parses all the courses (AKA, the most important part).
     """
@@ -62,27 +65,30 @@ def course_feature(catalog, soup):
     logger.info('Catalog has %d courses (manual: %d)' % (len(courses), count))
 
 
-
-
-
 # INTERNAL FUNCTIONS
+
 
 def create_period(period_data):
     return Period(**period_data)
+
 
 def create_section(section_data):
     data = dict(section_data)
     data['periods'] = tuple(create_period(p) for p in section_data['periods'])
     return Section(**data)
 
+
 def create_course(course_data):
     data = dict(course_data)
     data['sections'] = tuple(create_section(s) for s in course_data['sections'])
     return Course(**data)
 
+
 class_days = {
     'M': 0, 'T': 1, 'W': 2, 'R': 3, 'F': 4
 }
+
+
 def extract_period(cells, period, G):
     # possible choices
     # [u'CRN Course-Sec', u'Course Title', u'Class Type', u'Cred Hrs', u'Gr Tp', u'Building/Room'
@@ -103,9 +109,9 @@ def extract_period(cells, period, G):
     if not is_tba(period['start']) and not is_tba(period['end']):
 
         is_pm = period['end'].upper().endswith('PM')
+
         def get_time(s):
             return int(s.replace(':', ''))
-
 
         period['start'] = get_time(period['start'])
         period['end'] = get_time(period['end'][:-2])
@@ -139,8 +145,13 @@ def parse_tables(node):
     rows = node.findAll('tr')
 
     columns = [None] * len(rows[0].findAll('th'))
-    for i, row in enumerate(rows[0].findAll('th')): columns[i] = row.text.strip()
-    for i, row in enumerate(rows[1].findAll('th')): columns[i] += ' ' + row.text.strip() if row.text else ''
+
+    for i, row in enumerate(rows[0].findAll('th')):
+        columns[i] = row.text.strip()
+
+    for i, row in enumerate(rows[1].findAll('th')):
+        columns[i] += ' ' + row.text.strip() if row.text else ''
+
     columns = tuple(x.strip() for x in columns)
 
     print columns
@@ -208,11 +219,11 @@ def parse_tables(node):
 
             last_course, last_section, last_period = course, section, period
 
-        elif 'NOTE:' in cells[1].text.strip(): # process note
+        elif 'NOTE:' in cells[1].text.strip():  # process note
             course, section = last_course, last_section
             section['notes'].add(cells[2].text.strip())
 
-        else: # process a new period type
+        else:  # process a new period type
             course, section = last_course, last_section
 
             period = last_period.copy()
@@ -220,4 +231,3 @@ def parse_tables(node):
             section['periods'].append(period)
 
     return courses
-

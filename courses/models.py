@@ -21,8 +21,10 @@ __all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting',
 def has_model(select_related, model):
     return any(s == model._meta.db_table for s, _ in select_related)
 
+
 def has_prefetched(model_instance, field):
     return field in getattr(model_instance, '_prefetched_objects_cache', [])
+
 
 def notify_if_missing_prefetch(model_instance, field):
     if WARN_EXTRA_QUERIES and not has_prefetched(model_instance, field):
@@ -310,7 +312,9 @@ class Course(models.Model):
         ordering = ['department__code', 'number']
 
     def __unicode__(self):
-        return "%s (%s %s)" % (self.name, self.department.code, self.number)
+        return '%s (%s %d)' % (
+            self.name, self.department.code, self.number
+        )
 
     def __hash__(self):
         return hash(self.id)
@@ -477,14 +481,3 @@ class SemesterDepartment(models.Model):
 
     class Meta:
         unique_together = ('department', 'semester')
-
-
-#class SemesterSection(models.Model):
-#    "M2M model of semesters and sections."
-#    semester = models.ForeignKey('Semester', related_name='+')
-#    section = models.ForeignKey('Section', related_name='+')
-#
-#    class Meta:
-#        unique_together = ('semester', 'section')
-
-
