@@ -62,8 +62,8 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
    browser to [http://localhost:8000/][local] and viola!
 
 6. (Optional) If you plan on editing the CSS. YACS uses [SASS][] to generate the CSS.
-   You'll have to install that. Once you have, use `make scss` to make sass
-   automatically update the stylesheets as you change them.
+   Once you installed it, use `make scss` to make sass automatically update the
+   stylesheets as you change them.
 
 7. ???
 8. Profit?
