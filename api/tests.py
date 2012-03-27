@@ -525,6 +525,9 @@ class TestAPI4Sections(ShortcutTestCase):
 class TestAPI4SectionConflicts(ShortcutTestCase):
     urls = 'api.urls'
 
+class TestAPI4Selection(ShortcutTestCase):
+    urls = 'api.urls'
+
 ################# API 2 #####################
 
 class TestLatestAPI2(object):
