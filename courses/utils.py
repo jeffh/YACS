@@ -115,9 +115,10 @@ class Synchronizer(object):
     On systems when the database query execution time is short, using
     the inverse_trim may be faster.
     """
-    def __init__(self, model, inverse_trim=True):
+    def __init__(self, model, known_ids=None, inverse_trim=True):
         self.model = model
         self.inverse_trim = inverse_trim
+        self.ids_to_delete = set(known_ids or ())
         self.ids_used = set()
 
     def exclude_id(self, id):
@@ -137,9 +138,9 @@ class Synchronizer(object):
         "Removes models that were not get_or_create'd. Can optionally be filtered."
         qs = self.model.objects.exclude(id__in=self.ids_used)
         if self.inverse_trim:
-            ids = set(self.model.objects.filter(**filter).values_list('id', flat=True))
-            ids_to_delete = ids.difference(self.ids_used)
+            ids_to_delete = self.ids_to_delete.difference(self.ids_used)
             qs = self.model.objects.filter(id__in=ids_to_delete)
+            print 'Trim:', len(self.ids_to_delete), '[existing] -', len(self.ids_used), '[re-added] =', len(ids_to_delete), '[to delete]'
             if not ids_to_delete:
                 return
         qs.filter(**filter).delete()

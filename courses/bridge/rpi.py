@@ -54,7 +54,7 @@ class ROCSRPIImporter(object):
 
         self.sections_changed = False
 
-        self.SectionPeriod = Synchronizer(SectionPeriod)
+        self.SectionPeriod = Synchronizer(SectionPeriod, SectionPeriod.objects.values_list('id', flat=True))
 
     def clear_unused(self, semester):
         self.SectionPeriod.trim(semester=semester)

@@ -96,7 +96,7 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
     if not semester:
         semester = courses.Semester.objects.get(year=semester_year, month=semester_month)
     #SectionConflict.objects.filter(semester=semester).delete()
-    Syncer = Synchronizer(SectionConflict)
+    Syncer = Synchronizer(SectionConflict, SectionConflict.objects.values_list('id', flat=True))
 
     sections = courses.Section.objects .select_related('course', 'semester') \
             .by_semester(semester).prefetch_periods()
@@ -109,9 +109,8 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
     conflicts = []
 
     def log(msg):
-        if stdout:
-            sys.stdout.write(msg)
-            sys.stdout.flush()
+        sys.stdout.write(msg)
+        sys.stdout.flush()
 
     def perform_insert(conflicts):
         SectionConflict.objects.bulk_create(conflicts)
@@ -124,8 +123,6 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
                     section1, section2 = section2, section1
 
                 count += 1
-                if count % 1000 == 0:
-                    log('.')
                 if sql:
                     if count % 10000 == 0:
                         perform_insert(conflicts)
@@ -138,17 +135,20 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
                     else:
                         Syncer.exclude_id(mapping[(section1.id, section2.id)])
                 else:
+                    log('C')
                     Syncer.get_or_create(
                         section1=section1,
                         section2=section2,
                         semester=semester,
                     )
 
-    log('\n')
 
     if sql and conflicts:
         perform_insert(conflicts)
+        log('.')
+    log('\n')
     Syncer.trim(semester=semester)
+    log('\n')
 
 
 # attach to signals
