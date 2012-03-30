@@ -142,10 +142,10 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
                         semester=semester,
                     )
 
-
     if sql and conflicts:
         perform_insert(conflicts)
         log('.')
+
     log('\n')
     Syncer.trim(semester=semester)
     log('\n')
