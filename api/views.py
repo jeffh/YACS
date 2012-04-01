@@ -247,7 +247,6 @@ def schedules(request, slug=None, version=None):
         return {'context': json.loads(selection.api_cache)}
 
     schedules = compute_schedules(selected_courses, conflict_cache)
-    print schedules
 
     periods = set(p for s in sections for p in s.get_periods())
     timerange, dow_used = period_stats(periods)
