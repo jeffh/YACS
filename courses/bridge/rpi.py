@@ -120,7 +120,8 @@ class ROCSRPIImporter(object):
                 )
             )
             if not created:
-                #course_obj.name = course.name
+                if self.forced:
+                    course_obj.name = course.name
                 course_obj.min_credits, course_obj.max_credits = course.cred
                 course_obj.grade_type = course.grade_type
                 course_obj.is_comm_intense = comm
@@ -257,6 +258,8 @@ class SISRPIImporter(ROCSRPIImporter):
         if get_catalog is None:
             from rpi_courses import CourseCatalog
             get_catalog = CourseCatalog.from_string
+
+        self.forced = force
 
         for filename in get_files(self.latest_semester):
             semester = self.semesters.get(filename)

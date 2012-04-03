@@ -345,7 +345,7 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
 ## TODO -- implement me
 
 
-def icalendar(request, year, month):
+def icalendar(request):
     from courses.bridge.rpi import export_schedule
     requested_crns = request.GET.getlist('crn')
     response = HttpResponse(export_schedule(requested_crns))

@@ -43,13 +43,19 @@
         <img src="{{ STATIC_URL }}img/thumbnails.gif" alt="View Thumbnails" />
       </a>
       <% } %>
-      <a name="schedule<%- sid %>">
+      <a name="schedule<%- sid %>" class="schedule_number">
         Schedule <%- sid %>
         <%- (schedules.length > 1) ? '/ '+schedules.length : '' %>
       </a>
-    </h1>
+  </h1>
     <p class="schedule-crns">
     <%- get_crns(schedule, sections).join(', ') %>
+    <% crns = get_crns(schedule, sections) %>
+    <% param = "?crn=" + crns.join("&crn=") %>
+    <p class="share">
+        <a href="{% url ics %}<%- param %>">iCal</a>
+        or
+        <a href="javascript:print()">print this page</a>
     </p>
     <p class="share" style="display: none;">
     <a href="#facebook">Facebook</a>
@@ -67,9 +73,10 @@
                 <% if(period) {
                   var section = sections.get(period.get('section_id')),
                     course = courses.get(section.get('course_id')),
-                    height = get_period_height(period);
+                    height = get_period_height(period),
+                    offset = marginTop = get_period_offset(period);
                   %>
-                  <span style="height: <%- height %>px; margin-top: <%- get_period_offset(period) %>px" class="class
+                  <span style="height: <%- height %>px; <% if (offset) { %>margin-top: <%- offset %>px<% } %>" class="class
                     color<%- color_map[course.id] %>
                     <%- height <= 35 ? 'very' : '' %>
                     <%- height <= 60 ? 'small' : '' %>

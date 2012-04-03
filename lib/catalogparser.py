@@ -96,6 +96,7 @@ def parse_catalog(a=False):
                 detail_url = url + "/preview_course.php?catoid=" + ids[i] + "&coid=" + course_id[c]
                 temp = get_course_detail(load_page(detail_url))
                 key = temp['department'] + temp['num']
-                if key not in courses or temp['description'].strip() != '':
+                if (key not in courses or temp['description'].strip() != '') and re.search('Topics in', temp['title']) == None:
                     courses[key] = temp
+                    print temp['title']
     return courses
