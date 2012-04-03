@@ -128,13 +128,14 @@ header {
     display: none;
 }
 
+.ical_link {
+    display: none;
+}
+
 #schedules {
     .schedule-crns {
         text-align: center;
         padding-bottom: 5px;
-    }
-    .ics_link {
-        display: none;
     }
     .row {
         display: block;
