@@ -38,6 +38,8 @@ ROCS_URL = "http://sis.rpi.edu/reg/rocs/"
 # TODO: this may be good to parse (for textbooks)
 HTML_URL = "http://sis.rpi.edu/stuclshr.htm"
 
+COMM_URL = "http://www.rpi.edu/dept/srfs/CI"
+
 # it would be best to get this data from a reliable data source:
 # like the course catalog: http://catalog.rpi.edu/content.php?catoid=10&navoid=232
 # instead of manually entering this data.

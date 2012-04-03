@@ -3,11 +3,13 @@ catalog data. This isn't your web.py web dev framework!
 """
 import urllib2
 import datetime
+import tempfile
+import pyPdf
 from contextlib import closing
 
 from BeautifulSoup import BeautifulSoup
 
-from config import ROCS_URL, SIS_URL
+from config import ROCS_URL, SIS_URL, COMM_URL
 
 
 def get(url, last_modified=None):
@@ -75,3 +77,32 @@ def is_xml(filename):
 def list_rocs_xml_files(url=ROCS_URL):
     "Gets all the xml files."
     return list(filter(is_xml, list_rocs_files(url)))
+
+
+def get_comm_file(date, base_url=COMM_URL):
+    format = '%.4d.pdf'
+    if date.month == 9:
+        url = base_url + "Fall" + str(format % (date.year))
+    else:
+        url = base_url + "Spring" + str(format % (date.year))
+
+    req = urllib2.Request(url)
+    print "Getting communication intensive list from: " + url
+
+    try:
+        f = urllib2.urlopen(req)
+        temp = tempfile.NamedTemporaryFile()
+        temp.write(f.read())
+        temp.seek(0)
+    except urllib2.HTTPError, e:
+        print "HTTP Error:", e.code, url
+    except urllib2.URLError, e:
+        print "URL Error:", e.reason, url
+
+    full_text = ""
+    pdf = pyPdf.PdfFileReader(open(temp.name, 'rb'))
+    for page in pdf.pages:
+        full_text += page.extractText()
+
+    temp.close()
+    return full_text.strip()

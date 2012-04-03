@@ -102,7 +102,12 @@ class ROCSRPIImporter(object):
 
     def create_courses(self, catalog, semester_obj):
         "Inserts all the course data, including section information, into the database from the catalog."
+        list = self.add_comm_intense(catalog, semester_obj)
         for course in catalog.get_courses():
+            comm = False
+            for course_name in list:
+                if course.name == course_name:
+                    comm = True
             course_obj, created = Course.objects.get_or_create(
                 number=course.num,
                 department=self.get_or_create_department(semester_obj, code=course.dept, name=course.full_dept),
@@ -110,17 +115,32 @@ class ROCSRPIImporter(object):
                     name=course.name,
                     min_credits=course.cred[0],
                     max_credits=course.cred[1],
-                    grade_type=course.grade_type
+                    grade_type=course.grade_type,
+                    is_comm_intense=comm,
                 )
             )
             if not created:
                 #course_obj.name = course.name
                 course_obj.min_credits, course_obj.max_credits = course.cred
                 course_obj.grade_type = course.grade_type
+                course_obj.is_comm_intense = comm
                 course_obj.save()
             OfferedFor.objects.get_or_create(course=course_obj, semester=semester_obj)
             self.create_sections(course, course_obj, semester_obj)
             logger.debug((' + ' if created else '   ') + course.name)
+
+    def add_comm_intense(self, catalog, semester):
+        from rpi_courses import get_comm_file
+        pdf = get_comm_file(semester)
+        list = []
+        crns = re.findall(r"\d{5}\s[A-Z]{4}", pdf)
+        print "Found " + str(len(crns)) + " communication intensive sections"
+        for i in crns:
+            course = catalog.find_course_by_crn(int(i.split()[0]))
+            if (course != None):
+                print course.name
+                list.append(course.name)
+        return list
 
     def create_sections(self, course, course_obj, semester_obj):
         "Inserts all section data, including time period information, into the database from the catalog."
@@ -320,6 +340,7 @@ def import_catalog(a=False):
             if 'description' in catalog[key].keys() and catalog[key]['description'] != "":
                 c.description = catalog[key]['description']
             c.name = catalog[key]['title']
+            c.prereqs = catalog[key]['prereqs']
             c.save()
     # uses >1GB of ram - currently unacceptable
     #add_cross_listing()
