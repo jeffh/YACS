@@ -144,7 +144,7 @@ header {
         height: 60px;
         border-bottom: 1px solid $border-color;
 
-        &:last-child { display: none }
+        &:first-child, &:last-child { display: none }
     }
     .dayview {
         float: left;
@@ -231,7 +231,7 @@ header {
                 display: block;
                 width: 160px;
 
-                &:last-child { display: none }
+                &:first-child, &:last-child { display: none }
             }
             .hour {
                 display: block;

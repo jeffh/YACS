@@ -104,7 +104,7 @@ header {
   width: 130px;
   height: 60px;
   border-bottom: 1px solid #d0d0d0; }
-  #schedules .row:last-child {
+  #schedules .row:first-child, #schedules .row:last-child {
     display: none; }
 #schedules .dayview {
   float: left; }
@@ -169,7 +169,7 @@ header {
   #schedules .dayview:first-child .row {
     display: block;
     width: 160px; }
-    #schedules .dayview:first-child .row:last-child {
+    #schedules .dayview:first-child .row:first-child, #schedules .dayview:first-child .row:last-child {
       display: none; }
   #schedules .dayview:first-child .hour {
     display: block;
