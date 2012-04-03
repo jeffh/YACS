@@ -52,7 +52,10 @@
     <%- get_crns(schedule, sections).join(', ') %>
     <% crns = get_crns(schedule, sections) %>
     <% param = "?crn=" + crns.join("&crn=") %>
-    <p><a href= "{% url ics %}<%- param %>" class="ical_link">iCal</a></p>
+    <p class="share">
+        <a href="{% url ics %}<%- param %>">iCal</a>
+        or
+        <a href="javascript:print()">print this page</a>
     </p>
     <p class="share" style="display: none;">
     <a href="#facebook">Facebook</a>
