@@ -292,6 +292,8 @@ class TestAPI4Courses(ShortcutTestCase):
             u"max_credits": obj.max_credits,
             u"grade_type": obj.grade_type,
             u"description": obj.description,
+            u"prereqs": obj.prereqs,
+            u"is_comm_intense": obj.is_comm_intense,
             u"id": obj.id,
         }
 

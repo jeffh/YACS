@@ -267,7 +267,7 @@ class Course(ReadOnly):
     def __init__(self, name, dept, num, credmin, credmax, grade_type, sections):
         self._name, self._dept, self._num, self._cred, self._grade_type = \
             name.strip(), dept.strip(), safeInt(num, warn_only=True), \
-            (int(credmin), int(credmax)), grade_type.strip()
+            (int(credmin), int(credmax)), grade_type.strip(),
         self._sections = tuple(sections)
         self.__free_sections = None
         self.__hash = None
