@@ -143,12 +143,14 @@ header {
         width: 130px;
         height: 60px;
         border-bottom: 1px solid $border-color;
+
+        &:last-child { display: none }
     }
     .dayview {
         float: left;
         .dow {
             padding: 5px 0;
-            margin: -25px 0 3px 0;
+            margin: -25px 3px 3px 0;
             width: 130px;
             height: 37px;
             display: block;
@@ -228,6 +230,8 @@ header {
             .row {
                 display: block;
                 width: 160px;
+
+                &:last-child { display: none }
             }
             .hour {
                 display: block;

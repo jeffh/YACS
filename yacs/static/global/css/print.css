@@ -104,11 +104,13 @@ header {
   width: 130px;
   height: 60px;
   border-bottom: 1px solid #d0d0d0; }
+  #schedules .row:last-child {
+    display: none; }
 #schedules .dayview {
   float: left; }
   #schedules .dayview .dow {
     padding: 5px 0;
-    margin: -25px 0 3px 0;
+    margin: -25px 3px 3px 0;
     width: 130px;
     height: 37px;
     display: block;
@@ -167,6 +169,8 @@ header {
   #schedules .dayview:first-child .row {
     display: block;
     width: 160px; }
+    #schedules .dayview:first-child .row:last-child {
+      display: none; }
   #schedules .dayview:first-child .hour {
     display: block;
     font-size: 90%; }
