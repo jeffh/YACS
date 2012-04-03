@@ -117,17 +117,18 @@ body {
 }
 
 footer {
-    clear: both;
-    color: #222;
-    text-align: center;
-    padding-top: 10px;
+    display: none;
+}
+
+header {
+    display: none;
+}
+
+.schedule_number {
+    display: none;
 }
 
 #schedules {
-    h1 {
-        padding: 0;
-        margin: 0;
-    }
     .schedule-crns {
         text-align: center;
         padding-bottom: 5px;
@@ -135,21 +136,17 @@ footer {
     .row {
         display: block;
         clear: left;
-        width: 100%;
+        width: 130px;
         height: 60px;
         border-bottom: 1px solid $border-color;
-
-        &:first-child {
-            color: $border-color - #444;
-        }
-        &:last-child {
-            color: $border-color - #444;
-        }
     }
     .dayview {
+        float: left;
         .dow {
             padding: 5px 0;
-            margin: -36px 0 3px 0;
+            margin: -25px 0 3px 0;
+            width: 130px;
+            height: 37px;
             display: block;
             clear: left;
             text-align: center;
@@ -158,9 +155,6 @@ footer {
             border-bottom: 1px solid $border-color;
             text-shadow: 1px 1px 0 #fff;
         }
-        &:first-child .dow {
-            padding-left: 25%;
-        }
 
         .class {
             margin: -1px 5px 0 0;
@@ -168,7 +162,6 @@ footer {
             display: block;
             float: right;
             position: relative;
-            width: 115px;
             padding: 5px;
             font-size: 90%;
 
@@ -209,15 +202,36 @@ footer {
                 background: #ffc37d;
             }
         }
+        .time {
+            display: none;
+        }
+        .crn {
+            display: none;
+        }
+        .hour {
+            display: none;
+        }
+        .instructor {
+            display: none;
+        }
 
 
         &:first-child {
-            width: 185px;
+            .dow {
+                display: block;
+                width: 160px;
+            }
+            .row {
+                display: block;
+                width: 160px;
+            }
             .hour {
                 display: block;
+                font-size: 90%;
             }
             .class {
                 margin: -19px 3px 0 0;
+                width: 105px;
             }
         }
     }

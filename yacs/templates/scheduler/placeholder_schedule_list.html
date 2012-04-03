@@ -43,13 +43,16 @@
         <img src="{{ STATIC_URL }}img/thumbnails.gif" alt="View Thumbnails" />
       </a>
       <% } %>
-      <a name="schedule<%- sid %>">
+      <a name="schedule<%- sid %>" class="schedule_number">
         Schedule <%- sid %>
         <%- (schedules.length > 1) ? '/ '+schedules.length : '' %>
       </a>
-    </h1>
+  </h1>
     <p class="schedule-crns">
     <%- get_crns(schedule, sections).join(', ') %>
+    <% crns = get_crns(schedule, sections) %>
+    <% param = "?crn=" + crns.join("&crn=") %>
+    <br><a href= "{% url ics %}<%- param %>" class="ical_link">iCal</a></br>
     </p>
     <p class="share" style="display: none;">
     <a href="#facebook">Facebook</a>

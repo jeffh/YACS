@@ -75,7 +75,6 @@ class CoursesEncoderDelegate(object):
             return
         if isinstance(model, models.SectionPeriod):
             del obj['period_id']
-            del obj['section_id']
             del obj['semester_id']
             del obj['id']
         return obj
