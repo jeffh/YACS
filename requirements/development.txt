@@ -1,7 +1,6 @@
 BeautifulSoup==3.2.1
 Django==1.4
 South==0.7.3
-coverage==3.5.1
 django-debug-toolbar==0.9.4
 django-devserver==0.3.1
 django-extensions==0.8
@@ -13,7 +12,6 @@ line-profiler==1.0b3
 mock==0.8.0
 nose==1.1.2
 pep8==0.7.0
-psycopg2==2.4.4
 py-bcrypt==0.2
 python-dateutil==1.5
 pytz==2011n
