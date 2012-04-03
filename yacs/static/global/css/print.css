@@ -92,11 +92,12 @@ header {
 .schedule_number {
   display: none; }
 
+.ical_link {
+  display: none; }
+
 #schedules .schedule-crns {
   text-align: center;
   padding-bottom: 5px; }
-#schedules .ics_link {
-  display: none; }
 #schedules .row {
   display: block;
   clear: left;
