@@ -13,6 +13,7 @@ mock==0.8.0
 nose==1.1.2
 pep8==0.7.0
 py-bcrypt==0.2
+pyPdf==1.13
 python-dateutil==1.5
 pytz==2011n
 sqlparse==0.1.3
