@@ -350,4 +350,5 @@ def icalendar(request):
     requested_crns = request.GET.getlist('crn')
     response = HttpResponse(export_schedule(requested_crns))
     response['Content-Type'] = 'text/calendar'
+    response['Content-Disposition'] = 'attachment;filename=schedule.ics'
     return response
