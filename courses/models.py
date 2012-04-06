@@ -209,7 +209,6 @@ class Section(models.Model):
 
     seats_taken = models.IntegerField()
     seats_total = models.IntegerField()
-
     # TODO: RPI Specific; provide alternative
     notes = models.TextField(blank=True)
 
@@ -304,7 +303,8 @@ class Course(models.Model):
     max_credits = models.IntegerField()
 
     grade_type = models.CharField(max_length=150, blank=True, default='')
-
+    prereqs = models.TextField(default="")
+    is_comm_intense = models.BooleanField()
     objects = managers.QuerySetManager(managers.CourseQuerySet)
 
     class Meta:
@@ -336,6 +336,8 @@ class Course(models.Model):
             'min_credits': self.min_credits,
             'max_credits': self.max_credits,
             'description': self.description,
+            'prereqs': self.prereqs,
+            'is_comm_intense': self.is_comm_intense,
         }
         if has_model(select_related, Department):
             values['department'] = self.department.toJSON(select_related)

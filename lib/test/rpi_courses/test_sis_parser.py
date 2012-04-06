@@ -7,22 +7,19 @@ from mock import Mock
 import os
 import unittest
 from time import mktime
-from constants import SIS_FILE
+from constants import SIS_FILE_SPRING2012
 
-with open(SIS_FILE) as f:
-    CONTENTS = f.read()
-catalog = None
-
-# from BeautifulSoup import BeautifulSoup; soup = BeautifulSoup(open('lib/test/rpi_courses/test_data/sis_courses.html').read())
-# from rpi_courses.sis_parser import CourseCatalog; catalog = CourseCatalog.from_file('lib/test/rpi_courses/test_data/sis_courses.html')
+with open(SIS_FILE_SPRING2012) as f:
+    CONTENTS_SPRING2012 = f.read()
+catalog_spring2012 = None
 
 
-class TestCatalog(TestCaseForModel):
+class TestCatalogSpring2012(TestCaseForModel):
     def setUp(self):
-        global catalog
-        if catalog is None:
-            catalog = CourseCatalog.from_string(CONTENTS)
-        self.catalog = catalog
+        global catalog_spring2012
+        if catalog_spring2012 is None:
+            catalog_spring2012 = CourseCatalog.from_string(CONTENTS_SPRING2012)
+        self.catalog = catalog_spring2012
 
 #    def test_crosslisting(self):
 #        crns = self.catalog.crosslisted_with(76093)
@@ -91,6 +88,23 @@ class TestCatalog(TestCaseForModel):
                     start=1200, end=1350, location='',
                     int_days=(0, 3),
                 )],
+            )]
+        )
+        self.assertCourseEquals(course, expected_course)
+
+    def test_creative_writing_poetry(self):
+        # Bug: this class was not detected by the parser
+        course = self.catalog.find_courses('CREATIVE WRITING: POETRY')[0]
+        expected_course = models.Course(
+            'CREATIVE WRITING: POETRY', 'LITR', num=2961, credmin=4, credmax=4,
+            grade_type='', sections=[models.Section(
+                crn=96438, num='01', taken=0, total=22,
+                periods=[models.Period(
+                    type='LEC', instructor='Gutmann',
+                    start=1200, end=1350, location='',
+                    int_days=(1, 4),
+                )],
+                notes=['COMMUNICATION INTENSIVE'],
             )]
         )
         self.assertCourseEquals(course, expected_course)

@@ -52,10 +52,9 @@ help:
 	@echo "  perform_data_refresh  Performs cron job tasks for all data on the remote server."
 	@echo "  remove_backup         Removes the backup folder from a deploy. Use after deploying."
 	@echo "  restore_backup        Restores backup folder from a deploy. Used to undo a deploy."
-	@echo "  test                  Runs all unit tests and generate a coverage report."
-	@echo "  test_django           Test only YACS's django apps. No coverage."
-	@echo "  test_lib              Test only YACS's lib directory. No coverage."
-	@echo "  test_only             Runs all unit tests without coverage."
+	@echo "  test                  Runs all tests."
+	@echo "  test_django           Test only YACS's django apps."
+	@echo "  test_lib              Test only YACS's lib directory."
 	@echo "  update_environment    Updates the environment dependencies and caches for deployment."
 	@echo "  scss                  Runs sass file watcher to convert scss files into css."
 
@@ -214,17 +213,7 @@ create_section_cache:
 
 ##### Testing Operations #####
 
-test: prefix=coverage run -a 
-# we can't run with python arg
-test: PYTHON=
-test: begin_coverage test_only end_coverage
-test_only: test_django test_lib pep8
-
-begin_coverage:
-	coverage erase
-
-end_coverage:
-	coverage html
+test: test_django test_lib pep8
 
 test_django:
 	$(prefix)$(PYTHON_EXEC) manage.py test --failfast $(APPS)

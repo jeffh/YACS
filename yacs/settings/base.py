@@ -238,6 +238,7 @@ with settings as s:
         'south',
         'django_extensions',
         'debug_toolbar',
+        'pyPdf',
         # local apps
         'courses',
         'scheduler',

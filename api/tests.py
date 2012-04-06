@@ -12,6 +12,13 @@ from courses.tests.factories import (
 ################# API 4 #####################
 
 
+class TestAPI4Schedules(ShortcutTestCase):
+    urls = 'api.urls'
+
+    def test_schedules(self):
+        pass
+
+
 class TestAPI4Semesters(ShortcutTestCase):
     urls = 'api.urls'
 
@@ -285,6 +292,8 @@ class TestAPI4Courses(ShortcutTestCase):
             u"max_credits": obj.max_credits,
             u"grade_type": obj.grade_type,
             u"description": obj.description,
+            u"prereqs": obj.prereqs,
+            u"is_comm_intense": obj.is_comm_intense,
             u"id": obj.id,
         }
 
@@ -455,6 +464,7 @@ class TestAPI4Sections(ShortcutTestCase):
                     u"instructor": obj.instructor,
                     u"location": obj.location,
                     u"days_of_the_week": period.days_of_week,
+                    u"section_id": section.id,
                 }
             ],
             u"crn": section.crn,

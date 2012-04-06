@@ -11,6 +11,9 @@ class ConflictCache(object):
     def __init__(self, conflict_mapping):
         self.conflict_mapping = conflict_mapping
 
+    def __repr__(self):
+        return "<ConflictCache: %r>" % self.conflict_mapping
+
     def __key__(self, section_id):
         return self.conflict_mapping.get(section_id, self._EMPTY_SET)
 

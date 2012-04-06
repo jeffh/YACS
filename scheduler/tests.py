@@ -32,6 +32,17 @@ def create_periods(*ranges):
     return periods
 
 
+class ICSViewTest(ShortcutTestCase):
+    urls = 'yacs.urls'
+
+    def test_ics(self):
+        # FIXME: remove http request dependency
+        semester = SemesterFactory.create(year=2012, month=9)
+        sections = SectionFactory.create_batch(3, semester=semester)
+        crns = [str(s.crn) for s in sections]
+        response = self.get('ics', get='?crn=' + '&crn='.join(crns), status_code=200)
+
+
 class ScheduleViewsSmokeTests(ShortcutTestCase):
     urls = 'yacs.urls'
 

@@ -89,6 +89,8 @@ body {
   #schedules h1, #schedules .schedule, #schedules .share, #schedules .schedule-crns, #schedules p {
     position: relative;
     left: 50%; }
+  #schedules .share {
+    font-size: 90%; }
   #schedules h1 {
     clear: both; }
   #schedules .schedule {

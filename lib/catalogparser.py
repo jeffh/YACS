@@ -45,7 +45,8 @@ def get_course_detail(course_page):
         'department': title.group(1),
         'num': title.group(2),
         'title': title.group(3),
-        'description': get_course_description(soup.findAll('hr')[0].nextSibling)
+        'description': get_course_description(soup.findAll('hr')[0].nextSibling),
+        'prereqs': get_course_reqs(soup)
     }
     return course
 
@@ -57,6 +58,14 @@ def get_course_description(tag):
         contents.append(getattr(tag, 'text', tag.string))
         current = current.nextSibling
     return ''.join(contents).strip()
+
+
+def get_course_reqs(tag):
+    if (tag.findAll('strong')):
+        current = tag.findAll('strong')[0]
+        if getattr(current, "text", current.string) == 'Prerequisites/Corequisites:':
+            return ''.join(current.nextSibling).strip()
+    return 'None'
 
 
 def special(tags):
@@ -87,6 +96,7 @@ def parse_catalog(a=False):
                 detail_url = url + "/preview_course.php?catoid=" + ids[i] + "&coid=" + course_id[c]
                 temp = get_course_detail(load_page(detail_url))
                 key = temp['department'] + temp['num']
-                if key not in courses or temp['description'].strip() != '':
+                if (key not in courses or temp['description'].strip() != '') and re.search('Topics in', temp['title']) == None:
                     courses[key] = temp
+                    print temp['title']
     return courses
