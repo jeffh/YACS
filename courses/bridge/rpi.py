@@ -7,7 +7,7 @@ import logging
 import logging.handlers
 import sys
 import datetime
-import rpi_calendars
+#import rpi_calendars
 from contextlib import closing
 
 from icalendar import Calendar, Event
@@ -147,6 +147,7 @@ class ROCSRPIImporter(object):
         "Inserts all section data, including time period information, into the database from the catalog."
         for section in course.sections:
             # TODO: encode prereqs / notes
+            remove_prereq_notes(section)
             section_obj, created = Section.objects.get_or_create(
                 crn=section.crn,
                 semester=semester_obj,
@@ -300,6 +301,17 @@ class SISRPIImporter(ROCSRPIImporter):
                     sections_modified.send(sender=self, semester=semester_obj)
 
                 self.clear_unused(semester_obj)
+
+
+def remove_prereq_notes(section):
+    all_notes = []
+    for i in range(0, len(section.notes)):
+        notes = section.notes[i]
+        m = re.match("PRE-REQ: ", notes)
+        if m:
+            notes = ""
+        all_notes.append(notes)
+    section.notes = all_notes
 
 
 def import_latest_semester(force=False):
