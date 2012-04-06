@@ -89,29 +89,28 @@ footer {
 header {
   display: none; }
 
-.schedule_number {
-  display: none; }
-
 .share {
   display: none; }
 
+#schedules h1, #schedules .share {
+  display: none; }
 #schedules .schedule-crns {
   text-align: center;
   padding-bottom: 5px; }
 #schedules .row {
   display: block;
   clear: left;
-  width: 130px;
   height: 60px;
+  width: 100%;
   border-bottom: 1px solid #d0d0d0; }
   #schedules .row:first-child, #schedules .row:last-child {
     display: none; }
 #schedules .dayview {
+  width: 130px;
   float: left; }
   #schedules .dayview .dow {
     padding: 5px 0;
     margin: -25px 3px 3px 0;
-    width: 130px;
     height: 37px;
     display: block;
     clear: left;
@@ -124,6 +123,7 @@ header {
     margin: -1px 5px 0 0;
     clear: left;
     display: block;
+    width: 110px;
     float: right;
     position: relative;
     padding: 5px;
@@ -163,17 +163,16 @@ header {
     display: none; }
   #schedules .dayview .instructor {
     display: none; }
-  #schedules .dayview:first-child .dow {
-    display: block;
-    width: 160px; }
-  #schedules .dayview:first-child .row {
-    display: block;
-    width: 160px; }
-    #schedules .dayview:first-child .row:first-child, #schedules .dayview:first-child .row:last-child {
-      display: none; }
-  #schedules .dayview:first-child .hour {
-    display: block;
-    font-size: 90%; }
-  #schedules .dayview:first-child .class {
-    margin: -19px 3px 0 0;
-    width: 105px; }
+  #schedules .dayview:first-child {
+    width: 175px; }
+    #schedules .dayview:first-child .dow {
+      display: block; }
+    #schedules .dayview:first-child .row {
+      display: block; }
+      #schedules .dayview:first-child .row:first-child, #schedules .dayview:first-child .row:last-child {
+        display: none; }
+    #schedules .dayview:first-child .hour {
+      display: block;
+      position: absolute;
+      font-size: 90%;
+      width: 36px; }

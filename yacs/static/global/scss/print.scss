@@ -124,15 +124,12 @@ header {
     display: none;
 }
 
-.schedule_number {
-    display: none;
-}
-
 .share {
     display: none;
 }
 
 #schedules {
+    h1, .share { display: none }
     .schedule-crns {
         text-align: center;
         padding-bottom: 5px;
@@ -140,18 +137,19 @@ header {
     .row {
         display: block;
         clear: left;
-        width: 130px;
         height: 60px;
+        width: 100%;
         border-bottom: 1px solid $border-color;
 
         &:first-child, &:last-child { display: none }
     }
     .dayview {
+        width: 130px;
         float: left;
+
         .dow {
             padding: 5px 0;
             margin: -25px 3px 3px 0;
-            width: 130px;
             height: 37px;
             display: block;
             clear: left;
@@ -166,6 +164,7 @@ header {
             margin: -1px 5px 0 0;
             clear: left;
             display: block;
+            width: 110px;
             float: right;
             position: relative;
             padding: 5px;
@@ -223,23 +222,20 @@ header {
 
 
         &:first-child {
-            .dow {
-                display: block;
-                width: 160px;
-            }
+            width: 175px;
+            .dow { display: block; }
             .row {
                 display: block;
-                width: 160px;
 
                 &:first-child, &:last-child { display: none }
             }
             .hour {
                 display: block;
+                position: absolute;
                 font-size: 90%;
+                width: 36px;
             }
             .class {
-                margin: -19px 3px 0 0;
-                width: 105px;
             }
         }
     }

@@ -398,6 +398,8 @@ def export_schedule(crns):
         length = break_end - break_start
         for i in range(length.days):
             days_off.append([(break_start + datetime.timedelta(i)).date()])
+    if semester_start >= semester_end:
+        print "semester dates are messed up"
     for s in sections:
         for p in s.periods.all():
             event = Event()
