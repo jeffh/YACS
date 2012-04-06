@@ -394,9 +394,10 @@ def export_schedule(crns):
         if re.search("(.*)study-review days", str(e.name).lower()) != None and found:
             semester_end = e.start
             break
-    length = break_end - break_start
-    for i in range(length.days):
-        days_off.append([(break_start + datetime.timedelta(i)).date()])
+    if break_start != None and break_end != None:
+        length = break_end - break_start
+        for i in range(length.days):
+            days_off.append([(break_start + datetime.timedelta(i)).date()])
     for s in sections:
         for p in s.periods.all():
             event = Event()
