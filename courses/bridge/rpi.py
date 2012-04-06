@@ -130,7 +130,6 @@ class ROCSRPIImporter(object):
             self.create_sections(course, course_obj, semester_obj)
             logger.debug((' + ' if created else '   ') + course.name)
 
-
     def add_comm_intense(self, catalog, semester):
         from rpi_courses import get_comm_file
         pdf = get_comm_file(semester)
@@ -172,7 +171,6 @@ class ROCSRPIImporter(object):
                 self.sections_changed = False
 
             self.create_timeperiods(semester_obj, section, section_obj)
-
 
     # maps from catalog data to database representation
     DOW_MAPPER = {
