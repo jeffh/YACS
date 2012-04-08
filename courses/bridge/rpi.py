@@ -7,7 +7,7 @@ import logging
 import logging.handlers
 import sys
 import datetime
-#import rpi_calendars
+import rpi_calendars
 from contextlib import closing
 
 from icalendar import Calendar, Event
