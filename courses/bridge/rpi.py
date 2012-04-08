@@ -430,6 +430,5 @@ def export_schedule(crns):
                 until=datetime.datetime(semester_end.year, semester_end.month, semester_end.day, p.end.hour, p.end.minute, tzinfo=pytz.timezone("America/New_York")).astimezone(pytz.utc)))
             event.add('exdate', days_off)
             calendar.add_component(event)
-    output = calendar.to_ical().replace("EXDATE", "EXDATE;VALUE=DATE")
-    print output
+    output = str(calendar).replace("EXDATE", "EXDATE;VALUE=DATE")
     return output
