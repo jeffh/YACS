@@ -153,7 +153,7 @@ $(function(){
   var uri = _.compact(location.href.split('/'));
   var index = 0, scheduleID = null;
   if (uri[uri.length - 1] !== 'schedules'){
-    var index = uri[length - 1] || null;
+    var index = uri[uri.length - 1] || null;
     var scheduleID = uri[uri.length - 2] || null;
   }
 
