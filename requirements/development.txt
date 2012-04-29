@@ -11,7 +11,7 @@ icalendar==3.0.1b2
 mock==0.8.0
 nose==1.1.2
 pep8==0.7.0
-pyPdf==1.13
+git+https://github.com/jeffh/pyPdf.git#egg=pyPdf
 python-dateutil==1.5
 pytz==2011n
 sqlparse==0.1.3
