@@ -2,6 +2,13 @@ import os
 import sys
 from datetime import timedelta
 
+# To work with pypy
+try:
+    from psycopg2ct import compat
+    compat.register()
+except ImportError:
+    pass
+
 
 __all__ = ['Settings', 'settings']
 
@@ -181,9 +188,9 @@ with settings as s:
     )
 
     s.PASSWORD_HASHERS = (
-        'django.contrib.auth.hashers.BCryptPasswordHasher',
         'django.contrib.auth.hashers.PBKDF2PasswordHasher',
         'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+        'django.contrib.auth.hashers.BCryptPasswordHasher',
         'django.contrib.auth.hashers.SHA1PasswordHasher',
     )
 
