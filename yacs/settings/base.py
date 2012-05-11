@@ -105,7 +105,7 @@ with settings as s:
     # include lib
     sys.path.insert(0, s.relative_path('..', 'lib'))
 
-    s.DEBUG = True
+    s.DEBUG = False
     s.alias('DEBUG', 'TEMPLATE_DEBUG')
 
     s.ADMINS = (
@@ -190,7 +190,6 @@ with settings as s:
     s.PASSWORD_HASHERS = (
         'django.contrib.auth.hashers.PBKDF2PasswordHasher',
         'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
-        'django.contrib.auth.hashers.BCryptPasswordHasher',
         'django.contrib.auth.hashers.SHA1PasswordHasher',
     )
 
@@ -245,7 +244,7 @@ with settings as s:
         'south',
         'django_extensions',
         'debug_toolbar',
-        'pyPdf',
+        'pipeline',
         # local apps
         'courses',
         'scheduler',
@@ -377,3 +376,78 @@ with settings as s:
 
                 #'devserver.modules.profile.LineProfilerModule',
             )
+
+    # ==== django-pipeline ====
+    s.STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+    s.PIPELINE_COMPILERS = (
+        'pipeline.compilers.coffee.CoffeeScriptCompiler',
+        'pipeline.compilers.sass.SASSCompiler',
+    )
+
+    s.PIPELINE_COFFEE_SCRIPT_BINARY = 'coffee'
+
+    s.PIPELINE_SASS_BINARY = 'sass'
+    s.PIPELINE_SASS_ARGUMENTS = '--scss'
+
+    s.PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
+    s.PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
+
+    s.PIPELINE_YUI_BINARY = 'java -jar lib/yuicompressor-2.4.7.jar'
+    s.PIPELINE_YUI_CSS_ARGUMENTS = '--type css'
+    s.PIPELINE_YUI_JS_ARGUMENTS = '--type js'
+
+    s.PIPELINE_CSS = {
+        'base+320': {
+            'source_filenames': (
+                'css/style.css',
+                'css/320.css',
+            ),
+            'extra_context': {'media': 'screen'},
+            'output_filename': 'core.css',
+        },
+        '480': {
+            'source_filenames': ('css/480.css',),
+            'extra_context': {'media': 'only screen and (min-width: 480px)'},
+            'output_filename': '480.css',
+        },
+        '768': {
+            'source_filenames': ('css/768.css',),
+            'extra_context': {'media': 'only screen and (min-width: 768px)'},
+            'output_filename': '768.css',
+        },
+        'ie': {
+            'source_filenames': ('css/ie.css',),
+            'output_filename': 'ie.css',
+        },
+        'ie': {
+            'source_filenames': ('css/print.css',),
+            'extra_context': {'media': 'print'},
+            'output_filename': 'print.css',
+        },
+    }
+
+    s.PIPELINE_JS = {
+        'libs': {
+            'source_filenames': (
+                'js/libs/sessionstorage.1.4.js',
+                'js/libs/json2.js',
+                'js/libs/history.js',
+                'js/libs/history.adapter.jquery.js',
+                'js/libs/underscore-1.3.1.js',
+                'js/libs/backbone-0.9.2.js',
+                'js/320nu.js',
+            ),
+            'output_filename': 'l.js',
+        },
+        'application': {
+            'source_filenames': (
+                'js/v3/utilities.coffee',
+                'js/v3/jquery.ext.coffee',
+                'js/v3/api.coffee',
+                'js/v3/selection.coffee',
+                'js/v3/application.coffee',
+            ),
+            'output_filename': 'a.js',
+        },
+    }
+

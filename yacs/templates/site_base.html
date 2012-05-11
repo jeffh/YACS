@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+
+{% load compressed %}
+
 {% comment %}
 Site-specific customizations
 ------------------------------
@@ -30,15 +33,15 @@ It would be bad if a 500 error page threw a 500 error when trying to render...
 <link rel="stylesheet" media="handheld" href="css/handheld.css?v=1">  -->
 
 <!-- For all browsers -->
-<link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/style.css?v=3">
-<link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/320.css?v=3">
-<!-- For progressively larger displays -->
-<link rel="stylesheet" media="only screen and (min-width: 480px)" href="{{ STATIC_URL }}css/480.css?v=3">
-<link rel="stylesheet" media="only screen and (min-width: 768px)" href="{{ STATIC_URL }}css/768.css?v=3">
+{% compressed_css 'base+320' %}
+{% compressed_css '480' %}
+{% compressed_css '768' %}
+{% comment %}
 <link rel="stylesheet" media="only screen and (min-width: 992px)" href="{{ STATIC_URL }}css/992.css?v=3">
 <link rel="stylesheet" media="only screen and (min-width: 1382px)" href="{{ STATIC_URL }}css/1382.css?v=3">
 <!-- For Retina displays -->
 <link rel="stylesheet" media="only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-pixel-ratio: 2)" href="{{ STATIC_URL }}css/2x.css?v=3">
+{% endcomment %}
 
 <!--[if IE]>
 <link rel="stylesheet" media="screen" href="{{ STATIC_URL }}css/ie.css?v=1">
@@ -76,21 +79,15 @@ It would be bad if a 500 error page threw a 500 error when trying to render...
 -->
 {% endblock head %}
 
-
 {% block javascript %}
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
-<script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.7.1.min.js">\x3C/script>')</script>
-<!-- Scripts -->
-<script src="{{ STATIC_URL }}js/libs/sessionstorage.1.4.js"></script>
-<script src="{{ STATIC_URL }}js/libs/jquery.history.js"></script>
-<script src="{{ STATIC_URL }}js/libs/underscore-1.3.1.js"></script>
-<script src="{{ STATIC_URL }}js/libs/backbone-0.9.2.min.js"></script>
-
-<script src="{{ STATIC_URL }}js/320nu.js"></script>
-
-<!-- version 2 (OO) -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+<script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.7.2.min.js">\x3C/script>')</script>
+{% compressed_js 'libs' %}
+{% compressed_js 'application' %}
+<!-- version 2 (OO)
 <script src="{{ STATIC_URL }}js/v2/objects.js?v=2"></script>
 <script src="{{ STATIC_URL }}js/v2/application.js?v=2"></script>
+-->
 
 <!--[if (lt IE 9) & (!IEMobile)]>
 <script src="{{ STATIC_URL }}js/libs/ie-bundle.js"></script>

@@ -3,6 +3,7 @@ Django==1.4
 South==0.7.3
 django-extensions==0.6
 django-debug-toolbar==0.9.4
+django-pipeline==1.2.6
 icalendar==3.0.1b2
 git+https://github.com/jeffh/pyPdf.git#egg=pyPdf
 python-dateutil==1.5

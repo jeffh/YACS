@@ -5,13 +5,15 @@ django-debug-toolbar==0.9.4
 django-devserver==0.3.1
 django-extensions==0.8
 django-jasmine==0.3.2
+django-pipeline==1.2.6
 docutils==0.8.1
 factory-boy==1.1.2
 icalendar==3.0.1b2
 mock==0.8.0
 nose==1.1.2
 pep8==0.7.0
-git+https://github.com/jeffh/pyPdf.git#egg=pyPdf
+psycopg2==2.4.4
+pyPdf==1.13
 python-dateutil==1.5
 pytz==2011n
 sqlparse==0.1.3
