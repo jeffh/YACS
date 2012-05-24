@@ -8,12 +8,10 @@ django-jasmine==0.3.2
 docutils==0.8.1
 factory-boy==1.1.2
 icalendar==3.0.1b2
-line-profiler==1.0b3
 mock==0.8.0
 nose==1.1.2
 pep8==0.7.0
-py-bcrypt==0.2
-pyPdf==1.13
+git+https://github.com/jeffh/pyPdf.git#egg=pyPdf
 python-dateutil==1.5
 pytz==2011n
 sqlparse==0.1.3
