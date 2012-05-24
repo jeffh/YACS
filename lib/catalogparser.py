@@ -48,8 +48,8 @@ def get_course_detail(course_page):
         'description': get_course_description(soup.findAll('hr')[0].nextSibling),
         'prereqs': get_course_reqs(soup)
     }
-    print course['title']
-    print course['description']
+    #print course['title']
+    #print course['description']
     return course
 
 
