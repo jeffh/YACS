@@ -29,6 +29,7 @@ logger.setLevel(logging.DEBUG)
 try:
     NullHandler = logging.NullHandler
 except AttributeError:
+    level = logging.INFO
     class NullHandler(object):
         def emit(self, record):
             pass
