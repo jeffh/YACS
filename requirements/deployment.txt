@@ -1,7 +1,7 @@
 BeautifulSoup==3.2.1
 Django==1.4
-South==0.7.3
-django-extensions==0.6
+South==0.7.5
+django-extensions==0.8
 django-debug-toolbar==0.9.4
 icalendar==3.0.1b2
 git+https://github.com/jeffh/pyPdf.git#egg=pyPdf
