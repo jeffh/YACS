@@ -354,9 +354,6 @@ with settings as s:
     # ==== Django-Robots App ====
     #s.ROBOTS_CACHE_TIMEOUT = 60*60*24 # 24-hour cache of robots file
 
-    # ==== Django-Jasmine ====
-    s.JASMINE_TEST_DIRECTORY = s.relative_path('static', 'jasmine')
-
     # ==== api ====
     # which urls require no sessions. This saves us at least one DB query.
     # this is a collection of regular expressions

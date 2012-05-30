@@ -25,8 +25,4 @@ urlpatterns = patterns('',
 
 
 if settings.DEBUG:
-    urlpatterns += patterns('',
-        url(r'^tests/', include('django_jasmine.urls')),
-    )
-
     urlpatterns += staticfiles_urlpatterns()

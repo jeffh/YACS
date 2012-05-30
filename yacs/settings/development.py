@@ -13,7 +13,6 @@ with settings as s:
     def debug_install_apps(s):
         if s.DEBUG:
             s.INSTALLED_APPS += (
-                'django_jasmine',
                 'devserver',
             )
 
