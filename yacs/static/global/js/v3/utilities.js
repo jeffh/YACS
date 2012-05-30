@@ -20,19 +20,18 @@
   };
 
   window.assert = function(bool, message) {
-    if (message == null) {
-      message = 'assertion failed';
-    }
     if (!bool) {
-      throw message;
+      throw message || 'Assertion Failed';
     }
   };
 
   window.pushUnique = function(array, item) {
     if (array.indexOf(item) < 0) {
       array.push(item);
+      return true;
+    } else {
+      return false;
     }
-    return array;
   };
 
   window.format = function() {

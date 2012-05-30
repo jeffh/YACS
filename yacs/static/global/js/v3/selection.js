@@ -33,6 +33,8 @@
 
     Storage.name = 'Storage';
 
+    Storage.prototype.version = 2;
+
     function Storage(options) {
       this.keys = [];
       this.options = $.extend({

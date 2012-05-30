@@ -70,7 +70,7 @@ window.dict_by_attr = (array, attr, options) ->
 
 # returns a function can multiple async calls can invoke.
 # once the given number of async calls has finished, invoke the callback.
-# This is good to do something after multiple ajax requests.
+# This is good for doing something after multiple ajax requests.
 window.barrier = (number, complete) ->
     i = 0
     return do (number) ->
