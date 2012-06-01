@@ -73,5 +73,24 @@ class Storage
             @_remove(fullKey)
         @_save()
 
+class Selection
+    constructor: (@data) ->
+        @data ?= {}
+    get: -> $.extend({}, @data)
+    set: (data) ->
+        @data = $.extend({}, data)
+    toggle_course: (course_id, section_ids) ->
+        if @data[course_id]?
+            delete @data[course_id]
+        else
+            @data[course_id] = section_ids
+    toggle_section: (course_id, section_id) ->
+        if @data[course_id]? and @data[course_id].indexOf(section_id) >= 0
+            @data[course_id] = _.without(@data[course_id], section_id)
+        else
+            @data[course_id] ?= []
+            @data[course_id].push(section_id)
+        # TODO: save to storage
+
 window.MemoryBackend = MemoryBackend
 window.Storage = Storage

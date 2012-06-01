@@ -87,6 +87,11 @@ window.delayfn = (msec, fn) ->
             timer = setTimeout((-> fn(args...)), msec)
     )(msec)
 
+window.set_difference = (original, toRemove) ->
+    original = _.uniq(original)
+    toRemove = _.uniq(toRemove)
+    _.without(original, toRemove)
+
 # wrapper around logging
 window.Logger =
     CONSOLE: 1

@@ -441,6 +441,8 @@ with settings as s:
                 'js/v3/utilities.coffee',
                 'js/v3/jquery.ext.coffee',
                 'js/v3/api.coffee',
+                'js/v3/summarizer.coffee',
+                'js/v3/realtime_form.coffee',
                 'js/v3/selection.coffee',
                 'js/v3/application.coffee',
             ),
