@@ -449,4 +449,3 @@ with settings as s:
             'output_filename': 'a.js',
         },
     }
-
