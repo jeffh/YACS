@@ -1,5 +1,8 @@
 $.extend($.fn, {
-    # provides checkbox shortcuts
+    # provides checkbox shortcuts. Automatically filters by checkboxes
+    # and radio buttons.
+    # checked() -> Returns if the checkbox is checked or not
+    # checked(bool) -> Sets checkbox to true or false
     checked: ->
         checkboxes = @filter('input[type=checkbox], input[type=radio]')
         if arguments.length < 1

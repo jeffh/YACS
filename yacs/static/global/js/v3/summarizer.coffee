@@ -17,5 +17,6 @@ window.summarize = (elements, options) ->
         parent = $(this).parent()
         text = parent.data('full-text')
         parent.text(text)
+        return false
     )
 

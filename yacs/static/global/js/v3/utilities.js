@@ -19,6 +19,26 @@
     return null;
   };
 
+  window.product = function(arrays) {
+    var array, newarr, result, tmp, x, y, _i, _j, _k, _len, _len1, _len2;
+    result = [[]];
+    for (_i = 0, _len = arrays.length; _i < _len; _i++) {
+      array = arrays[_i];
+      tmp = [];
+      for (_j = 0, _len1 = result.length; _j < _len1; _j++) {
+        x = result[_j];
+        for (_k = 0, _len2 = array.length; _k < _len2; _k++) {
+          y = array[_k];
+          newarr = x.slice(0);
+          newarr.push(y);
+          tmp.push(newarr);
+        }
+      }
+      result = tmp;
+    }
+    return result;
+  };
+
   window.assert = function(bool, message) {
     if (!bool) {
       throw message || 'Assertion Failed';
@@ -108,12 +128,26 @@
     })(msec);
   };
 
+  window.array_of_ints = function(string) {
+    var numbers, parts, x, _i, _len;
+    parts = string.split(',');
+    numbers = [];
+    for (_i = 0, _len = parts.length; _i < _len; _i++) {
+      x = parts[_i];
+      numbers.push(parseInt($.trim(x), 10));
+    }
+    if (numbers && numbers.length === 1 && isNaN(numbers[0])) {
+      return [];
+    } else {
+      return numbers;
+    }
+  };
+
   window.Logger = {
+    NONE: 0,
     CONSOLE: 1,
     SERVER: 2,
     USER: 3,
-    INFO: 1,
-    ERROR: 5,
     enabled: true,
     log: function() {
       var message, type;
@@ -122,14 +156,10 @@
         return;
       }
       if (!(Logger.mode != null)) {
-        Logger.mode = Logger.INFO;
+        Logger.mode = Logger.CONSOLE;
       }
       if (Logger.mode >= Logger.CONSOLE) {
-        if (type === Logger.INFO) {
-          console.log.apply(console, message);
-        } else if (type === Logger.ERROR) {
-          console.error.apply(console, message);
-        }
+        console[type].apply(console, message);
       }
       if (Logger.modemode >= Logger.SERVER) {
         delayfn(200, function() {
@@ -143,12 +173,17 @@
     info: function() {
       var message;
       message = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return Logger.log.apply(Logger, [Logger.INFO].concat(__slice.call(message)));
+      return Logger.log.apply(Logger, ['log'].concat(__slice.call(message)));
+    },
+    warn: function() {
+      var message;
+      message = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return Logger.log.apply(Logger, ['warn'].concat(__slice.call(message)));
     },
     error: function() {
       var message;
       message = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      return Logger.log.apply(Logger, [Logger.ERROR].concat(__slice.call(message)));
+      return Logger.log.apply(Logger, ['error'].concat(__slice.call(message)));
     }
   };
 

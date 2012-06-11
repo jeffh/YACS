@@ -9,6 +9,19 @@ window.getCookie = getCookie = (name) ->
                 return decodeURIComponent(cookie[(name.length + 1)..])
     return null
 
+# performs a cartesian product
+window.product = (arrays) ->
+    result = [[]]
+    for array in arrays
+        tmp = []
+        for x in result
+            for y in array
+                newarr = x[...]
+                newarr.push(y)
+                tmp.push(newarr)
+        result = tmp
+    result
+
 # simple assertion
 window.assert = (bool, message) ->
     if not bool
@@ -87,27 +100,27 @@ window.delayfn = (msec, fn) ->
             timer = setTimeout((-> fn(args...)), msec)
     )(msec)
 
-window.set_difference = (original, toRemove) ->
-    original = _.uniq(original)
-    toRemove = _.uniq(toRemove)
-    _.without(original, toRemove)
+window.array_of_ints = (string) ->
+    parts = string.split(',')
+    numbers = []
+    numbers.push(parseInt($.trim(x), 10)) for x in parts
+    if numbers and numbers.length == 1 and isNaN(numbers[0])
+        []
+    else
+        numbers
 
 # wrapper around logging
 window.Logger =
+    NONE: 0
     CONSOLE: 1
     SERVER: 2
     USER: 3
-    INFO: 1
-    ERROR: 5
     enabled: true
     log: (type, message...) ->
         if not Logger.enabled then return
-        if not Logger.mode? then Logger.mode = Logger.INFO
+        if not Logger.mode? then Logger.mode = Logger.CONSOLE
         if Logger.mode >= Logger.CONSOLE
-            if type == Logger.INFO
-                console.log(message...)
-            else if type == Logger.ERROR
-                console.error(message...)
+            console[type].apply(console, message)
         if Logger.modemode >= Logger.SERVER
             # foo
             delayfn(200, () -> console.log(message...))()
@@ -115,10 +128,13 @@ window.Logger =
             alert(' '.join(message))
 
     info: (message...) ->
-        Logger.log(Logger.INFO, message...)
+        Logger.log('log', message...)
+
+    warn: (message...) ->
+        Logger.log('warn', message...)
 
     error: (message...) ->
-        Logger.log(Logger.ERROR, message...)
+        Logger.log('error', message...)
 
 # modify ajax hook to send CSRF token for local requests
 $(document).ajaxSend((evt, xhr, settings) ->

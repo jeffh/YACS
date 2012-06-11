@@ -20,7 +20,8 @@
       var parent, text;
       parent = $(this).parent();
       text = parent.data('full-text');
-      return parent.text(text);
+      parent.text(text);
+      return false;
     });
   };
 
