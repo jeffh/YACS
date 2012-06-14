@@ -27,6 +27,17 @@ window.assert = (bool, message) ->
     if not bool
         throw message || 'Assertion Failed'
 
+# searches for templates in the given page
+# searches for script tags with type="text/template"
+window.find_templates = ->
+    templates = {}
+    $('script[type="text/template"]').each(->
+        $this = $(this)
+        templates[$this.attr('id')] = _.template($this.html())
+    )
+    templates
+
+
 # adds a given item to an array if it does not exist in the array.
 # Returns true if added, false otherwise
 window.pushUnique = (array, item) ->

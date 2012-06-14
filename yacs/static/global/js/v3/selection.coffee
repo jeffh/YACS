@@ -97,8 +97,14 @@ class Selection
     clear: -> @data = {}
     get: (course_id) -> @data[course_id]
     set: (data) -> @data = $.extend({}, data)
+    has_section_id: (sid) ->
+      for cid in @course_ids()
+        if _.includes(@get(cid), sid)
+          return true
+      return false
     save: -> @storage.set('selection', @data)
     course_ids: -> Object.keys(@data)
+    is_empty: -> @course_ids().length == 0
     conflicts_with: (section_id) ->
         conflicts_with = null
         for cid in @data

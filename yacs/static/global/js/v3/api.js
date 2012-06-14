@@ -122,6 +122,7 @@
 
     function API() {
       this.base_url = '/api/4/';
+      this.filter = '';
     }
 
     API.prototype.url = function(object, id) {
@@ -136,6 +137,7 @@
       return $.ajax({
         url: url,
         type: 'GET',
+        data: this.filter,
         dataType: 'json',
         cache: true,
         success: function(data) {
@@ -167,6 +169,10 @@
           return error(null, exception);
         }
       });
+    };
+
+    API.prototype.filter = function(query) {
+      return this;
     };
 
     API.prototype.semesters = function(success, error) {

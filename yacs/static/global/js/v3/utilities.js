@@ -45,6 +45,17 @@
     }
   };
 
+  window.find_templates = function() {
+    var templates;
+    templates = {};
+    $('script[type="text/template"]').each(function() {
+      var $this;
+      $this = $(this);
+      return templates[$this.attr('id')] = _.template($this.html());
+    });
+    return templates;
+  };
+
   window.pushUnique = function(array, item) {
     if (array.indexOf(item) < 0) {
       array.push(item);

@@ -2,8 +2,13 @@ YACS =
     summary_length: 150
     search_delay: 1000
 
+window.templates = {_processed: 0}
+
+$(-> window.templates = find_templates())
+
 # summarize course descriptions
-$(-> summarize($('.summarize'), {summary_length: YACS.summary_length}))
+create_summaries = -> summarize($('.summarize'), summary_length: YACS.summary_length)
+$(create_summaries)
 
 # realtime search
 $(->
@@ -75,4 +80,53 @@ $(->
                 $('#course_' + cid).parent().find('.section input[type=checkbox]').checked(false)
     )
     sync_selection(selection)
+)
+
+# selection courses display
+$(->
+    target = $('#selected_courses')
+    if not target.length
+        return
+    #templates.course_template()
+    if selection.is_empty()
+        target.html(templates.no_courses_template())
+    else
+        target.empty()
+        window.api.courses(((courses) ->
+            context =
+                alwaysShowSections: true
+                days_of_the_week: 'Monday Tuesday Wednesday Thursday Friday'.split(' ')
+                periodsByDayOfWeek: (periods) ->
+                    remapped_periods = {}
+                    self.options.dows.each((dow) ->
+                        remapped_periods[dow] = []
+                    )
+                    for period in periods
+                        period.get('days_of_the_week').each((dow) ->
+                            remapped_periods[dow].push(period)
+                        )
+                    return remapped_periods
+                isSelectedCRN: (sid) -> selection.has_section_id(sid)
+                requires_truncation: (string, max) -> !string or string.length > max
+                truncate: (string, max) ->
+                    if (string.substring(0, max) == string)
+                        return string
+                    return string.substring(0, max - 3) + '...'
+                bold_topics_include: (string) ->
+                    string.replace('Topics include', '<strong>Topics include</strong>')
+                displayPeriod: (p) ->
+                    fmt = '{{ 0 }}-{{ 1 }}'
+                    start = FunctionsContext.time_parts(p.get('start'))
+                    end = FunctionsContext.time_parts(p.get('end'))
+                    return format(fmt,
+                        FunctionsContext.humanize_time(p.get('start'), {includesAPM: false})
+                        FunctionsContext.humanize_time(p.get('end'))
+                    )
+                isReadOnly: true
+            for cid in selection.course_ids()
+                context.course = courses.get(cid)
+                Logger.info(context.course)
+                target.append(templates.course_template(context))
+            create_summaries()
+        ), -> Logger.error('Failed to fetch courses'))
 )

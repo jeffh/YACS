@@ -54,6 +54,7 @@ class Collection
 class API
     constructor: () ->
         @base_url = '/api/4/'
+        @filter = ''
 
     url: (object, id) ->
         if id?
@@ -65,6 +66,7 @@ class API
         $.ajax({
             url: url
             type: 'GET'
+            data: @filter
             dataType: 'json'
             cache: true
             success: (data) ->
@@ -80,6 +82,10 @@ class API
             error: (xhr, txtStatus, exception) ->
                 error(null, exception)
         })
+
+    filter: (query) ->
+      # TODO: fixme
+      this
 
     semesters: (success, error) -> @get(@url('semesters'), success, error)
     departments: (success, error) -> @get(@url('departments'), success, error)

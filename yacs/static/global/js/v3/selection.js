@@ -126,7 +126,6 @@
       var s1, s2;
       s1 = collection.get(parseInt(sid1, 10));
       s2 = collection.get(parseInt(sid2, 10));
-      console.log(collection, sid1, sid2, s1, s2);
       return (s1 != null) && get(s1.get('conflicts'), sid2) || (s2 != null) && get(s2.get('conflicts'), sid1);
     };
     comparer.update = function(new_data) {
@@ -174,12 +173,28 @@
       return this.data = $.extend({}, data);
     };
 
+    Selection.prototype.has_section_id = function(sid) {
+      var cid, _i, _len, _ref;
+      _ref = this.course_ids();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        cid = _ref[_i];
+        if (_.includes(this.get(cid), sid)) {
+          return true;
+        }
+      }
+      return false;
+    };
+
     Selection.prototype.save = function() {
       return this.storage.set('selection', this.data);
     };
 
     Selection.prototype.course_ids = function() {
       return Object.keys(this.data);
+    };
+
+    Selection.prototype.is_empty = function() {
+      return this.course_ids().length === 0;
     };
 
     Selection.prototype.conflicts_with = function(section_id) {
@@ -212,25 +227,20 @@
     };
 
     Selection.prototype.validate = function() {
-      var cid, conflict, i, j, schedule, schedules, section_ids, valid, _i, _j, _k, _l, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var cid, i, j, schedule, schedules, section_ids, valid, _i, _j, _k, _l, _len, _len1, _ref, _ref1, _ref2, _ref3;
       section_ids = [];
       _ref = Object.keys(this.data);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         cid = _ref[_i];
         section_ids.push(this.data[cid]);
-        console.log(this.data[cid]);
       }
-      console.log(section_ids);
       schedules = product(section_ids);
       for (_j = 0, _len1 = schedules.length; _j < _len1; _j++) {
         schedule = schedules[_j];
         valid = true;
         for (i = _k = 0, _ref1 = schedule.length - 1; 0 <= _ref1 ? _k < _ref1 : _k > _ref1; i = 0 <= _ref1 ? ++_k : --_k) {
           for (j = _l = _ref2 = i + 1, _ref3 = schedule.length; _ref2 <= _ref3 ? _l < _ref3 : _l > _ref3; j = _ref2 <= _ref3 ? ++_l : --_l) {
-            console.log(schedule, i, j);
-            conflict = this.conflicts_with(schedule[i], schedule[j]);
-            console.log(conflict);
-            if (conflict) {
+            if (this.conflicts_with(schedule[i], schedule[j])) {
               valid = false;
               return false;
             }

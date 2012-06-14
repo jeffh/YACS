@@ -38,7 +38,7 @@
 
 {# functions: #}
 {# required context: #}
-<script type="text/template" id="course-template">
+<script type="text/template" id="course_template">
 <li class="course <%- course.getSeatsLeft() < 1 ? 'no-seats' : '' %><%- course.getSectionIDs().length < 1 ? 'no-sections' : '' %>">
     <% if (course.getSectionIDs().length > 0){ %>
         <input type="checkbox" id="course_<%- course.id %>" name="course_<%- course.id %>"
@@ -144,7 +144,7 @@
 </li>
 </script>
 
-<script type="text/template" id="no-courses-template">
+<script type="text/template" id="no_courses_template">
 <div class="empty">
     <h3 class="text-center">...</h3>
     <p>Here would be any courses you selected... <br/>if only you picked out some courses.</p>
