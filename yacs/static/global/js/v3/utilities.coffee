@@ -1,16 +1,16 @@
 # returns the given value for the name in the cookie string
-window.getCookie = getCookie = (name) ->
-    if document.cookie && document.cookie != ''
-        cookies = document.cookie.split(';')
+window.getCookie = getCookie = (name, source) ->
+    source ?= document.cookie
+    if source && source != ''
+        cookies = source.split(';')
         for c in cookies
-            cookie = $.trim(c)
-            console.log(cookie[0..name.length], name + '=')
-            if cookie[0..name.length] == name + '='
-                return decodeURIComponent(cookie[(name.length + 1)..])
+            [rawName, value] = $.trim(c).split('=', 2)
+            if rawName == name
+                return decodeURIComponent(value)
     return null
 
 # performs a cartesian product
-window.product = (arrays) ->
+window.product = (arrays...) ->
     result = [[]]
     for array in arrays
         tmp = []
@@ -26,17 +26,6 @@ window.product = (arrays) ->
 window.assert = (bool, message) ->
     if not bool
         throw message || 'Assertion Failed'
-
-# searches for templates in the given page
-# searches for script tags with type="text/template"
-window.find_templates = ->
-    templates = {}
-    $('script[type="text/template"]').each(->
-        $this = $(this)
-        templates[$this.attr('id')] = _.template($this.html())
-    )
-    templates
-
 
 # adds a given item to an array if it does not exist in the array.
 # Returns true if added, false otherwise
@@ -65,7 +54,18 @@ window.format = (string, values...) ->
     else
         # process as numbered arguments (names pair up with argument indices)
         string.replace(/{{ *(\d+) *}}/g, (match, index) ->
-            if values[index]? then values[index] else match
+            if values[index]?
+                values[index]
+            else if index < values.length
+                type = $.type(values[index])
+                if type == 'undefined'
+                    '<undefined>'
+                else if type == 'null'
+                    '<null>'
+                else
+                    '<unknown>'
+            else
+                match
         )
 
 # convert an array to a dictionary mapping the given attribute name to
@@ -75,13 +75,22 @@ window.format = (string, values...) ->
 # (and no arrays as values of the dict).
 #
 # Pass {value: 'attr'} to options to set the return attribute value
-# instead of being the array element
-window.dict_by_attr = (array, attr, options) ->
+# instead of being the array element. If the value is callable, then
+# it is given the object in questioned and expects a value result
+window.hash_by_attr = (array, attr, options) ->
     result = {}
+    options ?= {}
     for item in array
-        key = item[attr]
+        continue if not item?
+        if $.isFunction(attr)
+            key = attr(item)
+        else
+            key = item[attr]
         if options.value?
-            value = item[options.value]
+            if $.isFunction(options.value)
+                value = options.value(item)
+            else
+                value = item[options.value]
         else
             value = item
         if options.flat?
@@ -96,10 +105,40 @@ window.dict_by_attr = (array, attr, options) ->
 # once the given number of async calls has finished, invoke the callback.
 # This is good for doing something after multiple ajax requests.
 window.barrier = (number, complete) ->
+    assert($.isFunction(complete), 'complete should be a function')
     i = 0
-    return do (number) ->
-        complete() if ++i == number
+    return ->
+        do (number) -> complete() if ++i == number
 
+
+# breaks up loop work into separate async calls to prevent freezing
+# the username
+window.iterate = (array, options) ->
+    options = $.extend({
+        delay: 5
+        context: {}
+        each: (item, index) ->
+        end: () ->
+    }, options)
+    job = {}
+    $.extend(job, {
+        is_running: true
+        abort: -> job.is_running = false
+    })
+    callback = barrier(array.length, ->
+        return unless job.is_running
+        job.is_running = false
+        options.end.call(options.context)
+    )
+    for i in [0...array.length]
+        item = array[i]
+        setTimeout((do (item, i) ->
+            () ->
+                return unless job.is_running
+                options.each.call(options.context, item, i)
+                callback()
+        ), options.delay * i)
+    job
 
 # returns a new function that we only trigger after a given
 # delay. Repeated calls before triggering will reset the timer.
@@ -111,6 +150,7 @@ window.delayfn = (msec, fn) ->
             timer = setTimeout((-> fn(args...)), msec)
     )(msec)
 
+# converts a string (from an html attr) to an array of integers
 window.array_of_ints = (string) ->
     parts = string.split(',')
     numbers = []
@@ -153,7 +193,7 @@ $(document).ajaxSend((evt, xhr, settings) ->
         host = document.location.host
         protocol = document.location.protocol
         sr_origin = '//' + host
-        origin = protocol + sr_originn
+        origin = protocol + sr_origin
         return (url == origin or url.slice(0, origin.length + 1) == origin + '/') ||
             (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
             # or any other URL that isn't scheme relative or absolute i.e relative.

@@ -3,24 +3,27 @@
   var getCookie,
     __slice = [].slice;
 
-  window.getCookie = getCookie = function(name) {
-    var c, cookie, cookies, _i, _len;
-    if (document.cookie && document.cookie !== '') {
-      cookies = document.cookie.split(';');
+  window.getCookie = getCookie = function(name, source) {
+    var c, cookies, rawName, value, _i, _len, _ref;
+    if (source == null) {
+      source = document.cookie;
+    }
+    if (source && source !== '') {
+      cookies = source.split(';');
       for (_i = 0, _len = cookies.length; _i < _len; _i++) {
         c = cookies[_i];
-        cookie = $.trim(c);
-        console.log(cookie.slice(0, name.length + 1 || 9e9), name + '=');
-        if (cookie.slice(0, name.length + 1 || 9e9) === name + '=') {
-          return decodeURIComponent(cookie.slice(name.length + 1));
+        _ref = $.trim(c).split('=', 2), rawName = _ref[0], value = _ref[1];
+        if (rawName === name) {
+          return decodeURIComponent(value);
         }
       }
     }
     return null;
   };
 
-  window.product = function(arrays) {
-    var array, newarr, result, tmp, x, y, _i, _j, _k, _len, _len1, _len2;
+  window.product = function() {
+    var array, arrays, newarr, result, tmp, x, y, _i, _j, _k, _len, _len1, _len2;
+    arrays = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
     result = [[]];
     for (_i = 0, _len = arrays.length; _i < _len; _i++) {
       array = arrays[_i];
@@ -43,17 +46,6 @@
     if (!bool) {
       throw message || 'Assertion Failed';
     }
-  };
-
-  window.find_templates = function() {
-    var templates;
-    templates = {};
-    $('script[type="text/template"]').each(function() {
-      var $this;
-      $this = $(this);
-      return templates[$this.attr('id')] = _.template($this.html());
-    });
-    return templates;
   };
 
   window.pushUnique = function(array, item) {
@@ -82,8 +74,18 @@
       });
     } else {
       return string.replace(/{{ *(\d+) *}}/g, function(match, index) {
+        var type;
         if (values[index] != null) {
           return values[index];
+        } else if (index < values.length) {
+          type = $.type(values[index]);
+          if (type === 'undefined') {
+            return '<undefined>';
+          } else if (type === 'null') {
+            return '<null>';
+          } else {
+            return '<unknown>';
+          }
         } else {
           return match;
         }
@@ -91,14 +93,28 @@
     }
   };
 
-  window.dict_by_attr = function(array, attr, options) {
+  window.hash_by_attr = function(array, attr, options) {
     var item, key, result, value, _i, _len;
     result = {};
+    if (options == null) {
+      options = {};
+    }
     for (_i = 0, _len = array.length; _i < _len; _i++) {
       item = array[_i];
-      key = item[attr];
+      if (!(item != null)) {
+        continue;
+      }
+      if ($.isFunction(attr)) {
+        key = attr(item);
+      } else {
+        key = item[attr];
+      }
       if (options.value != null) {
-        value = item[options.value];
+        if ($.isFunction(options.value)) {
+          value = options.value(item);
+        } else {
+          value = item[options.value];
+        }
       } else {
         value = item;
       }
@@ -116,12 +132,52 @@
 
   window.barrier = function(number, complete) {
     var i;
+    assert($.isFunction(complete), 'complete should be a function');
     i = 0;
-    return (function(number) {
-      if (++i === number) {
-        return complete();
+    return function() {
+      return (function(number) {
+        if (++i === number) {
+          return complete();
+        }
+      })(number);
+    };
+  };
+
+  window.iterate = function(array, options) {
+    var callback, i, item, job, _i, _ref;
+    options = $.extend({
+      delay: 5,
+      context: {},
+      each: function(item, index) {},
+      end: function() {}
+    }, options);
+    job = {};
+    $.extend(job, {
+      is_running: true,
+      abort: function() {
+        return job.is_running = false;
       }
-    })(number);
+    });
+    callback = barrier(array.length, function() {
+      if (!job.is_running) {
+        return;
+      }
+      job.is_running = false;
+      return options.end.call(options.context);
+    });
+    for (i = _i = 0, _ref = array.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+      item = array[i];
+      setTimeout((function(item, i) {
+        return function() {
+          if (!job.is_running) {
+            return;
+          }
+          options.each.call(options.context, item, i);
+          return callback();
+        };
+      })(item, i), options.delay * i);
+    }
+    return job;
   };
 
   window.delayfn = function(msec, fn) {
@@ -205,7 +261,7 @@
       host = document.location.host;
       protocol = document.location.protocol;
       sr_origin = '//' + host;
-      origin = protocol + sr_originn;
+      origin = protocol + sr_origin;
       return (url === origin || url.slice(0, origin.length + 1) === origin + '/') || (url === sr_origin || url.slice(0, sr_origin.length + 1) === sr_origin + '/') || !(/^(\/\/|http:|https:).*/.test(url));
     };
     safeMethod = function(method) {

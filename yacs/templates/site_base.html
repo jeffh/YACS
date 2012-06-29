@@ -84,10 +84,6 @@ It would be bad if a 500 error page threw a 500 error when trying to render...
 <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.7.2.min.js">\x3C/script>')</script>
 {% compressed_js 'libs' %}
 {% compressed_js 'application' %}
-<!-- version 2 (OO)
-<script src="{{ STATIC_URL }}js/v2/objects.js?v=2"></script>
-<script src="{{ STATIC_URL }}js/v2/application.js?v=2"></script>
--->
 
 <!--[if (lt IE 9) & (!IEMobile)]>
 <script src="{{ STATIC_URL }}js/libs/ie-bundle.js"></script>

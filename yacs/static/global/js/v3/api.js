@@ -26,6 +26,10 @@
       return $.extend(this.attrs, attrs);
     };
 
+    Model.prototype.to_hash = function() {
+      return $.extend({}, this.attrs);
+    };
+
     Model.prototype.replace_attributes = function(attrs) {
       this.attrs = $.extend({}, attrs);
       return this.id = this.attrs.id;
@@ -58,6 +62,7 @@
       this.url = url;
       this.id_map = {};
       this.data = [];
+      this.length = 0;
     }
 
     Collection.prototype.attr = function(name) {
@@ -78,16 +83,33 @@
 
     Collection.prototype.add = function(item) {
       this.data.push(item);
-      return this.id_map[item.id] = item;
+      this.id_map[item.id] = item;
+      this.length = this.data.length;
+      return this;
+    };
+
+    Collection.prototype.add_array = function(arr) {
+      var item, _i, _len;
+      for (_i = 0, _len = arr.length; _i < _len; _i++) {
+        item = arr[_i];
+        this.add(item);
+      }
+      return this;
     };
 
     Collection.prototype.clear = function() {
       this.slice(0);
-      return this.id_map = {};
+      this.id_map = {};
+      this.length = 0;
+      return this;
     };
 
     Collection.prototype.get = function(id) {
       return this.id_map[id];
+    };
+
+    Collection.prototype.to_array = function() {
+      return this.data.slice(0);
     };
 
     Collection.prototype.refresh = function(options) {
@@ -120,10 +142,15 @@
 
     API.name = 'API';
 
-    function API() {
-      this.base_url = '/api/4/';
+    function API(base_url) {
+      this.base_url = base_url;
       this.filter = '';
+      this.cache = {};
     }
+
+    API.prototype.clear_cache = function() {
+      return this.cache = {};
+    };
 
     API.prototype.url = function(object, id) {
       if (id != null) {
@@ -134,37 +161,45 @@
     };
 
     API.prototype.get = function(url, success, error) {
+      var success_callback, that;
+      that = this;
+      success_callback = function(data) {
+        var collection, x;
+        that.cache[url] = data;
+        if (data.success) {
+          if (_.isArray(data.result)) {
+            collection = new Collection(url);
+            [
+              (function() {
+                var _i, _len, _ref, _results;
+                _ref = data.result;
+                _results = [];
+                for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                  x = _ref[_i];
+                  _results.push(collection.add(new Model(x, url + x.id + '/')));
+                }
+                return _results;
+              })()
+            ];
+            return success(collection);
+          } else {
+            return success(new Model(data.result, url));
+          }
+        } else {
+          return error(data, null);
+        }
+      };
+      if (this.cache[url] != null) {
+        success_callback(this.cache[url]);
+        return null;
+      }
       return $.ajax({
         url: url,
         type: 'GET',
         data: this.filter,
         dataType: 'json',
         cache: true,
-        success: function(data) {
-          var collection, x;
-          if (data.success) {
-            if (_.isArray(data.result)) {
-              collection = new Collection(url);
-              [
-                (function() {
-                  var _i, _len, _ref, _results;
-                  _ref = data.result;
-                  _results = [];
-                  for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                    x = _ref[_i];
-                    _results.push(collection.add(new Model(x, url + x.id + '/')));
-                  }
-                  return _results;
-                })()
-              ];
-              return success(collection);
-            } else {
-              return success(new Model(data.result, url));
-            }
-          } else {
-            return error(data, null);
-          }
-        },
+        success: success_callback,
         error: function(xhr, txtStatus, exception) {
           return error(null, exception);
         }
@@ -175,30 +210,66 @@
       return this;
     };
 
-    API.prototype.semesters = function(success, error) {
-      return this.get(this.url('semesters'), success, error);
+    API.prototype.semesters = function(success, error, id) {
+      return this.get(this.url('semesters', id), success, error);
     };
 
-    API.prototype.departments = function(success, error) {
-      return this.get(this.url('departments'), success, error);
+    API.prototype.departments = function(success, error, id) {
+      return this.get(this.url('departments', id), success, error);
     };
 
-    API.prototype.courses = function(success, error) {
-      return this.get(this.url('courses'), success, error);
+    API.prototype.courses = function(success, error, id) {
+      return this.get(this.url('courses', id), success, error);
     };
 
-    API.prototype.sections = function(success, error) {
-      return this.get(this.url('sections'), success, error);
+    API.prototype.sections = function(success, error, id) {
+      return this.get(this.url('sections', id), success, error);
     };
 
-    API.prototype.conflicts = function(success, error) {
-      return this.get(this.url('conflicts'), success, error);
+    API.prototype.conflicts = function(success, error, id) {
+      return this.get(this.url('conflicts', id), success, error);
+    };
+
+    API.prototype.schedules = function(options) {
+      var data, url;
+      options = $.extend({
+        id: null,
+        section_ids: null,
+        success: $.noop,
+        error: $.noop,
+        cache: true
+      }, options);
+      assert((options.id != null) || (options.section_ids != null), 'id or section_ids need to be specified');
+      if (options.section_ids) {
+        data = '?section_id=' + options.section_ids.join('&section_id=');
+      } else {
+        data = '';
+      }
+      url = this.url('schedules', options.id) + data;
+      if (this.cache[url] != null) {
+        success_callback(this.cache[url]);
+        return null;
+      }
+      return $.ajax({
+        url: url,
+        type: 'GET',
+        dataType: 'json',
+        cache: true,
+        success: options.success,
+        error: options.error
+      });
     };
 
     return API;
 
   })();
 
-  window.api = api = new API;
+  window.API = API;
+
+  window.API.Model = Model;
+
+  window.API.Collection = Collection;
+
+  window.api = api = new API('/api/4/');
 
 }).call(this);
