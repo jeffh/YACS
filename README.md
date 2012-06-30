@@ -4,7 +4,7 @@ Simple, Sane Course Scheduling.
 YACS is a web-based course schedule with an emphasis on usability.
 It is also flexible enough to work with other school course data.
 
-Send questions and comments to [@jeffhui][] or huij@rpi.edu.
+Send questions and comments to [@jeffhui][] or jeffh@alumni.rpi.edu.
 
 If you're an RPI student and looking to use it, go to [yacs.me][yacsme]
 
