@@ -308,7 +308,6 @@ class Course(models.Model):
     objects = managers.QuerySetManager(managers.CourseQuerySet)
 
     class Meta:
-        unique_together = ('name', 'department', 'number')
         ordering = ['department__code', 'number']
 
     def __unicode__(self):
