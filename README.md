@@ -34,7 +34,7 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
 
 ### Setup (Development)
 
-1. YACS uses a lot of dependencies. It relies on [pip][] to install them. Simply do:
+1. YACS uses a lot of dependencies. It relies on [pip][] to install most of them. Simply do:
     `pip install -r requirements/development.txt`
    Which will install all the dependencies YACS needs (minus the database driver).
 
@@ -62,13 +62,17 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
 5. Check it out by running the dev server `python manage.py runserver` and pointing your
    browser to [http://localhost:8000/][local] and viola!
 
-6. (Optional) If you plan on editing the CSS. YACS uses [SASS][] to generate the CSS.
+6. YACS uses [coffeescript][] as its basis for javascript. So if you want to modify the
+   javascript code, you'll need to have the coffeescript compiler installed.
+
+7. (Optional) If you plan on editing the CSS. YACS uses [SASS][] to generate the CSS.
    Once you installed it, use `make scss` to make sass automatically update the
    stylesheets as you change them.
 
-7. ???
-8. Profit?
+8. ???
+9. Profit?
 
+[coffeescript]: http://coffeescript.org/
 [SASS]: http://sass-lang.com/
 [pip]: http://www.pip-installer.org/en/latest/index.html
 [local]: http://localhost:8000/
