@@ -39,54 +39,58 @@
 {# functions: #}
 {# required context: #}
 <script type="text/template" id="course_template">
-<li class="course <%- course.getSeatsLeft() < 1 ? 'no-seats' : '' %><%- course.getSectionIDs().length < 1 ? 'no-sections' : '' %>">
-    <% if (course.getSectionIDs().length > 0){ %>
+<li class="course <%- course.seats_left < 1 ? 'no-seats' : '' %><%- course.sections.length < 1 ? 'no-sections' : '' %>">
+    <% if (course.sections.length > 0){ %>
         <input type="checkbox" id="course_<%- course.id %>" name="course_<%- course.id %>"
     <% if (isReadOnly) { %> disabled="disabled" <% } %>
-    <% if (course.getSectionIDs().some(isSelectedCRN)){ %> checked="checked" <% } %>
-        data-cid="<%- course.id %>" data-sids="<%- course.getSectionIDs().join(', ') %>" data-sids-full="<%- course.getSectionIDs().join(', ') %>" />
+    <% if (_.any(course.section_ids, isSelectedSection)){ %> checked="checked" <% } %>
+        data-cid="<%- course.id %>" data-sids="<%- course.section_ids.join(', ') %>" data-sids-full="<%- course.section_ids.join(', ') %>" />
     <% } else { %>
         <p style="float:left; width: 15px; height: 10px; margin: 0; padding: 0;"></p>
     <% } %>
     <label class="padded" for="course_<%- course.id %>">
-        <span class="name"><%- course.get('name') %></span>
+        <span class="name"><%- course.name %></span>
         <span class="secondary">
             <span class="code">
-                <span class="dept"><%- course.get('department').get('code') %></span>
-                <span class="number"><%- course.get('number') %></span>
+                <span class="dept"><%- course.department.code %></span>
+                <span class="number"><%- course.number %></span>
             </span>
             <span class="credits">
-                <%- course.getCreditsDisplay() %>
+                <% if(course.min_credits == course.max_credits) { %>
+                  <%- course.min_credits + ' ' + pluralize('credit', course.min_credits) %>
+                <% } else { %>
+                  <%- course.min_credits %> - <%- course.max_credits %> credits
+                <% } %>
             </span>
         </span>
     </label>
     <span class="secondary">
         <span class="seats-left">
-            <% if (course.getSectionIDs().length > 0){ %>
-                <% if (course.getSeatsLeft() <= 0) { %>
+            <% if (course.sections.length > 0){ %>
+                <% if (course.seats_left <= 0) { %>
                     No seats left
-                <% } else if (course.getSeatsLeft() < 30) { %>
-                    <%- course.getSeatsLeft() %> seat<%- course.getSeatsLeft() === 1 ? '' : 's' %> left
+                <% } else if (course.seats_left < 30) { %>
+                    <%- course.seats_left %> <%- pluralize('seat', course.seats_left) %> left
                 <% } %>
             <% } else { %>
                 No Sections
             <% } %>
         </span>
-        <% if (course.get('description').length) { %>
+        <% if (course.description.length) { %>
           <div class="description summarize">
-            <%= course.get('description') %>
+            <%= course.description %>
           </div>
         <% } %>
         <div class="kinds">
             <ul>
-                <% for(var kinds=course.getKinds(), i=0, l=kinds.length; i<l; i++){ %>
+                <% for(var kinds=course.kinds, i=0, l=kinds.length; i<l; i++){ %>
                     <li><%- kinds[i] %></li>
                 <% } %>
             </ul>
         </div>
         <div class="notes">
             <ul>
-                <% for(var notes=course.getNotes(), i=0, l=notes.length; i<l; i++){ %>
+                <% for(var notes=course.notes, i=0, l=notes.length; i<l; i++){ %>
                     <li><%- notes[i] %><li>
                 <% } %>
             </ul>
@@ -94,39 +98,39 @@
     </span>
     <% if (alwaysShowSections){ %>
     <span class="sections">
-        <% if(course.getSections().length){ %>
+        <% if(course.sections.length){ %>
             <ul>
-                <% for(var sections=course.getSections(), i=0, l=sections.length; i<l; i++){ var section = sections.at(i); %>
-                    <li class="section<%- section.get('seats_taken') >= section.get('seats_total') ? ' full' : '' %>">
-                    <input type="checkbox" id="section_<%- section.id %>" name="section_<%- section.id %>" <%- isSelectedCRN(section.id) ? ' checked="checked"' : '' %> data-cid="<%- course.id %>" data-sid="<%- section.id  %>" <% if (isReadOnly) { %> disabled="disabled" <% } %> />
+                <% for(var sections=course.sections, i=0, l=sections.length; i<l; i++){ var section = sections[i]; %>
+                    <li class="section<%- section.seats_taken >= section.seats_total ? ' full' : '' %>">
+                    <input type="checkbox" id="section_<%- section.id %>" name="section_<%- section.id %>" <%- isSelectedSection(section.id) ? ' checked="checked"' : '' %> data-cid="<%- course.id %>" data-sid="<%- section.id  %>" <% if (isReadOnly) { %> disabled="disabled" <% } %> />
                         <label for="section_<%- section.id %>">
                             <span class="section-number">
-                                Section <span class="number"><%- section.get('number') %></span>
+                                Section <span class="number"><%- section.number %></span>
                             </span>
-                            <% if(section.getSeatsLeft() <= 0){ %>
+                            <% if(section.seats_left <= 0){ %>
                             <span class="section-seats-left none">No seats left</span>
                             <% } else { %>
                             <span class="section-seats-left">
-                                <span class="number"><%- section.getSeatsLeft() %></span> seat<%- section.getSeatsLeft() === 1 ? '' : 's' %> left
+                                <span class="number"><%- section.seats_left %></span> seat<%- section.seats_left === 1 ? '' : 's' %> left
                             </span>
                             <% } %>
                             <div class="instructors">
                                 <ul>
-                                    <% for(var instructors=section.getInstructors(), i2=0, l2=instructors.length; i2<l2; i2++){ %>
+                                    <% for(var instructors=section.instructors, i2=0, l2=instructors.length; i2<l2; i2++){ %>
                                     <li><%- instructors[i2] %></li>
                                     <% } %>
                                 </ul>
                             </div>
                         </label>
                         <ul class="days">
-                            <% var times = periodsByDayOfWeek(section.getPeriods()); %>
+                            <% var times = periodsByDayOfWeek(section.section_times); %>
                             <% for(var i3=0, l3=days_of_the_week.length; i3<l3; i3++){ var dow = days_of_the_week[i3]; %>
                                 <li class="item <%- times[dow].length ? 'selected' : 'empty' %>">
                                     <span class="short"><%- dow %></span>
                                     <span class="long"><%- dow %></span>
                                     <ul class="times">
                                         <% for(var i4=0, l4=times[dow].length; i4<l4; i4++){ %>
-                                            <li><%- displayPeriod(times[dow][i4]) %></li>
+                                            <li><%- displayTime(times[dow][i4]) %></li>
                                         <% } %>
                                     </ul>
                                 </li>

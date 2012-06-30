@@ -146,10 +146,12 @@
       this.base_url = base_url;
       this.filter = '';
       this.cache = {};
+      this.callbacks = {};
     }
 
     API.prototype.clear_cache = function() {
-      return this.cache = {};
+      this.cache = {};
+      return this.callbacks = {};
     };
 
     API.prototype.url = function(object, id) {
@@ -161,10 +163,10 @@
     };
 
     API.prototype.get = function(url, success, error) {
-      var success_callback, that;
+      var success_callback, that, _base;
       that = this;
       success_callback = function(data) {
-        var collection, x;
+        var collection, err, s, x, _i, _j, _len, _len1, _ref, _ref1;
         that.cache[url] = data;
         if (data.success) {
           if (_.isArray(data.result)) {
@@ -181,29 +183,57 @@
                 return _results;
               })()
             ];
-            return success(collection);
+            _ref = that.callbacks[url].successes;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              s = _ref[_i];
+              s(collection);
+            }
           } else {
-            return success(new Model(data.result, url));
+            success(new Model(data.result, url));
           }
         } else {
-          return error(data, null);
+          _ref1 = that.callbacks[url].errors;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            err = _ref1[_j];
+            err(data, null);
+          }
         }
+        that.callbacks[url].success = [];
+        return that.callbacks[url].errors = [];
       };
       if (this.cache[url] != null) {
         success_callback(this.cache[url]);
         return null;
       }
-      return $.ajax({
-        url: url,
-        type: 'GET',
-        data: this.filter,
-        dataType: 'json',
-        cache: true,
-        success: success_callback,
-        error: function(xhr, txtStatus, exception) {
-          return error(null, exception);
-        }
-      });
+      if ((_base = this.callbacks)[url] == null) {
+        _base[url] = {
+          successes: [],
+          errors: [],
+          request: null
+        };
+      }
+      this.callbacks[url].successes.push(success);
+      this.callbacks[url].errors.push(error);
+      if (!this.callbacks[url].request) {
+        return this.callbacks[url].request = $.ajax({
+          url: url,
+          type: 'GET',
+          data: this.filter,
+          dataType: 'json',
+          cache: true,
+          success: success_callback,
+          error: function(xhr, txtStatus, exception) {
+            var err, _i, _len, _ref;
+            _ref = that.callbacks[url].errors;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              err = _ref[_i];
+              err(null, exception);
+            }
+            that.callbacks[url].success = [];
+            return that.callbacks[url].errors = [];
+          }
+        });
+      }
     };
 
     API.prototype.filter = function(query) {

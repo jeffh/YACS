@@ -113,6 +113,8 @@ class Selection
             courses.push(parseInt(cid, 10))
         courses
 
+    get: (course_id) -> @data[course_id]
+
 class Validator
     constructor: (options) ->
         options = $.extend({}, options)

@@ -66,8 +66,11 @@ class API
     constructor: (@base_url) ->
         @filter = ''
         @cache = {}
+        @callbacks = {}
 
-    clear_cache: -> @cache = {}
+    clear_cache: ->
+      @cache = {}
+      @callbacks = {}
 
     url: (object, id) ->
         if id?
@@ -83,17 +86,30 @@ class API
                 if _.isArray(data.result)
                   collection = new Collection(url)
                   [collection.add(new Model(x, url + x.id + '/')) for x in data.result]
-                  success(collection)
+                  for s in that.callbacks[url].successes
+                    s(collection)
                 else
                   success(new Model(data.result, url))
             else
-                error(data, null)
+              for err in that.callbacks[url].errors
+                err(data, null)
+            that.callbacks[url].success = []
+            that.callbacks[url].errors = []
 
         if @cache[url]?
             success_callback(@cache[url])
             return null
 
-        $.ajax({
+        @callbacks[url] ?= {
+          successes: []
+          errors: []
+          request: null
+        }
+        @callbacks[url].successes.push(success)
+        @callbacks[url].errors.push(error)
+
+        unless @callbacks[url].request
+          @callbacks[url].request = $.ajax({
             url: url
             type: 'GET'
             data: @filter
@@ -101,8 +117,11 @@ class API
             cache: true
             success: success_callback
             error: (xhr, txtStatus, exception) ->
-                error(null, exception)
-        })
+              for err in that.callbacks[url].errors
+                err(null, exception)
+              that.callbacks[url].success = []
+              that.callbacks[url].errors = []
+          })
 
     filter: (query) ->
       this

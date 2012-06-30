@@ -190,6 +190,10 @@
       return courses;
     };
 
+    Selection.prototype.get = function(course_id) {
+      return this.data[course_id];
+    };
+
     return Selection;
 
   })();
