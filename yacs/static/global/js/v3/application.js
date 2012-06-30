@@ -42,6 +42,16 @@
     });
   });
 
+  $(function() {
+    var data;
+    data = $('meta[name=semester_id]');
+    if (data.length) {
+      return api.filter({
+        semester_id: parseInt(data.attr('content'), 10)
+      });
+    }
+  });
+
   courses = null;
 
   window.validator = validator = new Validator();

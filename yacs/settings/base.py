@@ -307,9 +307,11 @@ with settings as s:
     }
 
     # === Memory ===
-    CACHES = {
+    s.CACHE_VERSION = 1
+    s.CACHES = {
         'default': {
-            'BACKEND': 'django.core.cache.backends.memcached.LocMemCache',
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'VERSION': s.CACHE_VERSION,
         }
     }
 

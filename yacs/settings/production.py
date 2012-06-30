@@ -10,10 +10,11 @@ with open(os.environ.get('YACS_SETTINGS', settings.relative_path('settings', 'pr
 with settings as s:
     s.DEBUG = False
 
-    CACHES = {
+    s.CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
             'LOCATION': '127.0.0.1:11211',
+            'VERSION': s.CACHE_VERSION,
         }
     }
 

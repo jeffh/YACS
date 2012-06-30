@@ -23,6 +23,12 @@ $ ->
         error: -> spinner.fadeOut()
     )
 
+$ ->
+    # set API to filter by semester_id
+    data = $('meta[name=semester_id]')
+    if data.length
+        api.filter(semester_id: parseInt(data.attr('content'), 10))
+
 # initialize selection validation system
 courses = null
 window.validator = validator = new Validator()

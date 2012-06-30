@@ -20,6 +20,10 @@ It would be bad if a 500 error page threw a 500 error when trying to render...
 <meta name="copyright" content="(c) 2011 Jeff Hui">
 <meta name="keywords" content="rpi courses, rpi course scheduler, course scheduling, yacs">
 
+{% if semester %}
+<meta name="semester_id" content="{{ semester.id }}">
+{% endif %}
+
 <!-- http://t.co/dKP3o1e -->
 <meta name="HandheldFriendly" content="True">
 <meta name="MobileOptimized" content="320">

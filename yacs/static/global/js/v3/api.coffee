@@ -64,7 +64,7 @@ class Collection
 # Public interface to accessing the API
 class API
     constructor: (@base_url) ->
-        @filter = ''
+        @_filter = ''
         @cache = {}
         @callbacks = {}
 
@@ -112,7 +112,7 @@ class API
           @callbacks[url].request = $.ajax({
             url: url
             type: 'GET'
-            data: @filter
+            data: @_filter
             dataType: 'json'
             cache: true
             success: success_callback
@@ -124,6 +124,7 @@ class API
           })
 
     filter: (query) ->
+      @_filter = $.param(query)
       this
 
     semesters: (success, error, id) -> @get(@url('semesters', id), success, error)

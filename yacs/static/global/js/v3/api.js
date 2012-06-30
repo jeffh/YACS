@@ -144,7 +144,7 @@
 
     function API(base_url) {
       this.base_url = base_url;
-      this.filter = '';
+      this._filter = '';
       this.cache = {};
       this.callbacks = {};
     }
@@ -218,7 +218,7 @@
         return this.callbacks[url].request = $.ajax({
           url: url,
           type: 'GET',
-          data: this.filter,
+          data: this._filter,
           dataType: 'json',
           cache: true,
           success: success_callback,
@@ -237,6 +237,7 @@
     };
 
     API.prototype.filter = function(query) {
+      this._filter = $.param(query);
       return this;
     };
 
