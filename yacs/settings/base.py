@@ -306,6 +306,13 @@ with settings as s:
         }
     }
 
+    # === Memory ===
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.memcached.LocMemCache',
+        }
+    }
+
     # ==== API App ====
     # Return queries executed in json, only works when DEBUG = True
     s.API_RETURN_QUERIES = True
@@ -439,11 +446,13 @@ with settings as s:
         'application': {
             'source_filenames': (
                 'js/v3/utilities.coffee',
+                'js/v3/time.coffee',
                 'js/v3/jquery.ext.coffee',
                 'js/v3/api.coffee',
                 'js/v3/summarizer.coffee',
-                'js/v3/realtime_form.coffee',
-                'js/v3/selection.coffee',
+                'js/v3/liveform.coffee',
+                'js/v3/storage.coffee',
+                'js/v3/templates.coffee',
                 'js/v3/application.coffee',
             ),
             'output_filename': 'a.js',
