@@ -1,4 +1,4 @@
-Jeff Hui (huij@rpi.edu)
+Jeff Hui
 Jinzhen Gong
 David Hedin
 Matt Zanchelli
