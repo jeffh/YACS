@@ -1,6 +1,8 @@
 # stop attaching hooks if we're in jasmine tests
 return if $('.content').length == 0
 
+days_of_the_week = 'Monday Tuesday Wednesday Thursday Friday'.split(' ')
+
 create_summaries = ->
     elements = $('.summarize').not('.has-summary')
     summarize(elements, summary_length: 150)
@@ -211,6 +213,41 @@ $ ->
         visualize_conflicts()
         selection.save()
 
+template_functions = {
+    display_time: (period) ->
+        fmt = '{{ 0 }}-{{ 1 }}'
+        start = Time.parse_military(period.start)
+        end = Time.parse_military(period.end)
+        time_fmt = '{{ hour }}{{ sep_if_min }}{{ zmin_if_min }}'
+        format(fmt,
+            start.format(time_fmt + (if (start.isAM() == end.isAM()) or (start.isPM() == end.isPM()) then '' else '{{ apm }}')),
+                            end.format(time_fmt + '{{ apm }}')
+        )
+    periods_by_dow: (periods) ->
+        remapped_periods = {}
+        for dow in days_of_the_week
+            remapped_periods[dow] = []
+        for period in periods
+            for dow in period.days_of_the_week
+                remapped_periods[dow].push(period)
+        remapped_periods
+    pluralize: (text, number, pluralize_text) ->
+        pluralize_text ?= 's'
+        if number != 1
+            text + pluralize_text
+        else
+            text
+    period_offset: (period, height) ->
+        start = Time.parse_military(period.start)
+        time = start.minute * 60 + start.second
+        return time / 3600.0 * height
+    period_height: (period, height) ->
+        time = Time.parse_military(period.end).int() - Time.parse_military(period.start).int();
+        #return 25 // 30 min time block
+        #return 41.666666667 // 50 min time block
+        return time / 3600.0 * height
+}
+
 # selected courses
 $ ->
     target = $('#selected_courses')
@@ -274,7 +311,6 @@ $ ->
                     _.pluck(course.sections, 'notes')
                 )()
 
-                days_of_the_week = 'Monday Tuesday Wednesday Thursday Friday'.split(' ')
                 target.append(templates.course_template(
                     course: course
                     days_of_the_week: days_of_the_week
@@ -282,30 +318,9 @@ $ ->
                     alwaysShowSections: true
                     isReadOnly: false
                     isSelectedSection: (section_id) -> _.include(selection.get_sections(), section_id)
-                    displayPeriod: ->
-                    periodsByDayOfWeek: (periods) ->
-                        remapped_periods = {}
-                        for dow in days_of_the_week
-                            remapped_periods[dow] = []
-                        for period in periods
-                            for dow in period.days_of_the_week
-                                remapped_periods[dow].push(period)
-                        remapped_periods
-                    displayTime: (period) ->
-                        fmt = '{{ 0 }}-{{ 1 }}'
-                        start = Time.parse_military(period.start)
-                        end = Time.parse_military(period.end)
-                        time_fmt = '{{ hour }}{{ sep_if_min }}{{ zmin_if_min }}'
-                        format(fmt,
-                            start.format(time_fmt + (if (start.isAM() == end.isAM()) or (start.isPM() == end.isPM()) then '' else '{{ apm }}')),
-                            end.format(time_fmt + '{{ apm }}')
-                        )
-                    pluralize: (text, number, pluralize_text) ->
-                        pluralize_text ?= 's'
-                        if number != 1
-                            text + pluralize_text
-                        else
-                            text
+                    displayTime: template_functions.display_time
+                    periodsByDayOfWeek: template_functions.periods_by_dow
+                    pluralize: template_functions.pluralize
                 ))
             create_summaries('.summarize')
         )
@@ -320,4 +335,170 @@ $ ->
             callback()
     else
         target.html(templates.no_courses_template())
+
+# cycles numbers based on the number of schedule items
+create_color_map = (schedule, maxcolors) ->
+    color_map = {}
+    maxcolors = maxcolors or 9
+    keys = Object.keys(schedule)
+    for i in [0..keys.length]
+        cid = keys[i]
+        color_map[cid] = (i % maxcolors) + 1
+    return color_map
+
+# creates a nested object for easily accessing sections by time slot:
+# map[day_of_the_week][starting_hour] = section
+create_timemap = (schedule, sections, dows, time_range) ->
+    map = {}
+    for dow in dows
+        map[dow] = {}
+    scheduleSections = []
+
+    section_ids = (schedule[cid] for cid in Object.keys(schedule))
+
+    for section_id in section_ids
+        scheduleSections.push(sections.get(section_id).to_hash())
+
+    for section in scheduleSections
+        for period in section.section_times
+            for dow in period.days_of_the_week
+                startingHour = Time.parse_military(period.start).hour
+                map[dow][startingHour] = period
+    map
+
+
+current_schedule = {}
+display_schedules = (options) ->
+    options = $.extend({
+        selected_index: 0
+        section_ids: null
+        id: null
+    }, current_schedule, options)
+    current_schedule = options
+    target = $('#thumbnails')
+    callback = barrier(4, ->
+        unless @response.success
+            Logger.error(@response)
+            return
+
+        schedules = @response.result.schedules
+        dows = @response.result.days_of_the_week
+        time_range = @response.result.time_range
+
+        if schedules.length
+            target.empty()
+            color_map = create_color_map(schedules[0], 8)
+            for i in [0..schedules.length - 1]
+                schedule = schedules[i]
+                secs = []
+
+                for section_id in schedule
+                    secs.push(@sections.get(section_id).to_hash())
+
+                timemap = create_timemap(schedule, @sections, dows, time_range)
+                height = parseInt($('#thumbnail_template').attr('data-period-height'), 10)
+                # render thumbnail
+                target.append(templates.thumbnail_template(
+                    sid: i + 1
+                    schedules: schedules
+                    dows: @response.result.days_of_the_week
+                    timemap: timemap
+                    time_range: @response.result.time_range
+                    color_map: color_map
+                    courses: @courses
+                    sections: @sections
+                    period_height: (p) -> template_functions.period_height(p, height)
+                    period_offset: (p) -> template_functions.period_offset(p, height)
+                ))
+                # render selected template
+                if options.selected_index == i
+                    height = parseInt($('#schedule_template').attr('data-period-height'), 10)
+                    $('#schedules').html(templates.schedule_template(
+                        sid: i + 1 #response.result.id
+                        schedules: schedules
+                        dows: @response.result.days_of_the_week
+                        timemap: timemap
+                        time_range: @response.result.time_range
+                        color_map: color_map
+                        courses: @courses
+                        sections: @sections
+                        departments: @departments
+                        crns: _.pluck(secs, (section) -> section.crn)
+                        displayTime: template_functions.display_time
+                        pluralize: template_functions.pluralize
+                        period_height: (p) -> template_functions.period_height(p, height)
+                        period_offset: (p) -> template_functions.period_offset(p, height)
+                        humanize_hour: (h) ->
+                            h = h % 12
+                            apm = if h >= 12 then 'pm' else 'am'
+                            if h == 0
+                                '12 ' + apm
+                            else
+                                h + ' ' + apm
+                        humanize_time: (time) ->
+                            time = Time.parse_military(time)
+                            time.format('{{ hour }}')
+                    ))
+            bind_schedule_events()
+        else
+            $('#schedules').html(templates.no_schedules_template())
+    )
+
+    api.courses((data) ->
+        callback(-> @courses = data)
+    )
+    api.sections((data) ->
+        callback(-> @sections = data)
+    )
+    api.departments((data) ->
+        callback(-> @departments = data)
+    )
+    api.schedules(
+        section_ids: options.section_ids
+        id: options.id
+        success: (r) ->
+            callback(-> @response = r)
+    )
+
+bind_schedule_events = ->
+    hide_schedules = ->
+        $('#thumbnails').hide(200)
+        return false
+
+    $('.view-schedules').click(->
+        $('#thumbnails').toggle(200)
+        return false
+    )
+    $('#thumbnails .select-schedule').live('click', ->
+        schedule_id = parseInt($(this).parent().attr('data-sid'), 10) - 1
+        display_schedules(
+            selected_index: schedule_id
+        )
+        hide_schedules()
+        return false
+    )
+    window.display_schedules = display_schedules
+    window.current_schedule = current_schedule
+
+# schedules view
+$ ->
+    target = $('#thumbnails')
+    return unless target.length
+
+    # requires browser support
+    if History.enabled
+        History.Adapter.bind(window, 'statechange', ->
+            state = History.getState()
+            if state.id
+                display_schedules(
+                    id: state.id
+                    selected_index: state.index
+                )
+                return
+        )
+
+    display_schedules(
+        section_ids: selection.get_sections()
+        selected_index: 0
+    )
 

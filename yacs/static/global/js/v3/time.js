@@ -73,6 +73,10 @@
       });
     };
 
+    Time.prototype.int = function() {
+      return this.hour * 3600 + this.minute * 60 + this.second;
+    };
+
     Time.prototype.standardHour = function() {
       var h;
       h = this.hour % 12;
@@ -98,7 +102,6 @@
   Time.parse_military = function(string) {
     var parts;
     parts = string.split(':');
-    console.log(parts);
     return new Time(parts[0], parts[1], parts[2]);
   };
 

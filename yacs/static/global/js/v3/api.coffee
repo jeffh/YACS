@@ -78,6 +78,23 @@ class API
         else
             @base_url + object + '/'
 
+    _add_callbacks: (url, success, error) ->
+        @callbacks[url] ?= {
+          successes: []
+          errors: []
+          request: null
+        }
+        @callbacks[url].successes.push(success)
+        @callbacks[url].errors.push(error)
+
+    _invoke_callbacks: (url, type, args...) ->
+        i = 0
+        for fn in @callbacks[url][type]
+            fn(args...)
+            ++i
+        @callbacks[url].successes = @callbacks[url].successes.slice(i)
+        @callbacks[url].errors = @callbacks[url].errors.slice(i)
+
     get: (url, success, error) ->
         that = this
         success_callback = (data) ->
@@ -86,27 +103,17 @@ class API
                 if _.isArray(data.result)
                   collection = new Collection(url)
                   [collection.add(new Model(x, url + x.id + '/')) for x in data.result]
-                  for s in that.callbacks[url].successes
-                    s(collection)
+                  that._invoke_callbacks(url, 'successes', collection)
                 else
-                  success(new Model(data.result, url))
+                  that._invoke_callbacks(url, 'successes', new Model(data.result, url))
             else
-              for err in that.callbacks[url].errors
-                err(data, null)
-            that.callbacks[url].success = []
-            that.callbacks[url].errors = []
+                that._invoke_callbacks(url, 'errors', data, null)
+
+        @_add_callbacks(url, success, error)
 
         if @cache[url]?
             success_callback(@cache[url])
             return null
-
-        @callbacks[url] ?= {
-          successes: []
-          errors: []
-          request: null
-        }
-        @callbacks[url].successes.push(success)
-        @callbacks[url].errors.push(error)
 
         unless @callbacks[url].request
           @callbacks[url].request = $.ajax({
@@ -117,10 +124,7 @@ class API
             cache: true
             success: success_callback
             error: (xhr, txtStatus, exception) ->
-              for err in that.callbacks[url].errors
-                err(null, exception)
-              that.callbacks[url].success = []
-              that.callbacks[url].errors = []
+              that._invoke_callbacks(url, 'errors', null, exception)
           })
 
     filter: (query) ->
@@ -142,22 +146,29 @@ class API
         }, options)
         assert(options.id? or options.section_ids?, 'id or section_ids need to be specified')
 
-        if options.section_ids
+        if options.section_ids and not options.id
             data = '?section_id=' + options.section_ids.join('&section_id=')
         else
             data = ''
         url = @url('schedules', options.id) + data
+
+        @_add_callbacks(url, options.success, options.error)
+
         if @cache[url]?
-            success_callback(@cache[url])
+            @_invoke_callbacks(url, 'successes', @cache[url])
             return null
 
+
+        that = this
         $.ajax({
             url: url
             type: 'GET'
             dataType: 'json'
             cache: true
-            success: options.success
-            error: options.error
+            success: (data) ->
+                that._invoke_callbacks(url, 'successes', data)
+            error: (xhr, type, exception) ->
+                that._invoke_callbacks(url, 'errors', null, exception)
         })
 
 window.API = API

@@ -89,6 +89,9 @@
 
     Selection.prototype.load = function() {
       this.data = this.storage.get('selection');
+      if (this.data == null) {
+        this.data = {};
+      }
       $(this).trigger('loaded', {
         sender: this,
         data: this.data

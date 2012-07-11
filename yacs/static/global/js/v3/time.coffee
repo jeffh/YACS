@@ -46,6 +46,8 @@ class Time
       cap_apm: if @isAM() then 'Am' else 'Pm'
     )
 
+  int: -> @hour * 3600 + @minute * 60 + @second
+
   standardHour: ->
     h = @hour % 12
     if h == 0
@@ -58,7 +60,6 @@ class Time
 
 Time.parse_military = (string) ->
   parts = string.split(':')
-  console.log(parts)
   new Time(parts[0], parts[1], parts[2])
 
 @Time = Time

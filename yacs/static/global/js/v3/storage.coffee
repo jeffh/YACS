@@ -51,6 +51,7 @@ class Selection
 
     load: ->
         @data = @storage.get('selection')
+        @data = {} unless @data?
         $(this).trigger('loaded', {sender: this, data: @data})
         this
 

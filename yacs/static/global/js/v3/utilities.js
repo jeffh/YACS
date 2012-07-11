@@ -130,17 +130,22 @@
     return result;
   };
 
-  window.barrier = function(number, complete) {
-    var i;
+  window.barrier = function(number, complete, context) {
     assert($.isFunction(complete), 'complete should be a function');
-    i = 0;
-    return function() {
-      return (function(number) {
-        if (++i === number) {
-          return complete();
+    return (function(number, complete) {
+      var fn;
+      fn = function(modify_context) {
+        if ($.isFunction(modify_context)) {
+          modify_context.call(fn.context, fn.context);
         }
-      })(number);
-    };
+        if (++fn.counter === number) {
+          return complete.call(fn.context);
+        }
+      };
+      fn.context = $.extend({}, context);
+      fn.counter = 0;
+      return fn;
+    })(number, complete);
   };
 
   window.iterate = function(array, options) {

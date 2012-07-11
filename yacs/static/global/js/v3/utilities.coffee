@@ -104,11 +104,34 @@ window.hash_by_attr = (array, attr, options) ->
 # returns a function can multiple async calls can invoke.
 # once the given number of async calls has finished, invoke the callback.
 # This is good for doing something after multiple ajax requests.
-window.barrier = (number, complete) ->
+#
+# You can use the counter attribute on the return object to get the current
+# number of times the function has been called
+#
+# Barrier's final argument is a context object for the complete function.
+# Complete can access the context via this.
+#
+# The returned function accepts an context modifier function which can
+# modify the context object (which it is given as the first arg and as this)
+#
+# Example:
+#   callback = barrier(2, -> console.log(this))
+#   $.get('/some/url/1', (d) -> callback(-> @data1 = d))
+#   $.get('/some/url/2', (d) -> callback(-> @data2 = d))
+#
+# # When both request finish (regardless of order) in console:
+# {data1: /* ... */, data2: /* ... */}
+window.barrier = (number, complete, context) ->
     assert($.isFunction(complete), 'complete should be a function')
-    i = 0
-    return ->
-        do (number) -> complete() if ++i == number
+    return do (number, complete) ->
+      fn = (modify_context) ->
+        if $.isFunction(modify_context)
+          modify_context.call(fn.context, fn.context)
+        complete.call(fn.context) if ++fn.counter == number
+
+      fn.context = $.extend({}, context)
+      fn.counter = 0
+      return fn
 
 
 # breaks up loop work into separate async calls to prevent freezing
