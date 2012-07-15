@@ -101,6 +101,7 @@
 
   Time.parse_military = function(string) {
     var parts;
+    assert(string != null, 'string must be a string');
     parts = string.split(':');
     return new Time(parts[0], parts[1], parts[2]);
   };

@@ -264,79 +264,91 @@
       return null;
     };
 
-    Validator.prototype.is_valid = function() {
-      var course_id, i, j, keys, schedules, section1_times, section2_times, sections, time_conflict, time_to_int, times_conflict, _i, _j, _k, _len, _ref, _ref1, _ref2, _ref3;
+    Validator.prototype._time_conflict = function(time1, time2) {
+      var dow, dow1, dow2, dow_equal, end1, end2, result, start1, start2, time_to_int, _i, _len;
       time_to_int = function(s) {
-        var n, parts;
-        parts = s.split(':');
-        n = parseInt(parts[2], 10);
-        n += parseInt(parts[1], 10) * 60;
-        n += parseInt(parts[0], 10) * 3600;
-        return n;
+        return Time.parse_military(s).int();
       };
-      time_conflict = function(time1, time2) {
-        var dow, dow1, dow2, dow_equal, end1, end2, result, start1, start2, _i, _len;
-        start1 = time_to_int(time1.start);
-        end1 = time_to_int(time1.end);
-        start2 = time_to_int(time2.start);
-        end2 = time_to_int(time2.end);
-        dow1 = time1.days_of_the_week;
-        dow2 = time2.days_of_the_week;
-        dow_equal = false;
-        for (_i = 0, _len = dow1.length; _i < _len; _i++) {
-          dow = dow1[_i];
-          if (_.include(dow2, dow)) {
-            dow_equal = true;
-            break;
-          }
+      start1 = time_to_int(time1.start);
+      end1 = time_to_int(time1.end);
+      start2 = time_to_int(time2.start);
+      end2 = time_to_int(time2.end);
+      dow1 = time1.days_of_the_week;
+      dow2 = time2.days_of_the_week;
+      dow_equal = false;
+      for (_i = 0, _len = dow1.length; _i < _len; _i++) {
+        dow = dow1[_i];
+        if (dow2.indexOf(dow) >= 0) {
+          dow_equal = true;
+          break;
         }
-        result = dow_equal && ((start1 <= start2 && start2 <= end1) || (start2 <= start1 && start1 <= end2) || (start1 <= end2 && end2 <= end1) || (start2 <= end2 && end2 <= end2));
-        return result;
-      };
-      times_conflict = function(times1, times2) {
-        var n, time1, time2, _i, _j, _len, _len1;
-        for (_i = 0, _len = times1.length; _i < _len; _i++) {
-          time1 = times1[_i];
-          n = 0;
-          for (_j = 0, _len1 = times2.length; _j < _len1; _j++) {
-            time2 = times2[_j];
-            if (time_conflict(time1, time2)) {
-              n += 1;
-            }
-          }
-          if (n === times2.length) {
-            return true;
-          }
-        }
-        return false;
-      };
-      keys = Object.keys(this.data);
-      if (keys.length < 2) {
-        return true;
       }
-      sections = (function() {
-        var _i, _len, _results;
-        _results = [];
-        for (_i = 0, _len = keys.length; _i < _len; _i++) {
-          course_id = keys[_i];
-          _results.push(this.data[course_id]);
-        }
-        return _results;
-      }).call(this);
-      _ref = product.apply(null, sections);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        schedules = _ref[_i];
-        for (i = _j = 0, _ref1 = schedules.length - 1; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
-          section1_times = this.sections[schedules[i]];
-          for (j = _k = _ref2 = i + 1, _ref3 = schedules.length - 1; _ref2 <= _ref3 ? _k < _ref3 : _k > _ref3; j = _ref2 <= _ref3 ? ++_k : --_k) {
-            section2_times = this.sections[schedules[j]];
-            if (times_conflict(section1_times, section2_times)) {
-              return false;
-            }
+      result = dow_equal && ((start1 <= start2 && start2 <= end1) || (start2 <= start1 && start1 <= end2) || (start1 <= end2 && end2 <= end1) || (start2 <= end1 && end1 <= end2));
+      return result;
+    };
+
+    Validator.prototype._section_times_conflict = function(times1, times2) {
+      var time1, time2, _i, _j, _len, _len1;
+      for (_i = 0, _len = times1.length; _i < _len; _i++) {
+        time1 = times1[_i];
+        for (_j = 0, _len1 = times2.length; _j < _len1; _j++) {
+          time2 = times2[_j];
+          if (!this._time_conflict(time1, time2)) {
+            return false;
           }
         }
       }
       return true;
+    };
+
+    Validator.prototype._schedule_is_valid = function(schedule) {
+      var k, key1, key2, keys, section_times, times1, times2, _i, _j, _len, _len1;
+      keys = Object.keys(schedule);
+      section_times = (function() {
+        var _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = keys.length; _i < _len; _i++) {
+          k = keys[_i];
+          _results.push(schedule[k]);
+        }
+        return _results;
+      })();
+      for (_i = 0, _len = keys.length; _i < _len; _i++) {
+        key1 = keys[_i];
+        times1 = schedule[key1];
+        for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
+          key2 = keys[_j];
+          if (key1 === key2) {
+            continue;
+          }
+          times2 = schedule[key2];
+          if (this._time_conflict(times1, times2)) {
+            return false;
+          }
+        }
+      }
+      return true;
+    };
+
+    Validator.prototype.is_valid = function() {
+      var course_id, keys, schedule, schedules, sections, that, _i, _j, _len, _len1;
+      that = this;
+      keys = Object.keys(this.data);
+      sections = [];
+      for (_i = 0, _len = keys.length; _i < _len; _i++) {
+        course_id = keys[_i];
+        sections.push(_.map(this.data[course_id], function(cid) {
+          return that.sections[cid][0];
+        }));
+      }
+      schedules = product.apply(null, sections);
+      for (_j = 0, _len1 = schedules.length; _j < _len1; _j++) {
+        schedule = schedules[_j];
+        if (this._schedule_is_valid(schedule)) {
+          return true;
+        }
+      }
+      return false;
     };
 
     return Validator;

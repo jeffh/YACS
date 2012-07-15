@@ -1,3 +1,4 @@
+
 describe 'storage', ->
     storage = null
     beforeEach ->
@@ -101,6 +102,72 @@ describe 'selection', ->
         expect(s.get_courses()).toEqual([1, 2])
 
 describe 'validator', ->
+    describe 'internal helpers', ->
+        v = null
+        beforeEach ->
+            v = new Validator()
+
+        describe 'time_conflict', ->
+            it 'should return true on conflicting times', ->
+                expect(v._time_conflict(
+                    { start: '09:00:00', end: '10:50:00', days_of_the_week: ['Monday'] },
+                    { start: '10:00:00', end: '11:50:00', days_of_the_week: ['Monday'] }
+                )).toBeTruthy()
+
+            it 'should return false on non-conflicting times', ->
+                expect(v._time_conflict(
+                    { start: '09:00:00', end: '10:50:00', days_of_the_week: ['Monday'] },
+                    { start: '11:00:00', end: '11:50:00', days_of_the_week: ['Monday'] }
+                )).toBeFalsy()
+
+            it 'should return false on non-conflicting days of the week', ->
+                expect(v._time_conflict(
+                    { start: '09:00:00', end: '10:50:00', days_of_the_week: ['Monday'] },
+                    { start: '10:00:00', end: '11:50:00', days_of_the_week: ['Tuesday'] }
+                )).toBeFalsy()
+
+        describe 'section_times_conflict', ->
+            it 'should return true for sections that do conflict', ->
+                result = v._section_times_conflict([
+                    { start: '09:00:00', end: '10:50:00', days_of_the_week: ['Monday'] },
+                ], [
+                    { start: '10:00:00', end: '11:50:00', days_of_the_week: ['Monday'] }
+                ])
+                expect(result).toBeTruthy()
+
+            it 'should return true for multiple sections that do conflict', ->
+                result = v._section_times_conflict([
+                    { start: '09:00:00', end: '10:50:00', days_of_the_week: ['Monday'] },
+                    { start: '10:00:00', end: '10:50:00', days_of_the_week: ['Monday'] },
+                ], [
+                    { start: '10:00:00', end: '11:50:00', days_of_the_week: ['Monday'] }
+                ])
+                expect(result).toBeTruthy()
+
+            it 'should return false if times do not conflict', ->
+                result = v._section_times_conflict([
+                    { start: '14:00:00', end: '16:50:00', days_of_the_week: ['Monday'] },
+                    { start: '12:00:00', end: '13:50:00', days_of_the_week: ['Monday'] },
+                ], [
+                    { start: '10:00:00', end: '11:50:00', days_of_the_week: ['Monday'] }
+                ])
+                expect(result).toBeFalsy()
+
+        describe 'schedule_is_valid', ->
+            it 'should return false if sections do conflict', ->
+                result = v._schedule_is_valid({
+                    1: { start: '09:00:00', end: '10:50:00', days_of_the_week: ['Monday'] },
+                    2: { start: '10:00:00', end: '11:50:00', days_of_the_week: ['Monday'] }
+                })
+                expect(result).toBeFalsy()
+
+            it 'should return true if sections do not conflict', ->
+                result = v._schedule_is_valid({
+                    1: { start: '09:00:00', end: '10:50:00', days_of_the_week: ['Monday'] },
+                    2: { start: '13:00:00', end: '14:50:00', days_of_the_week: ['Monday'] }
+                })
+                expect(result).toBeTruthy()
+
     it 'returns course id for invalid course', ->
         v = new Validator(
             data: {
@@ -120,31 +187,79 @@ describe 'validator', ->
         expect(v.conflicts_with(3)).toEqual(1)
         expect(v.conflicts_with(4)).toEqual(1)
 
-    it 'can detect cyclic conflicts', ->
-        sections = new API.Collection().add_array([
-            new API.Model({ id: 1, section_times: [
-                {start: '10:00:00', end: '11:00:00', days_of_the_week: ['Monday']}
-                {start: '12:00:00', end: '14:00:00', days_of_the_week: ['Monday']}
-            ]})
-            new API.Model({ id: 2, section_times: [{start: '12:00:00', end: '13:00:00', days_of_the_week: ['Monday']}]})
-            new API.Model({ id: 3, section_times: [{start: '10:00:00', end: '11:00:00', days_of_the_week: ['Monday']}]})
-        ])
-        v = new Validator(
-            data: {
+    describe 'detect cyclic conflicts', ->
+        describe 'with simple conflicts', ->
+            sections = null
+            beforeEach ->
+                sections = new API.Collection().add_array([
+                    new API.Model({ id: 1, section_times: [
+                        {start: '10:00:00', end: '11:00:00', days_of_the_week: ['Monday']}
+                        {start: '12:00:00', end: '14:00:00', days_of_the_week: ['Monday']}
+                    ]})
+                    new API.Model({ id: 2, section_times: [{start: '12:00:00', end: '13:00:00', days_of_the_week: ['Monday']}]})
+                    new API.Model({ id: 3, section_times: [{start: '10:00:00', end: '11:00:00', days_of_the_week: ['Monday']}]})
+                ])
+
+            it 'should validate if only one conflict', ->
+                v = new Validator(
+                    data: {
+                        1: [1]
+                        2: [2]
+                    }
+                ).set_sections(sections)
+                expect(v.is_valid()).toBeTruthy()
+
+            it 'should not validate if no possible schedules', ->
+                v = new Validator().set_data({
+                    1: [1]
+                    2: [2]
+                    3: [3]
+                }).set_sections(sections)
+                expect(v.is_valid()).toBeFalsy()
+
+        it 'should validate if different day of the week', ->
+            sections = new API.Collection().add_array([
+                new API.Model({ id: 1, section_times: [
+                    {start: '10:00:00', end: '11:00:00', days_of_the_week: ['Tuesday']}
+                    {start: '12:00:00', end: '14:00:00', days_of_the_week: ['Tuesday']}
+                ]})
+                new API.Model({ id: 2, section_times: [{start: '12:00:00', end: '13:00:00', days_of_the_week: ['Monday']}]})
+                new API.Model({ id: 3, section_times: [{start: '10:00:00', end: '11:00:00', days_of_the_week: ['Monday']}]})
+            ])
+            v = new Validator().set_data({
                 1: [1]
                 2: [2]
-            }
-        ).set_sections(sections)
-        expect(v.is_valid()).toBeTruthy()
+                3: [3]
+            }).set_sections(sections)
+            expect(v.is_valid()).toBeTruthy()
 
-        v = new Validator().set_data({
-            1: [1]
-            2: [2]
-            3: [3]
-        }).set_sections(sections)
-        expect(v.is_valid()).toBeFalsy()
+        it 'should validate if there are more free sections', ->
+            sections = new API.Collection().add_array([
+                new API.Model({
+                    id: 1,
+                    section_times: [
+                        {start: '10:00:00', end: '11:00:00', days_of_the_week: ['Monday']}
+                        {start: '12:00:00', end: '14:00:00', days_of_the_week: ['Monday']}
+                    ]
+                })
+                new API.Model({
+                    id: 2,
+                    section_times: [
+                        {start: '15:00:00', end: '16:00:00', days_of_the_week: ['Tuesday']}
+                    ]
+                })
+                new API.Model({ id: 3, section_times: [{start: '12:00:00', end: '13:00:00', days_of_the_week: ['Monday']}]})
+                new API.Model({ id: 4, section_times: [{start: '10:00:00', end: '11:00:00', days_of_the_week: ['Monday']}]})
+            ])
+            v = new Validator().set_data({
+                1: [1, 2]
+                2: [3]
+                3: [4]
+            }).set_sections(sections)
+            expect(v.is_valid()).toBeTruthy()
 
-        v = new Validator().set_data()
-        expect(v.is_valid()).toBeTruthy()
+        it 'should return true on empty', ->
+            v = new Validator().set_data()
+            expect(v.is_valid()).toBeTruthy()
 
 

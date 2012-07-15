@@ -103,6 +103,12 @@
         sec2course = {};
         for (_i = 0, _len = section_ids.length; _i < _len; _i++) {
           section_id = section_ids[_i];
+          s.add_section(course_id, section_id);
+          validator.set_data(s.data);
+          if (!validator.is_valid()) {
+            conflicted_sections.push(section_id);
+          }
+          s.undo();
           cid = validator.conflicts_with(section_id);
           if (cid != null) {
             conflicted_sections.push(section_id);
@@ -120,6 +126,7 @@
         course.find('.conflict').removeClass('conflict');
         course.find('.conflicts_with_course, .conflicts_with_section').remove();
         course.find('input[type=checkbox]').removeAttr('disabled');
+        conflicted_sections = _.uniq(conflicted_sections);
         if (conflicted_sections.length === section_ids.length) {
           if ($('#course_' + course_id).checked()) {
             return;
@@ -254,7 +261,6 @@
       section_id = parseInt(el.attr('data-sid'), 10);
       validator.set_data(selection.data);
       if (validator.conflicts_with(section_id)) {
-        console.log('obvious conflict');
         return false;
       }
       if (is_checked) {
@@ -265,7 +271,6 @@
       validator.set_data(selection.data);
       if (!validator.is_valid()) {
         selection.undo();
-        console.log('deep conflict!');
         return false;
       }
       parent = el.parents('.course');
@@ -514,8 +519,7 @@
     current_schedule = options;
     target = $('#thumbnails');
     callback = barrier(4, function() {
-      var color_map, dows, height, i, schedule, schedules, secs, section_id, time_range, timemap, _i, _j, _len, _ref;
-      console.log(this);
+      var color_map, dows, height, i, schedule, schedules, secs, section_id, thumbnails_html, time_range, timemap, _i, _j, _len, _ref;
       if (!this.response.success) {
         Logger.error(this.response);
         return;
@@ -524,8 +528,8 @@
       dows = this.response.result.days_of_the_week;
       time_range = this.response.result.time_range;
       if (schedules.length) {
-        target.empty();
         color_map = create_color_map(schedules[0], 8);
+        thumbnails_html = [];
         for (i = _i = 0, _ref = schedules.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
           schedule = schedules[i];
           secs = [];
@@ -535,7 +539,7 @@
           }
           timemap = create_timemap(schedule, this.sections, dows, time_range);
           height = parseInt($('#thumbnail_template').attr('data-period-height'), 10);
-          target.append(templates.thumbnail_template({
+          thumbnails_html.push(templates.thumbnail_template({
             sid: i + 1,
             schedules: schedules,
             dows: this.response.result.days_of_the_week,
@@ -591,7 +595,9 @@
             }));
           }
         }
-        return bind_schedule_events();
+        target.html(thumbnails_html.join(''));
+        bind_schedule_events();
+        return $('#schedule_thumbnail' + (options.selected_index + 1)).addClass('selected');
       } else {
         return $('#schedules').html(templates.no_schedules_template());
       }

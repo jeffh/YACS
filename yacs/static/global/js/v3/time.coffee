@@ -59,6 +59,7 @@ class Time
   isAM: -> not @isPM()
 
 Time.parse_military = (string) ->
+  assert(string?, 'string must be a string')
   parts = string.split(':')
   new Time(parts[0], parts[1], parts[2])
 

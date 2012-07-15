@@ -71,11 +71,18 @@ visualize_conflicts = () ->
             validator.set_data(s.data)
             sec2course = {} # track course ids
             for section_id in section_ids
+                s.add_section(course_id, section_id)
+                validator.set_data(s.data)
+                unless validator.is_valid()
+                    conflicted_sections.push(section_id)
+                s.undo()
+                # fast-check of conflicts
                 cid = validator.conflicts_with(section_id)
                 if cid?
                     conflicted_sections.push(section_id)
                     sec2course[section_id] = cid
                 else
+                    # slower check of conflicts
                     s.add_section(course_id, section_id)
                     validator.set_data(s.data)
                     unless validator.is_valid()
@@ -88,6 +95,7 @@ visualize_conflicts = () ->
             course.find('input[type=checkbox]').removeAttr('disabled')
 
             # full-course conflict
+            conflicted_sections = _.uniq(conflicted_sections)
             if conflicted_sections.length == section_ids.length
                 return if $('#course_' + course_id).checked()
                 course.addClass('conflict')
@@ -187,7 +195,6 @@ $ ->
 
         validator.set_data(selection.data)
         if validator.conflicts_with(section_id)
-            console.log('obvious conflict')
             return false
 
         if is_checked
@@ -198,7 +205,6 @@ $ ->
 
         if not validator.is_valid()
             selection.undo()
-            console.log('deep conflict!')
             return false
 
         parent = el.parents('.course')
@@ -386,8 +392,8 @@ display_schedules = (options) ->
         time_range = @response.result.time_range
 
         if schedules.length
-            target.empty()
             color_map = create_color_map(schedules[0], 8)
+            thumbnails_html = []
             for i in [0..schedules.length - 1]
                 schedule = schedules[i]
                 secs = []
@@ -398,7 +404,7 @@ display_schedules = (options) ->
                 timemap = create_timemap(schedule, @sections, dows, time_range)
                 height = parseInt($('#thumbnail_template').attr('data-period-height'), 10)
                 # render thumbnail
-                target.append(templates.thumbnail_template(
+                thumbnails_html.push(templates.thumbnail_template(
                     sid: i + 1
                     schedules: schedules
                     dows: @response.result.days_of_the_week
@@ -439,7 +445,9 @@ display_schedules = (options) ->
                             time = Time.parse_military(time)
                             time.format('{{ hour }}')
                     ))
+            target.html(thumbnails_html.join(''))
             bind_schedule_events()
+            $('#schedule_thumbnail' + (options.selected_index + 1)).addClass('selected')
         else
             $('#schedules').html(templates.no_schedules_template())
     )

@@ -160,59 +160,60 @@ class Validator
                 return course_id
         return null
 
+    _time_conflict: (time1, time2) ->
+        time_to_int = (s) -> Time.parse_military(s).int()
+
+        start1 = time_to_int(time1.start)
+        end1 = time_to_int(time1.end)
+        start2 = time_to_int(time2.start)
+        end2 = time_to_int(time2.end)
+        dow1 = time1.days_of_the_week
+        dow2 = time2.days_of_the_week
+
+        dow_equal = false
+        for dow in dow1
+            if dow2.indexOf(dow) >= 0
+                dow_equal = true
+                break
+        result = dow_equal and (
+            (start1 <= start2 and start2 <= end1) or
+            (start2 <= start1 and start1 <= end2) or
+            (start1 <= end2 and end2 <= end1) or
+            (start2 <= end1 and end1 <= end2)
+        )
+        return result
+
+    _section_times_conflict: (times1, times2) ->
+        for time1 in times1
+            for time2 in times2
+                unless @_time_conflict(time1, time2)
+                    return false
+        return true
+
+    _schedule_is_valid: (schedule) ->
+        keys = Object.keys(schedule)
+        section_times = (schedule[k] for k in keys)
+        for key1 in keys
+            times1 = schedule[key1]
+            for key2 in keys
+                continue if key1 == key2
+                times2 = schedule[key2]
+                if @_time_conflict(times1, times2)
+                    return false
+        return true
+
     # checks for selections & cyclic conflicts
     # this is much slower than conflicts_with()
     is_valid: ->
-        time_to_int = (s) ->
-            parts = s.split(':')
-            n = parseInt(parts[2], 10)
-            n += parseInt(parts[1], 10) * 60
-            n += parseInt(parts[0], 10) * 3600
-            return n
-
-        time_conflict = (time1, time2) ->
-            start1 = time_to_int(time1.start)
-            end1 = time_to_int(time1.end)
-            start2 = time_to_int(time2.start)
-            end2 = time_to_int(time2.end)
-            dow1 = time1.days_of_the_week
-            dow2 = time2.days_of_the_week
-
-            dow_equal = false
-            for dow in dow1
-                if _.include(dow2, dow)
-                    dow_equal = true
-                    break
-
-            result = dow_equal and (
-                start1 <= start2 <= end1 or
-                start2 <= start1 <= end2 or
-                start1 <= end2 <= end1 or
-                start2 <= end2 <= end2
-            )
-            result
-
-        times_conflict = (times1, times2) ->
-            for time1 in times1
-                n = 0
-                for time2 in times2
-                    n += 1 if time_conflict(time1, time2)
-                if n == times2.length
-                    return true
-            return false
-
+        that = this
         keys = Object.keys(@data)
-        return true if keys.length < 2
-
-        sections = (@data[course_id] for course_id in keys)
-        for schedules in product(sections...)
-            for i in [0...schedules.length-1]
-                section1_times = @sections[schedules[i]]
-                for j in [i+1...schedules.length-1]
-                    section2_times = @sections[schedules[j]]
-                    if times_conflict(section1_times, section2_times)
-                        return false
-        return true
+        sections = []
+        for course_id in keys
+            sections.push(_.map(@data[course_id], (cid) -> that.sections[cid][0]))
+        schedules = product(sections...)
+        for schedule in schedules
+            return true if @_schedule_is_valid(schedule)
+        return false
 
 window.Validator = Validator
 window.NullStorage = NullStorage
