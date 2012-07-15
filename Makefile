@@ -215,6 +215,9 @@ create_section_cache:
 
 test: test_django test_lib pep8
 
+test_js:
+	jasmine-headless-webkit -j jasmine.yml -c
+
 test_django:
 	$(prefix)$(PYTHON_EXEC) manage.py test --failfast $(APPS)
 
