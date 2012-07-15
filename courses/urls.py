@@ -4,7 +4,7 @@ from django.views.decorators.cache import cache_page
 from courses import views
 from courses.views import newviews as nviews
 
-cache_duration = 60 * 5
+cache_duration = 60 * 10
 
 urlpatterns = patterns('',
     url(r'^$', nviews.semester_list, name='semesters'),
@@ -15,9 +15,6 @@ urlpatterns = patterns('',
     url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/(?P<code>[A-Z]+)/$', cache_page(nviews.course_list_by_dept, cache_duration), name='courses-by-dept'),
 
     # courses
-    #url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/$', views.DepartmentListView.as_view(), name='departments'),
-    #url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/search/$', views.SearchCoursesListView.as_view(), name='search-all-courses'),
-    #url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/(?P<code>[A-Z]+)/$', views.CourseByDeptListView.as_view(), name='courses-by-dept'),
     url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/(?P<code>[A-Z]+)/(?P<number>[1-9]\d*)/$', views.CourseDetailView.as_view(), name='course'),
 
     # pretty much a static page..
