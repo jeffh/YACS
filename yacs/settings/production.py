@@ -9,6 +9,7 @@ with open(os.environ.get('YACS_SETTINGS', settings.relative_path('settings', 'pr
 
 with settings as s:
     s.DEBUG = False
+    s.STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
     s.CACHES = {
         'default': {

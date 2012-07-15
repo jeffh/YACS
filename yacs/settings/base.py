@@ -384,7 +384,7 @@ with settings as s:
             )
 
     # ==== django-pipeline ====
-    s.STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+    s.STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
     s.PIPELINE_COMPILERS = (
         'pipeline.compilers.coffee.CoffeeScriptCompiler',
         'pipeline.compilers.sass.SASSCompiler',
