@@ -1,5 +1,5 @@
 BeautifulSoup==3.2.1
-Django==1.4
+Django==1.4.1
 South==0.7.3
 django-debug-toolbar==0.9.4
 django-devserver==0.3.1
