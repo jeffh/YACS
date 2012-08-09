@@ -17,11 +17,18 @@ $ -> window.templates = templates = find_templates()
 # search form
 $ ->
     spinner = $('#search-spinner')
+    original_html = $('#replacable-with-search').html()
     updateform('#searchform',
         start: -> spinner.show()
+        data: {partial: 1}
         update: (html) ->
             $('#replacable-with-search').html(html)
             create_summaries()
+            visualize_conflicts()
+            spinner.fadeOut()
+        empty: ->
+            $('#replacable-with-search').html(original_html)
+            visualize_conflicts()
         error: -> spinner.fadeOut()
     )
 
@@ -244,6 +251,7 @@ template_functions = {
         else
             text
     period_offset: (period, height) ->
+        return 0
         start = Time.parse_military(period.start)
         time = start.minute * 60 + start.second
         return time / 3600.0 * height
@@ -419,7 +427,7 @@ create_set_index_for_schedule = (schedules, response, courses, sections, departm
             courses: courses
             sections: sections
             departments: departments
-            crns: _.pluck(secs, (section) -> section.crn)
+            crns: _.map(_.values(schedules[index]), (sid) -> sections.get(sid).get('crn'))
             displayTime: template_functions.display_time
             pluralize: template_functions.pluralize
             period_height: (p) -> template_functions.period_height(p, height)
@@ -555,15 +563,14 @@ $ ->
         index = state.data.offset or parseInt($('#schedules').attr('data-start'), 10) or 0
         schedule_id = state.data.schedule or $('#schedules').attr('data-schedule')
     else
-        index = 0
-        schedule_id = null
+        index = parseInt($('#schedules').attr('data-start'), 10) or 0
+        schedule_id = $('#schedules').attr('data-schedule')
     if schedule_id == ''
         schedule_id = null
-    display_schedules(
+    display_schedules
         id: schedule_id
         section_ids: selection.get_sections()
         selected_index: Math.max(index - 1, 0)
-    )
 
     # update selection url
     api.schedules
@@ -571,8 +578,6 @@ $ ->
         section_ids: selection.get_sections()
         success: (data) ->
             current_sids = data.result.section_ids
-            console.log(current_sids, selection.get_sections())
-            console.log(_.difference(current_sids, selection.get_sections()))
             is_equal = _.difference(current_sids, selection.get_sections()).length == 0
 
             if not is_equal

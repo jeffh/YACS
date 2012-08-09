@@ -50,6 +50,7 @@
   window.updateform = function(form, options) {
     var request, trigger;
     options = $.extend({
+      data: {},
       start: $.noop,
       ajax_start: $.noop,
       update: $.noop,
@@ -64,6 +65,7 @@
         request.abort();
       }
       ajax = form_for_ajax(form);
+      ajax.data += '&' + $.param(options.data);
       request = $.ajax($.extend(ajax, {
         success: function(data) {
           request = null;

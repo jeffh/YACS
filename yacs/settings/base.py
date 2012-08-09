@@ -473,4 +473,3 @@ with settings as s:
             'output_filename': 's.js',
         }
     }
-

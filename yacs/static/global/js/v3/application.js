@@ -28,15 +28,25 @@
   });
 
   $(function() {
-    var spinner;
+    var original_html, spinner;
     spinner = $('#search-spinner');
+    original_html = $('#replacable-with-search').html();
     return updateform('#searchform', {
       start: function() {
         return spinner.show();
       },
+      data: {
+        partial: 1
+      },
       update: function(html) {
         $('#replacable-with-search').html(html);
-        return create_summaries();
+        create_summaries();
+        visualize_conflicts();
+        return spinner.fadeOut();
+      },
+      empty: function() {
+        $('#replacable-with-search').html(original_html);
+        return visualize_conflicts();
       },
       error: function() {
         return spinner.fadeOut();
@@ -326,6 +336,7 @@
     },
     period_offset: function(period, height) {
       var start, time;
+      return 0;
       start = Time.parse_military(period.start);
       time = start.minute * 60 + start.second;
       return time / 3600.0 * height;
@@ -531,6 +542,7 @@
         offset: index + 1,
         schedule: response.result.id
       };
+      console.log(response.result.id);
       new_url = format('{{ base }}{{ id }}/{{ offset }}/', {
         base: $('#schedules').attr('data-url-base'),
         id: state.schedule,
@@ -544,6 +556,7 @@
       $('.thumbnail').removeClass('selected');
       $($('.thumbnail')[index]).addClass('selected');
       height = parseInt($('#schedule_template').attr('data-period-height'), 10);
+      console.log(schedules[index]);
       $('#schedules').html(templates.schedule_template({
         sid: index + 1,
         schedules: schedules,
@@ -554,8 +567,8 @@
         courses: courses,
         sections: sections,
         departments: departments,
-        crns: _.pluck(secs, function(section) {
-          return section.crn;
+        crns: _.map(_.values(schedules[index]), function(sid) {
+          return sections.get(sid).get('crn');
         }),
         displayTime: template_functions.display_time,
         pluralize: template_functions.pluralize,
@@ -726,12 +739,13 @@
       index = state.data.offset || parseInt($('#schedules').attr('data-start'), 10) || 0;
       schedule_id = state.data.schedule || $('#schedules').attr('data-schedule');
     } else {
-      index = 0;
-      schedule_id = null;
+      index = parseInt($('#schedules').attr('data-start'), 10) || 0;
+      schedule_id = $('#schedules').attr('data-schedule');
     }
     if (schedule_id === '') {
       schedule_id = null;
     }
+    console.log(schedule_id, index);
     display_schedules({
       id: schedule_id,
       section_ids: selection.get_sections(),
@@ -743,8 +757,6 @@
       success: function(data) {
         var $el, current_sids, href, is_equal;
         current_sids = data.result.section_ids;
-        console.log(current_sids, selection.get_sections());
-        console.log(_.difference(current_sids, selection.get_sections()));
         is_equal = _.difference(current_sids, selection.get_sections()).length === 0;
         if (!is_equal) {
           $el = $('.selected_courses.button');

@@ -39,6 +39,7 @@ window.form_for_ajax = (form) ->
 # uses live form to update form values
 window.updateform = (form, options) ->
     options = $.extend({
+        data: {}
         start: $.noop
         ajax_start: $.noop
         update: $.noop # accepts (html) parameter
@@ -51,6 +52,7 @@ window.updateform = (form, options) ->
         if request?
             request.abort()
         ajax = form_for_ajax(form)
+        ajax.data += '&' + $.param(options.data)
         request = $.ajax($.extend(ajax,
             success: (data) ->
                 request = null

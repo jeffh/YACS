@@ -321,8 +321,8 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
 
     index = index or request.GET.get('index', 0)
     try:
-        index = int(index) - 1
-        assert index >= 0
+        index = int(index)
+        assert index >= 1
     except (ValueError, TypeError, AssertionError):
         if slug:
             return redirect(reverse('schedules', kwargs=dict(year=year, month=month, slug=slug, index=1)))
