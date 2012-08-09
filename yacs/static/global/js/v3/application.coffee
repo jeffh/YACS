@@ -373,6 +373,70 @@ create_timemap = (schedule, sections, dows, time_range) ->
     map
 
 
+# used to change the UI appropriately when a section changes
+create_set_index_for_schedule = (schedules, response, courses, sections, departments, dows, time_range, color_map) ->
+    # use lock-like mechanism to prevent recursive calls because of re-trigging History state change
+    ignoreStateChange = false
+    return (index, options) ->
+        options = $.extend({
+            replace: false
+        }, options)
+        if index >= schedules.length or index < 0 or ignoreStateChange
+            return
+        ignoreStateChange = true
+        schedule = schedules[index]
+        timemap = create_timemap(schedule, sections, dows, time_range)
+        secs = []
+
+        for section_id in schedule
+            secs.push(sections.get(section_id).to_hash())
+
+        current_schedule.selected_index = index
+        state = {
+            offset: index + 1
+            schedule: response.result.id
+        }
+        new_url = format('{{ base }}{{ id }}/{{ offset }}/',
+            base: $('#schedules').attr('data-url-base')
+            id: state.schedule
+            offset: state.offset
+        )
+        if options.replace
+            History.replaceState(state, null, new_url)
+        else
+            History.pushState(state, null, new_url)
+
+        $('.thumbnail').removeClass('selected')
+        $($('.thumbnail')[index]).addClass('selected')
+        height = parseInt($('#schedule_template').attr('data-period-height'), 10)
+        $('#schedules').html(templates.schedule_template(
+            sid: index + 1 #response.result.id
+            schedules: schedules
+            dows: response.result.days_of_the_week
+            timemap: timemap
+            time_range: response.result.time_range
+            color_map: color_map
+            courses: courses
+            sections: sections
+            departments: departments
+            crns: _.pluck(secs, (section) -> section.crn)
+            displayTime: template_functions.display_time
+            pluralize: template_functions.pluralize
+            period_height: (p) -> template_functions.period_height(p, height)
+            period_offset: (p) -> template_functions.period_offset(p, height)
+            humanize_hour: (h) ->
+                h = h % 12
+                apm = if h >= 12 then 'pm' else 'am'
+                if h == 0
+                    '12 ' + apm
+                else
+                    h + ' ' + apm
+            humanize_time: (time) ->
+                time = Time.parse_military(time)
+                time.format('{{ hour }}')
+        ))
+        ignoreStateChange = false
+
 current_schedule = {}
 display_schedules = (options) ->
     options = $.extend({
@@ -387,6 +451,7 @@ display_schedules = (options) ->
             Logger.error(@response)
             return
 
+        current_schedule.id = @response.result.id
         schedules = @response.result.schedules
         dows = @response.result.days_of_the_week
         time_range = @response.result.time_range
@@ -396,12 +461,12 @@ display_schedules = (options) ->
             thumbnails_html = []
             for i in [0..schedules.length - 1]
                 schedule = schedules[i]
+                timemap = create_timemap(schedule, @sections, dows, time_range)
                 secs = []
 
                 for section_id in schedule
                     secs.push(@sections.get(section_id).to_hash())
 
-                timemap = create_timemap(schedule, @sections, dows, time_range)
                 height = parseInt($('#thumbnail_template').attr('data-period-height'), 10)
                 # render thumbnail
                 thumbnails_html.push(templates.thumbnail_template(
@@ -416,35 +481,9 @@ display_schedules = (options) ->
                     period_height: (p) -> template_functions.period_height(p, height)
                     period_offset: (p) -> template_functions.period_offset(p, height)
                 ))
-                # render selected template
-                if options.selected_index == i
-                    height = parseInt($('#schedule_template').attr('data-period-height'), 10)
-                    $('#schedules').html(templates.schedule_template(
-                        sid: i + 1 #response.result.id
-                        schedules: schedules
-                        dows: @response.result.days_of_the_week
-                        timemap: timemap
-                        time_range: @response.result.time_range
-                        color_map: color_map
-                        courses: @courses
-                        sections: @sections
-                        departments: @departments
-                        crns: _.pluck(secs, (section) -> section.crn)
-                        displayTime: template_functions.display_time
-                        pluralize: template_functions.pluralize
-                        period_height: (p) -> template_functions.period_height(p, height)
-                        period_offset: (p) -> template_functions.period_offset(p, height)
-                        humanize_hour: (h) ->
-                            h = h % 12
-                            apm = if h >= 12 then 'pm' else 'am'
-                            if h == 0
-                                '12 ' + apm
-                            else
-                                h + ' ' + apm
-                        humanize_time: (time) ->
-                            time = Time.parse_military(time)
-                            time.format('{{ hour }}')
-                    ))
+            # render selected template
+            current_schedule.set_selected_index = create_set_index_for_schedule(schedules, @response, @courses, @sections, @departments, dows, time_range, color_map)
+            current_schedule.set_selected_index(options.selected_index, {replace: true})
             target.html(thumbnails_html.join(''))
             bind_schedule_events()
             $('#schedule_thumbnail' + (options.selected_index + 1)).addClass('selected')
@@ -473,19 +512,28 @@ bind_schedule_events = ->
         $('#thumbnails').hide(200)
         return false
 
-    $('.view-schedules').click(->
+    $('.view-schedules').live('click', ->
         $('#thumbnails').toggle(200)
         return false
     )
     $('#thumbnails .select-schedule').live('click', ->
         schedule_id = parseInt($(this).parent().attr('data-sid'), 10) - 1
-        display_schedules(
-            selected_index: schedule_id
-        )
+        current_schedule.set_selected_index(schedule_id)
         hide_schedules()
         return false
     )
-    window.display_schedules = display_schedules
+    KEY = {
+        LEFT: 37
+        RIGHT: 39
+    }
+    # bind keyboard shortcuts
+    $(window).bind('keyup', (e) ->
+        index = current_schedule.selected_index
+        if e.keyCode == KEY.LEFT
+            current_schedule.set_selected_index(index - 1)
+        else if e.keyCode == KEY.RIGHT
+            current_schedule.set_selected_index(index + 1)
+    )
     window.current_schedule = current_schedule
 
 # schedules view
@@ -495,18 +543,40 @@ $ ->
 
     # requires browser support
     if History.enabled
-        History.Adapter.bind(window, 'statechange', ->
+        state_changed = ->
             state = History.getState()
             if state.id
-                display_schedules(
-                    id: state.id
-                    selected_index: state.index
-                )
-                return
-        )
+                current_schedule.set_selected_index(state.data.offset - 1)
+        History.Adapter.bind(window, 'statechange', state_changed)
+        History.Adapter.bind(window, 'hashchange', state_changed)
 
+    state = History.getState()
+    if state.data.schedule
+        index = state.data.offset or parseInt($('#schedules').attr('data-start'), 10) or 0
+        schedule_id = state.data.schedule or $('#schedules').attr('data-schedule')
+    else
+        index = 0
+        schedule_id = null
+    if schedule_id == ''
+        schedule_id = null
     display_schedules(
+        id: schedule_id
         section_ids: selection.get_sections()
-        selected_index: 0
+        selected_index: Math.max(index - 1, 0)
     )
 
+    # update selection url
+    api.schedules
+        id: schedule_id
+        section_ids: selection.get_sections()
+        success: (data) ->
+            current_sids = data.result.section_ids
+            console.log(current_sids, selection.get_sections())
+            console.log(_.difference(current_sids, selection.get_sections()))
+            is_equal = _.difference(current_sids, selection.get_sections()).length == 0
+
+            if not is_equal
+                $el = $('.selected_courses.button')
+                href = $el.attr('href')
+                if href.indexOf('/selected/') == href.length - '/selected/'.length
+                    $el.attr('href', href + data.result.id+ '/')

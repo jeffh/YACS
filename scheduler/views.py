@@ -319,6 +319,7 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
     URL for the javascript client to hit for the schedule computation.
     """
 
+    index = index or request.GET.get('index', 0)
     try:
         index = int(index) - 1
         assert index >= 0
@@ -328,7 +329,7 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
 
     semester = Semester.objects.get(year=year, month=month)
     try:
-        slug = slug or request.GET.get('slug')
+        slug = slug or request.GET.get('slug', '')
         selection = models.Selection.objects.get(slug=slug)
     except models.Selection.DoesNotExist:
         selection = None
@@ -340,9 +341,8 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
         'sem_year': semester.year,
         'sem_month': semester.month,
         'index': index,
+        'slug': slug,
     }, RequestContext(request))
-
-## TODO -- implement me
 
 
 def icalendar(request):

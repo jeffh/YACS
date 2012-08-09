@@ -459,4 +459,18 @@ with settings as s:
             ),
             'output_filename': 'a.js',
         },
+        'specs': {
+            'source_filenames': (
+                'specs/utilities_spec.coffee',
+                'specs/time_spec.coffee',
+                'specs/jquery_ext_spec.coffee',
+                'specs/api_spec.coffee',
+                'specs/summarizer_spec.coffee',
+                'specs/liveform_spec.coffee',
+                'specs/storage_spec.coffee',
+                'specs/templates_spec.coffee',
+            ),
+            'output_filename': 's.js',
+        }
     }
+

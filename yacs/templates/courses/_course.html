@@ -42,12 +42,12 @@
           </div>
           {% endif %}
           {% if course.is_comm_intense %}
-          <div style="color:blue; font-style:italic;" class="comm intense description">
+          <div class="requirement comm description">
             {{ "Communication Intensive" }}
           </div>
           {% endif %}
           {% if course.prereqs != "None" %}
-          <div style="font-weight:bold;" class="prerequisites description">
+          <div class="requirement prereq description">
             {{ course.prereqs }}
           </div>
           {% endif %}

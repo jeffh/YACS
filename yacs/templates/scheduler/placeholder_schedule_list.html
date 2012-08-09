@@ -24,12 +24,14 @@
 
 <div id="thumbnails">
 </div>
-<div id="schedules" class="clear" data-start="{{ index }}">
+<div id="schedules" class="clear" data-schedule="{{ slug }}" data-start="{{ index }}" data-url-base="{% url schedules sem_year,sem_month %}">
 <p><img src="{{ STATIC_URL }}img/spinner.gif" alt="Loading" style="margin: 20px 0 20px 0"></p>
 <noscript>
     Sorry, javascript is required to view schedules :(
 </noscript>
 </div>
+
+<p class="tip clear">Psst, you can also use &larr; and &rarr; to move between the schedules too!</p>
 
 {# functions: humanize_time, humanize_hour, period_height, period_offset #}
 {# defined: schedule, time_range, courses, sections, color_map, sid, dows, timemap #}

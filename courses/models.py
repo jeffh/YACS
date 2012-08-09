@@ -233,7 +233,7 @@ class Section(models.Model):
             'seats_taken': self.seats_taken,
             'seats_total': self.seats_total,
             'seats_left': self.seats_left,
-            'notes': [n for n in self.notes.split('\n') if n],
+            'notes': list(set(n for n in self.notes.split('\n') if n)),
         }
         if has_model(select_related, Course):
             values['course'] = self.course.toJSON(select_related)

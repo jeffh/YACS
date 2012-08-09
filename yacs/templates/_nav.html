@@ -6,7 +6,7 @@
           {% url selected-courses sem_year,sem_month,selection.slug %}
           {% else %}
           {% url selected-courses sem_year,sem_month %}
-          {% endif %}" class="selected-courses button{% if selected == 'selected' %} selected{% endif %}">Selected</a></li>
+          {% endif %}" class="selected_courses button{% if selected == 'selected' %} selected{% endif %}">Selected</a></li>
         <li><a href="{% if selection %}
           {% url schedules sem_year,sem_month,selection.slug %}
           {% else %}

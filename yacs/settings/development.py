@@ -29,3 +29,7 @@ with settings as s:
             }
         }
     }
+
+    s.INSTALLED_APPS += (
+        'jasmine',
+    )

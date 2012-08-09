@@ -657,29 +657,22 @@ header {
 		padding-left: 13px;
 		text-shadow: 1px 1px 0 #fff;
 	}
-	/*
-	.no-seats {
-		$the-color: #555;
-		a:link, a:visited, .padded {
-			color: $the-color;
-			.name {
-				color: $the-color;
-			}
-			.credits {
-				color: $the-color;
-			}
-			.seats-left {
-				color: #555;
-			}
-		}
-	}
-	*/
     .description {
       display: block;
       clear: both;
-      padding-left: 5px;
+      padding-left: 0.5em;
+      padding-right: 10px;
       padding-bottom: 5px;
 
+
+      &.requirement {
+        &.comm {
+          color: #900;
+        }
+        &.prereq {
+          color: #000;
+        }
+      }
       .read-more {
         display: inline;
         background: transparent;
@@ -740,6 +733,7 @@ header {
     	display: block;
     	clear: left;
     	color: #444;
+        padding-left: 0.5em;
     	ul {
     		padding: 0 0 0 0;
 	    	li {
@@ -1187,6 +1181,12 @@ header {
 			border-color: #e49e58 - $darken;
 		}
 	}
+}
+.tip {
+  padding-top: 1em;
+  text-align: center;
+  font-size: 95%;
+  color: #555;
 }
 /* END SCHEDULES */
 

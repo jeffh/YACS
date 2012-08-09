@@ -533,24 +533,7 @@ header .alpha {
 /* END SELECTED_COURSES */
 /* COURSES */
 #courses, #selected_courses {
-  margin-top: 1em;
-  /*
-  .no-seats {
-  	$the-color: #555;
-  	a:link, a:visited, .padded {
-  		color: $the-color;
-  		.name {
-  			color: $the-color;
-  		}
-  		.credits {
-  			color: $the-color;
-  		}
-  		.seats-left {
-  			color: #555;
-  		}
-  	}
-  }
-  */ }
+  margin-top: 1em; }
   #courses .course.conflict > *, #selected_courses .course.conflict > * {
     zoom: 1;
     filter: alpha(opacity=40);
@@ -672,8 +655,13 @@ header .alpha {
   #courses .description, #selected_courses .description {
     display: block;
     clear: both;
-    padding-left: 5px;
+    padding-left: 0.5em;
+    padding-right: 10px;
     padding-bottom: 5px; }
+    #courses .description.requirement.comm, #selected_courses .description.requirement.comm {
+      color: #900; }
+    #courses .description.requirement.prereq, #selected_courses .description.requirement.prereq {
+      color: #000; }
     #courses .description .read-more, #selected_courses .description .read-more {
       display: inline;
       background: transparent;
@@ -727,7 +715,8 @@ header .alpha {
   #courses .notes, #selected_courses .notes {
     display: block;
     clear: left;
-    color: #444; }
+    color: #444;
+    padding-left: 0.5em; }
     #courses .notes ul, #selected_courses .notes ul {
       padding: 0 0 0 0; }
       #courses .notes ul li, #selected_courses .notes ul li {
@@ -1058,6 +1047,12 @@ header .alpha {
     #thumbnails .class.color9 {
       background: #dda15b;
       border-color: #c27c36; }
+
+.tip {
+  padding-top: 1em;
+  text-align: center;
+  font-size: 95%;
+  color: #555; }
 
 /* END SCHEDULES */
 /* FOOTER */

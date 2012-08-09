@@ -274,10 +274,9 @@
         cache: true
       }, options);
       assert((options.id != null) || (options.section_ids != null), 'id or section_ids need to be specified');
+      data = '';
       if (options.section_ids && !options.id) {
         data = '?section_id=' + options.section_ids.join('&section_id=');
-      } else {
-        data = '';
       }
       url = this.url('schedules', options.id) + data;
       this._add_callbacks(url, options.success, options.error);

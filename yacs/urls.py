@@ -26,3 +26,6 @@ urlpatterns = patterns('',
 
 if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
+    urlpatterns += patterns('',
+        url(r'^', include('jasmine.urls')),
+    )

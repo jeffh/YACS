@@ -53,7 +53,7 @@ body {
   clear: left;
   float: right;
   position: relative;
-  top: -3em;
+  top: -2em;
   margin-bottom: -2em; }
   #courses .sections .days li.item.empty, #courses .sections .days li.item.selected, #selected_courses .sections .days li.item.empty, #selected_courses .sections .days li.item.selected {
     display: block;
@@ -76,9 +76,12 @@ body {
 #courses .sections .instructors, #selected_courses .sections .instructors {
   font-size: 95%;
   float: left;
-  clear: left;
-  margin-left: 18px;
-  font-size: 105%; }
+  /* clear: left; */
+  /* margin-left: 18px; */
+  margin-left: 2px;
+  margin-right: 5px;
+  font-size: 105%;
+  line-height: 25px; }
   #courses .sections .instructors li, #selected_courses .sections .instructors li {
     padding: 0; }
 
@@ -101,8 +104,7 @@ body {
   #schedules .dayview {
     width: 135px;
     margin: 0 3px;
-    float: left;
-    /* @include transition(all $transition-fast $transition-type); */ }
+    float: left; }
     #schedules .dayview .hour {
       display: none;
       width: 48px; }

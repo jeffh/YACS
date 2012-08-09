@@ -74,7 +74,7 @@ body {
             clear: left;
             float: right;
             position: relative;
-            top: -3em;
+            top: -2em;
             margin-bottom: -2em;
 
             li.item {
@@ -104,9 +104,12 @@ body {
         .instructors {
             font-size: 95%;
             float: left;
-            clear: left;
-            margin-left: 18px;
+            /* clear: left; */
+            /* margin-left: 18px; */
+            margin-left: 2px;
+            margin-right: 5px;
             font-size: 105%;
+            line-height: 25px;
 
             li {
                 padding: 0;
@@ -142,8 +145,6 @@ body {
         width: 135px;
         margin: 0 3px;
         float: left;
-
-        /* @include transition(all $transition-fast $transition-type); */
 
         .hour {
             display: none;
