@@ -35,6 +35,8 @@
 {% endblock head %}
 
 {% block content %}
+<h2>Course Sizes</h2>
+<p>Here lists all the number of culmulative seats various courses that are known to YACS. You can drag the size filter to hide courses with fewer seats.</p>
 <div id="seatsFilterSlider" class="dragdealer">
   <div class="red-bar handle">Size Filter</div>
 </div>
@@ -48,7 +50,7 @@
 {% block javascript %}
 {{ block.super }}
 <script>
-  // This code is kind of messy, but I'll try an annotate it.
+  // This code is kind of messy
   $('#seatsFilterSlider').hide();
   var semestersURL = "{% url api:v4:semesters %}",
   departmentsURL = "{% url api:v4:departments %}",
@@ -217,7 +219,7 @@
         window.scale = scale;
         x = x * 100 + 1;
         minSeatsFilter = scale(x);
-        console.log(minSeatsFilter, x+1);
+        //console.log(minSeatsFilter, x+1);
         render(0);
       }
     });

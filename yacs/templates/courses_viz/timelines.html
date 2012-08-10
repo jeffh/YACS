@@ -19,6 +19,11 @@
     shape-rendering: crispEdges;
   }
 
+  .text {
+    font-size: 14px;
+    stroke-width: 1px;
+  }
+
   .line {
     fill: none;
     stroke: steelblue;
@@ -37,7 +42,8 @@
 {% endblock head %}
 
 {% block content %}
-<h2>Departments</h2>
+<h2>Number of Courses/Dept Over Semesters</h2>
+<p>Here's a simple graph of number of courses per semester. Some semesters are from the summer which shows the difference in comparison to a normal semester. Each line indicates a department. Single contingent colors of circles indicates the same department.</p>
 <div id="viz1">
   <p style="text-align:center"><img src="{{ STATIC_URL }}img/spinner.gif" alt="Loading" style="margin: 20px 0 20px 0"></p>
   <p id="status" style="text-align:center"></p>
@@ -56,17 +62,20 @@
 
   function normalizeLinesByX(lines){
     var ranges = [];
+    var maxY = 1;
     _.each($U.range(lines[0].length), function(i){
       var pts = _.reduce(lines, function(accum, line){
         accum.push(line[i].y);
         return accum;
       }, []);
       ranges.push([d3.min(pts), d3.max(pts)]);
+      maxY = (maxY < ranges[1]) ? ranges[1] : maxY;
     });
+    console.log('y', maxY);
     return _.map(lines, function(line){
       return _.map(line, function(pt, i){
         return _.extend(pt, {
-          y: pt.y / ranges[i][1]
+          y: pt.y / maxY //ranges[i][1]
         });
       });
     });
@@ -96,7 +105,7 @@
       options.exit(selection.exit());
     var enter = selection.enter();
     if (!enter.empty()){
-      var result = options.enter(enter);
+      var result = options.enter(enter.append(options.tag));
       if (!result.empty()){
         options.selection(result);
       }
@@ -161,7 +170,9 @@
     var selection = vis.selectAll('g.x.rule').data(x.ticks(semesters.length - 1));
     process(selection, {
       tag: 'g',
-      enter: function(s){ return s.attr('class', 'rule x'); },
+      enter: function(s){
+          return s.attr('class', 'rule x');
+      },
       selection: function(s){ drawXRules(s, x, size); }
     });
     process(vis.selectAll('g.y.rule').data(y.ticks(height % 40)), {
@@ -172,7 +183,6 @@
     .x(function(d){ return x(d.x); })
     .y(function(d){ return y(d.y); });
 
-    /*
     vis.selectAll('path.dropshadow')
     .data(linesToDraw)
     .enter().append('svg:path')
@@ -185,42 +195,42 @@
     .enter().append('svg:path')
     .attr('class', 'line')
     .attr('d', line)
-    .style('stroke', function(d, i){ return colors(i); });
-    */
+    .style('stroke', function(d, i){ return colors(i); })
 
-    process(vis.selectAll('path.dropshadow').data(linesToDraw), {
-      tag: 'svg:path',
-      selection: function(sel){
-        sel.attr('class', 'dropshadow')
-        .attr('d', line)
-        .attr('filter', 'url(#FEdropshadow)');
-      }
-    });
-
-    var lines = process(vis.selectAll('path.line').data(linesToDraw), {
-      tag: 'svg:path',
-      selection: function(sel){
-        sel.attr('d', line)
-        .style('stroke', function(d, i){ return colors(i); });
-      }
-    });
+    var labels = vis.selectAll('text')
+    .data(linesToDraw)
+    .enter().append('text')
+    .attr('class', 'text')
+    .attr('x', size.x)
+    .attr('y', function(d){
+        return y(d[0].y);
+    })
+    .style('fill', function(d, i){ return colors(i); })
+    .text(function(d){ return d[0].dept; });
 
     var originalWidth = vis.select('path.line').attr('stroke-width');
     var shadowWidth = vis.select('path.dropshadow').attr('stroke-width');
     var opacity = 0.5
 
-    lines.on('mouseover', function(){
+    lines.on('mouseover', function(d, i){
       var self = this;
       d3.selectAll('path.line').filter(function(){ return this !== self; })
       .style('stroke-width', '1px').style('opacity', opacity);
       d3.selectAll('path.dropshadow').style('stroke-width', '1px');
-      d3.select(this)
-      .style('stroke-width', '10px');
+      d3.select(this).style('stroke-width', '10px');
+      labels.style('opacity', 0);
+      d3.select(labels[0][i])
+      .style('opacity', 1)
+      .style('stroke', 'gray')
+      .style('font-size', '24px');
     }).on('mouseout', function(){
       d3.selectAll('path.line').style('opacity', 1)
       .transition()
       .style('stroke-width', originalWidth);
       d3.selectAll('path.dropshadow').style('stroke-width', shadowWidth);
+      labels.style('opacity', 1)
+      .style('stroke', 'transparent')
+      .style('font-size', '13px');
     });
   }
 
@@ -283,7 +293,7 @@
               barriers[i * c].notify();
             });
           });
-        })(c++);
+        })(c++); // the language!
       });
     });
   });
