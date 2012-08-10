@@ -19,10 +19,12 @@ class TimeRange(object):
     def __contains__(self, period):
         days, start, end = period.days_of_week_flag, period.start, period.end
 
-        return days & self.days_of_week > 0 and (self.start <= start <= self.end or \
-            start <= self.start <= end or \
-            self.start <= end <= self.end or \
-            start <= self.end <= end)
+        return days & self.days_of_week > 0 and (
+            self.start <= start <= self.end or
+            start <= self.start <= end or
+            self.start <= end <= self.end or
+            start <= self.end <= end
+        )
 
     def conflicts_with(self, section):
         "Returns True if the given section conflicts with this time range."

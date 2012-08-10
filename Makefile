@@ -1,5 +1,5 @@
 ### configurable vars ###
-APPS=api courses courses_viz scheduler jslog
+APPS=api courses courses_viz scheduler
 
 # Requirements file to use
 DEPLOY_REQUIREMENTS=requirements/deployment.txt
@@ -214,6 +214,9 @@ create_section_cache:
 ##### Testing Operations #####
 
 test: test_django test_lib pep8
+
+test_js:
+	jasmine-headless-webkit -j jasmine.yml -c
 
 test_django:
 	$(prefix)$(PYTHON_EXEC) manage.py test --failfast $(APPS)

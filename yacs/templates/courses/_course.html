@@ -7,14 +7,14 @@
   {% with seats_left_for_course=sections|seats_left %}
     <li class="course {% if seats_left_for_course < 1 %}no-seats{% endif %}{% if course.section_ids|length < 1 %} no-sections{% endif %}">
         {% if course.section_ids|length > 0 %}
-        <input type="checkbox" id="selected_course_{{ course.id }}" name="course_{{ course.id }}"
+        <input type="checkbox" id="course_{{ course.id }}" name="course_{{ course.id }}"
         {% if course in selected_courses %} checked="checked" {% endif %}
-        data-cid="{{ course.id }}" data-crns="{{ course.section_ids|join }}" data-crns-full="{{ course.full_section_ids|join }}" />
+        data-cid="{{ course.id }}" data-sids="{{ course.section_ids|join }}" data-sids-full="{{ course.full_section_ids|join }}" />
         {% else %}
         <p style="float:left; width: 15px; height: 10px; margin: 0; padding: 0;"></p>
         {% endif %}
         <img src="{{ STATIC_URL }}img/tinyspinner.gif" class="tinyspinner" alt="" style="display: none" />
-        <label class="padded" for="selected_course_{{ course.id }}">
+        <label class="padded" for="course_{{ course.id }}">
           <span class="name">{{ course.name }}</span>
           <div class="secondary">
             <span class="code">
@@ -42,12 +42,10 @@
           </div>
           {% endif %}
           {% if course.is_comm_intense %}
-          <div style="color:blue; font-style:italic;" class="comm intense description">
-            {{ "Communication Intensive" }}
-          </div>
+          <div class="requirement comm description">Communication Intensive</div>
           {% endif %}
-          {% if course.prereqs != "None" %}
-          <div style="font-weight:bold;" class="prerequisites description">
+          {% if course.prereqs and course.prereqs != "None" %}
+          <div class="requirement prereq description">
             {{ course.prereqs }}
           </div>
           {% endif %}
@@ -75,8 +73,8 @@
           <ul>
             {% for section in sections %}
             <li class="section{% if section.is_full %} full{% endif %}">
-            <input type="checkbox" id="selected_course_{{ course.id }}_{{ section.id }}" name="selected_course_{{ course.id }}_{{ section.id }}"{% if section.id in selected_section_ids %} checked="checked"{% endif %} data-cid="{{ course.id }}" data-crn="{{ section.id }}" />
-            <label for="selected_course_{{ course.id }}_{{ section.id }}">
+            <input type="checkbox" id="section_{{ section.id }}" name="section_{{ section.id }}"{% if section.id in selected_section_ids %} checked="checked"{% endif %} data-cid="{{ course.id }}" data-cid="{{ course.id }}" data-sid="{{ section.id }}" />
+            <label for="section_{{ section.id }}">
               <span class="section-number">
                 Section <span class="number">{{ section.number }}</span>
               </span>

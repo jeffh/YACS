@@ -4,7 +4,7 @@ Simple, Sane Course Scheduling.
 YACS is a web-based course schedule with an emphasis on usability.
 It is also flexible enough to work with other school course data.
 
-Send questions and comments to [@jeffhui][] or huij@rpi.edu.
+Send questions and comments to [@jeffhui][] or jeffh@alumni.rpi.edu.
 
 If you're an RPI student and looking to use it, go to [yacs.me][yacsme]
 
@@ -27,14 +27,14 @@ Which will download code into a YACS folder where you run this command.
 
 ### Dependencies
 
-YACS is built on top of [Django][] 1.4rc1. Thus, it requires a database driver to run.
+YACS is built on top of [Django][] 1.4. Thus, it requires a database driver to run.
 Install the appropriate driver and its database, or just use the bundled SQLite.
 
 [Django]: https://www.djangoproject.com/ "Django Web Framework"
 
 ### Setup (Development)
 
-1. YACS uses a lot of dependencies. It relies on [pip][] to install them. Simply do:
+1. YACS uses a lot of dependencies. It relies on [pip][] to install most of them. Simply do:
     `pip install -r requirements/development.txt`
    Which will install all the dependencies YACS needs (minus the database driver).
 
@@ -62,13 +62,17 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
 5. Check it out by running the dev server `python manage.py runserver` and pointing your
    browser to [http://localhost:8000/][local] and viola!
 
-6. (Optional) If you plan on editing the CSS. YACS uses [SASS][] to generate the CSS.
+6. YACS uses [coffeescript][] as its basis for javascript. So if you want to modify the
+   javascript code, you'll need to have the coffeescript compiler installed.
+
+7. (Optional) If you plan on editing the CSS. YACS uses [SASS][] to generate the CSS.
    Once you installed it, use `make scss` to make sass automatically update the
    stylesheets as you change them.
 
-7. ???
-8. Profit?
+8. ???
+9. Profit?
 
+[coffeescript]: http://coffeescript.org/
 [SASS]: http://sass-lang.com/
 [pip]: http://www.pip-installer.org/en/latest/index.html
 [local]: http://localhost:8000/

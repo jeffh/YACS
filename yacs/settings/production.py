@@ -9,6 +9,15 @@ with open(os.environ.get('YACS_SETTINGS', settings.relative_path('settings', 'pr
 
 with settings as s:
     s.DEBUG = False
+    s.STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+    s.CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+            'LOCATION': '127.0.0.1:11211',
+            'VERSION': s.CACHE_VERSION,
+        }
+    }
 
     @s.lazy_eval
     def debug_toolbar_configs(s):

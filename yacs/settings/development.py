@@ -13,7 +13,6 @@ with settings as s:
     def debug_install_apps(s):
         if s.DEBUG:
             s.INSTALLED_APPS += (
-                'django_jasmine',
                 'devserver',
             )
 
@@ -21,8 +20,8 @@ with settings as s:
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
             'NAME': 'yacs',
-            'USER': 'padawanyacs',
-            'PASSWORD': 'yacs2012',
+            'USER': 'timetable',
+            'PASSWORD': 'thereisn0sp00n',
             'HOST': 'localhost',
             'PORT': '',
             'OPTIONS': {
@@ -30,3 +29,7 @@ with settings as s:
             }
         }
     }
+
+    s.INSTALLED_APPS += (
+        'jasmine',
+    )

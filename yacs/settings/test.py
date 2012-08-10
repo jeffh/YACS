@@ -13,3 +13,6 @@ with settings as s:
             'PORT': '',
         }
     }
+
+    # === django-pipeline ===
+    s.STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
