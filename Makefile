@@ -1,5 +1,5 @@
 ### configurable vars ###
-APPS=api courses courses_viz scheduler jslog
+APPS=api courses courses_viz scheduler
 
 # Requirements file to use
 DEPLOY_REQUIREMENTS=requirements/deployment.txt

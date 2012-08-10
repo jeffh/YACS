@@ -81,6 +81,14 @@
             <%= course.description %>
           </div>
         <% } %>
+        <% if (course.is_comm_intense) { %>
+          <div class="requirement comm description">Communication Intensive</div>
+        <% } %>
+        <% if (course.prereqs !== "" && course.prereqs !== "None") { %>
+          <div class="requirement prereq description">
+            <%- course.prereqs %>
+          </div>
+        <% } %>
         <div class="kinds">
             <ul>
                 <% for(var kinds=course.kinds, i=0, l=kinds.length; i<l; i++){ %>

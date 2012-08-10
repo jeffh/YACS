@@ -250,7 +250,6 @@ with settings as s:
         'scheduler',
         'api',
         'courses_viz',
-        'jslog',
     )
 
     # A sample logging configuration. The only tangible logging
@@ -309,10 +308,10 @@ with settings as s:
     # === Memory ===
     s.CACHE_VERSION = 1
     s.CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'VERSION': s.CACHE_VERSION,
-        }
+        #'default': {
+        #    'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        #    'VERSION': s.CACHE_VERSION,
+        #}
     }
 
     # ==== API App ====

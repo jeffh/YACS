@@ -208,14 +208,12 @@
   });
 
   $(function() {
-    var that;
     if (selection.has_courses()) {
       initialize_validator();
     } else if ($('input[type=checkbox]').length) {
       initialize_validator();
     }
-    that = this;
-    $('.course > input[type=checkbox]').click(function() {
+    $('.course > input[type=checkbox]').live('click', function() {
       var course_id, el, free_section_ids, full_section_ids, is_checked, parent, section_id, section_ids, sections, valid_sections, _i, _j, _k, _len, _len1, _len2;
       el = $(this);
       is_checked = el.checked();
@@ -263,7 +261,7 @@
       visualize_conflicts();
       return selection.save();
     });
-    return $('.section > input[type=checkbox]').click(function() {
+    return $('.section > input[type=checkbox]').live('click', function() {
       var checked_courses, course_id, el, is_checked, parent, section_id;
       el = $(this);
       is_checked = el.checked();
@@ -542,7 +540,6 @@
         offset: index + 1,
         schedule: response.result.id
       };
-      console.log(response.result.id);
       new_url = format('{{ base }}{{ id }}/{{ offset }}/', {
         base: $('#schedules').attr('data-url-base'),
         id: state.schedule,
@@ -556,7 +553,6 @@
       $('.thumbnail').removeClass('selected');
       $($('.thumbnail')[index]).addClass('selected');
       height = parseInt($('#schedule_template').attr('data-period-height'), 10);
-      console.log(schedules[index]);
       $('#schedules').html(templates.schedule_template({
         sid: index + 1,
         schedules: schedules,
@@ -745,7 +741,6 @@
     if (schedule_id === '') {
       schedule_id = null;
     }
-    console.log(schedule_id, index);
     display_schedules({
       id: schedule_id,
       section_ids: selection.get_sections(),

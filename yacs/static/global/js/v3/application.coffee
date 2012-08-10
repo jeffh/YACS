@@ -151,8 +151,7 @@ $ ->
     else if $('input[type=checkbox]').length
         initialize_validator()
 
-    that = this
-    $('.course > input[type=checkbox]').click ->
+    $('.course > input[type=checkbox]').live 'click', ->
         el = $(this)
         is_checked = el.checked()
         course_id = parseInt(el.attr('data-cid'), 10)
@@ -194,7 +193,7 @@ $ ->
         visualize_conflicts()
         selection.save()
 
-    $('.section > input[type=checkbox]').click ->
+    $('.section > input[type=checkbox]').live 'click', ->
         el = $(this)
         is_checked = el.checked()
         course_id = parseInt(el.attr('data-cid'), 10)
