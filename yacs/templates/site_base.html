@@ -91,14 +91,6 @@ It would be bad if a 500 error page threw a 500 error when trying to render...
 <!--[if (lt IE 9) & (!IEMobile)]>
 <script src="{{ STATIC_URL }}js/libs/ie-bundle.js"></script>
 <![endif]-->
-
-<!-- http://t.co/HZe9oJ4
-<script>
-var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']]; // Change UA-XXXXX-X to be your site's ID
-(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
-g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-s.parentNode.insertBefore(g,s)}(document,'script'));
-</script>
--->
+{% include 'analytics.html' %}
 <noscript>Your browser does not support JavaScript!</noscript>
 {% endblock javascript %}

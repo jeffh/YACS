@@ -22,7 +22,7 @@ urlpatterns = patterns('',
     url(r'^/$', views.raw_data, meta, name='metadata'),
     url(r'^' + ext_re, views.raw_data, meta, name='metadata'),
 
-    url(r'^/docs/$', TemplateView.as_view(template_name='api/4/docs.html'), name='docs'),
+    url(r'^/docs/$', views.docs, dict(template_name='api/4/docs.html'), name='docs'),
 
     url(r'^/semesters/$', cache_page(views.semesters, cache_duration), api4, name='semesters'),
     url(r'^/semesters' + ext_re, cache_page(views.semesters, cache_duration), api4, name='semesters'),

@@ -51,6 +51,11 @@ body {
   padding-left: 2em; }
 .docs dl {
   padding-left: 1em; }
+.docs a:link, .docs a:visited {
+  color: #33c; }
+.docs strong {
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: bold; }
 .docs dt {
   font-family: Helvetica, Arial, sans-serif;
   font-weight: bold;
@@ -58,6 +63,9 @@ body {
   margin: 0; }
   .docs dt.depr {
     color: #999; }
+  .docs dt a:link {
+    font-family: "Helvetica Neue", "Open Sans", Helvetica, Arial, sans-serif;
+    font-weight: normal; }
 .docs dd {
   padding: 0;
   margin: 0 0 0.5em 1em; }

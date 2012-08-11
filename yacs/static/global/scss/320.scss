@@ -42,6 +42,13 @@ body {
     dl {
         padding-left: 1em;
     }
+    a:link, a:visited {
+        color: #33c;
+    }
+    strong {
+        font-family: Helvetica, Arial, sans-serif;
+        font-weight: bold;
+    }
     dt {
         font-family: Helvetica, Arial, sans-serif;
         font-weight: bold;
@@ -49,6 +56,10 @@ body {
         margin: 0;
         &.depr {
             color: #999;
+        }
+        a:link {
+            font-family: "Helvetica Neue", "Open Sans", Helvetica, Arial, sans-serif;
+            font-weight: normal;
         }
     }
     dd {

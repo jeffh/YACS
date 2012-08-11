@@ -45,9 +45,10 @@
 </div>
 
 <footer role="contentinfo" class="clearfix">
-{% block footer %}
-<p>&copy; 2012 by <a href="http://twitter.com/#!/jeffhui">Jeff Hui</a> <a href="https://github.com/jeffh/YACS/blob/master/CONTRIBUTORS.txt" style="padding: 0 0.2em">et al.</a> - A <a href="http://rcos.rpi.edu">RCOS</a> Project, which means it's <a href="http://github.com/jeffh/YACS">open source</a>.</p>
-{% endblock %}
+  <p>Hey, you want to write programs from course data? Use the <a href="{% url api:v4:docs %}">API</a>!</p>
+  {% block footer %}
+  <p>&copy; 2012 by <a href="http://twitter.com/#!/jeffhui">Jeff Hui</a> <a href="https://github.com/jeffh/YACS/blob/master/CONTRIBUTORS.txt" style="padding: 0 0.2em">et al.</a> - A <a href="http://rcos.rpi.edu">RCOS</a> Project, which means it's <a href="http://github.com/jeffh/YACS">open source</a>.</p>
+  {% endblock %}
 </footer>
 
 {% block javascript %}{% endblock %}

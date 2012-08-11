@@ -5,6 +5,8 @@ import json
 from django.views.generic import ListView, DetailView
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.conf import settings
+from django.template import RequestContext
+from django.shortcuts import render_to_response
 
 from courses.utils import ObjectJSONEncoder, dict_by_attr, DAYS, int_list, XMLEncoder
 from courses.views import decorators
@@ -45,11 +47,6 @@ class DataFormatter(object):
     def convert_data_to_xml(self, context):
         return XMLEncoder().encode(context, root='api')
 
-    def convert_data_to_binary_plist(self, context):
-        # TODO: handle datetime classes
-        import biplist
-        return biplist.writePlistToString(context)
-
     def convert_data_to_plist(self, context):
         # TODO: handle datetime classes
         return plistlib.writePlistToString(context)
@@ -60,7 +57,6 @@ class DataFormatter(object):
             'application/xml': self.convert_data_to_xml,
             'text/xml': self.convert_data_to_xml,
             'application/x-plist': self.convert_data_to_plist,
-            'application/x-binary-plist': self.convert_data_to_binary_plist,
         }.get(content_type)(data)
 
     def convert(self, data, content_type):
@@ -133,6 +129,12 @@ def departments(request, id=None, version=None, ext=None):
     return {'context': get_if_id_present(queryset, id)}
 
 
+def try_int(value, default=0):
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return default
+
 @render()
 def courses(request, id=None, version=None, ext=None):
     queryset = models.Course.objects.optional_filter(
@@ -141,6 +143,7 @@ def courses(request, id=None, version=None, ext=None):
         department__id__in=int_list(request.GET.getlist('department_id')) or None,
         number__in=int_list(request.GET.getlist('number')) or None,
         id__in=int_list(request.GET.getlist('id')) or None,
+        is_comm_intense=try_int(request.GET.get('is_comm_intense')),
         id=id,
     ).distinct()
     search_query = request.GET.get('search')
@@ -268,6 +271,15 @@ def schedules(request, slug=None, version=None):
 
     return {'context': context}
 
+def docs(request, template_name):
+    semesters = models.Semester.objects.all()
+    departments = models.Department.objects.all()
+    return render_to_response(template_name, {
+        'semester': semesters[0],
+        'department': departments[0],
+    }, RequestContext(request))
+
+
 ###########################################################################
 
 
@@ -314,16 +326,9 @@ class APIMixin(views.AjaxJsonResponseMixin):
         return self.inject_debug_info(json)
 
     def convert_context_to_xml(self, context):
-        # TODO: check if datetime classes is handle automatically
         return xmlrpclib.dumps((context,))
 
-    def convert_context_to_binary_plist(self, context):
-        # TODO: handle datetime classes
-        import biplist
-        return biplist.writePlistToString(context)
-
     def convert_context_to_plist(self, context):
-        # TODO: handle datetime classes
         return plistlib.writePlistToString(context)
 
     def convert_to_content_type(self, content_type, data):
