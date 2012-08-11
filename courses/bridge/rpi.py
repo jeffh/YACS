@@ -106,20 +106,42 @@ class ROCSRPIImporter(object):
         "Inserts all the course data, including section information, into the database from the catalog."
         list = self.add_comm_intense(catalog, semester_obj)
         for course in catalog.get_courses():
-            comm = False
-            for course_name in list:
-                if course.name == course_name:
-                    comm = True
-            course_obj, created = Course.objects.get_or_create(
-                number=course.num,
-                department=self.get_or_create_department(semester_obj, code=course.dept, name=course.full_dept),
-                defaults=dict(
+            comm = (course.name in list)
+            department = self.get_or_create_department(semester_obj, code=course.dept, name=course.full_dept)
+            # we use our OfferedFor.ref to determine if we need to create a new
+            # course or not.
+            ref_name = '%r:%r:%r' % (course.name, course.dept, course.num)
+            qs = OfferedFor.objects.filter(semester=semester_obj, course__department__code=course.dept, course__number=course.num)
+            qs = qs.select_related('course')
+            try:
+                offered_for = qs.get(ref=ref_name)
+                course_obj = offered_for.course
+                created = False
+            except OfferedFor.DoesNotExist:
+                course_obj = None
+
+            if not course_obj:
+                # for migration support... set empty refs.
+                try:
+                    offered_for = qs.get(ref='')
+                    offered_for.ref = ref_name
+                    offered_for.save()
+                    course_obj = offered_for.course
+                    created = False
+                except OfferedFor.DoesNotExist:
+                    course_obj = None
+
+            if not course_obj:
+                course_obj = Course.objects.create(
+                    number=course.num,
+                    department=department,
                     min_credits=course.cred[0],
                     max_credits=course.cred[1],
                     grade_type=course.grade_type,
                     is_comm_intense=comm,
                 )
-            )
+                created = True
+
             if not created:
                 if self.forced:
                     course_obj.name = course.name
@@ -127,7 +149,8 @@ class ROCSRPIImporter(object):
                 course_obj.grade_type = course.grade_type
                 course_obj.is_comm_intense = comm
                 course_obj.save()
-            OfferedFor.objects.get_or_create(course=course_obj, semester=semester_obj)
+            else:
+                OfferedFor.objects.get_or_create(course=course_obj, semester=semester_obj, ref=course.name)
             self.create_sections(course, course_obj, semester_obj)
             logger.debug((' + ' if created else '   ') + course.name)
 
