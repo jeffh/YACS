@@ -352,6 +352,13 @@
     if (!target.length) {
       return;
     }
+    $('[data-action=clear-selection]').click(function() {
+      if (confirm('Clear all your selected courses?')) {
+        selection.clear();
+        location.reload();
+      }
+      return false;
+    });
     if (selection.has_courses()) {
       sections = null;
       departments = null;

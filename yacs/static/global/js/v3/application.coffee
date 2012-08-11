@@ -265,6 +265,13 @@ template_functions = {
 $ ->
     target = $('#selected_courses')
     return unless target.length
+
+    $('[data-action=clear-selection]').click ->
+      if confirm('Clear all your selected courses?')
+          selection.clear()
+          location.reload()
+      return false
+
     if selection.has_courses()
         sections = null
         departments = null
