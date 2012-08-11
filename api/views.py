@@ -1,13 +1,12 @@
 import mimetypes
 import plistlib
-import xmlrpclib
 import json
 
 from django.views.generic import ListView, DetailView
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.conf import settings
 
-from courses.utils import ObjectJSONEncoder, dict_by_attr, DAYS, int_list
+from courses.utils import ObjectJSONEncoder, dict_by_attr, DAYS, int_list, XMLEncoder
 from courses.views import decorators
 from courses import models, views
 from courses import encoder as encoders
@@ -44,9 +43,7 @@ class DataFormatter(object):
         return ObjectJSONEncoder(indent=indent).encode(context)
 
     def convert_data_to_xml(self, context):
-        # TODO: check if datetime classes is handle automatically
-        # TODO: make a proper xml dumper
-        return xmlrpclib.dumps((context,))
+        return XMLEncoder().encode(context, root='api')
 
     def convert_data_to_binary_plist(self, context):
         # TODO: handle datetime classes
@@ -60,8 +57,8 @@ class DataFormatter(object):
     def convert_to_content_type(self, data, content_type=None):
         return {
             'application/json': self.convert_data_to_json,
-            #'application/xml': self.convert_data_to_xml,
-            #'text/xml': self.convert_data_to_xml,
+            'application/xml': self.convert_data_to_xml,
+            'text/xml': self.convert_data_to_xml,
             'application/x-plist': self.convert_data_to_plist,
             'application/x-binary-plist': self.convert_data_to_binary_plist,
         }.get(content_type)(data)
@@ -318,7 +315,7 @@ class APIMixin(views.AjaxJsonResponseMixin):
 
     def convert_context_to_xml(self, context):
         # TODO: check if datetime classes is handle automatically
-        return xmlrpclib.dumps(context)
+        return xmlrpclib.dumps((context,))
 
     def convert_context_to_binary_plist(self, context):
         # TODO: handle datetime classes
@@ -336,7 +333,7 @@ class APIMixin(views.AjaxJsonResponseMixin):
             'text/xml': self.convert_context_to_xml,
             'application/x-plist': self.convert_context_to_plist,
             #'application/x-binary-plist': self.convert_context_to_binary_plist,
-        }.get(content_type)(data)
+        }[content_type](data)
 
     def render_to_response(self, context):
         def body(*args, **kwargs):

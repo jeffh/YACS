@@ -111,7 +111,6 @@ class ROCSRPIImporter(object):
                 if course.name == course_name:
                     comm = True
             course_obj, created = Course.objects.get_or_create(
-                name=course.name,
                 number=course.num,
                 department=self.get_or_create_department(semester_obj, code=course.dept, name=course.full_dept),
                 defaults=dict(

@@ -1,0 +1,105 @@
+{% extends 'site_base.html' %}
+
+{% block app-title %}{{ block.super }} <span>API</span>{% endblock %}
+
+{% block header %}
+{{ block.super }}
+{% include 'api/_nav.html' with selected='4' %}
+{% endblock header %}
+
+{% block content %}
+<div class="docs">
+  <h1>API (V4)</h1>
+  <p>
+  It is possible to programmatically access YACS data &amp; features,
+  which it acquires from various RPI systems. This is the fourth revision
+  of this interface.
+  </p>
+  <ul>
+    <li><a href="#demos">Demos</a></li>
+    <li><a href="#endpoints">API Endpoints</a></li>
+    <li><a href="#schema">Schema</a></li>
+  </ul>
+  <h2><a name="demos">Demos</a></h2>
+  <p>
+  Besides the web front-end, there are two visualization demos available that utilize the API:
+    <a href="{% url courses_viz:bubble %}">bubbles</a> and
+    <a href="{% url courses_viz:timelines %}">timelines</a>.
+  </p>
+  <p>Feel free to view-source in those demos to see moderately complex programs accessing large portions of the API.</p>
+  <h2><a name="endpoints">API Endpoints</a></h2>
+  <p>The API is accessed by a set of URLs they are usually accessed in the form: <code>{% url api:v4:metadata %}&lt;model&gt;/&lt;id&gt;/</code></p>
+  <p>
+  All endpoints optionally accept a file extension as: json, xml, or plist. The default is json.
+  For example, <code>{% url api:v4:semesters 1 %}</code> is the same as
+  <code>{% url api:v4:semesters 1,'json' %}</code>, but you can get the data in plist form by using:
+  <code>{% url api:v4:semesters 1,'plist' %}</code>
+  </p>
+  <ul>
+    <li><a href="{% url api:v4:semesters %}">{% url api:v4:semesters %}</a></li>
+  </ul>
+  <h2><a name="schema">Schema</a></h2>
+  <p>YACS currently exposes its data models directly for access. The schema is as follows:</p>
+  <div class="section">
+    <h3>Semester</h3>
+    <p>
+    These represent a particular time period where all courses are available. Usually there are Fall
+    and Spring semesters for every year. Summer semesters may exist, although it is unlikely that they will be available.
+    </p>
+    <p>
+    Generally, semesters are fetched first to filter other model fetching.
+    </p>
+    <dl>
+      <dt>id</dt> <dd>Unique identifer to refer to this semester.</dd>
+      <dt>year</dt> <dd>The year this semester occurs.</dd>
+      <dt>month</dt> <dd>The month this semester starts.</dd>
+      <dt>date_updated</dt> <dd>The timestamp that this semester was last refreshed by YACS.</dd>
+      <dt class="depr">ref</dt> <dd class="depr">Deprecated. Do not use.</dd>
+    </dl>
+    <h3>Department</h3>
+    <p>
+    The suborganization that manages a set of courses about a particular subject.
+    Departments can span multiple semesters.
+    </p>
+    <dl>
+      <dt>id</dt> <dd>Unique identifer to refer to this department.</dd>
+      <dt>name</dt> <dd>The human-readable name of the department. May not always be available.</dd>
+      <dt>code</dt> <dd>The short-hand 4-letter code that represents this department (eg - 'CSCI' for computer science department)</dd>
+    </dl>
+    <h3>Course</h3>
+    <p>
+    Course is each kind of topic that is taught per semester. A course has sections, which indicate "classes" that can be taken for this topic.
+    A course may span multiple semesters.
+    </p>
+    <dl>
+      <dt>id</dt> <dd>Unique identifer to refer to this course.</dd>
+      <dt>name</dt> <dd>The name of the course. This may be in all uppercase or not, depending on the data source YACS managed to use for course names.</dd>
+      <dt>number</dt> <dd>The number the department uses to refer to this course (eg - The 2300 in 'CSCI 2300')</dd>
+      <dt>department_id</dt> <dd>The identifier that refers the department this course belongs to.</dd>
+      <dt>description</dt> <dd>The course description, if available.</dd>
+      <dt>min_credits</dt> <dd>The minimum number of credits this course is offered for.</dd>
+      <dt>max_credits</dt> <dd>The maximum number of credits this course is offered for.</dd>
+      <dt>grade_type</dt> <dd>How the course is graded.</dd>
+      <dt>prereqs</dt> <dd>The prerequisites of courses to take prior to taking this course. This is currently only available as a raw string.</dd>
+      <dt>is_comm_intensive</dt> <dd>A boolean indicating if the course satisfies the communication requirement.</dd>
+    </dl>
+    <h3>Sections</h3>
+    <p>
+    Section is an instance of a course being taught. A section has a collection of times it occurs.
+    Unlike courses, sections belong to only one semester.
+    </p>
+    <dl>
+      <dt>id</dt> <dd>Unique identifer to refer to this section.</dd>
+      <dt>course_id</dt> <dd>The course that this section belongs to</dd>
+      <dt>semester_id</dt> <dd>The semester that this section belongs to</dd>
+      <dt>crosslisted_id</dt> <dd>null field for a possible future feature.</dd>
+      <dt>notes</dt> <dd>Misc data set by RPI</dd>
+      <dt>crn</dt> <dd>The Course Registration Number used to register for the course by students.</dd>
+      <dt>number</dt> <dd>The section number. Section numbers are unique per course and semester. They also may not be actually numbers.</dd>
+      <dt>seats_total</dt> <dd>The total number of seats this section allows.</dd>
+      <dt>seats_left</dt> <dd>The number of remaining seats this section.</dd>
+      <dt>section_times</dt> <dd>An array of section times which indicate location, professor and times.</dd>
+    </dl>
+  </div>
+</div>
+{% endblock %}

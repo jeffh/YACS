@@ -1,5 +1,6 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.views.decorators.cache import cache_page
+from django.views.generic import TemplateView
 
 from api import views
 
@@ -20,6 +21,8 @@ ext_re = r'\.(?P<ext>[a-z]+)$'
 urlpatterns = patterns('',
     url(r'^/$', views.raw_data, meta, name='metadata'),
     url(r'^' + ext_re, views.raw_data, meta, name='metadata'),
+
+    url(r'^/docs/$', TemplateView.as_view(template_name='api/4/docs.html'), name='docs'),
 
     url(r'^/semesters/$', cache_page(views.semesters, cache_duration), api4, name='semesters'),
     url(r'^/semesters' + ext_re, cache_page(views.semesters, cache_duration), api4, name='semesters'),

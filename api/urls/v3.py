@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import patterns, include, url
+from django.views.generic import TemplateView
 
 from api import views
 
@@ -9,6 +10,7 @@ api3 = dict(version=3, objects=(
 urlpatterns = patterns('',
     # version 3
     url(r'^$', views.ObjectList.as_view(), api3, name='objects'),
+    url(r'^docs/$', TemplateView.as_view(template_name='api/3/docs.html'), name='docs'),
     url(r'^semesters/$', views.SemesterListView.as_view(), api3, name='semesters'),
     url(r'^semesters/(?P<year>[1-9]\d*)/$', views.SemesterListView.as_view(), api3, name='semesters-by-year'),
     url(r'^semesters/(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/$', views.SemesterDetailView.as_view(), api3, name='semester'),

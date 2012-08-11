@@ -1,8 +1,49 @@
+from xml.sax.saxutils import XMLGenerator
 from json import dumps, JSONEncoder
 import datetime
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']  # , 'Saturday', 'Sunday']
 
+
+class XMLEncoder(object):
+    def encode(self, obj, root='root'):
+        buf = StringIO()
+        xml = XMLGenerator(buf, encoding='utf-8')
+        xml.startDocument()
+        self.encode_obj(xml, root, obj)
+        xml.endDocument()
+        return buf.getvalue()
+
+    def encode_obj(self, xml, name, obj):
+        print 'start', name
+        xml.startElement(name, {})
+        if callable(getattr(obj, 'items', None)):
+            result = self.encode_dict(xml, name, obj)
+        elif isinstance(obj, list) or isinstance(obj, tuple):
+            result = self.encode_list(xml, name, obj)
+        else:
+            result = xml.characters(str(obj))
+        xml.endElement(name)
+        print 'end', name
+
+    def encode_dict(self, xml, name, obj):
+        for key, value in obj.items():
+            self.encode_obj(xml, key, value)
+
+    def encode_list(self, xml, name, obj):
+        for item in obj:
+            self.encode_obj(xml, 'item', item)
+
+    def encode_generic_obj(self, xml, name, obj):
+        if callable(getattr(o, 'toJSON', None)):
+            return self.encode_obj(xml, name, o.toJSON())
+        if isinstance(o, datetime.datetime) or isinstance(o, datetime.date) or isinstance(o, datetime.time):
+            return self.encode_obj(xml, name, o.isoformat())
+        return self.encode_obj(xml, name, obj)
 
 def sorted_daysofweek(dow, days=DAYS):
     "Sorts list of days of the week to what we're expected."

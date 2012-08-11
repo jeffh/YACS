@@ -25,6 +25,44 @@ body {
 	font-family: "Helvetica Neue", "Open Sans", Helvetica, Arial, sans-serif;
 }
 
+.docs {
+    h1, h2, h3, h4, h5, h6 {
+        padding: 0;
+        margin: 0;
+        font-weight: normal;
+        font-family: Helvetica, Arial, sans-serif;
+    }
+    h1 { font-size: 200%; }
+    h2 { font-size: 160%; color: #333; }
+    h3 { font-size: 120%; }
+    p { padding: 0; margin: 0 0 1em 0; }
+    .section {
+        padding-left: 2em;
+    }
+    dl {
+        padding-left: 1em;
+    }
+    dt {
+        font-family: Helvetica, Arial, sans-serif;
+        font-weight: bold;
+        padding: 0;
+        margin: 0;
+        &.depr {
+            color: #999;
+        }
+    }
+    dd {
+        padding: 0;
+        margin: 0 0 0.5em 1em;
+        &.depr {
+            color: #999;
+        }
+    }
+    ul {
+        padding-left: 3em;
+    }
+}
+
 h2 {
 	font-size: 115%;
 	color: #000;
@@ -76,6 +114,19 @@ p {
 		@include background-gradient(#941010, #b42020);
 	}
 }
+.nav .button.disabled {
+    &:visited, &:link, &:hover, &:visited:hover, &:active {
+        $desat: 30%;
+        $dark: 5%;
+        border-left-color: transparent;
+        text-shadow: 0 transparent;
+        color: #999;
+        cursor: default;
+        @include background-gradient(darken(desaturate(#a42020, $desat), $dark), darken(desaturate(#741010, $desat), $dark));
+        text-decoration: line-through;
+    }
+}
+
 
 a.button:hover, a.button:visited:hover {
 	color: #eee;
