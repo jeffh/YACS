@@ -45,6 +45,7 @@ class XMLEncoder(object):
             return self.encode_obj(xml, name, o.isoformat())
         return self.encode_obj(xml, name, obj)
 
+
 def sorted_daysofweek(dow, days=DAYS):
     "Sorts list of days of the week to what we're expected."
     dow = set(dow)

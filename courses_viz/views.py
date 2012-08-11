@@ -14,6 +14,7 @@ def render_template(request, template):
         'context': {},
     }
 
+
 class DefaultRedirect(RedirectView):
     def get_redirect_url(self):
         return reverse('courses_viz:bubble')

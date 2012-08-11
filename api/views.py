@@ -135,6 +135,7 @@ def try_int(value, default=0):
     except (ValueError, TypeError):
         return default
 
+
 @render()
 def courses(request, id=None, version=None, ext=None):
     queryset = models.Course.objects.optional_filter(
@@ -270,6 +271,7 @@ def schedules(request, slug=None, version=None):
     selection.save()
 
     return {'context': context}
+
 
 def docs(request, template_name):
     semesters = models.Semester.objects.all()
