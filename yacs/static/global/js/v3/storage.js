@@ -62,7 +62,9 @@
     Selection.name = 'Selection';
 
     function Selection(options) {
-      options = $.extend({}, options);
+      options = $.extend({
+        version: $('meta[name=semester-id]').attr('content') || void 0
+      }, options);
       this.storage = options.storage || new Storage();
       this.storage.version_check();
       this.data = options.data || {};

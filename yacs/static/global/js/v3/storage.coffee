@@ -30,7 +30,9 @@ class NullStorage
 
 class Selection
     constructor: (options) ->
-        options = $.extend({}, options)
+        options = $.extend({
+            version: $('meta[name=semester-id]').attr('content') or undefined
+        }, options)
         @storage = options.storage or new Storage()
         @storage.version_check()
         @data = options.data or {}
