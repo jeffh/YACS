@@ -10,10 +10,10 @@ icalendar==3.0.1b2
 mock==0.8.0
 nose==1.1.2
 pep8==1.1
-git+https://github.com/jeffh/pyPdf.git#egg=pyPdf
+pyPdf==0.12
+pyconstraints==1.0.1
 python-dateutil==1.5
 pytz==2011c
 six==1.1.0
 sqlparse==0.1.4
 wsgiref==0.1.2
-pyconstraints==1.0.0
