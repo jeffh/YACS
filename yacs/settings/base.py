@@ -369,19 +369,6 @@ with settings as s:
         r'^/api/',
     )
 
-    # ==== devserver ====
-    @s.lazy_eval
-    def devserver_if_not_testing(s):
-        if not s.RUNNING_TESTS:
-            s.DEVSERVER_AUTO_PROFILE = s.DEBUG
-            s.DEVSERVER_MODULES = (
-                #'devserver.modules.sql.SQLRealTimeModule',
-                'devserver.modules.sql.SQLSummaryModule',
-                'devserver.modules.profile.ProfileSummaryModule',
-
-                #'devserver.modules.profile.LineProfilerModule',
-            )
-
     # ==== django-pipeline ====
     s.STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
     s.PIPELINE_COMPILERS = (
