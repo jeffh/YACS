@@ -16,3 +16,4 @@ pytz==2011c
 six==1.1.0
 sqlparse==0.1.4
 wsgiref==0.1.2
+pyconstraints==1.0.0

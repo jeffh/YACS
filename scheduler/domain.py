@@ -1,4 +1,4 @@
-from csp import is_nil
+from pyconstraints import is_nil
 
 from courses.utils import DAYS, sorted_daysofweek
 

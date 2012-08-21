@@ -2,7 +2,7 @@ import unittest
 
 import rpi_courses.scheduler as s
 from rpi_courses.parser import CourseCatalog
-from csp import Problem
+from pyconstraints import Problem
 
 from constants import XML_SCHEDULE_TEST_FILE, XML_SCHEDULE_TEST_CONFLICT_FILE
 

@@ -9,3 +9,4 @@ git+https://github.com/jeffh/pyPdf.git#egg=pyPdf
 python-dateutil==1.5
 pytz==2011c
 wsgiref==0.1.2
+pyconstraints==1.0.0

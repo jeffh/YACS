@@ -1,4 +1,4 @@
-from csp import Problem, is_nil, BruteForceSolver
+from pyconstraints import Problem, is_nil, BruteForceSolver
 
 
 __all__ = ['compute_schedules', 'TimeRange', 'Scheduler']
