@@ -10,7 +10,7 @@ icalendar==3.0.1b2
 mock==0.8.0
 nose==1.1.2
 pep8==1.1
-pyPdf==0.12
+pyPdf==1.12
 pyconstraints==1.0.1
 python-dateutil==1.5
 pytz==2011c
