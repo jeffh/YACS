@@ -656,9 +656,12 @@
         });
         target.html(thumbnails_html.join(''));
         bind_schedule_events();
-        return $('#schedule_thumbnail' + (options.selected_index + 1)).addClass('selected');
+        $('#schedule_thumbnail' + (options.selected_index + 1)).addClass('selected');
       } else {
-        return $('#schedules').html(templates.no_schedules_template());
+        $('#schedules').html(templates.no_schedules_template());
+      }
+      if (schedules.length < 2) {
+        return target.hide();
       }
     });
     api.courses(function(data) {

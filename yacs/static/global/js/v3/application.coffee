@@ -503,6 +503,8 @@ display_schedules = (options) ->
             $('#schedule_thumbnail' + (options.selected_index + 1)).addClass('selected')
         else
             $('#schedules').html(templates.no_schedules_template())
+        if schedules.length < 2
+            target.hide()
     )
 
     api.courses((data) ->
