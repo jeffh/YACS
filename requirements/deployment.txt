@@ -1,5 +1,6 @@
 BeautifulSoup==3.2.1
 Django==1.4.1
+RPICourses==1.0.1
 South==0.7.5
 django-extensions==0.8
 django-debug-toolbar==0.9.4
