@@ -7,18 +7,10 @@ from fabric.contrib.files import append
 
 APPS = 'api courses courses_viz scheduler'.split(' ')
 
-DEPLOY_LOCATION = 'yacs'
-
 
 def exists(name):
     with settings(warn_only=True):
         return not run('[ -e "%s" ]' % name).failed
-
-
-def first_deploy():
-    "Sets up the project for the initial deploy"
-    run('virtualenv --distribute yacs_ve')
-
 
 def deploy():
     "Deploys to the given system."
@@ -32,13 +24,17 @@ def deploy():
     upload_project()
     append('.bashrc', 'export YACS_ENV=production', use_sudo=True)
     with cd('yacs'):
+        # remove dotfiles
+        with settings(warn_only=True):
+            run('find . -name ".*" | xargs rm -r')
+            run('rm yacs.db')
         run(PIP + ' install --upgrade -r requirements/deployment.txt')
         # we're using postgres!
         # change to whatever you need to use
         run(PIP + ' install psycopg2')
         run(PYTHON + ' manage.py syncdb --noinput')
         run(PYTHON + ' manage.py migrate')
-        run(PYTHON + ' manage.py collectstatic --noinput')
+        #run(PYTHON + ' manage.py collectstatic --noinput')
 
 
 def collectstatic():
