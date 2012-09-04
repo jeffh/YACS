@@ -39,14 +39,14 @@
       options = $.extend({
         sep: ':'
       }, options);
-      left_padding = function(n, padding, char) {
+      left_padding = function(n, padding, ch) {
         var str;
-        if (char == null) {
-          char = ' ';
+        if (ch == null) {
+          ch = ' ';
         }
         str = '' + n;
         while (str.length < padding) {
-          str = char + str;
+          str = ch + str;
         }
         return str;
       };
@@ -71,7 +71,7 @@
       });
     };
 
-    Time.prototype.int = function() {
+    Time.prototype.toInt = function() {
       return this.hour * 3600 + this.minute * 60 + this.second;
     };
 

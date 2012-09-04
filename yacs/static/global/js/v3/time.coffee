@@ -20,11 +20,11 @@ class Time
     options = $.extend({
       sep: ':'
     }, options)
-    left_padding = (n, padding, char) ->
-      char ?= ' '
+    left_padding = (n, padding, ch) ->
+      ch ?= ' '
       str = '' + n
       while str.length < padding
-        str = char + str
+        str = ch + str
       str
     format(fmt,
       mhour: @hour
@@ -46,7 +46,7 @@ class Time
       cap_apm: if @isAM() then 'Am' else 'Pm'
     )
 
-  int: -> @hour * 3600 + @minute * 60 + @second
+  toInt: -> @hour * 3600 + @minute * 60 + @second
 
   standardHour: ->
     h = @hour % 12

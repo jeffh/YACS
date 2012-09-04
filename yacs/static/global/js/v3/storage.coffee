@@ -163,7 +163,7 @@ class Validator
         return null
 
     _time_conflict: (time1, time2) ->
-        time_to_int = (s) -> Time.parse_military(s).int()
+        time_to_int = (s) -> Time.parse_military(s).toInt()
 
         start1 = time_to_int(time1.start)
         end1 = time_to_int(time1.end)

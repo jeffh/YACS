@@ -255,7 +255,7 @@ template_functions = {
         time = start.minute * 60 + start.second
         return time / 3600.0 * height
     period_height: (period, height) ->
-        time = Time.parse_military(period.end).int() - Time.parse_military(period.start).int();
+        time = Time.parse_military(period.end).toInt() - Time.parse_military(period.start).toInt();
         #return 25 // 30 min time block
         #return 41.666666667 // 50 min time block
         return time / 3600.0 * height

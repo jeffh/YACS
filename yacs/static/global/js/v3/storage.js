@@ -261,7 +261,7 @@
     Validator.prototype._time_conflict = function(time1, time2) {
       var dow, dow1, dow2, dow_equal, end1, end2, result, start1, start2, time_to_int, _i, _len;
       time_to_int = function(s) {
-        return Time.parse_military(s).int();
+        return Time.parse_military(s).toInt();
       };
       start1 = time_to_int(time1.start);
       end1 = time_to_int(time1.end);

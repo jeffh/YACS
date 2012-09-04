@@ -341,7 +341,7 @@
     },
     period_height: function(period, height) {
       var time;
-      time = Time.parse_military(period.end).int() - Time.parse_military(period.start).int();
+      time = Time.parse_military(period.end).toInt() - Time.parse_military(period.start).toInt();
       return time / 3600.0 * height;
     }
   };
