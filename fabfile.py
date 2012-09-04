@@ -54,10 +54,10 @@ def fetch():
 
 def clean():
     "Removes local python cache files."
-    local('find . -name "*.pyc" | xargs rm')
-    local('find . -name "*.pyo" | xargs rm')
-    local('find . -name "__pycache__" -type directory | xargs rm -r')
     with settings(warn_only=True):
+        local('find . -name "*.pyc" | xargs rm')
+        local('find . -name "*.pyo" | xargs rm')
+        local('find . -name "__pycache__" -type directory | xargs rm -r')
         local('rm -r yacs/static/root')
 
 
