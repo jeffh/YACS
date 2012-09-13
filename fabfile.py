@@ -13,19 +13,22 @@ GROUP = 'www-data'
 # we're using postgres!
 # change to whatever you need to use
 ADDITIONAL_PACKAGES = 'psycopg2 gunicorn'
-ENV='YACS_ENV=production'
+ENV = 'YACS_ENV=production'
 
 
 PYTHON = '/www/yacs/virtualenv/bin/python'
 PIP = '/www/yacs/virtualenv/bin/pip'
 
+
 @task
 def verbose():
     output['everything'] = True
 
+
 def exists(name):
     with settings(warn_only=True):
         return not run('[ -e "%s" ]' % name).failed
+
 
 def upload_monit_conf():
     "Uploads the monit conf for gunicorn."
