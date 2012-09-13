@@ -1,55 +1,139 @@
 import os
 
-from fabric.api import run, local, settings, cd, sudo
+from fabric.api import run, local, settings, cd, sudo, task, output, puts
 from fabric.contrib.project import upload_project
-from fabric.contrib.files import append
+from fabric.contrib.files import append, upload_template
 
 
 APPS = 'api courses courses_viz scheduler'.split(' ')
 
+USER = 'www-data'
+GROUP = 'www-data'
+
+# we're using postgres!
+# change to whatever you need to use
+ADDITIONAL_PACKAGES = 'psycopg2 gunicorn'
+ENV='YACS_ENV=production'
+
+
+PYTHON = '/www/yacs/virtualenv/bin/python'
+PIP = '/www/yacs/virtualenv/bin/pip'
+
+@task
+def verbose():
+    output['everything'] = True
 
 def exists(name):
     with settings(warn_only=True):
         return not run('[ -e "%s" ]' % name).failed
 
-def deploy():
-    "Deploys to the given system."
+def upload_monit_conf():
+    "Uploads the monit conf for gunicorn."
+    if not exists('/etc/monit/conf.d/'):
+        puts('monit missing... skipping')
+        return
+    puts('Uploading monit config...')
+    context = dict(
+        projectpath='/www/yacs/django/',
+        user=USER,
+        gunicorn='/www/yacs/virtualenv/bin/gunicorn_django',
+        workers=4,
+        logs='/www/yacs/logs/',
+        settings='yacs.settings',
+        pid='/tmp/yacs.pid',
+    )
+    upload_template('yacs.monit', '/etc/monit/conf.d/yacs.conf',
+            context=context, use_sudo=True, backup=False)
+
+
+def update_crontab():
+    context = dict(
+        projectpath='/www/yacs/django/',
+        python='/www/yacs/virtualenv/bin/python',
+        user=USER,
+        logpath='/www/yacs/logs/',
+    )
+    upload_template('yacs.cron', 'yacs_cron', context=context, backup=False)
+    sudo('crontab -u {0} yacs_cron'.format(USER))
+    sudo('rm -f yacs_cron')
+
+
+@task
+def deploy(upgrade=1):
+    """Deploys to the given system.
+    Use salt, chef, or puppet to configure the outside packages.
+
+    Things required to be set up:
+        - python
+            - database driver
+        - virtualenv
+        - coffeescript
+        - java
+        - pip
+        - database (postgres; postgres user)
+            - created database & user
+        - webserver (nginx; www-data user)
+            - webserver config to proxypass to gunicorn (nginx)
+        - memcached
+    """
+    upload_monit_conf()
     clean()
-    collectstatic()
-    if not exists('yacs_ve'):
-        run('virtualenv --distribute yacs_ve')
-    PYTHON = '~/yacs_ve/bin/python'
-    PIP = '~/yacs_ve/bin/pip'
-    run('rm -rf yacs')
-    upload_project()
-    append('.bashrc', 'export YACS_ENV=production', use_sudo=True)
-    with cd('yacs'):
-        # remove dotfiles
+    with cd('/www/yacs/'):
+        if not exists('virtualenv'):
+            puts('Creating Virtual Environment...')
+            sudo('virtualenv --distribute virtualenv', user=USER)
+    puts('Uploading to remote...')
+    with settings(warn_only=True):
+        run('rm -rf tmp')
+        run('mkdir tmp')
+    upload_project(remote_dir='tmp')
+    sudo('mv -f tmp/yacs /www/yacs/tmp')
+    sudo('chown -R %s /www/yacs/tmp' % USER)
+    sudo('chgrp -R %s /www/yacs/tmp' % GROUP)
+    run('rm -rf tmp')
+    with cd('/www/yacs/'):
+        puts('Replacing remote codebase...')
+        sudo('rm -rf django', user=USER)
+        sudo('mv -f tmp django', user=USER)
+    with cd('/www/yacs/django'):
+        puts('Removing extra files...')
         with settings(warn_only=True):
-            run('find . -name ".*" | xargs rm -r')
-            run('rm yacs.db')
-        run(PIP + ' install --upgrade -r requirements/deployment.txt')
-        # we're using postgres!
-        # change to whatever you need to use
-        run(PIP + ' install psycopg2')
-        run(PYTHON + ' manage.py syncdb --noinput')
-        run(PYTHON + ' manage.py migrate')
-        #run(PYTHON + ' manage.py collectstatic --noinput')
+            sudo('find . -name ".*" | xargs rm -r', user=USER)
+            sudo('rm yacs.db', user=USER)
+        puts('Installing dependencies...')
+        prefix = '--upgrade'
+        if not int(upgrade):
+            prefix = ''
+        sudo(PIP + ' install %s -r requirements/deployment.txt' % prefix, user=USER)
+        sudo(PIP + ' install %s %s ' % (prefix, ADDITIONAL_PACKAGES), user=USER)
+        puts('Running migrations...')
+        sudo('%s %s manage.py syncdb --noinput' % (ENV, PYTHON), user=USER)
+        sudo('%s %s manage.py migrate' % (ENV, PYTHON), user=USER)
+        puts('Gathering static files...')
+        sudo('%s %s manage.py collectstatic --noinput' % (ENV, PYTHON), user=USER)
+        puts('Restarting gunicorn...')
+        sudo('service monit restart')
+        sudo('monit restart yacs')
+    update_crontab()
+    puts('Done!')
 
 
-def collectstatic():
-    local('python manage.py collectstatic --noinput')
-
-
+@task
 def fetch():
-    "Tells the deployment system to fetch course data."
-    with cd('yacs'):
+    "Tells the deployed system to fetch course data."
+    with cd('/www/yacs/django'):
+        puts('Getting course data from SIS...')
         run(PYTHON + ' manage.py import_course_data')
+        puts('Fetching catalog data...')
+        run(PYTHON + ' manage.py import_catalog_data')
+        puts('Generating conflict cache...')
         run(PYTHON + ' manage.py create_section_cache')
 
 
+@task
 def clean():
     "Removes local python cache files."
+    puts('Removing local object files and caches...')
     with settings(warn_only=True):
         local('find . -name "*.pyc" | xargs rm')
         local('find . -name "*.pyo" | xargs rm')
@@ -57,8 +141,10 @@ def clean():
         local('rm -r yacs/static/root')
 
 
+@task
 def test():
     "Runs tests."
     clean()
+    verbose()
     local('python manage.py test --failfast ' + ' '.join(APPS))
     local('pep8 . --exclude=migrations --statistics --count --ignore=E501')

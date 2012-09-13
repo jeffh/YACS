@@ -424,7 +424,7 @@ class Course(models.Model):
 class OfferedFor(models.Model):
     "The M2M model of courses and semesters."
     course = models.ForeignKey('Course', related_name='offered_for')
-    ref = models.CharField(max_length=200, blank=True, help_text='Internal. Used by data source to identify unique offerings.')
+    ref = models.CharField(max_length=200, blank=True, help_text='Internal. Used by data source to identify unique offerings.', db_index=True)
     semester = models.ForeignKey('Semester', related_name='offers')
 
     class Meta:

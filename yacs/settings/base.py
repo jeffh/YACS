@@ -376,9 +376,9 @@ with settings as s:
         'pipeline.compilers.sass.SASSCompiler',
     )
 
-    s.PIPELINE_COFFEE_SCRIPT_BINARY = 'coffee'
+    #s.PIPELINE_COFFEE_SCRIPT_BINARY = 'coffee'
 
-    s.PIPELINE_SASS_BINARY = 'sass'
+    #s.PIPELINE_SASS_BINARY = 'sass'
     s.PIPELINE_SASS_ARGUMENTS = '--scss'
 
     s.PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'

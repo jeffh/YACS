@@ -6,6 +6,7 @@ django-extensions==0.8
 django-debug-toolbar==0.9.4
 django-pipeline==1.2.6
 icalendar==3.0.1b2
+pylibmc==1.2.3
 pyPdf==1.12
 pyconstraints==1.0.1
 python-dateutil==1.5

@@ -133,6 +133,7 @@ class ROCSRPIImporter(object):
 
             if not course_obj:
                 course_obj = Course.objects.create(
+                    name=course.name,
                     number=course.num,
                     department=department,
                     min_credits=course.cred[0],
@@ -150,7 +151,9 @@ class ROCSRPIImporter(object):
                 course_obj.is_comm_intense = comm
                 course_obj.save()
             else:
-                OfferedFor.objects.get_or_create(course=course_obj, semester=semester_obj, ref=course.name)
+                OfferedFor.objects.get_or_create(
+                    course=course_obj, semester=semester_obj, ref=ref_name
+                )
             self.create_sections(course, course_obj, semester_obj)
             logger.debug((' + ' if created else '   ') + course.name)
 
