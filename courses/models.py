@@ -201,7 +201,7 @@ class Section(models.Model):
     OFF_CAMPUS = -2
     number = models.CharField(max_length=5)
 
-    crn = models.IntegerField(unique=True)
+    crn = models.IntegerField()
     course = models.ForeignKey('Course', related_name='sections')
     semester = models.ForeignKey(Semester, related_name='sections')
     periods = models.ManyToManyField(Period, through='SectionPeriod', related_name='sections')
@@ -216,6 +216,7 @@ class Section(models.Model):
 
     class Meta:
         ordering = ['number']
+        unique_together = ('crn', 'semester')
 
     #class Meta:
     #    unique_together = ('number', 'course')
