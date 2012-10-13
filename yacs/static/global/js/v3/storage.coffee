@@ -6,7 +6,7 @@ class Storage
         @store = options.store or window.localStorage or window.sessionStorage
         @serialize = options.serialize or JSON.stringify
         @deserialize = options.deserialize or $.parseJSON
-        @version = options.version or 4
+        @version = options.version or 5
 
     set: (key, value) -> @store.setItem(key, @serialize(value))
     get: (key) -> @deserialize(@store.getItem(key))
