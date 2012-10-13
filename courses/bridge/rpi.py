@@ -155,7 +155,8 @@ class ROCSRPIImporter(object):
                     course=course_obj, semester=semester_obj, ref=ref_name
                 )
             self.create_sections(course, course_obj, semester_obj)
-            logger.debug((' + ' if created else '   ') + course.name)
+            crns = [str(s.crn) for s in course_obj.sections.all()]
+            logger.debug(' %s %s (crns: %s)' % (('+' if created else ' '), course.name, ', '.join(crns)))
 
     def add_comm_intense(self, catalog, semester):
         from rpi_courses import get_comm_file
