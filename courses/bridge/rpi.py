@@ -301,7 +301,7 @@ class SISRPIImporter(ROCSRPIImporter):
                             if not force and last_mod <= semester.date_updated:
                                 logger.debug("Skipping b/c of mod date: %r <= %r" % (last_mod, semester.date_updated))
                                 continue
-                        catalog = get_catalog(page.read())
+                        catalog = get_catalog(page.read(), filename)
                 except urllib2.URLError:
                     logger.debug("Failed to fetch url (%r)" % (filename))
                     continue
