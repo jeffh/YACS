@@ -5,8 +5,5 @@ check process yacs
   stop program = "/bin/bash -c '/bin/kill -QUIT `cat %(pid)s`'"
     as uid %(user)s and gid %(user)s
   if failed host 127.0.0.1 port 8000 protocol http then restart
-  if mem is greater than 200.0 MB for 1 cycles then restart
-  if cpu is greater than 70%% for 2 cycles then alert
-  if cpu is greater than 90%% for 3 cycles then restart
 
   group yacs
