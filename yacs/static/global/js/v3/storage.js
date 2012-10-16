@@ -56,7 +56,6 @@
   Selection = (function() {
 
     function Selection(options) {
-      console.log('version', $('meta[name=storage-version]').attr('content') || void 0);
       options = $.extend({
         version: $('meta[name=storage-version]').attr('content') || void 0
       }, options);
