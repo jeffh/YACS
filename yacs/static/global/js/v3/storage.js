@@ -9,7 +9,7 @@
       this.store = options.store || window.localStorage || window.sessionStorage;
       this.serialize = options.serialize || JSON.stringify;
       this.deserialize = options.deserialize || $.parseJSON;
-      this.version = options.version || 4;
+      this.version = options.version || 5;
     }
 
     Storage.prototype.set = function(key, value) {

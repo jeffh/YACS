@@ -34,13 +34,15 @@ def notify_if_missing_prefetch(model_instance, field):
 class Semester(models.Model):
     """Represents the semester / quarter for a college. Courses may not be offered every semester.
     """
-    year = models.IntegerField()
+    year = models.IntegerField(help_text="The year the semester takes place")
     month = models.IntegerField(help_text="The starting month of the semester")
-    name = models.CharField(max_length=100, help_text="(eg - 'Spring 2011')")
+    name = models.CharField(max_length=100, help_text="An human-readable display of the semester")
     ref = models.CharField(max_length=150, help_text="Internally used by bridge module to refer to a semester.", unique=True)
     date_updated = models.DateTimeField(auto_now=True)
+    visible = models.BooleanField(default=True, help_text="Should this semester be publicly visible?")
 
-    objects = managers.QuerySetManager(managers.SerializableQuerySet)
+    admin = managers.QuerySetManager(managers.SerializableQuerySet)
+    objects = managers.PublicSemestersQuerySetManager(managers.SerializableQuerySet)
 
     class Meta:
         unique_together = (
@@ -153,6 +155,10 @@ class Period(models.Model):
         return self.days_of_week_flag & day
 
     @property
+    def days_of_the_week(self):
+        return ', '.join(self.days_of_week)
+
+    @property
     def days_of_week(self):
         "Returns a tuple of days of the week (str)."
         days = []
@@ -207,8 +213,8 @@ class Section(models.Model):
     periods = models.ManyToManyField(Period, through='SectionPeriod', related_name='sections')
     crosslisted = models.ForeignKey(SectionCrosslisting, related_name='sections', null=True, blank=True)
 
-    seats_taken = models.IntegerField()
-    seats_total = models.IntegerField()
+    seats_taken = models.IntegerField('Seats Taken')
+    seats_total = models.IntegerField('Seats Total')
     # TODO: RPI Specific; provide alternative
     notes = models.TextField(blank=True)
 
@@ -300,12 +306,12 @@ class Course(models.Model):
     semesters = models.ManyToManyField(Semester, through='OfferedFor', related_name='courses')
 
     description = models.TextField(default="")
-    min_credits = models.IntegerField()
-    max_credits = models.IntegerField()
+    min_credits = models.IntegerField('Min Credits')
+    max_credits = models.IntegerField('Max Credits')
 
     grade_type = models.CharField(max_length=150, blank=True, default='')
     prereqs = models.TextField(default="")
-    is_comm_intense = models.BooleanField()
+    is_comm_intense = models.BooleanField('Communication Intensive')
     objects = managers.QuerySetManager(managers.CourseQuerySet)
 
     class Meta:

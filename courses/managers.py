@@ -53,6 +53,11 @@ class SerializableQuerySet(OptionalFilterMixin, QuerySet):
         return [m.toJSON(self.query.related_select_cols) for m in self]
 
 
+class PublicSemestersQuerySetManager(QuerySetManager):
+    def get_query_set(self):
+        return super(PublicSemestersQuerySetManager, self).get_query_set().filter(visible=True)
+
+
 class SemesterBasedQuerySet(SerializableQuerySet):
     YEAR_QUERY_PARAM = 'semesters__year__exact'
     MONTH_QUERY_PARAM = 'semesters__month__exact'

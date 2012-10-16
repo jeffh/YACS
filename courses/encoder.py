@@ -77,6 +77,8 @@ class CoursesEncoderDelegate(object):
             del obj['period_id']
             del obj['semester_id']
             del obj['id']
+        if isinstance(model, models.Semester):
+            del obj['visible']
         return obj
 
 

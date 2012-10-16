@@ -87,6 +87,7 @@ class ROCSRPIImporter(object):
                     year=catalog.year,
                     month=catalog.month,
                     defaults={
+                        'visible': False,
                         'name': catalog.name,
                         'ref': filename,
                     })
@@ -315,6 +316,7 @@ class SISRPIImporter(ROCSRPIImporter):
                     month=catalog.month,
                     ref=filename,
                     defaults={
+                        'visible': False,
                         'name': catalog.name
                     })
                 self.create_courses(catalog, semester_obj)
