@@ -21,7 +21,7 @@ It would be bad if a 500 error page threw a 500 error when trying to render...
 <meta name="keywords" content="rpi courses, rpi course scheduler, course scheduling, yacs">
 
 {% if semester %}
-<meta name="semester_id" content="{{ semester.id }}">
+<meta name="storage-version" content="{{ semester.year }}{{ semester.month }}">
 {% endif %}
 
 <!-- http://t.co/dKP3o1e -->

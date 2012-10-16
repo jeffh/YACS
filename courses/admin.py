@@ -70,6 +70,10 @@ class SectionPeriodAdmin(admin.ModelAdmin):
             instance.period.days_of_the_week,
         )
 
+    def queryset(self, request):
+        qs = super(SectionPeriodAdmin, self).queryset(request)
+        return qs.select_related()
+
 
 class PeriodAdmin(admin.ModelAdmin):
     list_display = ('start', 'end', 'days_of_the_week')
