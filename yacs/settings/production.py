@@ -49,3 +49,10 @@ with settings as s:
         'debug_toolbar.panels.logger.LoggingPanel',
         #'debug_profiling.ProfilingPanel'
     )
+
+    s.INSTALLED_APPS += (
+        'postmark',
+    )
+
+    EMAIL_BACKEND = 'postmark.backends.PostmarkBackend'
+    POSTMARK_API_KEY = data['postmark']['key']
