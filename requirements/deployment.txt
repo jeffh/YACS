@@ -6,7 +6,6 @@ South==0.7.5
 django-extensions==0.8
 django-debug-toolbar==0.9.4
 django-pipeline==1.2.6
-django-postmark==0.1.6
 docutils==0.9.1
 icalendar==3.0.1b2
 pylibmc==1.2.3

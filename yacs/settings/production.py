@@ -50,9 +50,10 @@ with settings as s:
         #'debug_profiling.ProfilingPanel'
     )
 
-    s.INSTALLED_APPS += (
-        'postmark',
-    )
-
-    EMAIL_BACKEND = 'postmark.backends.PostmarkBackend'
-    POSTMARK_API_KEY = data['postmark']['key']
+    FROM_EMAIL = data['email']['from']
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_USE_TLS = data['email']['tls']
+    EMAIL_HOST = data['email']['host']
+    EMAIL_USER = data['email']['user']
+    EMAIL_PASS = data['email']['pass']
+    EMAIL_PORT = data['email']['port']
