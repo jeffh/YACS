@@ -14,6 +14,8 @@ from icalendar import Calendar, Event
 import pytz
 
 from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.conf import settings
 
 from courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment)
@@ -41,12 +43,35 @@ logger.addHandler(NullHandler())
 logger.addHandler(logging.StreamHandler(sys.stdout))
 
 
+class SemesterNotifier(object):
+    def __init__(self):
+        self.subject = "[YACS] New Semester for Review"
+        self.message = """Hey Humans,
+
+There's a new semester to approve. Go to the admin interface and check it out!
+
+Love,
+YACS.me
+"""
+        self.from_email = settings.FROM_EMAIL
+        self.recipient_list = settings.ADMINS
+        self.notify = False
+
+    def requires_notification(self):
+        self.notify = True
+
+    def notify(self):
+        if self.notify:
+            send_mail(self.subject, self.message, self.from_email, self.recipient_list, fail_silently=True)
+
+
 class ROCSRPIImporter(object):
     """Handles the importation of RPI course data into the database."""
     FILE_RE = re.compile(r'(\d+)\.xml')
 
-    def __init__(self):
+    def __init__(self, notifier):
         self.semesters = {}  # semester.ref: semester obj
+        self.notifier = notifier
         for semester in Semester.objects.filter(ref__startswith='http://sis.rpi.edu/reg/rocs/'):
             self.semesters[semester.ref] = semester
 
@@ -55,7 +80,6 @@ class ROCSRPIImporter(object):
             self.latest_semester = max(self.semesters.values())
 
         self.sections_changed = False
-
         self.SectionPeriod = Synchronizer(SectionPeriod, SectionPeriod.objects.values_list('id', flat=True))
 
     def clear_unused(self, semester):
@@ -96,6 +120,7 @@ class ROCSRPIImporter(object):
                 semester_obj.save()  # => update date_updated property
                 if created:
                     logger.debug(' CREATE SEMESTER ' + repr(semester_obj))
+                    self.notifier.requires_notification()
                 else:
                     logger.debug(' EXISTS SEMESTER ' + repr(semester_obj))
                 if self.sections_changed:
@@ -325,6 +350,7 @@ class SISRPIImporter(ROCSRPIImporter):
                 semester_obj.save()  # => update date_updated property
                 if created:
                     logger.debug(' CREATE SEMESTER ' + repr(semester_obj))
+                    self.notifier.requires_notification()
                 else:
                     logger.debug(' EXISTS SEMESTER ' + repr(semester_obj))
                 if self.sections_changed:
@@ -347,25 +373,26 @@ def remove_prereq_notes(section):
 def import_latest_semester(force=False):
     "Imports RPI data into the database."
     logger.debug('Update Time: %r' % datetime.datetime.now())
-    #period_count = Period.objects.count()
-    #Period.objects.all().delete()
-    #logger.debug('Removed %r periods!' % period_count)
+    notifier = SemesterNotifier()
     #ROCSRPIImporter().sync() # slower.. someone manually updates this I think?
-    SISRPIImporter().sync(force=force)
+    SISRPIImporter(notifier).sync(force=force)
+    notifier.notify()
 
 
 def import_all_semesters(force=False):
     from rpi_courses import list_sis_files, list_rocs_xml_files
+    notifier = SemesterNotifier()
     urls = []
     urls.extend(list_sis_files())
     urls.extend(list_rocs_xml_files())
     for url in urls:
         print url
         if 'rocs' in url:
-            importer = ROCSRPIImporter()
+            importer = ROCSRPIImporter(notifier)
         else:
-            importer = SISRPIImporter()
+            importer = SISRPIImporter(notifier)
         importer.sync(get_files=lambda *a, **k: [url])
+    notifier.notify()
 
 
 def import_data(force=False, all=False):

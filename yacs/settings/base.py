@@ -109,7 +109,7 @@ with settings as s:
     s.alias('DEBUG', 'TEMPLATE_DEBUG')
 
     s.ADMINS = (
-        ('Jeff Hui', 'huij@rpi.edu'),
+        ('Jeff Hui', 'jeff@jeffhui.net'),
     )
     s.alias('ADMINS', 'MANAGERS')
 
@@ -251,6 +251,9 @@ with settings as s:
         'api',
         'courses_viz',
     )
+
+    FROM_EMAIL = "no-reply@yacs.me"
+    EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
     # A sample logging configuration. The only tangible logging
     # performed by this configuration is to send an email to
