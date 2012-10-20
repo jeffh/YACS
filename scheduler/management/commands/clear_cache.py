@@ -9,6 +9,7 @@ from scheduler import models
 
 class Command(BaseCommand):
     help = "Removes all caches on Selection model"
+    option_list = BaseCommand.option_list
 
     def handle(self, *args, **options):
         with commit_all_or_rollback():

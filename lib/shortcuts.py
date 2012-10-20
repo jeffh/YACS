@@ -13,10 +13,8 @@ def commit_all_or_rollback():
     transaction.commit_manually()
     try:
         yield
-        logger.debug('Committing Transaction...')
         transaction.commit()
     except:
-        logger.error('Exception found... rolling back')
         transaction.rollback()
         raise
 
