@@ -10,10 +10,10 @@ except ImportError:
     pass
 
 def relative_path(*path):
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), *path))
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', *path))
 
 # include lib
-sys.path.insert(0, relative_path('..', '..', 'lib'))
+sys.path.insert(0, relative_path('..', 'lib'))
 
 RUNNING_TESTS = 'test' in sys.argv
 DEBUG = False
@@ -250,7 +250,7 @@ SCHEDULER_SECTION_LIMIT = 60
 INTERNAL_IPS = ('127.0.0.1',)
 
 def debug_toolbar_callback(request):
-    return not s.RUNNING_TESTS and request.user.is_staff
+    return not RUNNING_TESTS and request.user.is_staff
 
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.version.VersionDebugPanel',

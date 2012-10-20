@@ -1,18 +1,15 @@
-from yacs.settings.base import settings
+from yacs.settings.base import *
 
-__all__ = ['settings']
-
-with settings as s:
-    s.DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': '',
-            'USER': '',
-            'PASSWORD': '',
-            'HOST': '',
-            'PORT': '',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
     }
+}
 
-    # === django-pipeline ===
-    s.STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+# === django-pipeline ===
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
