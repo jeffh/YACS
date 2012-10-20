@@ -13,4 +13,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with commit_all_or_rollback():
-            models.Selection.objects.all().update(api_cache, '')
+            models.Selection.objects.all().update(api_cache='')
