@@ -9,6 +9,8 @@ from courses.utils import dict_by_attr, Synchronizer
 from scheduler import managers
 from scheduler.utils import slugify, deserialize_numbers, serialize_numbers
 
+from shortcuts import commit_all_or_rollback
+
 
 class Selection(models.Model):
     """Represents a unique set of selected CRNs. It also offers a unique URL for each set.
@@ -86,60 +88,63 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
     # trash existing conflict data...
     if not semester:
         semester = courses.Semester.objects.get(year=semester_year, month=semester_month)
-    #SectionConflict.objects.filter(semester=semester).delete()
-    Syncer = Synchronizer(SectionConflict, SectionConflict.objects.values_list('id', flat=True))
 
-    sections = courses.Section.objects .select_related('course', 'semester') \
-            .by_semester(semester).prefetch_periods()
-    section_courses = dict_by_attr(sections, 'course')
+    with commit_all_or_rollback():
+        # we don't want to increment IDs too quickly (ev 25 minutes)
+        #SectionConflict.objects.filter(semester=semester).delete()
+        Syncer = Synchronizer(SectionConflict, SectionConflict.objects.values_list('id', flat=True))
 
-    mapping = {}
-    for id, sid1, sid2 in SectionConflict.objects.filter(semester=semester).values_list('id', 'section1', 'section2'):
-        mapping[(sid1, sid2)] = id
+        sections = courses.Section.objects .select_related('course', 'semester') \
+                .by_semester(semester).prefetch_periods()
+        section_courses = dict_by_attr(sections, 'course')
 
-    conflicts = []
+        mapping = {}
+        for id, sid1, sid2 in SectionConflict.objects.filter(semester=semester).values_list('id', 'section1', 'section2'):
+            mapping[(sid1, sid2)] = id
 
-    def log(msg):
-        sys.stdout.write(msg)
-        sys.stdout.flush()
+        conflicts = []
 
-    def perform_insert(conflicts):
-        SectionConflict.objects.bulk_create(conflicts)
+        def log(msg):
+            sys.stdout.write(msg)
+            sys.stdout.flush()
 
-    count = 0
-    for course1, course2 in itertools.combinations(section_courses.keys(), 2):
-        for section1, section2 in itertools.product(section_courses[course1], section_courses[course2]):
-            if section1.conflicts_with(section2):
-                if section1.id > section2.id:
-                    section1, section2 = section2, section1
+        def perform_insert(conflicts):
+            SectionConflict.objects.bulk_create(conflicts)
 
-                count += 1
-                if sql:
-                    if count % 10000 == 0:
-                        perform_insert(conflicts)
-                        conflicts = []
-                        log('.')
-                    if mapping.get((section1.id, section2.id), None) is None:
-                        conflicts.append(
-                            SectionConflict(section1=section1, section2=section2, semester=semester)
-                        )
+        count = 0
+        for course1, course2 in itertools.combinations(section_courses.keys(), 2):
+            for section1, section2 in itertools.product(section_courses[course1], section_courses[course2]):
+                if section1.conflicts_with(section2):
+                    if section1.id > section2.id:
+                        section1, section2 = section2, section1
+
+                    count += 1
+                    if sql:
+                        if count % 500 == 0:
+                            perform_insert(conflicts)
+                            conflicts = []
+                            log('.')
+                        if mapping.get((section1.id, section2.id), None) is None:
+                            conflicts.append(
+                                SectionConflict(section1=section1, section2=section2, semester=semester)
+                            )
+                        else:
+                            Syncer.exclude_id(mapping[(section1.id, section2.id)])
                     else:
-                        Syncer.exclude_id(mapping[(section1.id, section2.id)])
-                else:
-                    log('C')
-                    Syncer.get_or_create(
-                        section1=section1,
-                        section2=section2,
-                        semester=semester,
-                    )
+                        log('C')
+                        Syncer.get_or_create(
+                            section1=section1,
+                            section2=section2,
+                            semester=semester,
+                        )
 
-    if sql and conflicts:
-        perform_insert(conflicts)
-        log('.')
+        if sql and conflicts:
+            perform_insert(conflicts)
+            log('.')
 
-    log('\n')
-    Syncer.trim(semester=semester)
-    log('\n')
+        log('\n')
+        Syncer.trim(semester=semester)
+        log('\n')
 
 
 # attach to signals

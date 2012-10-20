@@ -62,6 +62,7 @@ initialize_validator = ->
         validator.set_sections(sections)
         callback()
     )
+initialize_validator()
 
 # initialize selection modification
 conflict_runner = null
@@ -146,11 +147,6 @@ $ ->
 
 # checkboxes for storage
 $ ->
-    if selection.has_courses()
-        initialize_validator()
-    else if $('input[type=checkbox]').length
-        initialize_validator()
-
     $('.course > input[type=checkbox]').live 'click', ->
         el = $(this)
         is_checked = el.checked()

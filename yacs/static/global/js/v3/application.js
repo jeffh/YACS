@@ -95,6 +95,8 @@
     });
   };
 
+  initialize_validator();
+
   conflict_runner = null;
 
   visualize_conflicts = function() {
@@ -208,11 +210,6 @@
   });
 
   $(function() {
-    if (selection.has_courses()) {
-      initialize_validator();
-    } else if ($('input[type=checkbox]').length) {
-      initialize_validator();
-    }
     $('.course > input[type=checkbox]').live('click', function() {
       var course_id, el, free_section_ids, full_section_ids, is_checked, parent, section_id, section_ids, sections, valid_sections, _i, _j, _k, _len, _len1, _len2;
       el = $(this);
