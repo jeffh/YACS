@@ -11,15 +11,14 @@ else:
     environment = os.environ.get('YACS_ENV', 'development')
 
 if environment == 'development':
-    from yacs.settings.development import settings
-    #print 'using development'
+    from yacs.settings.development import *
+    print 'Loading Development Environment...'
 elif environment == 'production':
-    from yacs.settings.production import settings
-    #print 'using production'
+    from yacs.settings.production import *
+    print 'Loading Production Environment...'
 elif environment == 'test':
-    from yacs.settings.test import settings
-    #print 'using test'
+    from yacs.settings.test import *
+    print 'Loading Test Environment...'
 else:
-    raise ImproperlyConfigured('YACS_ENV environmental variable needs to be set, unless tests are running.')
+    raise ImproperlyConfigured('YACS_ENV environmental variable needs to be set to development, test, or production - unless tests are running.')
 
-settings.transfer(globals())

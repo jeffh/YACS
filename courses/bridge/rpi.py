@@ -8,7 +8,7 @@ import logging.handlers
 import sys
 import datetime
 import rpi_calendars
-from contextlib import closing
+from contextlib import closing, contextmanager
 
 from icalendar import Calendar, Event
 import pytz
@@ -16,6 +16,7 @@ import pytz
 from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db import transaction
 
 from courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment)
@@ -55,13 +56,13 @@ YACS.me
 """
         self.from_email = settings.FROM_EMAIL
         self.recipient_list = settings.ADMINS
-        self.notify = False
+        self.__notify = False
 
     def requires_notification(self):
-        self.notify = True
+        self.__notify = True
 
     def notify(self):
-        if self.notify:
+        if self.__notify:
             send_mail(self.subject, self.message, self.from_email, self.recipient_list, fail_silently=True)
 
 
@@ -336,13 +337,18 @@ class SISRPIImporter(ROCSRPIImporter):
                 if not force and self.latest_semester and semester == self.latest_semester:
                     continue  # already up-to-date
 
+                logger.debug("Semester: %r => %s-%s" % (
+                    filename,
+                    catalog.year,
+                    catalog.month,
+                ))
                 semester_obj, created = Semester.objects.get_or_create(
                     year=catalog.year,
                     month=catalog.month,
                     ref=filename,
                     defaults={
                         'visible': False,
-                        'name': catalog.name
+                        'name': catalog.name,
                     })
                 self.create_courses(catalog, semester_obj)
                 # catalog doesn't support this for now.
@@ -369,18 +375,32 @@ def remove_prereq_notes(section):
         all_notes.append(notes)
     section.notes = all_notes
 
+@contextmanager
+def commit_all_or_rollback():
+    transaction.commit_manually()
+    try:
+        yield
+        logger.debug('Committing Transaction...')
+        transaction.commit()
+    except:
+        logger.error('Exception found... rolling back')
+        transaction.rollback()
+        raise
+
 
 def import_latest_semester(force=False):
     "Imports RPI data into the database."
-    logger.debug('Update Time: %r' % datetime.datetime.now())
+    logger.debug('Importing latest semester: %s' % datetime.datetime.now().strftime('%A %x %X %f%Z'))
     notifier = SemesterNotifier()
     #ROCSRPIImporter().sync() # slower.. someone manually updates this I think?
-    SISRPIImporter(notifier).sync(force=force)
+    with commit_all_or_rollback():
+        SISRPIImporter(notifier).sync(force=force)
     notifier.notify()
 
 
 def import_all_semesters(force=False):
     from rpi_courses import list_sis_files, list_rocs_xml_files
+    logger.debug('Importing ALL semesters: %s' % datetime.datetime.now().strftime('%A %x %X %f%Z'))
     notifier = SemesterNotifier()
     urls = []
     urls.extend(list_sis_files())
@@ -391,7 +411,8 @@ def import_all_semesters(force=False):
             importer = ROCSRPIImporter(notifier)
         else:
             importer = SISRPIImporter(notifier)
-        importer.sync(get_files=lambda *a, **k: [url])
+        with commit_all_or_rollback():
+            importer.sync(get_files=lambda *a, **k: [url])
     notifier.notify()
 
 

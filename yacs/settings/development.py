@@ -1,26 +1,23 @@
-from yacs.settings.base import settings
+from yacs.settings.base import *
 
-__all__ = ['settings']
+DEBUG = True
 
-with settings as s:
-    s.DEBUG = True
-
-    s.DATABASES = {
-        'default': {
-            #'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            #'NAME': 'yacs.db',
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'yacs.db',
-            'USER': 'timetable',
-            'PASSWORD': 'thereisn0sp00n',
-            'HOST': 'localhost',
-            'PORT': '',
-            'OPTIONS': {
-                #'autocommit': True,
-            }
+DATABASES = {
+    'default': {
+        #'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        #'NAME': 'yacs.db',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'yacs.db',
+        'USER': 'timetable',
+        'PASSWORD': 'thereisn0sp00n',
+        'HOST': 'localhost',
+        'PORT': '',
+        'OPTIONS': {
+            #'autocommit': True,
         }
     }
+}
 
-    s.INSTALLED_APPS += (
-        'jasmine',
-    )
+INSTALLED_APPS += (
+    'jasmine',
+)
