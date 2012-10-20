@@ -62,7 +62,7 @@ def update_crontab():
 
 
 def managepy(command):
-    sudo('%s %s manage.py %s --noinput' % (ENV, PYTHON, command), user=USER)
+    sudo('%s %s manage.py %s' % (ENV, PYTHON, command), user=USER)
 
 
 @task
@@ -114,17 +114,16 @@ def deploy(upgrade=1):
         sudo(PIP + ' install %s -r requirements/deployment.txt' % prefix, user=USER)
         sudo(PIP + ' install %s %s ' % (prefix, ADDITIONAL_PACKAGES), user=USER)
         puts('Running migrations...')
-        managepy('syncdb')
-        managepy('migrate')
+        managepy('syncdb --noinput')
+        managepy('migrate --noinput')
         puts('Gathering static files...')
-        managepy('collectstatic')
+        managepy('collectstatic --noinput')
         puts("Clearing caches...")
         sudo('service memcached restart')
         managepy('clear_cache')
         puts('Restarting gunicorn...')
         sudo('service monit restart')
         sudo('monit restart yacs')
-        managepy('clear_cache')
     update_crontab()
     puts('Done!')
 
