@@ -61,6 +61,10 @@ def update_crontab():
     sudo('rm -f yacs_cron')
 
 
+def managepy(command):
+    sudo('%s %s manage.py %s --noinput' % (ENV, PYTHON, command), user=USER)
+
+
 @task
 def deploy(upgrade=1):
     """Deploys to the given system.
@@ -110,13 +114,16 @@ def deploy(upgrade=1):
         sudo(PIP + ' install %s -r requirements/deployment.txt' % prefix, user=USER)
         sudo(PIP + ' install %s %s ' % (prefix, ADDITIONAL_PACKAGES), user=USER)
         puts('Running migrations...')
-        sudo('%s %s manage.py syncdb --noinput' % (ENV, PYTHON), user=USER)
-        sudo('%s %s manage.py migrate' % (ENV, PYTHON), user=USER)
+        managepy('syncdb')
+        managepy('migrate')
         puts('Gathering static files...')
-        sudo('%s %s manage.py collectstatic --noinput' % (ENV, PYTHON), user=USER)
+        managepy('collectstatic')
         puts('Restarting gunicorn...')
         sudo('service monit restart')
         sudo('monit restart yacs')
+        puts("Clearing caches...")
+        sudo('service memcached restart')
+        managepy('clear_cache')
     update_crontab()
     puts('Done!')
 
