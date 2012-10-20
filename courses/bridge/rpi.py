@@ -375,6 +375,7 @@ def remove_prereq_notes(section):
         all_notes.append(notes)
     section.notes = all_notes
 
+
 @contextmanager
 def commit_all_or_rollback():
     transaction.commit_manually()

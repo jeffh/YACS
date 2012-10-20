@@ -21,4 +21,3 @@ elif environment == 'test':
     print 'Loading Test Environment...'
 else:
     raise ImproperlyConfigured('YACS_ENV environmental variable needs to be set to development, test, or production - unless tests are running.')
-

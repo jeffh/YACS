@@ -18,6 +18,7 @@ CACHES = {
     }
 }
 
+
 def debug_toolbar_configs(s):
     def debug_toolbar_callback(request):
         return request.user.is_staff

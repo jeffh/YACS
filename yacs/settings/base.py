@@ -9,6 +9,7 @@ try:
 except ImportError:
     pass
 
+
 def relative_path(*path):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', *path))
 
@@ -248,6 +249,7 @@ SCHEDULER_SECTION_LIMIT = 60
 
 # ==== Django Debug Toolbar ====
 INTERNAL_IPS = ('127.0.0.1',)
+
 
 def debug_toolbar_callback(request):
     return not RUNNING_TESTS and request.user.is_staff
