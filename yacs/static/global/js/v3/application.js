@@ -357,29 +357,32 @@
   };
 
   $(function() {
-    var display_selection, saved_id, target;
+    var display_selection, process_selection, target;
     target = $('#selected_courses');
     if (!target.length) {
       return;
     }
-    saved_id = saved_selection_id();
-    if (saved_id) {
-      $('[data-action=clear-selection]').hide();
-    }
-    if (saved_id) {
-      api.selection((function(sel) {
-        window.selection = selection = new Selection({
-          data: sel.get('data'),
-          read_only: true
-        });
+    process_selection = function() {
+      var saved_id;
+      saved_id = saved_selection_id();
+      if (saved_id) {
+        $('[data-action=clear-selection]').hide();
+      }
+      if (saved_id) {
+        return api.selection((function(sel) {
+          window.selection = selection = new Selection({
+            data: sel.get('data'),
+            read_only: true
+          });
+          return display_selection();
+        }), (function() {
+          return console.error('Failed to load selection');
+        }), saved_id);
+      } else {
         return display_selection();
-      }), (function() {
-        return console.error('Failed to load selection');
-      }), saved_id);
-    } else {
-      display_selection();
-    }
-    return display_selection = function() {
+      }
+    };
+    display_selection = function() {
       var callback, departments, sections;
       $('[data-action=clear-selection]').click(function() {
         if (confirm('Clear all your selected courses?')) {
@@ -501,6 +504,7 @@
         return target.html(templates.no_courses_template());
       }
     };
+    return process_selection();
   });
 
   create_color_map = function(schedule, maxcolors) {

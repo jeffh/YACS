@@ -264,7 +264,8 @@ template_functions = {
 saved_selection_id = ->
     path = location.href.split('/')
     index = path.indexOf('selected')
-    return 0 if index == -1 || path.length - 1 == index
+    if index == -1 || path.length - 1 == index
+        return 0
     parseInt(path[index + 1], 10)
 
 # selected courses
@@ -272,21 +273,20 @@ $ ->
     target = $('#selected_courses')
     return unless target.length
 
-    saved_id = saved_selection_id()
-
-    $('[data-action=clear-selection]').hide() if saved_id
-
-    if saved_id
-        api.selection(
-            ((sel) ->
-                window.selection = selection = new Selection(data: sel.get('data'), read_only: true)
-                display_selection()
-            ),
-            (-> console.error('Failed to load selection')),
-            saved_id
-        )
-    else
-        display_selection()
+    process_selection = ->
+        saved_id = saved_selection_id()
+        $('[data-action=clear-selection]').hide() if saved_id
+        if saved_id
+            api.selection(
+                ((sel) ->
+                    window.selection = selection = new Selection(data: sel.get('data'), read_only: true)
+                    display_selection()
+                ),
+                (-> console.error('Failed to load selection')),
+                saved_id
+            )
+        else
+            display_selection()
 
     display_selection = ->
         $('[data-action=clear-selection]').click ->
@@ -378,6 +378,8 @@ $ ->
                 callback()
         else
             target.html(templates.no_courses_template())
+
+    process_selection()
 
 # cycles numbers based on the number of schedule items
 create_color_map = (schedule, maxcolors) ->
