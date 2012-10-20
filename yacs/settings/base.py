@@ -174,10 +174,15 @@ EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
         'default': {
             'format': '[%(asctime)s] %(levelname)s (%(module)s): %(message)s'
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
         },
     },
     'handlers': {
@@ -190,12 +195,20 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
-        #'file': {
-        #    'level': 'DEBUG',
-        #    'class': 'logging.FileHandler',
-        #    'filename': s.relative_path('django.log'),
-        #    'formatter': 'default',
-        #},
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': relative_path('..', 'access.log'),
+            'formatter': 'default',
+            'filters': ['require_debug_false'],
+        },
+        'file-error': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': relative_path('..', 'error.log'),
+            'formatter': 'default',
+            'filters': ['require_debug_false'],
+        },
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
@@ -208,12 +221,17 @@ LOGGING = {
             'level': 'INFO',
         },
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['console', 'file-error'],
             'level': 'ERROR',
             'propagate': True,
         },
+        #'django.request': {
+        #    'handlers': ['mail_admins'],
+        #    'level': 'ERROR',
+        #    'propagate': True,
+        #},
         'yacs': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': True,
         },
