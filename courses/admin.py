@@ -31,7 +31,7 @@ class SemesterAdmin(admin.ModelAdmin):
         (None, {'fields': ('name', 'year', 'month')}),
         ('Advanced options', {'fields': ('ref', 'visible')}),
     )
-    ordering = ('year', 'month')
+    ordering = ('-year', '-month')
 
 
 class CourseAdmin(admin.ModelAdmin):

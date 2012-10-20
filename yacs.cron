@@ -1,3 +1,4 @@
 SHELL=/bin/bash
 */10 * * * * cd %(projectpath)s && YACS_ENV=production %(python)s manage.py import_course_data 2>&1 >> %(logpath)s/import_course_data.log
 */25 * * * * cd %(projectpath)s && YACS_ENV=production %(python)s manage.py create_section_cache 2>&1 >> %(logpath)s/create_section_cache.log
+0 1 * * * cd %(projectpath)s && YACS_ENV=production %(python)s manage.py import_catalog_data 2>&1 >> %(logpath)s/import_catalog_data.log

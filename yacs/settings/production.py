@@ -19,15 +19,14 @@ CACHES = {
 }
 
 
-def debug_toolbar_configs(s):
-    def debug_toolbar_callback(request):
-        return request.user.is_staff
+def debug_toolbar_callback(request):
+    return False
 
-    DEBUG_TOOLBAR_CONFIG = {
-        'INTERCEPT_REDIRECTS': False,
-        'SHOW_TOOLBAR_CALLBACK': debug_toolbar_callback,
-        'HIDE_DJANGO_SQL': DEBUG
-    }
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+    'SHOW_TOOLBAR_CALLBACK': debug_toolbar_callback,
+    'HIDE_DJANGO_SQL': DEBUG
+}
 
 STATIC_URL = data['static_url']
 DATABASES = data['databases']
