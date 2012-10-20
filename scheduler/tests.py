@@ -126,12 +126,12 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
         # redirects to url below
 
     def test_get_schedules(self):
-        "/2011/1/schedules/MQ/"
-        response = self.get('schedules', year=2011, month=1, slug='MQ')
+        "/2011/1/schedules/1/"
+        response = self.get('schedules', year=2011, month=1, id=1)
         self.assertEqual(response.status_code, 302)
         # redirects to url below
 
     def test_get_schedules(self):
-        "/2011/1/schedules/MQ/1/"
-        response = self.get('schedules', year=2011, month=1, slug='MQ', index=1)
+        "/2011/1/schedules/1/1/"
+        response = self.get('schedules', year=2011, month=1, id=1, index=1)
         self.assertEqual(response.status_code, 200)

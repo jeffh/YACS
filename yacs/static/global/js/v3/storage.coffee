@@ -35,7 +35,8 @@ class Selection
         }, options)
         @storage = options.storage or new Storage()
         @storage.version_check()
-        @data = options.data or {}
+        @data = options.data || {}
+        @read_only = options.read_only or false
         @conflicts = options.conflicts
         @history = []
 
@@ -51,13 +52,14 @@ class Selection
         api.conflicts (data) -> that.conflicts = data
         that
 
-    load: ->
-        @data = @storage.get('selection')
+    load: (data) ->
+        @data = data || @storage.get('selection')
         @data = {} unless @data?
         $(this).trigger('loaded', {sender: this, data: @data})
         this
 
     save: ->
+        return this if @read_only
         @storage.set('selection', @data)
         $(this).trigger('saved', {sender: this, data: @data})
         this

@@ -136,6 +136,7 @@ class API
     courses: (success, error, id) -> @get(@url('courses', id), success, error)
     sections: (success, error, id) -> @get(@url('sections', id), success, error)
     conflicts: (success, error, id) -> @get(@url('conflicts', id), success, error)
+    selection: (success, error, id) -> @get(@url('schedules/selection', id), success, error)
     schedules: (options) ->
         options = $.extend({
             id: null

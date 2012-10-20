@@ -219,10 +219,23 @@ def section_conflicts(request, id=None, version=None, ext=None):
 
 
 @render()
-def schedules(request, slug=None, version=None):
+def selections(request, id, version=None):
+    selection = Selection.objects.get(id=id)
+    sections = models.Section.objects.filter(id__in=selection.section_ids)
+    data = dict_by_attr(sections, 'course_id', 'id')
+    return {
+        'context': {
+            'id': selection.id,
+            'data': data,
+        }
+    }
+
+
+@render()
+def schedules(request, id=None, version=None):
     selection = None
-    if slug:
-        selection = Selection.objects.get(slug=slug)
+    if id:
+        selection = Selection.objects.get(id=id)
         section_ids = selection.section_ids
     else:
         section_ids = int_list(request.GET.getlist('section_id'))
@@ -264,7 +277,7 @@ def schedules(request, slug=None, version=None):
                 for s in sections
         )),
         'days_of_the_week': list(DAYS),
-        'id': selection.slug
+        'id': selection.id,
     }
 
     selection.api_cache = json.dumps(context)

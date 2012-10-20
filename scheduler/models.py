@@ -13,7 +13,6 @@ from scheduler.utils import slugify, deserialize_numbers, serialize_numbers
 class Selection(models.Model):
     """Represents a unique set of selected CRNs. It also offers a unique URL for each set.
     """
-    internal_slug = models.CharField(max_length=200, db_index=True, blank=True, default="")
     internal_section_ids = models.CommaSeparatedIntegerField(max_length=255)
     api_cache = models.TextField(default='', blank=True)
 
@@ -31,16 +30,8 @@ class Selection(models.Model):
     def section_ids(self, section_ids):
         self.internal_section_ids = serialize_numbers(section_ids)
 
-    @property
-    def slug(self):
-        return self.internal_slug
-
-    @slug.setter
-    def slug(self, string):
-        self.internal_slug = slugify(string)
-
     def __unicode__(self):
-        return "%r, %r" % (self.slug, self.section_ids)
+        return "%r, %r" % (self.id, self.section_ids)
 
 
 # Django bug? Using a proxy causes tests to fail (looking for database NAME).

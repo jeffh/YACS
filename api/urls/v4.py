@@ -51,6 +51,8 @@ urlpatterns = patterns('',
 
     url(r'^/schedules/$', cache_page(views.schedules, cache_duration), api4, name='schedules'),
     url(r'^/schedules' + ext_re, cache_page(views.schedules, cache_duration), api4, name='schedules'),
-    url(r'^/schedules/(?P<slug>[A-Za-z0-9_-]+)/$', cache_page(views.schedules, cache_duration), api4, name='schedules'),
-    url(r'^/schedules/(?P<slug>[A-Za-z0-9_-]+)' + ext_re, cache_page(views.schedules, cache_duration), api4, name='schedules'),
+    url(r'^/schedules/(?P<id>\d+)/$', cache_page(views.schedules, cache_duration), api4, name='schedules'),
+    url(r'^/schedules/(?P<id>\d+)' + ext_re, cache_page(views.schedules, cache_duration), api4, name='schedules'),
+    url(r'^/schedules/selection/(?P<id>\d+)/$', cache_page(views.selections, cache_duration), api4, name='selection'),
+    url(r'^/schedules/selection/(?P<id>\d+)' + ext_re, cache_page(views.selections, cache_duration), api4, name='selection'),
 )

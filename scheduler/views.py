@@ -34,7 +34,7 @@ def compute_selection_dict(sids):
 class SelectionSelectedCoursesListView(SelectedCoursesListView):
     def get_context_data(self, **kwargs):
         context = super(SelectionSelectedCoursesListView, self).get_context_data(**kwargs)
-        selection = context['selection'] = models.Selection.objects.get(slug=self.kwargs.get('slug'))
+        selection = context['selection'] = models.Selection.objects.get(id=self.kwargs.get('id'))
         context['raw_selection'] = dumps(compute_selection_dict(selection.section_ids))
         return context
 
@@ -103,9 +103,9 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
                 except (ValueError, TypeError):
                     pass
             return crns
-        slug = self.request.GET.get('slug')
+        id = self.request.GET.get('id')
         try:
-            return models.Selection.objects.get(slug=slug).crns
+            return models.Selection.objects.get(id=id).crns
         except models.Selection.DoesNotExist:
             raise Http404
 
@@ -289,14 +289,14 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
                 'courses': courses_output,
                 'sections': sections_output,
                 'section_mapping': self.get_section_mapping(selected_courses, schedules, periods),
-                'selection_slug': selection.slug,
+                'selection_slug': selection.id,
             }
         else:
             context = {
                 'schedules': [],
                 'sem_year': year,
                 'sem_month': month,
-                'selection_slug': selection.slug,
+                'selection_slug': selection.id,
             }
         data.update(context)
         return data
@@ -314,7 +314,7 @@ class JsonComputeSchedules(AjaxJsonResponseMixin, ComputeSchedules):
         return self.get_json_response(self.get_json_content_prefix() + self.convert_context_to_json(context))
 
 
-def schedules_bootloader(request, year, month, slug=None, index=None):
+def schedules_bootloader(request, year, month, id=None, index=None):
     """A simple view that loads the basic template and provides the
     URL for the javascript client to hit for the schedule computation.
     """
@@ -324,14 +324,14 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
         index = int(index)
         assert index >= 1
     except (ValueError, TypeError, AssertionError):
-        if slug:
-            return redirect(reverse('schedules', kwargs=dict(year=year, month=month, slug=slug, index=1)))
+        if id:
+            return redirect(reverse('schedules', kwargs=dict(year=year, month=month, id=id, index=1)))
 
     semester = Semester.objects.get(year=year, month=month)
     try:
-        slug = slug or request.GET.get('slug', '')
-        selection = models.Selection.objects.get(slug=slug)
-    except models.Selection.DoesNotExist:
+        id = id or request.GET.get('id', '')
+        selection = models.Selection.objects.get(id=id)
+    except (models.Selection.DoesNotExist, ValueError):
         selection = None
 
     return render_to_response('scheduler/placeholder_schedule_list.html', {
@@ -341,7 +341,7 @@ def schedules_bootloader(request, year, month, slug=None, index=None):
         'sem_year': semester.year,
         'sem_month': semester.month,
         'index': index,
-        'slug': slug,
+        'id': id,
     }, RequestContext(request))
 
 

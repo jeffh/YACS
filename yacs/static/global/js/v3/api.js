@@ -259,6 +259,10 @@
       return this.get(this.url('conflicts', id), success, error);
     };
 
+    API.prototype.selection = function(success, error, id) {
+      return this.get(this.url('schedules/selection', id), success, error);
+    };
+
     API.prototype.schedules = function(options) {
       var data, that, url;
       options = $.extend({

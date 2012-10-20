@@ -62,6 +62,7 @@
       this.storage = options.storage || new Storage();
       this.storage.version_check();
       this.data = options.data || {};
+      this.read_only = options.read_only || false;
       this.conflicts = options.conflicts;
       this.history = [];
     }
@@ -83,8 +84,8 @@
       return that;
     };
 
-    Selection.prototype.load = function() {
-      this.data = this.storage.get('selection');
+    Selection.prototype.load = function(data) {
+      this.data = data || this.storage.get('selection');
       if (this.data == null) {
         this.data = {};
       }
@@ -96,6 +97,9 @@
     };
 
     Selection.prototype.save = function() {
+      if (this.read_only) {
+        return this;
+      }
       this.storage.set('selection', this.data);
       $(this).trigger('saved', {
         sender: this,

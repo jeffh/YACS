@@ -8,7 +8,7 @@ import logging.handlers
 import sys
 import datetime
 import rpi_calendars
-from contextlib import closing, contextmanager
+from contextlib import closing
 
 from icalendar import Calendar, Event
 import pytz
@@ -16,12 +16,12 @@ import pytz
 from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.conf import settings
-from django.db import transaction
 
 from courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment)
 from courses.signals import sections_modified
 from courses.utils import Synchronizer, DAYS
+from shortcuts import commit_all_or_rollback
 
 # TODO: remove import *
 from catalogparser import *
@@ -374,19 +374,6 @@ def remove_prereq_notes(section):
             notes = ""
         all_notes.append(notes)
     section.notes = all_notes
-
-
-@contextmanager
-def commit_all_or_rollback():
-    transaction.commit_manually()
-    try:
-        yield
-        logger.debug('Committing Transaction...')
-        transaction.commit()
-    except:
-        logger.error('Exception found... rolling back')
-        transaction.rollback()
-        raise
 
 
 def import_latest_semester(force=False):

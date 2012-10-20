@@ -3,8 +3,8 @@
     <ul>
         <li><a href="{% url departments sem_year,sem_month %}" class="catalog button{% if selected == 'catalog' %} selected{% endif %}">Catalog</a></li>
         <li><a href="{% if selection %}
-          {% if selection.slug %}
-          {% url selected-courses sem_year,sem_month,selection.slug %}
+          {% if selection.id %}
+          {% url selected-courses sem_year,sem_month,selection.id %}
           {% else %}
           {% url selected-courses sem_year,sem_month %}
           {% endif %}
@@ -12,8 +12,8 @@
           {% url selected-courses sem_year,sem_month %}
           {% endif %}" class="selected_courses button{% if selected == 'selected' %} selected{% endif %}">Selected</a></li>
         <li><a href="{% if selection %}
-          {% if selection.slug %}
-          {% url schedules sem_year,sem_month,selection.slug %}
+          {% if selection.id %}
+          {% url schedules sem_year,sem_month,selection.id %}
           {% else %}
           {% url schedules sem_year,sem_month %}
           {% endif %}

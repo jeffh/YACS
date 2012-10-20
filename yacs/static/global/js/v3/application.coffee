@@ -261,100 +261,123 @@ template_functions = {
         return time / 3600.0 * height
 }
 
+saved_selection_id = ->
+    path = location.href.split('/')
+    index = path.indexOf('selected')
+    return 0 if index == -1 || path.length - 1 == index
+    parseInt(path[index + 1], 10)
+
 # selected courses
 $ ->
     target = $('#selected_courses')
     return unless target.length
 
-    $('[data-action=clear-selection]').click ->
-      if confirm('Clear all your selected courses?')
-          selection.clear()
-          location.reload()
-      return false
+    saved_id = saved_selection_id()
 
-    if selection.has_courses()
-        sections = null
-        departments = null
-        courses = null
-        callback = barrier(3, ->
-            target.empty()
-            for course_id in selection.get_courses()
-                course = courses.get(course_id).to_hash()
-                course.sections = (->
-                    results = _.filter(sections.to_array(), (s) -> s.get('course_id') == course.id)
-                    _.map(results, (s) -> s.to_hash())
-                )()
-                for section in course.sections
-                    section.instructors = (->
-                        _.pluck(section.section_times, 'instructor')
-                    )()
-                    section.seats_left = section.seats_total - section.seats_taken
-                course.section_ids = (->
-                    _.pluck(course.sections, 'id')
-                )()
-                course.full_section_ids = (->
-                    _.pluck(_.filter(course.sections, (s) ->
-                        s.seats_taken >= s.seats_total
-                    ), 'id')
-                )()
-                course.seats_total = (->
-                    _.reduce(course.sections,
-                        ((accum, item) -> accum + item.seats_total),
-                        0
-                    )
-                )()
-                course.seats_taken = (->
-                    _.reduce(course.sections,
-                        ((accum, item) -> accum + item.seats_left),
-                        0
-                    )
-                )()
-                course.seats_left = course.seats_total - course.seats_left
-                course.department = (->
-                    departments.get(course.department_id).to_hash()
-                )()
-                course.instructors = (->
-                    kinds = []
-                    for section in course.sections
-                        for times in section.section_times
-                            pushUnique(kinds, times.instructor)
-                    kinds
-                )()
-                course.kinds = (->
-                    kinds = []
-                    for section in course.sections
-                        for times in section.section_times
-                            pushUnique(kinds, times.kind)
-                    kinds
-                )()
-                course.notes = (->
-                    _.pluck(course.sections, 'notes')
-                )()
+    $('[data-action=clear-selection]').hide() if saved_id
 
-                target.append(templates.course_template(
-                    course: course
-                    days_of_the_week: days_of_the_week
-                    _: _
-                    alwaysShowSections: true
-                    isReadOnly: false
-                    isSelectedSection: (section_id) -> _.include(selection.get_sections(), section_id)
-                    displayTime: template_functions.display_time
-                    periodsByDayOfWeek: template_functions.periods_by_dow
-                    pluralize: template_functions.pluralize
-                ))
-            create_summaries('.summarize')
+    if saved_id
+        api.selection(
+            ((sel) ->
+                window.selection = selection = new Selection(data: sel.get('data'), read_only: true)
+                display_selection()
+            ),
+            (-> console.error('Failed to load selection')),
+            saved_id
         )
-        api.courses (data) ->
-            courses = data
-            callback()
-        api.sections (data) ->
-            sections = data
-            callback()
-        api.departments (data) ->
-            departments = data
-            callback()
     else
-        target.html(templates.no_courses_template())
+        display_selection()
+
+    display_selection = ->
+        $('[data-action=clear-selection]').click ->
+            if confirm('Clear all your selected courses?')
+                selection.clear()
+                location.reload()
+            return false
+
+        if selection.has_courses()
+            sections = null
+            departments = null
+            courses = null
+            callback = barrier(3, ->
+                target.empty()
+                for course_id in selection.get_courses()
+                    course = courses.get(course_id).to_hash()
+                    course.sections = (->
+                        results = _.filter(sections.to_array(), (s) -> s.get('course_id') == course.id)
+                        _.map(results, (s) -> s.to_hash())
+                    )()
+                    for section in course.sections
+                        section.instructors = (->
+                            _.pluck(section.section_times, 'instructor')
+                        )()
+                        section.seats_left = section.seats_total - section.seats_taken
+                    course.section_ids = (->
+                        _.pluck(course.sections, 'id')
+                    )()
+                    course.full_section_ids = (->
+                        _.pluck(_.filter(course.sections, (s) ->
+                            s.seats_taken >= s.seats_total
+                        ), 'id')
+                    )()
+                    course.seats_total = (->
+                        _.reduce(course.sections,
+                            ((accum, item) -> accum + item.seats_total),
+                            0
+                        )
+                    )()
+                    course.seats_taken = (->
+                        _.reduce(course.sections,
+                            ((accum, item) -> accum + item.seats_left),
+                            0
+                        )
+                    )()
+                    course.seats_left = course.seats_total - course.seats_left
+                    course.department = (->
+                        departments.get(course.department_id).to_hash()
+                    )()
+                    course.instructors = (->
+                        kinds = []
+                        for section in course.sections
+                            for times in section.section_times
+                                pushUnique(kinds, times.instructor)
+                        kinds
+                    )()
+                    course.kinds = (->
+                        kinds = []
+                        for section in course.sections
+                            for times in section.section_times
+                                pushUnique(kinds, times.kind)
+                        kinds
+                    )()
+                    course.notes = (->
+                        _.pluck(course.sections, 'notes')
+                    )()
+
+                    target.append(templates.course_template(
+                        course: course
+                        days_of_the_week: days_of_the_week
+                        _: _
+                        alwaysShowSections: true
+                        isReadOnly: false
+                        isSelectedSection: (section_id) -> _.include(selection.get_sections(), section_id)
+                        displayTime: template_functions.display_time
+                        periodsByDayOfWeek: template_functions.periods_by_dow
+                        pluralize: template_functions.pluralize
+                    ))
+                create_summaries('.summarize')
+            )
+            api.courses (data) ->
+                courses = data
+                callback()
+            api.sections (data) ->
+                sections = data
+                callback()
+            api.departments (data) ->
+                departments = data
+                callback()
+        else
+            target.html(templates.no_courses_template())
 
 # cycles numbers based on the number of schedule items
 create_color_map = (schedule, maxcolors) ->
