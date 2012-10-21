@@ -257,7 +257,6 @@ def schedules(request, id=None, version=None):
 
     # check the cache
     if not created and selection.api_cache:
-        print selection.api_cache
         return {'context': json.loads(selection.api_cache)}
 
     schedules = compute_schedules(selected_courses, conflict_cache)
