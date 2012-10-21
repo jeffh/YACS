@@ -613,14 +613,7 @@
           return template_functions.period_offset(p, height);
         },
         humanize_hour: function(h) {
-          var apm;
-          h = h % 12;
-          apm = h >= 12 ? 'pm' : 'am';
-          if (h === 0) {
-            return '12 ' + apm;
-          } else {
-            return h + ' ' + apm;
-          }
+          return new Time(h, 0, 0).format('{{ hour }} {{ apm }}');
         },
         humanize_time: function(time) {
           time = Time.parse_military(time);

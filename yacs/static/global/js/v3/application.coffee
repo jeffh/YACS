@@ -460,12 +460,7 @@ create_set_index_for_schedule = (schedules, response, courses, sections, departm
             period_height: (p) -> template_functions.period_height(p, height)
             period_offset: (p) -> template_functions.period_offset(p, height)
             humanize_hour: (h) ->
-                h = h % 12
-                apm = if h >= 12 then 'pm' else 'am'
-                if h == 0
-                    '12 ' + apm
-                else
-                    h + ' ' + apm
+                new Time(h, 0, 0).format('{{ hour }} {{ apm }}')
             humanize_time: (time) ->
                 time = Time.parse_military(time)
                 time.format('{{ hour }}')
