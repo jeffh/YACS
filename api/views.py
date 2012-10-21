@@ -144,7 +144,7 @@ def courses(request, id=None, version=None, ext=None):
         department__id__in=int_list(request.GET.getlist('department_id')) or None,
         number__in=int_list(request.GET.getlist('number')) or None,
         id__in=int_list(request.GET.getlist('id')) or None,
-        is_comm_intense=try_int(request.GET.get('is_comm_intense')),
+        is_comm_intense=try_int(request.GET.get('is_comm_intense'), default=None),
         id=id,
     ).distinct()
     search_query = request.GET.get('search')

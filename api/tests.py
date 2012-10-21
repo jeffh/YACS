@@ -297,6 +297,16 @@ class TestAPI4Courses(ShortcutTestCase):
             u"id": obj.id,
         }
 
+    def test_fetch_should_not_exclude_comm_intense(self):
+        c1 = CourseFactory.create(is_comm_intense=True)
+        json = self.json_get('v4:courses', id=c1.id, status_code=200)
+        self.maxDiff = None
+        self.assertEqual(json, {
+            u"version": 4,
+            u"success": True,
+            u"result": self.to_dict(c1),
+        })
+
     def test_search_department_name(self):
         c1, c2 = CourseFactory.create_batch(2)
         d = DepartmentFactory.create(name='Computer Science')
