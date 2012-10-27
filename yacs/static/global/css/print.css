@@ -176,3 +176,6 @@ header {
       position: absolute;
       font-size: 90%;
       width: 36px; }
+
+.tip {
+  display: none; }

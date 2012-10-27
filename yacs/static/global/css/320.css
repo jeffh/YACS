@@ -1015,27 +1015,22 @@ header .alpha {
     -moz-box-shadow: 1px 1px 10px #999999;
     -webkit-box-shadow: 1px 1px 10px #999999;
     box-shadow: 1px 1px 10px #999999; }
-    #thumbnails .thumbnail.selected .day {
+    #thumbnails .thumbnail.selected {
       background: #ccc; }
       #thumbnails .thumbnail.selected .day .row {
         border-color: #999; }
-    #thumbnails .thumbnail.selected:hover .day {
-      background: inherit; }
-    #thumbnails .thumbnail.selected:hover .row {
-      border-color: #aeaeae; }
-      #thumbnails .thumbnail.selected:hover .row:first-child {
+      #thumbnails .thumbnail.selected:hover .day {
+        background: inherit; }
+      #thumbnails .thumbnail.selected:hover .row {
         border-color: #aeaeae; }
+        #thumbnails .thumbnail.selected:hover .row:first-child {
+          border-color: #aeaeae; }
     #thumbnails .thumbnail:hover {
       cursor: pointer; }
       #thumbnails .thumbnail:hover .day {
         background: #822; }
       #thumbnails .thumbnail:hover .row {
-        border-bottom: 1px solid #b55;
-        /*
-        &.noon {
-        	background: #a44;
-        }
-        */ }
+        border-bottom: 1px solid #b55; }
         #thumbnails .thumbnail:hover .row:first-child {
           border-top: 1px solid #b55; }
       #thumbnails .thumbnail:hover .class.color1 {

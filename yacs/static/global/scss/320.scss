@@ -1095,8 +1095,9 @@ header {
         @include box-shadow(1px 1px 10px #999);
 
         &.selected {
+            background: #ccc;
+
             .day {
-                background: #ccc;
                 .row {
                   border-color: #999;
                 }
@@ -1124,11 +1125,6 @@ header {
 				&:first-child {
 					border-top: 1px solid #b55;
 				}
-				/*
-				&.noon {
-					background: #a44;
-				}
-				*/
 			}
 			.class {
 				$adjust: #000;

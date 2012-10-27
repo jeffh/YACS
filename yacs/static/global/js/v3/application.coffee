@@ -246,12 +246,11 @@ template_functions = {
         else
             text
     period_offset: (period, height) ->
-        return 0
         start = Time.parse_military(period.start)
         time = start.minute * 60 + start.second
         return time / 3600.0 * height
     period_height: (period, height) ->
-        time = Time.parse_military(period.end).toInt() - Time.parse_military(period.start).toInt();
+        time = Time.parse_military(period.end).toInt() - Time.parse_military(period.start).toInt()
         #return 25 // 30 min time block
         #return 41.666666667 // 50 min time block
         return time / 3600.0 * height

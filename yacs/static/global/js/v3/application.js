@@ -331,7 +331,6 @@
     },
     period_offset: function(period, height) {
       var start, time;
-      return 0;
       start = Time.parse_military(period.start);
       time = start.minute * 60 + start.second;
       return time / 3600.0 * height;
