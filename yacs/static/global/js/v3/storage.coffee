@@ -43,7 +43,7 @@ class Selection
     copy: ->
         new Selection(
             storage: new NullStorage()
-            data: $.extend({}, @data) # clone
+            data: $.extend(true, {}, @data) # clone
             conflicts: @conflicts
         )
 
@@ -190,9 +190,9 @@ class Validator
     _section_times_conflict: (times1, times2) ->
         for time1 in times1
             for time2 in times2
-                unless @_time_conflict(time1, time2)
-                    return false
-        return true
+                if @_time_conflict(time1, time2)
+                    return true
+        return false
 
     _schedule_is_valid: (schedule) ->
         keys = Object.keys(schedule)
@@ -202,7 +202,7 @@ class Validator
             for key2 in keys
                 continue if key1 == key2
                 times2 = schedule[key2]
-                if @_time_conflict(times1, times2)
+                if @_section_times_conflict(times1, times2)
                     return false
         return true
 
@@ -213,10 +213,10 @@ class Validator
         keys = Object.keys(@data)
         sections = []
         for course_id in keys
-            sections.push(_.map(@data[course_id], (cid) -> that.sections[cid][0]))
+            sections.push(_.map(@data[course_id], (cid) -> that.sections[cid]))
         schedules = product(sections...)
         for schedule in schedules
-            return true if @_schedule_is_valid(schedule)
+            return schedule if @_schedule_is_valid(schedule)
         return false
 
 window.Validator = Validator

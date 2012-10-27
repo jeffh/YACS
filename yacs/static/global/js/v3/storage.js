@@ -70,7 +70,7 @@
     Selection.prototype.copy = function() {
       return new Selection({
         storage: new NullStorage(),
-        data: $.extend({}, this.data),
+        data: $.extend(true, {}, this.data),
         conflicts: this.conflicts
       });
     };
@@ -291,12 +291,12 @@
         time1 = times1[_i];
         for (_j = 0, _len1 = times2.length; _j < _len1; _j++) {
           time2 = times2[_j];
-          if (!this._time_conflict(time1, time2)) {
-            return false;
+          if (this._time_conflict(time1, time2)) {
+            return true;
           }
         }
       }
-      return true;
+      return false;
     };
 
     Validator.prototype._schedule_is_valid = function(schedule) {
@@ -320,7 +320,7 @@
             continue;
           }
           times2 = schedule[key2];
-          if (this._time_conflict(times1, times2)) {
+          if (this._section_times_conflict(times1, times2)) {
             return false;
           }
         }
@@ -336,14 +336,14 @@
       for (_i = 0, _len = keys.length; _i < _len; _i++) {
         course_id = keys[_i];
         sections.push(_.map(this.data[course_id], function(cid) {
-          return that.sections[cid][0];
+          return that.sections[cid];
         }));
       }
       schedules = product.apply(null, sections);
       for (_j = 0, _len1 = schedules.length; _j < _len1; _j++) {
         schedule = schedules[_j];
         if (this._schedule_is_valid(schedule)) {
-          return true;
+          return schedule;
         }
       }
       return false;

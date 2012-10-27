@@ -74,28 +74,18 @@ visualize_conflicts = () ->
             el = $(element)
             course_id = parseInt(el.attr('data-cid'), 10)
             section_ids = array_of_ints(el.attr('data-sids'))
-            conflicted_sections = []
             s = selection.copy()
             validator.set_data(s.data)
+            conflicted_sections = []
             sec2course = {} # track course ids
             for section_id in section_ids
+                # slower check of conflicts (more accurate)
                 s.add_section(course_id, section_id)
                 validator.set_data(s.data)
                 unless validator.is_valid()
                     conflicted_sections.push(section_id)
+                    sec2course[section_id] = course_id
                 s.undo()
-                # fast-check of conflicts
-                cid = validator.conflicts_with(section_id)
-                if cid?
-                    conflicted_sections.push(section_id)
-                    sec2course[section_id] = cid
-                else
-                    # slower check of conflicts
-                    s.add_section(course_id, section_id)
-                    validator.set_data(s.data)
-                    unless validator.is_valid()
-                        conflicted_sections.push(section_id)
-                    s.undo()
 
             course = $('#course_' + course_id).parent().removeClass('conflict')
             course.find('.conflict').removeClass('conflict')
