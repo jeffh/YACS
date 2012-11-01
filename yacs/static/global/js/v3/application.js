@@ -214,18 +214,14 @@
         for (_i = 0, _len = sections.length; _i < _len; _i++) {
           section_id = sections[_i];
           validator.set_data(selection.data);
-          if (!validator.conflicts_with(section_id)) {
-            selection.add_section(course_id, section_id);
-            validator.set_data(selection.data);
-            if (!validator.is_valid(section_ids)) {
-              console.log('undo', section_id);
-              selection.undo();
-            } else {
-              console.log('add', section_id);
-              valid_sections.push(section_id);
-            }
+          selection.add_section(course_id, section_id);
+          validator.set_data(selection.data);
+          if (!validator.is_valid(section_ids)) {
+            console.log('undo', section_id);
+            selection.undo();
           } else {
-            console.log('obvious conflict', section_id);
+            console.log('add', section_id);
+            valid_sections.push(section_id);
           }
         }
         for (_j = 0, _len1 = valid_sections.length; _j < _len1; _j++) {

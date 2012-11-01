@@ -152,17 +152,14 @@ $ ->
             valid_sections = []
             for section_id in sections
                 validator.set_data(selection.data)
-                unless validator.conflicts_with(section_id)
-                    selection.add_section(course_id, section_id)
-                    validator.set_data(selection.data)
-                    if not validator.is_valid(section_ids)
-                        console.log('undo', section_id)
-                        selection.undo() # reverse!
-                    else
-                        console.log('add', section_id)
-                        valid_sections.push(section_id)
+                selection.add_section(course_id, section_id)
+                validator.set_data(selection.data)
+                if not validator.is_valid(section_ids)
+                    console.log('undo', section_id)
+                    selection.undo() # reverse!
                 else
-                    console.log('obvious conflict', section_id)
+                    console.log('add', section_id)
+                    valid_sections.push(section_id)
 
             for section_id in valid_sections
                 parent.find('#section_' + section_id).checked(is_checked)
