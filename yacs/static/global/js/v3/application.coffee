@@ -25,10 +25,12 @@ $ ->
             $('#replacable-with-search').html(html)
             create_summaries()
             visualize_conflicts()
+            check_selection()
             spinner.fadeOut()
         empty: ->
             $('#replacable-with-search').html(original_html)
             visualize_conflicts()
+            check_selection()
         error: -> spinner.fadeOut()
     )
 
@@ -134,7 +136,8 @@ $(validator).bind('load', ->
 
 # course selection system
 window.selection = selection = new Selection().load()
-$ ->
+$ -> check_selection()
+window.check_selection = check_selection = ->
     for cid in selection.get_courses()
         $('#course_' + cid).checked(true)
         for sid in selection.get(cid)
