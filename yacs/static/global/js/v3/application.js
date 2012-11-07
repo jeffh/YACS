@@ -105,7 +105,7 @@
     }
     return conflict_runner = iterate($('.course > input[type=checkbox]'), {
       each: function(element, i) {
-        var conflicted_sections, course, course_id, el, name, s, sec2course, section, section_id, section_ids, _i, _j, _len, _len1, _results;
+        var cid, conflicted_sections, course, course_id, el, name, s, sec2course, section, section_id, section_ids, _i, _j, _len, _len1, _results;
         el = $(element);
         course_id = parseInt(el.attr('data-cid'), 10);
         section_ids = array_of_ints(el.attr('data-sids'));
@@ -115,11 +115,14 @@
         sec2course = {};
         for (_i = 0, _len = section_ids.length; _i < _len; _i++) {
           section_id = section_ids[_i];
+          cid = validator.conflicts_with(section_id);
+          if (cid != null) {
+            sec2course[section_id] = cid;
+          }
           s.add_section(course_id, section_id);
           validator.set_data(s.data);
           if (!validator.is_valid()) {
             conflicted_sections.push(section_id);
-            sec2course[section_id] = course_id;
           }
           s.undo();
         }

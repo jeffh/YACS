@@ -79,12 +79,17 @@ visualize_conflicts = () ->
             conflicted_sections = []
             sec2course = {} # track course ids
             for section_id in section_ids
-                # slower check of conflicts (more accurate)
+                # fast-check of conflicts -- but only use
+                # to "guess" which course conflicts
+                cid = validator.conflicts_with(section_id)
+                if cid?
+                    sec2course[section_id] = cid
+                # slower check of conflicts (but accurate)
+                # this can't give info on what conflicts
                 s.add_section(course_id, section_id)
                 validator.set_data(s.data)
                 unless validator.is_valid()
                     conflicted_sections.push(section_id)
-                    sec2course[section_id] = course_id
                 s.undo()
 
             course = $('#course_' + course_id).parent().removeClass('conflict')
