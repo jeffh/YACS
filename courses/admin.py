@@ -37,7 +37,7 @@ class SemesterAdmin(admin.ModelAdmin):
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('name', 'department', 'number', 'min_credits', 'max_credits', 'is_comm_intense')
     list_filter = (SemestersListFilter, 'is_comm_intense', 'min_credits', 'max_credits')
-    search_fields = ('name', 'department', 'number')
+    search_fields = ('name', 'department__name', 'department__code', 'number')
     ordering = ('department', 'number')
 
 
