@@ -8,8 +8,8 @@ django-debug-toolbar==0.9.4
 django-pipeline==1.2.6
 docutils==0.9.1
 icalendar==3.0.1b2
-pylibmc==1.2.3
 pyPdf==1.12
+python-memcached==1.48
 pyconstraints==1.0.1
 python-dateutil==1.5
 pytz==2011c
