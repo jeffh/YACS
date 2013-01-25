@@ -1,0 +1,4 @@
+{{ object.name }}
+{{ object.department.code }} {{ object.number }}
+{{ object.description }}
+{{ object.prereqs }}

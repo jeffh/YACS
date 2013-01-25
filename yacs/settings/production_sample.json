@@ -1,5 +1,17 @@
 {
   "static_url": "/static/",
+  "email": {
+    "tls": true,
+    "from": "yacs@example.com",
+    "host": "smtp.example.com",
+    "user": "username",
+    "pass": "password",
+    "port": 587
+  }
+  "haystack": {
+    "url": "http://127.0.0.1:9200/",
+    "index": "haystack",
+  },
   "databases": {
     "default": {
       "ENGINE": "django.db.backends.postgresql_psycopg2",

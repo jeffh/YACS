@@ -30,6 +30,14 @@ DEBUG_TOOLBAR_CONFIG = {
     'HIDE_DJANGO_SQL': DEBUG
 }
 
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': data['haystack']['url'],
+        'INDEX_NAME': data['haystack']['index'],
+    },
+}
+
 STATIC_URL = data['static_url']
 DATABASES = data['databases']
 

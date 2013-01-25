@@ -133,12 +133,13 @@ def fetch():
     "Tells the deployed system to fetch course data."
     with cd('/www/yacs/django'):
         puts('Getting course data from SIS...')
-        run(PYTHON + ' manage.py import_course_data')
+        managepy('import_course_data')
         puts('Fetching catalog data...')
-        run(PYTHON + ' manage.py import_catalog_data')
+        managepy('import_catalog_data')
         puts('Generating conflict cache...')
-        run(PYTHON + ' manage.py create_section_cache')
-
+        managepy('create_section_cache')
+        puts('Updating search index...')
+        managepy('update_index')
 
 @task
 def clean():

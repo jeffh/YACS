@@ -157,6 +157,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'debug_toolbar',
     'pipeline',
+    'haystack',
     # local apps
     'courses',
     'scheduler',
@@ -289,6 +290,21 @@ DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
     'SHOW_TOOLBAR_CALLBACK': debug_toolbar_callback,
     'HIDE_DJANGO_SQL': False,
+}
+
+# ==== Django-Haystack ====
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 100
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    },
+}
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack',
+    },
 }
 
 # ==== Django-Robots App ====
