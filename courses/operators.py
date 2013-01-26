@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models.sql.expressions import SQLEvaluator
 from django.utils import tree
 
+
 class FExpression(object):
     '''
     FExpression is the simplest way to reach the code path we need

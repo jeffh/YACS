@@ -328,7 +328,7 @@ class TestAPI4Courses(ShortcutTestCase):
         d = DepartmentFactory.create(code='CSCI')
         c3 = CourseFactory.create(department=d)
         json = self.json_get(
-            'v4:courses', get='?search=CS', status_code=200)
+            'v4:courses', get='?search=CSCI', status_code=200)
         self.maxDiff = None
         self.assertEqual(json, {
             u"version": 4,

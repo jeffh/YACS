@@ -41,11 +41,11 @@ class SearchQuery(object):
         for word in words:
             lword = word.lower()
             if lword.startswith('credit:') or lword.startswith('credits:'):
-                filters = filters & self._credits_filter(lword[lword.index(':')+1:])
+                filters = filters & self._credits_filter(lword[lword.index(':') + 1:])
             elif lword.startswith('com:') or lword.startswith('comm:') or lword.startswith('communication:'):
-                filters = filters & self._comm_intensive_filter(lword[lword.index(':')+1:])
+                filters = filters & self._comm_intensive_filter(lword[lword.index(':') + 1:])
             elif lword.startswith('seats:'):
-                filters = filters & self._seats_filter(lword[lword.index(':')+1])
+                filters = filters & self._seats_filter(lword[lword.index(':') + 1])
             elif lword in self._days():
                 filters = filters & self._days_filter(lword)
             else:
@@ -53,7 +53,6 @@ class SearchQuery(object):
                 free_query.append(word)
 
         filters = filters & self._times_filter(times)
-        filters = filters & self._fuzzy_match_filter(' '.join(free_query))
         return filters
 
     def _times_filter(self, times):
