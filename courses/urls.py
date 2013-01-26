@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/(?P<code>[A-Z]+)/(?P<number>[1-9]\d*)/$', views.CourseDetailView.as_view(), name='course'),
 
     # pretty much a static page..
-    url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/selected/$', cache_page(views.SelectedCoursesListView.as_view(), 60 * 3600), name='selected-courses'),
+    url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/selected/$', cache_page(nviews.selected_courses_view, 60 * 3600), name='selected-courses'),
     # actions
     #url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/select/$', views.SelectCoursesView.as_view(), name='select-courses'),
     #url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/deselect/$', views.DeselectCoursesView.as_view(), name='deselect-courses'),

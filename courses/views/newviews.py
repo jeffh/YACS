@@ -104,3 +104,14 @@ def course_list_by_dept(request, code=None, year=None, month=None, is_search=Fal
             'courses': courses,
         }
     }
+
+
+@render(template_name='selected_courses_list.html')
+def selected_courses_view(request, year, month):
+    semester = models.Semester.objects.get(year=year, month=month)
+    return {
+        'context': {
+            'semester': semester,
+            'departments': semester.departments.all(),
+        }
+    }
