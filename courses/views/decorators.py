@@ -60,9 +60,6 @@ class Renderer(object):
                     return self.assign_headers(response, true_settings['headers'])
                 except AlternativeResponse as altresponse:
                     return altresponse.response
-                except Exception as error:
-                    (_, _, traceback) = sys.exc_info()
-                    return self.handle_error(error, traceback)
             decorated.raw_view = fn
             decorated.decorator = self
             return decorated
