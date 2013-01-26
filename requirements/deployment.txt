@@ -6,14 +6,11 @@ South==0.7.5
 django-extensions==0.8
 django-debug-toolbar==0.9.4
 django-pipeline==1.2.6
-git+git://github.com/toastdriven/django-haystack.git
 docutils==0.9.1
 icalendar==3.0.1b2
 pyPdf==1.12
-pyelasticsearch==1.0.1
 python-memcached==1.48
 pyconstraints==1.0.1
 python-dateutil==1.5
 pytz==2011c
-requests==1.1.0
 wsgiref==0.1.2

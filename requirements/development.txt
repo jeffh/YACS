@@ -15,12 +15,10 @@ mock==0.8.0
 nose==1.1.2
 pep8==1.1
 pyPdf==1.12
-pyelasticsearch==1.0.1
 pyconstraints==1.0.1
 pycrypto==2.6
 python-dateutil==1.5
 pytz==2011c
-requests==1.1.0
 six==1.1.0
 sqlparse==0.1.4
 ssh==1.7.14

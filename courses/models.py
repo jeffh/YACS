@@ -27,7 +27,6 @@ def has_prefetched(model_instance, field):
 
 
 def notify_if_missing_prefetch(model_instance, field):
-    return
     if WARN_EXTRA_QUERIES and not has_prefetched(model_instance, field):
         print "WARN: DB query for %r. You should probably use prefetch_related." % field
 
@@ -312,9 +311,6 @@ class Course(models.Model):
     grade_type = models.CharField(max_length=150, blank=True, default='')
     prereqs = models.TextField(default="")
     is_comm_intense = models.BooleanField('Communication Intensive')
-
-    date_updated = models.DateTimeField(auto_now=True)
-
     objects = managers.QuerySetManager(managers.CourseQuerySet)
 
     class Meta:
@@ -392,10 +388,6 @@ class Course(models.Model):
             lines = set([line for note in notes for line in note.split('\n')])
             return lines
         return _process(set(sp.section.notes for sp in self.section_times))
-
-    @property
-    def locations(self):
-        return set(sp.location for sp in self.section_times)
 
     @property
     def section_ids(self):
