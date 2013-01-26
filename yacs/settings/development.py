@@ -5,7 +5,6 @@ DEBUG = True
 DATABASES = {
     'default': {
         #'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        #'NAME': 'yacs.db',
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'yacs.db',
         'USER': 'timetable',

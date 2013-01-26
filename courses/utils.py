@@ -186,3 +186,10 @@ class Synchronizer(object):
             if not ids_to_delete:
                 return
         qs.filter(**filter).delete()
+
+
+def force_int(value, default=0):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default

@@ -2,6 +2,7 @@ from django.db.models import Manager, Q, F
 from django.db.models.query import QuerySet
 
 from courses.utils import dict_by_attr
+from courses.search_parsing import SearchQuery
 
 
 def set_prefetch_cache(model, field, cache):
@@ -145,13 +146,6 @@ class SectionQuerySet(SemesterBasedQuerySet):
 
 
 class CourseQuerySet(SemesterBasedQuerySet):
-    def _filter_types(self, query):
-        if not query:
-            return Q()
-        return Q(department__name__icontains=query) | Q(department__code__icontains=query) | \
-            Q(name__icontains=query) | Q(number__contains=query) | \
-            Q(sections__section_times__instructor__icontains=query)
-
     def full_select(self, year=None, month=None, amount=None):
         """Returns all courses in the given queryset, plus Sections, Periods, and SectionPeriod data.
 
@@ -190,26 +184,8 @@ class CourseQuerySet(SemesterBasedQuerySet):
             result.append(course)
         return result
 
-    def _search_Q(self, query, dept_code=None):
-        "Returns a composed set of django.db.models.Q objects for searching courses."
-        from courses.models import Department
-        parts = query.split(' ')
-
-        department_filter = Q()
-        if isinstance(dept_code, Department):
-            department_filter = Q(department=dept_code)
-        elif dept_code:
-            department_filter = Q(department__code__iexact=dept_code)
-
-        complete_filters = self._filter_types(query)
-        part_filters = Q()
-        for part in parts:
-            if part:
-                part_filters = part_filters & self._filter_types(part)
-        return (complete_filters | part_filters) & department_filter
-
     def by_department(self, department):
         return self.filter(department=department)
 
     def search(self, query=None, dept=None):
-        return self.filter(self._search_Q(query or '', dept)).distinct()
+        return SearchQuery(self, dept).filter(query or '')
