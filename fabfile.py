@@ -64,6 +64,9 @@ def update_crontab():
 def managepy(command):
     sudo('%s %s manage.py %s' % (ENV, PYTHON, command), user=USER)
 
+def validate_production_json():
+    with open('yacs/settings/production.json', 'r') as handle:
+        json.loads(handle)
 
 @task
 def deploy(upgrade=1):
@@ -83,6 +86,7 @@ def deploy(upgrade=1):
             - webserver config to proxypass to gunicorn (nginx)
         - memcached
     """
+    validate_production_json()
     upload_monit_conf()
     clean()
     with cd('/www/yacs/'):
