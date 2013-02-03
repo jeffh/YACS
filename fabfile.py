@@ -68,7 +68,7 @@ def managepy(command):
 
 def validate_production_json():
     with open('yacs/settings/production.json', 'r') as handle:
-        json.loads(handle)
+        json.loads(handle.read())
 
 
 @task
