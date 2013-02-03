@@ -64,9 +64,11 @@ def update_crontab():
 def managepy(command):
     sudo('%s %s manage.py %s' % (ENV, PYTHON, command), user=USER)
 
+
 def validate_production_json():
     with open('yacs/settings/production.json', 'r') as handle:
         json.loads(handle)
+
 
 @task
 def deploy(upgrade=1):
