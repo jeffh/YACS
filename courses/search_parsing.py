@@ -61,7 +61,7 @@ class SearchQuery(object):
             name = 'sections__periods__%s__%s' % (kind, 'gte' if kind == 'start' else 'lte')
             hour = max(min(force_int(hour), 23), 0)
             minute = max(min(force_int(minute), 59), 0)
-            if apm == 'pm':
+            if apm == 'pm' and hour < 12:
                 hour += 12
             kwargs = {name: datetime.time(hour, minute)}
             filters = filters & Q(**kwargs)
