@@ -9,5 +9,13 @@
       "HOST": "localhost",
       "PORT": ""
     }
+  },
+  "email": {
+    "tls": true,
+    "from": "yacs@example.com",
+    "host": "smtp.example.com",
+    "user": "adminfor@yacs.me",
+    "pass": "secret password",
+    "port": 587
   }
 }
