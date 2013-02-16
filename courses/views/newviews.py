@@ -111,6 +111,8 @@ def selected_courses_view(request, year, month):
     semester = models.Semester.objects.get(year=year, month=month)
     return {
         'context': {
+            'sem_year': semester.year,
+            'sem_month': semester.month,
             'semester': semester,
             'departments': semester.departments.all(),
         }

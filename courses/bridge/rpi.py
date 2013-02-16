@@ -342,11 +342,11 @@ class SISRPIImporter(ROCSRPIImporter):
                     catalog.year,
                     catalog.month,
                 ))
-                semester_obj, created = Semester.objects.get_or_create(
-                    year=catalog.year,
-                    month=catalog.month,
+                semester_obj, created = Semester.admin.get_or_create(
                     ref=filename,
                     defaults={
+                        'year': catalog.year,
+                        'month': catalog.month,
                         'visible': False,
                         'name': catalog.name,
                     })
