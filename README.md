@@ -39,7 +39,7 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
    Which will install all the dependencies YACS needs (minus the database driver).
 
 
-2. Edit `s.DATABASES` variable in the `yacs/settings/development.py` file to your
+2. Edit `DATABASES` variable in the `yacs/settings/development.py` file to your
    appropriate database settings.
 
 3. Run the following commands. When calling syncdb, you'll be ask to create a superuser,
@@ -76,6 +76,22 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
 [SASS]: http://sass-lang.com/
 [pip]: http://www.pip-installer.org/en/latest/index.html
 [local]: http://localhost:8000/
+
+## Setup (Production)
+
+It's probably best to use the associated project: [seafood][]. Which is a [salt][]
+configuration project that can be used to set up a server for YACS.
+
+After using [seafood][] to set up the environment, use:
+
+    ```
+    fab -H root@my-server deploy
+    ```
+
+To deploy YACS to the server. Updates can be deployed to the server in the same fashion.
+
+[seafood]: https://github.com/jeffh/seafood
+[salt]: http://saltstack.org
 
 ## Project layout
 Currently the project is laid out as follows:
