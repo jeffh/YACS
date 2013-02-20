@@ -33,7 +33,7 @@ DEBUG_TOOLBAR_CONFIG = {
 STATIC_URL = data['static_url']
 DATABASES = data['databases']
 
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+SECRET_KEY = data['secret_key']
 
 TEMPLATE_LOADERS = (
     ('django.template.loaders.cached.Loader', (

@@ -1,5 +1,6 @@
 {
   "static_url": "/static/",
+  "secret_key": "some-secret-key-goes-here",
   "databases": {
     "default": {
       "ENGINE": "django.db.backends.postgresql_psycopg2",
