@@ -1,5 +1,7 @@
 {% extends 'site_base.html' %}
 
+{% load url from future %}
+
 {% block header %}
 {{ block.super }}
 {% endblock header %}
@@ -16,10 +18,10 @@ But since you're so awesome, here's some nice links to proper places.
 
 <ul style="margin-left: 10px">
 {% for semester in semesters %}
-<li><a href="{% url departments semester.year,semester.month %}">{{ semester.name }}</a></li>
+<li><a href="{% url 'departments' semester.year semester.month %}">{{ semester.name }}</a></li>
 {% endfor %}
 {% if sem_year %}
-<li>Or <a href="{% url semesters %}">view other semesters not in {{ sem_year }}</a></li>
+<li>Or <a href="{% url 'semesters' %}">view other semesters not in {{ sem_year }}</a></li>
 {% endif %}
 </ul>
 

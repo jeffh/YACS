@@ -1,5 +1,6 @@
 {% extends 'site_base.html' %}
 
+{% load url from future %}
 {% load course_tags %}
 
 {% block title %}Selected Courses | {% endblock %}
@@ -165,7 +166,7 @@
     <h3 class="text-center">...</h3>
     <p>Here would be any courses you selected... <br/>if only you picked out some courses.</p>
     <p>
-        Checking courses from the <a href="{% url departments sem_year,sem_month %}">catalog</a>
+        Checking courses from the <a href="{% url 'departments' sem_year sem_month %}">catalog</a>
         will show up here.
     </p>
 </div>

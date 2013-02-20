@@ -1,3 +1,4 @@
+{% load url from future %}
 <div id="notifications" class="text-center" style="display:none">
     {% if type == 'selection' %}
     <p>You are seeing selection of courses being shared.</p>
@@ -5,8 +6,8 @@
     <p>You are seeing schedules being shared.</p>
     {% endif %}
     <p>
-      <a href="{% if type == 'selection' %}{% url selected-courses sem_year,sem_month %}{% else %}{% url schedules sem_year,sem_month %}{% endif %}" data-action="adopt-selection">Adopt schedule</a>
-      or <a href="{% if type == 'selection' %}{% url selected-courses sem_year,sem_month %}{% else %}{% url schedules sem_year,sem_month %}{% endif %}">revert back</a>
+      <a href="{% if type == 'selection' %}{% url 'selected-courses' sem_year sem_month %}{% else %}{% url 'schedules' sem_year sem_month %}{% endif %}" data-action="adopt-selection">Adopt schedule</a>
+      or <a href="{% if type == 'selection' %}{% url 'selected-courses' sem_year sem_month %}{% else %}{% url 'schedules' sem_year sem_month %}{% endif %}">revert back</a>
       to your own selected courses instead.
     </p>
 </div>

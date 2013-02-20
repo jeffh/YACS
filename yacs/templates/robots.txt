@@ -1,11 +1,12 @@
 User-agent: *
 Allow: /
+{% load url from future %}
 
 Disallow: {{ STATIC_URL }}
 Disallow: /api/
 {% for semester in semesters %}
-Disallow: {% url selected-courses semester.year,semester.month %}
-Disallow: {% url schedules semester.year,semester.month %}
+Disallow: {% url 'selected-courses' semester.yearsemester.month %}
+Disallow: {% url 'schedules' semester.year semester.month %}
 {% endfor %}
 
 Sitemap: http://{{ site.domain }}/sitemap.xml

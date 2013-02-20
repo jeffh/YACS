@@ -1,5 +1,7 @@
 {% extends 'courses_viz/base.html' %}
 
+{% load url from future %}
+
 {% block title %}Bubbles | {% endblock %}
 
 {% block header %}
@@ -52,10 +54,10 @@
 <script>
   // This code is kind of messy
   $('#seatsFilterSlider').hide();
-  var semestersURL = "{% url api:v4:semesters %}",
-  departmentsURL = "{% url api:v4:departments %}",
-  coursesURL = "{% url api:v4:courses %}",
-  sectionsURL = "{% url api:v4:sections %}";
+  var semestersURL = "{% url 'api:v4:semesters' %}",
+  departmentsURL = "{% url 'api:v4:departments' %}",
+  coursesURL = "{% url 'api:v4:courses' %}",
+  sectionsURL = "{% url 'api:v4:sections' %}";
 
   var statusElement = document.getElementById('status');
 

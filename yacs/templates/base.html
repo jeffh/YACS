@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load url from future %}
 
 <!-- 320andup: http://stuffandnonsense.co.uk/projects/320andup -->
 {#% with 'manifest.appcache?v=1' as manifest %#}
@@ -17,7 +18,7 @@
 {% endif %}
 <meta name="spinner-url" content="{{ STATIC_URL }}img/spinner.gif">
 {% if sem_year and sem_month %}
-<meta name="schedules-url" content="{% url schedules sem_year,sem_month %}" />
+<meta name="schedules-url" content="{% url 'schedules' sem_year sem_month %}" />
 {% endif %}
 {% block head %}{% endblock %}
 </head>
@@ -45,7 +46,7 @@
 </div>
 
 <footer role="contentinfo" class="clearfix">
-  <p>Hey, you want to write programs from course data? Use the <a href="{% url api:v4:docs %}">API</a>!</p>
+  <p>Hey, you want to write programs from course data? Use the <a href="{% url 'api:v4:docs' %}">API</a>!</p>
   {% block footer %}
   <p>&copy; 2012 by <a href="http://twitter.com/#!/jeffhui">Jeff Hui</a> <a href="https://github.com/jeffh/YACS/blob/master/CONTRIBUTORS.txt" style="padding: 0 0.2em">et al.</a> - A <a href="http://rcos.rpi.edu">RCOS</a> Project, which means it's <a href="http://github.com/jeffh/YACS">open source</a>.</p>
   {% endblock %}

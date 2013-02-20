@@ -1,5 +1,7 @@
 {% extends 'site_base.html' %}
 
+{% load url from future %}
+
 {% block body_id %}departments-page{% endblock %}
 
 {% block title %}{{ semester.name }} | {% endblock %}
@@ -17,7 +19,7 @@
 		<ul>
 			{% for department in departments %}
 			<li>
-				<a href="{% url courses-by-dept sem_year,sem_month,department.code %}">
+				<a href="{% url 'courses-by-dept' sem_year sem_month department.code %}">
 					<span class="disclosure">&gt;</span>
 					<span class="deptcode">{{ department.code }}</span>
 					<span class="deptname">{{ department.name }}</span>

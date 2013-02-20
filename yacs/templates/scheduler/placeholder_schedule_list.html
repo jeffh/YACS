@@ -1,5 +1,7 @@
 {% extends 'site_base.html' %}
 
+{% load url from future %}
+
 {% block title %}Schedules | {% endblock %}
 
 {% block head %}
@@ -23,7 +25,7 @@
 {% endif %}
 
 <div id="thumbnails"></div>
-<div id="schedules" class="clear" data-schedule="{{ id }}" data-start="{{ index }}" data-url-base="{% url schedules sem_year,sem_month %}">
+<div id="schedules" class="clear" data-schedule="{{ id }}" data-start="{{ index }}" data-url-base="{% url 'schedules' sem_year sem_month %}">
 <p><img src="{{ STATIC_URL }}img/spinner.gif" alt="Loading" style="margin: 20px 0 20px 0"></p>
 <noscript>
     Sorry, javascript is required to view schedules :(
@@ -52,7 +54,7 @@
     <%- crns.join(', ') %>
     <% param = "?crn=" + crns.join("&crn=") %>
     <p class="share">
-        <a href="{% url ics %}<%- param %>">iCal</a>
+        <a href="{% url 'ics' %}<%- param %>">iCal</a>
         or
         <a href="javascript:print()">print this page</a>
     </p>
