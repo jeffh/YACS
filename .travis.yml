@@ -5,5 +5,5 @@ python:
 install:
   - pip install -r requirements/development.txt --use-mirrors
 script:
-  - fab test
+  - fab clean test
 
