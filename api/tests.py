@@ -12,6 +12,18 @@ from courses.tests.factories import (
 ################# API 4 #####################
 
 
+class TestAPI4Docs(ShortcutTestCase):
+    urls = 'yacs.urls'
+
+    def setUp(self):
+        self.s = SemesterFactory.create(year=2012)
+        self.d = DepartmentFactory.create()
+        SemesterDepartmentFactory(department=self.d, semester=self.s)
+
+    def test_it_should_not_blow_up(self):
+        self.get('api:v4:docs', status_code=200)
+
+
 class TestAPI4Schedules(ShortcutTestCase):
     urls = 'api.urls'
 

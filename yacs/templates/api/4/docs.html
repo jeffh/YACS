@@ -41,14 +41,14 @@
   </p>
   <p>Feel free to view-source in those demos to see moderately complex programs accessing large portions of the API.</p>
   <h2><a name="endpoints">API Endpoints</a></h2>
-  <p>The API is accessed by a set of URLs they are usually accessed in the form: <code>{% url api:v4:metadata %}&lt;model&gt;/&lt;id&gt;/</code></p>
+  <p>The API is accessed by a set of URLs they are usually accessed in the form: <code>{% url 'api:v4:metadata' %}&lt;model&gt;/&lt;id&gt;/</code></p>
   <p>
   All endpoints optionally accept a file extension as: json, xml, or plist. The default is json.
-  For example, <a href="{% url 'api:v4:semesters' semester.id %}">{% url api:v4:semesters semester.id %}</a>
+  For example, <a href="{% url 'api:v4:semesters' semester.id %}">{% url 'api:v4:semesters' semester.id %}</a>
   is the same as
-  <a href="{% url 'api:v4:semesters' semester.id 'json' %}">{% url api:v4:semesters semester.id,'json' %}</a>, but you can get the data in plist form by using
-  <a href="{% url 'api:v4:semesters' semester.id 'xml' %}">{% url api:v4:semesters semester.id,'xml' %}</a> or even plist
-  <a href="{% url 'api:v4:semesters' semester.id 'plist' %}">{% url api:v4:semesters semester.id,'plist' %}</a>
+  <a href="{% url 'api:v4:semesters' semester.id 'json' %}">{% url 'api:v4:semesters' semester.id 'json' %}</a>, but you can get the data in plist form by using
+  <a href="{% url 'api:v4:semesters' semester.id 'xml' %}">{% url 'api:v4:semesters' semester.id 'xml' %}</a> or even plist
+  <a href="{% url 'api:v4:semesters' semester.id 'plist' %}">{% url 'api:v4:semesters' semester.id 'plist' %}</a>
   </p>
   <p>
   All data can be accessed in a REST-like url scheme. Please note that
