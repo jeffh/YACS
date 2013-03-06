@@ -14,7 +14,7 @@ render = Renderer(template_prefix='courses/')
 def robots_txt(request):
     return {
         'context': {
-            'semesters': models.Semester.objects.all(),
+            'semesters': models.Semester.visible_objects.all(),
             'site': Site.objects.get_current()
         },
         'mimetype': 'text/plain',
@@ -29,13 +29,13 @@ class AjaxView(TemplateView):
         context = super(AjaxView, self).get_context_data(**kwargs)
         year = context['sem_year'] = self.kwargs.get('year')
         month = context['sem_month'] = self.kwargs.get('month')
-        context['semester'] = models.Semester.object.get(year=year, month=month)
+        context['semester'] = models.Semester.visible_objects.get(year=year, month=month)
         return context
 
 
 @render(template_name='semester_list.html')
 def semester_list(request, year=None, month=None):
-    semesters = models.Semester.objects.optional_filter(year=year)
+    semesters = models.Semester.visible_objects.optional_filter(year=year)
     return {
         'context': {
             'sem_year': year,
@@ -45,7 +45,7 @@ def semester_list(request, year=None, month=None):
 
 
 def redirect_to_latest_semester(request):
-    semester = models.Semester.objects.all()[0]
+    semester = models.Semester.visible_objects.all()[0]
     return redirect('departments', semester.year, semester.month)
 
 
@@ -57,7 +57,7 @@ def department_list(request, year=None, month=None):
     )
     semester = None
     if year and month:
-        semester = models.Semester.objects.get(year=year, month=month)
+        semester = models.Semester.visible_objects.get(year=year, month=month)
     return {
         'context': {
             'sem_year': year,
@@ -73,7 +73,7 @@ def course_list_by_dept(request, code=None, year=None, month=None, is_search=Fal
     query = request.GET.get('q')
     use_partial_template = request.GET.get('partial')
 
-    semester = models.Semester.objects.get(year=year, month=month)
+    semester = models.Semester.visible_objects.get(year=year, month=month)
     courses = models.Course.objects.filter(semesters=semester)
     department = None
     if code:  # filter by department if we can
@@ -108,7 +108,7 @@ def course_list_by_dept(request, code=None, year=None, month=None, is_search=Fal
 
 @render(template_name='selected_courses_list.html')
 def selected_courses_view(request, year, month):
-    semester = models.Semester.objects.get(year=year, month=month)
+    semester = models.Semester.visible_objects.get(year=year, month=month)
     return {
         'context': {
             'sem_year': semester.year,

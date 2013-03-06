@@ -41,8 +41,8 @@ class Semester(models.Model):
     date_updated = models.DateTimeField(auto_now=True)
     visible = models.BooleanField(default=True, help_text="Should this semester be publicly visible?")
 
-    admin = managers.QuerySetManager(managers.SerializableQuerySet)
-    objects = managers.PublicSemestersQuerySetManager(managers.SerializableQuerySet)
+    objects = managers.QuerySetManager(managers.SerializableQuerySet)
+    visible_objects = managers.PublicSemestersQuerySetManager(managers.SerializableQuerySet)
 
     class Meta:
         unique_together = (

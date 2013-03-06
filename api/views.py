@@ -107,7 +107,7 @@ def raw_data(request, data, version=None, ext=None):
 
 @render()
 def semesters(request, id=None, version=None, ext=None):
-    queryset = models.Semester.objects.optional_filter(
+    queryset = models.Semester.visible_objects.optional_filter(
         id__in=int_list(request.GET.getlist('id')) or None,
         courses__id__in=int_list(request.GET.getlist('course_id')) or None,
         departments__id__in=int_list(request.GET.getlist('department_id')) or None,
@@ -286,7 +286,7 @@ def schedules(request, id=None, version=None):
 
 
 def docs(request, template_name):
-    semesters = models.Semester.objects.all()
+    semesters = models.Semester.visible_objects.all()
     departments = models.Department.objects.all()
     return render_to_response(template_name, {
         'semester': semesters[0],

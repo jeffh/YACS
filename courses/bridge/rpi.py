@@ -16,6 +16,7 @@ import pytz
 from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db.utils import IntegrityError
 
 from courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment)
@@ -108,14 +109,19 @@ class ROCSRPIImporter(object):
 
                 logger.debug('found catalog for: %r %r' % (catalog.year, catalog.month))
 
-                semester_obj, created = Semester.objects.get_or_create(
-                    year=catalog.year,
-                    month=catalog.month,
-                    defaults={
-                        'visible': False,
-                        'name': catalog.name,
-                        'ref': filename,
-                    })
+                semester_obj = None
+                try:
+                    semester_obj, created = Semester.objects.get_or_create(
+                        year=catalog.year,
+                        month=catalog.month,
+                        defaults={
+                            'visible': False,
+                            'name': catalog.name,
+                            'ref': filename,
+                        })
+                except IntegrityError as error:
+                    logger.debug(' DUPLICATE SEMESTER ' + repr(semester_obj) + ': ' + repr(error))
+                    continue
                 self.create_courses(catalog, semester_obj)
                 self.create_crosslistings(semester_obj, set(catalog.crosslistings.values()))
                 semester_obj.save()  # => update date_updated property
@@ -342,14 +348,19 @@ class SISRPIImporter(ROCSRPIImporter):
                     catalog.year,
                     catalog.month,
                 ))
-                semester_obj, created = Semester.admin.get_or_create(
-                    ref=filename,
-                    defaults={
-                        'year': catalog.year,
-                        'month': catalog.month,
-                        'visible': False,
-                        'name': catalog.name,
-                    })
+                semester_obj = None
+                try:
+                    semester_obj, created = Semester.objects.get_or_create(
+                        ref=filename,
+                        defaults={
+                            'year': catalog.year,
+                            'month': catalog.month,
+                            'visible': False,
+                            'name': catalog.name,
+                        })
+                except IntegrityError as error:
+                    logger.debug(' DUPLICATE SEMESTER ' + repr(semester_obj) + ': ' + repr(error))
+                    continue
                 self.create_courses(catalog, semester_obj)
                 # catalog doesn't support this for now.
                 #self.create_crosslistings(semester_obj, set(catalog.crosslistings.values()))
