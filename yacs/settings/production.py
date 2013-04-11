@@ -1,6 +1,7 @@
 from yacs.settings.base import *
 import os
 import json
+import dj_database_url
 
 with open(os.environ.get('YACS_SETTINGS', relative_path('settings', 'production.json')), 'r') as handle:
     data = json.loads(handle.read())
@@ -30,10 +31,9 @@ DEBUG_TOOLBAR_CONFIG = {
     'HIDE_DJANGO_SQL': DEBUG
 }
 
-STATIC_URL = data['static_url']
-DATABASES = data['databases']
+STATIC_URL = '/static/'
 
-SECRET_KEY = data['secret_key']
+SECRET_KEY = os.environ['YACS_SECRET_KEY']
 
 TEMPLATE_LOADERS = (
     ('django.template.loaders.cached.Loader', (
@@ -55,10 +55,10 @@ DEBUG_TOOLBAR_PANELS = (
     #'debug_profiling.ProfilingPanel'
 )
 
-FROM_EMAIL = data['email']['from']
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = data['email']['tls']
-EMAIL_HOST = data['email']['host']
-EMAIL_USER = data['email']['user']
-EMAIL_PASS = data['email']['pass']
-EMAIL_PORT = data['email']['port']
+FROM_EMAIL = os.environ.get('YACS_EMAIL_FROM', 'robot@yacs.me')
+EMAIL_USE_TLS = os.environ.get('YACS_EMAIL_USE_TLS', 'yes').lower() in ['y', 'yes', 'true', 't', 'on']
+EMAIL_HOST = os.environ['YACS_EMAIL_HOST']
+EMAIL_USER = os.environ['YACS_EMAIL_USER']
+EMAIL_PASS = os.environ['YACS_EMAIL_PASS']
+EMAIL_PORT = int(os.environ.get('YACS_EMAIL_PORT', 587))

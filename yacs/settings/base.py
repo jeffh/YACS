@@ -1,6 +1,7 @@
 import os
 import sys
 from datetime import timedelta
+import dj_database_url
 
 # To work with pypy
 try:
@@ -24,6 +25,12 @@ ADMINS = (
     ('Jeff Hui', 'jeff@jeffhui.net'),
 )
 MANAGERS = ADMINS
+
+DATABASES = {
+    'default': dj_database_url.parse(
+        os.environ.get('YACS_DATABASE_URL',
+                       'sqlite:////' + os.path.abspath('yacs.db')))
+}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
