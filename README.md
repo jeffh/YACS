@@ -82,6 +82,21 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
 It's probably best to use the associated project: [seafood][]. Which is a [salt][]
 configuration project that can be used to set up a server for YACS.
 
+The following environmental variables are used in production:
+
+- **YACS_DATABASE_URL**: The database url to connect. Parsed using dj_database_url.
+                         In the form of dbengine://user:pass@host/dbname
+- **YACS_SECRET_KEY**: The internal django secret key to use. Be unique!
+- **YACS_EMAIL_FROM**: The email address the sender comes from
+- **YACS_EMAIL_USE_TLS**: The smtp server requires TLS (yes, no), defaults to yes.
+- **YACS_EMAIL_HOST**: The smtp server to connect to
+- **YACS_EMAIL_USER**: The smtp username
+- **YACS_EMAIL_PASS**: The smtp password
+- **YACS_EMAIL_PORT**: The smtp server port, defaults to 587
+
+When using [seafood][], you'll need to modify the salt configuration files to be
+unique for your installation. YACS uses email for notifying ADMINS in project settings.
+
 After using [seafood][] to set up the environment, use:
 
     ```
