@@ -14,7 +14,6 @@ GROUP = 'www-data'
 # we're using postgres!
 # change to whatever you need to use
 ADDITIONAL_PACKAGES = 'psycopg2 gunicorn'
-ENV = 'YACS_ENV=production'
 
 
 PYTHON = '/www/yacs/virtualenv/bin/python'
@@ -63,7 +62,7 @@ def update_crontab():
 
 
 def managepy(command):
-    sudo('%s %s manage.py %s' % (ENV, PYTHON, command), user=USER)
+    sudo('%s manage.py %s' % (PYTHON, command), user=USER)
 
 
 def validate_production_json():
