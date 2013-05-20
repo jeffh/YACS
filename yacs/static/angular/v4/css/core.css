@@ -1,0 +1,98 @@
+body {
+	background: #efefef;
+	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	padding: 0;
+	margin: 0;
+	font-weight: normal;
+	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+h1 { font-size: 250% }
+
+#wrap {
+	padding: 1em;
+}
+
+#hd {
+	text-align: center;
+}
+
+#bd {
+	font-family: "Helvetica Neue", "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+a:link, a:visited {
+	color: #933;
+	text-decoration: none;
+}
+a:hover {
+	color: #c55;
+	text-decoration: underline;
+}
+
+/** Menu **/
+#hd .menu {
+	border-top: 1px solid #d3d3d3;
+	font-size: 120%;
+	font-weight: 100;
+}
+.menu {
+	display: inline-block;
+	margin: 0.5em auto 0.5em 0;
+}
+.menu li {
+	display: block;
+	float: left;
+	margin: 0;
+	width: 8em;
+}
+.menu a:link, .menu a:visited {
+	display: block;
+	text-decoration: none;
+	padding: 0.5em 0;
+	margin: 0;
+	width: 100%;
+}
+.menu a:hover {
+	border-top: 2px solid #c33;
+	color: #c33;
+	text-decoration: none;
+}
+.menu .selected a:link, .menu .selected a:visited {
+	border-top: 2px solid #955;
+	color: #000;
+}
+
+/** Search **/
+#search {
+	clear: both;
+}
+#q {
+	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight: 100;
+	font-size: 150%;
+	padding: 5px 10px;
+	width: 25em;
+}
+
+/** Course Display **/
+.course .details {
+	color: #711;
+}
+
+.feedback {
+	position: absolute;
+	top: 1em;
+	right: 1em;
+}
+
+/** Footer **/
+#ft {
+    font-size: 90%;
+    color: #999;
+    text-align: center;
+    clear: both;
+    padding: 1em;
+}

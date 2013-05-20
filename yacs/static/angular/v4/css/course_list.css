@@ -1,0 +1,45 @@
+.course-list {
+	font-size: 120%;
+	font-weight: 200;
+}
+
+.course-list .checkbox {
+	display: block;
+	float: left;
+	margin: 3px 7px 0 0;
+}
+
+.course-list .checkbox_content {
+	display: block;
+	padding: 0;
+	margin-left: 20px;
+}
+
+.course-list .course {
+	clear: both;
+}
+
+.course-list .details {
+	margin-top: 0.2em;
+	font-size: 90%;
+}
+
+.course-list .credits, .course-list .num_sections, .course-list .num_seats {
+	font-size: 90%;
+	color: #444;
+}
+
+.course-list .num_seats {
+	color: #666;
+}
+
+.course-list .notes {
+	color: #555;
+	font-size: 90%;
+}
+
+.course-list .description {
+	font-size: 90%;
+	clear: both;
+}
+

@@ -1,0 +1,23 @@
+<div class="catalog course-list">
+	<div class="course" ng-repeat="course in courses">
+		<input type="checkbox" class="checkbox" id="course_{{course.id}}" name="course_{{course.id}}" />
+		<label class="checkbox_content" for="course_{{course.id}}">
+			<h2>{{course.name}}</h2>
+			<p class="details">
+			<span class="dept">{{course.department.code}}</span>
+			<span class="number">{{course.number}}</span>
+			<span class="credits">{{course.creditsText()}}</span>
+			<span class="num_sections">{{course.sectionsText()}}</span>
+			<span class="num_seats">{{course.seatsLeftText()}}</span>
+			</p>
+			<ul class="tags">
+				<li title="{{tag.title}}" class="{{tag.classes}}" ng-repeat="tag in course.tags">{{tag.name}}</li>
+			</ul>
+		</label>
+		<div class="checkbox_content">
+			<p class="description">
+			{{course.description}}
+			</p>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="yacs">
+<head>
+<meta charset="UTF-8" />
+<title>YACS</title>
+
+<!-- fonts -->
+<link href="http://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet" type="text/css" />
+<link href="http://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/reset.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/core.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/course_list.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/selection.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/catalog.css" />
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/dept_list.css" />
+
+<script src="{{ STATIC_URL }}v4/js/angular-1.1.4.js"></script>
+<script src="{{ STATIC_URL }}v4/js/underscore-1.4.4.min.js"></script>
+<script src="{{ STATIC_URL }}v4/js/application.js"></script>
+<script src="{{ STATIC_URL }}v4/js/models.js"></script>
+<script src="{{ STATIC_URL }}v4/js/api_client.js"></script>
+<script src="{{ STATIC_URL }}v4/js/controllers.js"></script>
+</head>
+<body class="page-index" ng-controller="RootCtrl">
+<div id="wrap">
+	<div id="hd" ng-controller="NavCtrl">
+		<h1>YACS</h1>
+		<ul class="menu">
+			<li ng-class="{selected: item.id==selectedItem.id}" ng-repeat="item in items">
+			<a href="" ng-click="click(item)">{% templatetag openvariable %}item.name{% templatetag closevariable %}</a>
+			</li>
+		</ul>
+		<a href="mailto:jeff@jeffhui.net?subject=YACS" class="feedback">Feedback</a>
+		<form id="search">
+			<input type="text" placeholder="Search {% templatetag openvariable %}semester.name{% templatetag closevariable %} courses" id="q" name="q" />
+		</form>
+	</div>
+	<div id="bd">
+		<div ng-view></div>
+		{% comment %}
+		<!---------------------------------------------------------------->
+		<div class="selection course-list">
+			<div class="header">
+				<h1>Selected Courses</h1>
+				<a href="#">Schedules &rarr;</a>
+			</div>
+			<div class="course">
+				<input type="checkbox" class="checkbox" id="course_1" name="course_1" />
+				<label class="checkbox_content" for="course_1">
+					<h2>Introduction to Computer Programming</h2>
+					<p class="details">
+						<span class="dept">CSCI</span>
+						<span class="number">1010</span>
+						<span class="credits">4 credits</span>
+						<span class="num_sections">6 sections</span>
+						<span class="num_seats">52 seats</span>
+					</p>
+				</label>
+			</div>
+			<div class="course">
+				<input type="checkbox" class="checkbox" id="course_2" name="course_2" />
+				<label class="checkbox_content" for="course_2">
+					<h2>Computer Science I</h2>
+					<p class="details">
+						<span class="dept">CSCI</span>
+						<span class="number">1100</span>
+						<span class="credits">1-4 credits</span>
+						<span class="num_sections">6 sections</span>
+						<span class="num_seats">52 seats</span>
+					</p>
+					<p class="notes">
+						Requires: CSCI 1010
+					</p>
+				</label>
+			</div>
+		{% endcomment %}
+		</div>
+	</div>
+	<div id="ft">
+		&copy; 2013 Jeff Hui &amp; Friends
+	</div>
+</div>
+</body>
+</html>
+

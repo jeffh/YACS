@@ -80,6 +80,7 @@ STATICFILES_DIRS = (
     # "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    relative_path('static', 'angular'),
     relative_path('static', 'global'),
 )
 

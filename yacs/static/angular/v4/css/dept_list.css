@@ -1,0 +1,34 @@
+.dept-list {
+    margin: 1em 0;
+}
+
+.dept-list .dept {
+	float: left;
+	width: 32em;
+	margin: 0 0.2em;
+	padding: 0.25em;
+	position: relative;
+}
+
+.dept-list .dept {
+	color: #933;
+}
+
+.dept-list .dept:hover {
+	background: #933;
+	color: #fff;
+	text-decoration: none;
+}
+
+.dept-list .dept .code {
+	display: inline-block;
+	font-size: 130%;
+	width: 4em;
+	font-family: "Helvetica Neue", "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+.dept-list .dept .name {
+	font-size: 100%;
+	font-weight: 200;
+	overflow: hidden;
+}

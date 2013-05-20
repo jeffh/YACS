@@ -1,0 +1,48 @@
+.selection {
+	background: #fff;
+	border: 5px solid #ddd;
+	bottom: 0;
+	position: absolute;
+	right: 1em;
+	padding: 1em;
+	width: 25em;
+}
+
+.selection .header {
+	position: relative;
+	color: #333;
+	font-size: 95%;
+	border-bottom: 1px solid #ccc;
+	padding: 0 0 0.5em 0;
+	margin: 0;
+}
+
+.selection h1 {
+	font-size: 100%;
+}
+
+.selection a:link {
+	float: right;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+.selection .credits, .selection .num_sections, .selection .num_seats {
+	font-size: 90%;
+	color: #444;
+}
+
+.selection .num_seats {
+	color: #666;
+}
+
+.selection .notes {
+	color: #555;
+	font-size: 80%;
+}
+
+.selection .course {
+	padding: 0.5em 0;
+}
+

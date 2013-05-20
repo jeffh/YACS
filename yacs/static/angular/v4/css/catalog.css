@@ -1,0 +1,52 @@
+.catalog {
+	margin-top: 1em;
+}
+
+.catalog .description {
+	margin-top: 0.5em;
+	line-height: 1.1em;
+}
+
+.catalog .course {
+	border-bottom: 1px solid #ddd;
+	margin-bottom: 0.75em;
+	padding-bottom: 0.75em;
+}
+
+.catalog .details span {
+	margin-right: 0.5em;
+}
+
+.catalog .details .dept {
+	margin-right: 0;
+}
+
+.catalog .tags {
+	margin-top: 0.5em;
+	font-size: 90%;
+}
+
+.catalog .tags li {
+	display: inline-block;
+	border-radius: 2px;
+	background: #666;
+	color: #fff;
+	padding: 2px 6px;
+	margin: 0 0.2em 0 0;
+}
+
+.catalog .tags .prereq {
+	background: #855;
+}
+
+.catalog .tags .satisfies-requirement {
+	background: #585;
+}
+
+.catalog .tags .comm, .catalog .tags .pass_or_fail {
+	background: #585;
+}
+
+.catalog .tags .crosslist {
+	background: #558;
+}

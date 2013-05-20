@@ -1,0 +1,16 @@
+<div class="dept-list">
+	<div ng-repeat="dept in departments">
+		<ul>
+			<li>
+				<a href="#" class="dept" ng-click="click(dept)">
+					<span class="code">
+						{{dept.code}}
+					</span>
+					<span class="name">
+						{{dept.name}}
+					</span>
+				</a>
+			</li>
+		</ul>
+	</div>
+</div>

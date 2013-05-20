@@ -1,6 +1,8 @@
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
 from django.conf.urls.defaults import patterns, include, url
+from django.views.generic import TemplateView
+
 from django.contrib import admin
 admin.autodiscover()
 
@@ -11,7 +13,8 @@ urlpatterns = patterns('',
     url(r'^robots\.txt$', 'courses.views.newviews.robots_txt'),
     url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}, name='sitemap'),
 
-    url(r'^$', redirect_to_latest_semester, name='index'),
+    #url(r'^$', redirect_to_latest_semester, name='index'),
+    url(r'^$', TemplateView.as_view(template_name='angular/index.html'), name='index'),
 
     url(r'^semesters/', include('courses.urls')),
     url(r'^semesters/', include('scheduler.urls')),
