@@ -13,8 +13,11 @@
 
 	PhantomJasmineRunner.prototype.inject_reporter = function() {
 		this.page.evaluate(function(){
-			window.console_reporter = new jasmine.ConsoleReporter();
-			jasmineEnv.addReporter(window.console_reporter);
+			window.onload = function(){
+				window.console_reporter = new jasmine.ConsoleReporter();
+				jasmineEnv.addReporter(window.console_reporter);
+				console.log("Attaching Console Reporter...");
+			};
 		});
 	};
 
@@ -57,12 +60,14 @@
 
   address = phantom.args[0];
 
+  page.onInitialized = function(){
+	  runner.inject_reporter();
+  };
+
   page.open(address, function(status) {
     if (status !== "success") {
       console.log("can't load the address!");
       return phantom.exit(1);
-    } else {
-		runner.inject_reporter();
 	}
   });
 
