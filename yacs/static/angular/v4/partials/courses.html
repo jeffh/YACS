@@ -1,6 +1,12 @@
 <div class="catalog course-list">
-	<div class="course" ng-repeat="course in courses">
-		<input type="checkbox" class="checkbox" id="course_{{course.id}}" name="course_{{course.id}}" />
+	<div class="course"
+		ng-class="{conflict: course.conflicts.length}"
+		ng-repeat="course in courses">
+		<input type="checkbox" class="checkbox" id="course_{{course.id}}" name="course_{{course.id}}"
+			ng-model="course.is_selected"
+			ng-click="click_course(course)"
+			ng-disabled="course.conflicts.length > 0"
+			/>
 		<label class="checkbox_content" for="course_{{course.id}}">
 			<h2>{{course.name}}</h2>
 			<p class="details">
@@ -10,14 +16,54 @@
 			<span class="num_sections">{{course.sectionsText()}}</span>
 			<span class="num_seats">{{course.seatsLeftText()}}</span>
 			</p>
+			<p class="course_conflict" ng-show="course.conflicts.length > 0">
+			Conflicts with
+			<span ng-repeat="conflict_name in course.conflicts">
+			{{ conflict_name }}{{{true: '', false: ', '}[$last]}}
+			</span>
+			</p>
+		</label>
+
+		<div class="checkbox_content">
+			<ul class="sections">
+				<li class="section" ng-class="{no_seats: section.seatsLeft() <= 0, conflict: section.allConflicts.length}" ng-repeat="section in course.sections">
+					<input type="checkbox" class="checkbox" id="section_{{section.id}}" name="section_{{section.id}}"
+						ng-model="section.is_selected"
+						ng-disabled="section.allConflicts.length > 0"
+						ng-click="click_section(course, section)" />
+					<label class="checkbox_content" for="section_{{section.id}}">
+						<p class="section-details">
+							<span class="number">Section {{section.numberText()}}</span>
+							<span class="instructors">{{section.instructorsText()}}</span>
+							<span class="seats">{{section.seatsLeftText()}}</span>
+						</p>
+						<ul class="section-times" ng-class="{expanded: section.hasMultipleTimesPerDay()}">
+							<li class="section-time" ng-class="{has_times: time.count, has_no_times: !time.count}" ng-repeat="time in section.times">
+							<span class="dow">{{time.day_of_the_week}}</span>
+							<span class="time" ng-repeat="section_time in time.section_times">
+								{{section_time.text()}}
+							</span>
+							</li>
+						</ul>
+						<p class="section_conflict" ng-show="section.conflicts.length > 0">
+						Conflicts with
+						<span ng-repeat="conflict_name in section.conflicts">
+							{{ conflict_name }}{{{true: '', false: ', '}[$last]}}
+						</span>
+						</p>
+					</label>
+				</li>
+			</ul>
+
 			<ul class="tags">
 				<li title="{{tag.title}}" class="{{tag.classes}}" ng-repeat="tag in course.tags">{{tag.name}}</li>
 			</ul>
-		</label>
-		<div class="checkbox_content">
 			<p class="description">
 			{{course.description}}
 			</p>
+			<ul class="notes">
+				<li class="note" ng-repeat="note in course.notes">{{note}}</li>
+			</ul>
 		</div>
 	</div>
 </div>

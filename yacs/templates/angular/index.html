@@ -15,25 +15,32 @@
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/catalog.css" />
 <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/dept_list.css" />
 
-<script src="{{ STATIC_URL }}v4/js/angular-1.1.4.js"></script>
-<script src="{{ STATIC_URL }}v4/js/underscore-1.4.4.min.js"></script>
+<script src="{{ STATIC_URL }}v4/js/lib/angularjs/angular.js"></script>
+<script src="{{ STATIC_URL }}v4/js/lib/angularjs/angular-cookies.js"></script>
+<script src="{{ STATIC_URL }}v4/js/lib/underscore-1.4.4.min.js"></script>
 <script src="{{ STATIC_URL }}v4/js/application.js"></script>
-<script src="{{ STATIC_URL }}v4/js/models.js"></script>
+<script src="{{ STATIC_URL }}v4/js/utils.js"></script>
+<script src="{{ STATIC_URL }}v4/js/text.js"></script>
+<script src="{{ STATIC_URL }}v4/js/domain/ModelFactory.js"></script>
+<script src="{{ STATIC_URL }}v4/js/domain/models.js"></script>
+<script src="{{ STATIC_URL }}v4/js/domain/computations.js"></script>
 <script src="{{ STATIC_URL }}v4/js/api_client.js"></script>
 <script src="{{ STATIC_URL }}v4/js/controllers.js"></script>
+{% block js %}{% endblock %}
 </head>
+{% block body %}
 <body class="page-index" ng-controller="RootCtrl">
 <div id="wrap">
 	<div id="hd" ng-controller="NavCtrl">
 		<h1>YACS</h1>
 		<ul class="menu">
-			<li ng-class="{selected: item.id==selectedItem.id}" ng-repeat="item in items">
+			<li ng-class="{selected: item==selectedItem}" ng-repeat="item in items">
 			<a href="" ng-click="click(item)">{% templatetag openvariable %}item.name{% templatetag closevariable %}</a>
 			</li>
 		</ul>
 		<a href="mailto:jeff@jeffhui.net?subject=YACS" class="feedback">Feedback</a>
-		<form id="search">
-			<input type="text" placeholder="Search {% templatetag openvariable %}semester.name{% templatetag closevariable %} courses" id="q" name="q" />
+		<form id="search" ng-controller="SearchCtrl">
+			<input type="text" placeholder="Search {% templatetag openvariable %}semester.name{% templatetag closevariable %} Courses" id="q" name="q" ng-model="query" />
 		</form>
 	</div>
 	<div id="bd">
@@ -78,9 +85,10 @@
 		</div>
 	</div>
 	<div id="ft">
-		&copy; 2013 Jeff Hui &amp; Friends
+		&copy; 2013 Jeff Hui &amp; Friends. A grass-fed, free-ranged RCOS project.
 	</div>
 </div>
 </body>
+{% endblock body %}
 </html>
 

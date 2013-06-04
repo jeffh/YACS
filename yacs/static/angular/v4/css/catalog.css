@@ -4,13 +4,31 @@
 
 .catalog .description {
 	margin-top: 0.5em;
+	margin-left: 0.25em;
 	line-height: 1.1em;
+	color: #555;
+}
+
+.catalog .notes {
+	margin-top: 0.5em;
+	margin-left: 0.25em;
 }
 
 .catalog .course {
+	position: relative;
 	border-bottom: 1px solid #ddd;
 	margin-bottom: 0.75em;
 	padding-bottom: 0.75em;
+}
+
+.catalog .course h2 {
+	font-size: 110%;
+}
+.catalog .checkbox {
+	margin-top: 4px;
+}
+.catalog .details {
+	margin-top: 0.3em;
 }
 
 .catalog .details span {
@@ -22,31 +40,125 @@
 }
 
 .catalog .tags {
+	position: absolute;
+	top: -8px;
+	right: 0;
 	margin-top: 0.5em;
 	font-size: 90%;
+	z-index: 10;
 }
 
 .catalog .tags li {
 	display: inline-block;
 	border-radius: 2px;
-	background: #666;
-	color: #fff;
+	border-top: 2px solid #ccc;
+	color: #666;
 	padding: 2px 6px;
 	margin: 0 0.2em 0 0;
 }
 
 .catalog .tags .prereq {
-	background: #855;
+	border-top: 2px solid #855;
 }
 
 .catalog .tags .satisfies-requirement {
-	background: #585;
+	border-top: 2px solid #585;
 }
 
 .catalog .tags .comm, .catalog .tags .pass_or_fail {
-	background: #585;
+	border-top: 2px solid #585;
 }
 
 .catalog .tags .crosslist {
 	background: #558;
+	color: #fff;
 }
+
+/** SECTION DISPLAY **/
+.catalog .section {
+	font-size: 90%;
+	margin: 0.25em 0;
+	padding: 4px 0 4px 0;
+	clear: both;
+}
+
+.catalog .section .instructors {
+	color: #955;
+}
+
+.catalog .section .section-details, .catalog .section .section-times {
+	display: inline-block;
+}
+
+.catalog .section-times {
+	float: right;
+	font-size: 80%;
+}
+
+.catalog .section-time {
+	display: inline-block;
+	margin-right: 2px;
+}
+
+.catalog .section-time .dow {
+	display: inline-block;
+	padding: 2px;
+	color: #444;
+	font-weight: bold;
+}
+
+/*** CONFLICT DISPLAY ***/
+.course_conflict {
+	background: white;
+	box-shadow: 0 1px 3px #999;
+	padding: 0.5em;
+	margin: 0.25em;
+}
+
+.catalog .section.conflict,
+.catalog .section.conflict .section-time .dow,
+.catalog .section.conflict .instructors {
+	color: #aaa;
+}
+.catalog .section_conflict {
+	color: #000;
+}
+
+/*** NO SEATS DISPLAY ***/
+.catalog .section.no_seats,
+.catalog .section.no_seats .section-time .dow,
+.catalog .section.no_seats .instructors {
+	color: #aaa;
+}
+.catalog .section.no_seats .seats {
+	color: #333;
+}
+
+/*** COMPACT TIME VIEW - 1 or less hours per day ***/
+.catalog .section-time.has_times {
+	border-top: 1px solid #bbb;
+	width: 9.5em;
+}
+
+.catalog .section-time.has_no_times {
+	border-top: 1px solid #d8d8d8;
+	width: 3em;
+}
+.catalog .section-time.has_no_times .dow {
+	color: #aaa;
+	font-weight: normal;
+}
+
+.catalog .section-time .time {
+	text-align: right;
+}
+
+/*** EXPANDED TIME VIEW - multiple hours per day ***/
+.catalog .section-times.expanded .has_times {
+}
+.catalog .section-times.expanded .time {
+	margin: 2px 6px 0 0;
+	display: block;
+	float: right;
+}
+

@@ -1,5 +1,10 @@
 import os
 import json
+import subprocess
+import shlex
+import time
+import signal
+import urllib2
 
 from fabric.api import run, local, settings, cd, sudo, task, output, puts
 from fabric.contrib.project import upload_project
@@ -156,6 +161,39 @@ def clean():
         local('find . -name "__pycache__" -type directory | xargs rm -r')
         local('rm -r yacs/static/root')
 
+def wait_for_url(url, timeout=30):
+    while timeout > 0:
+        handle = None
+        try:
+            handle = urllib2.urlopen(url, timeout=timeout)
+            handle.getcode()
+            return
+        except urllib2.URLError:
+            time.sleep(1)
+            timeout -= 1
+        finally:
+            if handle:
+                handle.close()
+
+@task
+def jasmine(port=6856):
+    "Runs jasmine tests. Requires phantomjs"
+    context = dict(port=port)
+    python = local('which python', capture=True)
+    args = shlex.split(repr(python) + ' manage.py runserver ' + str(port))
+    cwd = os.path.abspath(os.path.dirname(__file__))
+    print ' '.join(args)
+    print 'Running local server on port', port
+
+    proc = subprocess.Popen(args, cwd=cwd)
+    print 'Waiting for server to start...'
+    wait_for_url('http://localhost:{port}/jasmine/'.format(**context))
+    try:
+        local('phantomjs yacs/static/specs/run-jasmine.js http://localhost:{port}/jasmine/'.format(**context))
+    finally:
+        print 'killing local server...'
+        pids = local("ps | grep '[p]ython.*{port}' | cut -d ' ' -f 1".format(**context), capture=True).splitlines()
+        local('kill ' + ' '.join(pids))
 
 @task
 def test():
