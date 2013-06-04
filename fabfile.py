@@ -195,7 +195,8 @@ def jasmine(port=6856):
     finally:
         print 'killing local server...'
         pids = local("ps | grep '[p]ython.*{port}' | cut -d ' ' -f 1".format(**context), capture=True).splitlines()
-        local('kill ' + ' '.join(pids))
+        for pid in pids:
+            local('kill -9 ' + pid)
 
 
 @task
