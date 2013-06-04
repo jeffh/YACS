@@ -39,7 +39,7 @@ describe("Text", function(){
 
 		describe("with a pass/fail course", function(){
 			beforeEach(inject(function(Course){
-				course = new Course({ grade_type: 'Pass/Fail', sections: course.sections });
+				course = new Course({ grade_type: 'Satisfactory/Unsatisfactory', sections: course.sections });
 			}));
 
 			it("should include the pass/fail tag", function(){

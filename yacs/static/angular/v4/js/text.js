@@ -79,7 +79,7 @@ app.factory('tagger', function(kSectionTimeTags, kCourseTags){
 		if (section.is_comm_intense) {
 			tags.push(kCourseTags.communicationIntensive);
 		}
-		if (section.grade_type !== '') {
+		if (section.grade_type === 'Satisfactory/Unsatisfactory') {
 			tags.push(kCourseTags.passOrFail);
 		}
 
