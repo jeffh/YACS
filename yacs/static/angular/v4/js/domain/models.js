@@ -474,9 +474,7 @@ app.service('scheduleValidator', function($q, Conflict, Semester, Section, Time,
 			var validSchedules = [];
 			_(possibleSchedules).all(function(schedule){
 				if (self._isValidSchedule(schedule)){
-					var result = _.object(courseIds, schedule);
-					console.log(result);
-					validSchedules.push(result);
+					validSchedules.push(_.object(courseIds, schedule));
 				}
 				return !num || validSchedules.length < num;
 			});
