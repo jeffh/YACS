@@ -157,6 +157,22 @@ describe("Computations", function(){
 						expect(grab(validator.computeSchedules({1: [1], 2: [4]}))).toEqual([{1: sections[0], 2: sections[3]}]);
 					});
 
+					it("can compute all schedules", function(){
+						expect(grab(validator.computeSchedules({1: [1, 3, 4]}))).toEqual([
+							{1: sections[0]},
+							{1: sections[2]},
+							{1: sections[3]}
+						]);
+					});
+
+					it("can compute a restricted set of schedules", function(){
+						expect(grab(validator.computeSchedules({1: [1, 3, 4]}, 2))).toEqual([
+							{1: sections[0]},
+							{1: sections[2]}
+						]);
+					});
+
+
 					it("should return true if at least one section is valid for all courses", function(){
 						var schedule = {
 							1: [1, 3],

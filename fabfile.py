@@ -161,6 +161,7 @@ def clean():
         local('find . -name "__pycache__" -type directory | xargs rm -r')
         local('rm -r yacs/static/root')
 
+
 def wait_for_url(url, timeout=30):
     while timeout > 0:
         handle = None
@@ -174,6 +175,7 @@ def wait_for_url(url, timeout=30):
         finally:
             if handle:
                 handle.close()
+
 
 @task
 def jasmine(port=6856):
@@ -195,10 +197,16 @@ def jasmine(port=6856):
         pids = local("ps | grep '[p]ython.*{port}' | cut -d ' ' -f 1".format(**context), capture=True).splitlines()
         local('kill ' + ' '.join(pids))
 
+
+@task
+def pep8():
+    local('pep8 . --exclude=migrations --statistics --count --ignore=E501')
+
+
 @task
 def test():
     "Runs tests."
     clean()
     verbose()
     local('python manage.py test --failfast ' + ' '.join(APPS))
-    local('pep8 . --exclude=migrations --statistics --count --ignore=E501')
+    pep8()
