@@ -84,8 +84,8 @@
 		{% endcomment %}
 		</div>
 	</div>
-	<div id="ft">
-		&copy; 2013 Jeff Hui &amp; Friends. A grass-fed, free-ranged RCOS project.
+	<div id="ft" ng-controller="FooterCtrl">
+		&copy; 2013 Jeff Hui &amp; Friends. {% templatetag openvariable %} flavorText {% templatetag closevariable %} RCOS project.
 	</div>
 </div>
 </body>
