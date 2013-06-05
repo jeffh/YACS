@@ -116,17 +116,7 @@ app.factory('Course', function(ModelFactory, Section, tagger, Utils, conflictor)
 			return this.min_credits + ' - ' + this.max_credits + ' credits';
 		},
 		computeProperties: function(){
-			var self = this;
-			this.conflicts = conflictor.courseConflictsAmongAllSections(this);
-			_(this.sections).each(function(section){
-				section.computeProperties();
-				var sectionNames = _.difference(section.allConflicts, self.conflicts);
-				if (section.is_selected || _.isEqual(sectionNames, [])){
-					section.conflicts = sectionNames;
-				} else {
-					section.conflicts = angular.copy(section.allConflicts);
-				}
-			});
+			conflictor.computeCourseConflicts(this);
 			this.tags = tagger(this);
 			this.notes = _(this.sections).chain().pluck('notes').uniq().value();
 		}
@@ -429,20 +419,25 @@ app.service('scheduleValidator', function($q, Conflict, Semester, Section, Time,
 	// fast to check, but misses cyclic conflicts
 	this.conflictsWith = function(courseIdsToSectionIds, sectionId){
 		return this.promise.then(function(values){
+			sectionId = parseInt(sectionId, 10);
 			var conflictMap = values[0];
 			var idToSection = values[1];
 			var lastConflict = null;
-			_(courseIdsToSectionIds).some(function(selectedSectionIds, courseId){
-				return _(selectedSectionIds).all(function(sid){
-					var conflict = [];
-					if (conflictMap[sid].conflictsWith(sectionId)){
-						conflict = {
+			var conflictsForSectionId = conflictMap[sectionId];
+			if (_.isEmpty(conflictsForSectionId)){
+				console.warn('missing precomputed conflicts for', sectionId);
+				return false;
+			}
+			_(_.keys(courseIdsToSectionIds)).some(function(courseId){
+				var selectedSectionIds = courseIdsToSectionIds[courseId];
+				return _(selectedSectionIds).some(function(sid){
+					if (conflictsForSectionId.conflictsWith(sid)){
+						lastConflict = {
 							selectionSection: idToSection[sid],
 							section: idToSection[sectionId]
 						};
-						lastConflict = conflict;
 					}
-					return conflict;
+					return lastConflict;
 				});
 			});
 			return lastConflict;
@@ -678,7 +673,7 @@ app.factory('Selection', function($q, $cookieStore, Semester, scheduleValidator,
 			if (course.is_selected) {
 				var hasSelectedASection = false;
 				var sectionIds = _(course.sections).chain().filter(function(section){
-					if (!self._isFull(section)){
+					if (!self._isFull(section) && _.isEmpty(section.allConflicts)){
 						section.is_selected = true;
 						hasSelectedASection = true;
 					}

@@ -22,10 +22,17 @@ app.service('conflictor', function(){
 		return [];
 	};
 
-	this.courseConflicts = function(course){
-	};
-
-	this.sectionConflicts = function(course){
+	this.computeCourseConflicts = function(course){
+		course.conflicts = this.courseConflictsAmongAllSections(course);
+		_(course.sections).each(function(section){
+			section.computeProperties();
+			var sectionNames = _.difference(section.allConflicts, course.conflicts);
+			if (section.is_selected || _.isEqual(sectionNames, [])){
+				section.conflicts = [];
+			} else {
+				section.conflicts = angular.copy(section.allConflicts);
+			}
+		});
 	};
 });
 

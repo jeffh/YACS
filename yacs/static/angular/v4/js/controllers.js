@@ -4,7 +4,6 @@
 
 app.controller('RootCtrl', function($scope, Semester, Department, currentSemesterPromise){
 	$scope.semester = currentSemesterPromise;
-	console.log($scope.semester);
 	$scope.selectedCourses = [];
 });
 

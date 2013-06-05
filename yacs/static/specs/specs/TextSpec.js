@@ -47,7 +47,6 @@ describe("Text", function(){
 			});
 		});
 
-
 		describe("with a communication intensive course", function(){
 			beforeEach(inject(function(Course){
 				course = new Course({ is_comm_intense: true });

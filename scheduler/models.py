@@ -94,7 +94,7 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
         #SectionConflict.objects.filter(semester=semester).delete()
         Syncer = Synchronizer(SectionConflict, SectionConflict.objects.values_list('id', flat=True))
 
-        sections = courses.Section.objects .select_related('course', 'semester') \
+        sections = courses.Section.objects.select_related('course', 'semester') \
                 .by_semester(semester).prefetch_periods()
         section_courses = dict_by_attr(sections, 'course')
 
@@ -124,7 +124,8 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
                             perform_insert(conflicts)
                             conflicts = []
                             log('.')
-                        if mapping.get((section1.id, section2.id), None) is None:
+                        if (section1.id, section2.id) not in mapping:
+                            log('C')
                             conflicts.append(
                                 SectionConflict(section1=section1, section2=section2, semester=semester)
                             )
@@ -139,8 +140,8 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
                         )
 
         if sql and conflicts:
+            log('C')
             perform_insert(conflicts)
-            log('.')
 
         log('\n')
         Syncer.trim(semester=semester)

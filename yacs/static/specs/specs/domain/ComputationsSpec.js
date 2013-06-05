@@ -68,6 +68,10 @@ describe("Computations", function(){
 						rootScope.$apply();
 					});
 
+					it("should check multiple courses", function(){
+						expect(grab(validator.conflictsWith({1: [4], 2: [1]}, 2))).toBeTruthy();
+					});
+
 					it("should return true when sectionId conflicts with schedule", function(){
 						expect(grab(validator.conflictsWith({1: [1, 4]}, 2))).toBeTruthy();
 					});

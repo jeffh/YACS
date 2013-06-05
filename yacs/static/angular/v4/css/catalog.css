@@ -107,23 +107,6 @@
 	font-weight: bold;
 }
 
-/*** CONFLICT DISPLAY ***/
-.course_conflict {
-	background: white;
-	box-shadow: 0 1px 3px #999;
-	padding: 0.5em;
-	margin: 0.25em;
-}
-
-.catalog .section.conflict,
-.catalog .section.conflict .section-time .dow,
-.catalog .section.conflict .instructors {
-	color: #aaa;
-}
-.catalog .section_conflict {
-	color: #000;
-}
-
 /*** NO SEATS DISPLAY ***/
 .catalog .section.no_seats,
 .catalog .section.no_seats .section-time .dow,
@@ -134,10 +117,57 @@
 	color: #333;
 }
 
+/*** CONFLICT DISPLAY ***/
+.course_conflict {
+	background: white;
+	box-shadow: 0 1px 3px #999;
+	padding: 0.5em;
+	margin: 0.25em;
+	position: absolute;
+	top: -1em;
+	right: 1em;
+	z-index: 100;
+	opacity: 0.8;
+}
+
+.catalog .course.conflict h2 {
+	color: #777;
+}
+.catalog .course.conflict .details {
+	color: #b99;
+}
+
+.catalog .course.conflict .credits,
+.catalog .course.conflict .num_sections,
+.catalog .course.conflict .num_seats,
+.catalog .course.conflict .description,
+.catalog .course.conflict .note {
+	color: #999;
+}
+
+.catalog .section.conflict.no_seats .seats,
+.catalog .section.conflict,
+.catalog .section.conflict .section-time .dow,
+.catalog .section.conflict .instructors {
+	color: #aaa;
+}
+.catalog .section_conflict {
+	color: #000;
+	background: #fff;
+	box-shadow: 0 1px 3px #999;
+	display: inline-block;
+	padding: 0.25em;
+	position: absolute;
+	left: 2.5em;
+	z-index: 99;
+	opacity: 0.9;
+}
+
 /*** COMPACT TIME VIEW - 1 or less hours per day ***/
 .catalog .section-time.has_times {
 	border-top: 1px solid #bbb;
-	width: 9.5em;
+	width: 9.25em;
+	vertical-align: top;
 }
 
 .catalog .section-time.has_no_times {
@@ -154,11 +184,13 @@
 }
 
 /*** EXPANDED TIME VIEW - multiple hours per day ***/
-.catalog .section-times.expanded .has_times {
+.catalog .section-times.expanded .has_times .dow {
+	float: left
 }
+
 .catalog .section-times.expanded .time {
-	margin: 2px 6px 0 0;
+	margin: 2px 0 0 0.25em;
 	display: block;
-	float: right;
+	float: left;
 }
 
