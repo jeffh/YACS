@@ -7,7 +7,6 @@ app.factory('urlProvider', function(){
         var args = _(arguments).map(function(arg){
             return encodeURIComponent(arg);
         });
-        console.log(args);
         if (args.length) {
             return '/' + args.join('/') + '/';
         }

@@ -45,44 +45,6 @@
 	</div>
 	<div id="bd">
 		<div ng-view></div>
-		{% comment %}
-		<!---------------------------------------------------------------->
-		<div class="selection course-list">
-			<div class="header">
-				<h1>Selected Courses</h1>
-				<a href="#">Schedules &rarr;</a>
-			</div>
-			<div class="course">
-				<input type="checkbox" class="checkbox" id="course_1" name="course_1" />
-				<label class="checkbox_content" for="course_1">
-					<h2>Introduction to Computer Programming</h2>
-					<p class="details">
-						<span class="dept">CSCI</span>
-						<span class="number">1010</span>
-						<span class="credits">4 credits</span>
-						<span class="num_sections">6 sections</span>
-						<span class="num_seats">52 seats</span>
-					</p>
-				</label>
-			</div>
-			<div class="course">
-				<input type="checkbox" class="checkbox" id="course_2" name="course_2" />
-				<label class="checkbox_content" for="course_2">
-					<h2>Computer Science I</h2>
-					<p class="details">
-						<span class="dept">CSCI</span>
-						<span class="number">1100</span>
-						<span class="credits">1-4 credits</span>
-						<span class="num_sections">6 sections</span>
-						<span class="num_seats">52 seats</span>
-					</p>
-					<p class="notes">
-						Requires: CSCI 1010
-					</p>
-				</label>
-			</div>
-		{% endcomment %}
-		</div>
 	</div>
 	<div id="ft" ng-controller="FooterCtrl">
 		&copy; 2013 Jeff Hui &amp; Friends. {% templatetag openvariable %} flavorText {% templatetag closevariable %} RCOS project.

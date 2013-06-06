@@ -124,6 +124,16 @@ app.factory('Course', function(ModelFactory, Section, tagger, Utils, conflictor)
 	return Course;
 });
 
+app.factory('currentCourses', function(currentSemesterPromise, Course, $q){
+	var deferred = $q.defer();
+	currentSemesterPromise.then(function(semester){
+		Course.query({semester_id: semester.id}).then(function(courses){
+			deferred.resolve(courses);
+		});
+	});
+	return deferred.promise;
+});
+
 app.factory('Department', function(ModelFactory, Utils){
 	var url = Utils.URL('/api/4/departments/');
 	/*
@@ -417,15 +427,15 @@ app.service('scheduleValidator', function($q, Conflict, Semester, Section, Time,
 	this.promise = $q.all([conflictsDeferred.promise, sectionsDeferred.promise]);
 
 	// fast to check, but misses cyclic conflicts
-	this.conflictsWith = function(courseIdsToSectionIds, sectionId){
+	this.conflictsWith = function(courseIdsToSectionIds, sectionIdString){
 		return this.promise.then(function(values){
-			sectionId = parseInt(sectionId, 10);
+			var sectionId = parseInt(sectionIdString, 10);
 			var conflictMap = values[0];
 			var idToSection = values[1];
 			var lastConflict = null;
 			var conflictsForSectionId = conflictMap[sectionId];
 			if (_.isEmpty(conflictsForSectionId)){
-				console.warn('missing precomputed conflicts for', sectionId);
+				console.warn('missing precomputed conflicts for', sectionIdString, '->', sectionId);
 				return false;
 			}
 			_(_.keys(courseIdsToSectionIds)).some(function(courseId){
@@ -517,8 +527,8 @@ app.service('scheduleValidator', function($q, Conflict, Semester, Section, Time,
 	};
 });
 
-app.factory('Selection', function($q, $cookieStore, Semester, scheduleValidator, Utils){
-	var storageKeyPromise = Semester.latest().then(function(semester){
+app.factory('Selection', function($q, $cookieStore, currentSemesterPromise, currentCourses, scheduleValidator, Utils, $timeout){
+	var storageKeyPromise = currentSemesterPromise.then(function(semester){
 		return 'selection:' + semester.id;
 	});
 
@@ -556,6 +566,9 @@ app.factory('Selection', function($q, $cookieStore, Semester, scheduleValidator,
 		copy: function(){
 			return new Selection(angular.copy(this.courseIdsToSectionIds));
 		},
+		numberOfCourses: function(){
+			return _.keys(this.courseIdsToSectionIds).length;
+		},
 		_eachSection: function(courses, iterator){
 			var self = this;
 			_(courses).each(function(course){
@@ -578,49 +591,59 @@ app.factory('Selection', function($q, $cookieStore, Semester, scheduleValidator,
 				}
 			});
 		},
-		markAllConflicted: function(courses){
+		markAllConflicted: function(listedCourses){
 			var self = this;
-			var promises = [];
-			var idToCourse = Utils.hashById(courses);
-			var idToSection = Utils.hashById(_.flatten(_.pluck(courses, 'sections')));
-			this._eachSection(courses, function(course, section){
-				section.allConflicts = [];
-				if (section.is_selected) {
-					return;
-				}
-				var deferred = $q.defer();
-				var promise = scheduleValidator.conflictsWith(self.courseIdsToSectionIds, section.id);
-				function error(err){ deferred.reject(err); }
-				promise.then(function(conflict){
-					if (conflict) {
-						var conflictedCourse = idToCourse[conflict.selectionSection.course_id];
-						uniquePush(section.allConflicts, conflictedCourse.name);
-						deferred.resolve();
+			var deferred = $q.defer();
+			currentCourses.then(function(allCourses){
+				var promises = [];
+				var idToCourse = Utils.hashById(allCourses);
+				self._eachSection(listedCourses, function(course, section){
+					section.allConflicts = [];
+					if (section.is_selected) {
 						return;
 					}
-					var clone = self.copy();
-					clone._addSection(course, section);
-					promise = scheduleValidator.isValid(clone.courseIdsToSectionIds);
-					promise.then(function(isValid){
-						if (!isValid){
-							uniquePush(section.allConflicts, 'selected courses');
+					var deferred = $q.defer();
+					var promise = scheduleValidator.conflictsWith(self.courseIdsToSectionIds, section.id);
+					function error(err){ deferred.reject(err); }
+					promise.then(function(conflict){
+						var conflictedCourse = null;
+						if (conflict) {
+							conflictedCourse = idToCourse[conflict.selectionSection.course_id];
 						}
-						deferred.resolve();
+						var clone = self.copy();
+						clone._addSection(course, section);
+						promise = scheduleValidator.isValid(clone.courseIdsToSectionIds);
+						promise.then(function(isValid){
+							if (!isValid){
+								uniquePush(section.allConflicts, conflictedCourse ? conflictedCourse.name : 'selected courses');
+							}
+							deferred.resolve();
+						}, error);
 					}, error);
-				}, error);
 
-				promises.push(deferred.promise);
-			});
-			return $q.all(promises).then(function(values){
-				_(courses).each(function(course){
-					course.computeProperties();
+					promises.push(deferred.promise);
 				});
-				return values;
+				$q.all(promises).then(function(values){
+					_(listedCourses).each(function(course){
+						course.computeProperties();
+					});
+					deferred.resolve(values);
+				});
 			});
+			return deferred.promise;
 		},
 		apply: function(courses){
 			this.selectCoursesAndSections(courses);
-			return this.markAllConflicted(courses);
+			var self = this;
+			var deferred = $q.defer();
+			$timeout(function(){
+				self.markAllConflicted(courses).then(function(values){
+					deferred.resolve(values);
+				}, function(err){
+					deferred.reject(err);
+				});
+			}, 200);
+			return deferred.promise;
 		},
 		containsCourse: function(course){
 			var courseIds = _.keys(this.courseIdsToSectionIds)
@@ -641,30 +664,17 @@ app.factory('Selection', function($q, $cookieStore, Semester, scheduleValidator,
 		},
 		_updateAndValidate: function(fn, addedSectionIds){
 			var deferred = $q.defer();
-			var lastSectionId = null;
 			var self = this;
-			var conflictPromises = _(addedSectionIds).map(function(sectionId){
-				return scheduleValidator.conflictsWith(sectionId);
-			});
-			$q.all(conflictPromises).then(function(values){
-				values = _.compact(values);
-				if (values.length){
-					console.log('invalid', lastSectionId);
-					deferred.reject(lastSectionId);
-					return;
+			self.saveCheckpoint();
+			fn();
+			var promise = scheduleValidator.isValid(self.courseIdsToSectionIds);
+			promise.then(function(isValid){
+				if (isValid){
+					deferred.resolve(null);
+				} else {
+					self.restoreToCheckpoint();
+					deferred.reject(null);
 				}
-				self.saveCheckpoint();
-				fn();
-				var promise = scheduleValidator.isValid(self.courseIdsToSectionIds);
-				promise.then(function(isValid){
-					if (isValid){
-						deferred.resolve(null);
-					} else {
-						self.restoreToCheckpoint();
-						console.log('invalid');
-						deferred.reject(null);
-					}
-				});
 			});
 			return deferred.promise;
 		},

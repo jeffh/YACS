@@ -2,9 +2,11 @@
 
 (function(document, angular, app, undefined){
 
-app.controller('RootCtrl', function($scope, Semester, Department, currentSemesterPromise){
+app.controller('RootCtrl', function($scope, Semester, Department, currentSemesterPromise, Selection){
 	$scope.semester = currentSemesterPromise;
-	$scope.selectedCourses = [];
+	Selection.current.then(function(selection){
+		$scope.selection = selection;
+	});
 });
 
 app.controller('FooterCtrl', function($scope){
@@ -30,27 +32,31 @@ app.controller('FooterCtrl', function($scope){
 app.controller('NavCtrl', function($scope, $location, urlProvider){
 	$scope.semester.then(function(semester){
 		var previousPath = null;
-		$scope.items = [
-			{
-				name: 'Catalog',
-				path: function(){
-					if (previousPath){
-						var oldPath = previousPath;
-						previousPath = null;
-						return oldPath;
-					}
-					return urlProvider(semester.year, semester.month);
+		var catalogItem = {
+			name: 'Catalog',
+			path: function(){
+				if (previousPath){
+					var oldPath = previousPath;
+					previousPath = null;
+					return oldPath;
 				}
-			},
-			{
-				name: 'Selected (0)',
-				path: function(){
-					previousPath = $location.path();
-					return urlProvider(semester.year, semester.month, 'selected');
-				}
+				return urlProvider(semester.year, semester.month);
 			}
-		];
-		$scope.selectedItem = $scope.items[0];
+		};
+		var selectedItem = {
+			name: 'Selected',
+			path: function(){
+				previousPath = $location.path();
+				return urlProvider(semester.year, semester.month, 'selected');
+			}
+		};
+
+		$scope.$watch('selection', function(selection){
+			selectedItem.name = 'Selected (' + selection.numberOfCourses() + ')';
+		}, true);
+
+		$scope.items = [catalogItem, selectedItem];
+		$scope.selectedItem = catalogItem;
 		_($scope.items).each(function(item){
 			if ($location.path() === item.path()){
 				$scope.selectedItem = item;
