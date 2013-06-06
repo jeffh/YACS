@@ -336,7 +336,6 @@ class Course(models.Model):
     def toJSON(self, select_related=()):
         values = {
             'id': self.pk,
-            'semester_ids': self.semesters.values_list('id', flatten=True),
             'name': self.name,
             'number': self.number,
             'min_credits': self.min_credits,
