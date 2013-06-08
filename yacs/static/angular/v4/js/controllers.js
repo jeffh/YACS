@@ -2,7 +2,7 @@
 
 (function(document, angular, app, undefined){
 
-app.controller('RootCtrl', function($scope, Semester, Department, currentSemesterPromise, Selection){
+app.controller('RootCtrl', function($scope, currentSemesterPromise, Selection){
 	$scope.semester = currentSemesterPromise;
 	Selection.current.then(function(selection){
 		$scope.selection = selection;
@@ -52,7 +52,9 @@ app.controller('NavCtrl', function($scope, $location, urlProvider){
 		};
 
 		$scope.$watch('selection', function(selection){
-			selectedItem.name = 'Selected (' + selection.numberOfCourses() + ')';
+			if (selection){
+				selectedItem.name = 'Selected (' + selection.numberOfCourses() + ')';
+			}
 		}, true);
 
 		$scope.items = [catalogItem, selectedItem];
@@ -63,13 +65,6 @@ app.controller('NavCtrl', function($scope, $location, urlProvider){
 			}
 		});
 		previousPath = null;
-
-		$scope.itemClass = function(item){
-			if (item.id == $scope.selectItem.id) {
-				return 'selected';
-			}
-			return '';
-		};
 
 		$scope.click = function(item){
 			$scope.selectedItem = item;
@@ -103,6 +98,8 @@ app.controller('SearchCtrl', function($scope, $location, $timeout, $route, urlPr
 					timeout = null;
 				} else if (previousPath){
 					$location.path(previousPath);
+				} else {
+					$location.path(urlProvider(semester.year, semester.month));
 				}
 			}, 250);
 		});
@@ -114,10 +111,6 @@ app.controller('SearchResultsCtrl', function($scope, $routeParams, $location, Co
 	var query = decodeURIComponent($routeParams.query || '');
 	$scope.semester.then(function(semester){
 		if (query == '') {
-			$location.path(urlProvider(
-				semester.year,
-				semester.month
-			));
 			return;
 		}
 		CourseFetcher({semester_id: semester.id}).then(function(allCourses){
@@ -140,15 +133,6 @@ app.controller('DeptCtrl', function($scope, $location, Semester, Department, url
 		};
 	});
 });
-
-var hashById = function(items, property){
-	var result = {}
-	property = property || 'id';
-	angular.forEach(items, function(item){
-		result[item[property]] = item;
-	});
-	return result;
-};
 
 app.controller('CatalogCtrl', function($q, $scope, $location, $routeParams, $timeout, CourseFetcher, Selection){
 	$scope.courses = [];
