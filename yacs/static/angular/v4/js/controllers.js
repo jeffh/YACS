@@ -134,10 +134,10 @@ app.controller('DeptCtrl', function($scope, $location, Semester, Department, url
 	});
 });
 
-app.controller('CatalogCtrl', function($q, $scope, $location, $routeParams, $timeout, CourseFetcher, Selection){
+app.controller('CatalogCtrl', function($q, $scope, $location, $routeParams, $timeout, CourseFetcher, Selection, currentSemesterPromise){
 	$scope.courses = [];
 	var selectionPromise = Selection.current;
-	$scope.semester.then(function(semester){
+	currentSemesterPromise.then(function(semester){
 		var coursePromise = CourseFetcher({semester_id: semester.id, department_code: $routeParams.dept.toUpperCase()});
 		$q.all([selectionPromise, coursePromise]).then(function(values){
 			var selection = values[0];
@@ -171,8 +171,8 @@ app.controller('CatalogCtrl', function($q, $scope, $location, $routeParams, $tim
 	};
 });
 
-app.controller('IndexCtrl', function($scope, $location, $route, Semester, urlProvider) {
-	Semester.latest().then(function(semester){
+app.controller('IndexCtrl', function($scope, $location, currentSemesterPromise, urlProvider) {
+	currentSemesterPromise.then(function(semester){
 		$location.path(urlProvider(semester.year, semester.month));
 	});
 });

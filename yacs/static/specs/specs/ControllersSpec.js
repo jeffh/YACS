@@ -295,6 +295,57 @@ describe("Controllers", function(){
 			});
 		});
 	});
+
+	describe("CatalogCtrl", function(){
+		var controller, $location, $routeParams, CourseFetcher, coursesDeferred, semesterDeferred;
+		beforeEach(inject(function($injector, $q, $controller){
+			semesterDeferred = $q.defer();
+			coursesDeferred = $q.defer();
+			CourseFetcher = jasmine.createSpy('CourseFetcher').andReturn(coursesDeferred.promise);
+			$location = $injector.get('$location');
+			$routeParams = {};
+			controller = $controller('CatalogCtrl', {
+				$scope: scope,
+				$routeParams: $routeParams,
+				CourseFetcher: CourseFetcher,
+				currentSemesterPromise: semesterDeferred.promise
+			});
+		}));
+
+		it("should set the courses on the scope", function(){
+			expect(scope.courses).toEqual([]);
+		});
+
+		describe("when the current semester is resolved", function(){
+			beforeEach(inject(function($rootScope, Semester){
+				semesterDeferred.resolve(new Semester({year: 2013, month: 1}));
+				$rootScope.$apply();
+			}));
+		});
+	});
+
+	describe("IndexCtrl", function(){
+		var controller, semesterDeferred, $location;
+		beforeEach(inject(function($injector, $controller, $q, $rootScope, Semester){
+			$location = $injector.get('$location');
+			semesterDeferred = $q.defer();
+			controller = $controller('IndexCtrl', {
+				$scope: scope,
+				currentSemesterPromise: semesterDeferred.promise
+			});
+		}));
+
+		describe("when the current semester is resolved", function(){
+			beforeEach(inject(function(Semester, $rootScope){
+				semesterDeferred.resolve(new Semester({id: 1, year: 2013, month: 1}));
+				$rootScope.$apply();
+			}));
+
+			it("should change the location to the department list", function(){
+				expect($location.path()).toEqual('/2013/1/');
+			});
+		});
+	});
 });
 
 })(document, angular, app);
