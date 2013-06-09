@@ -89,6 +89,7 @@ app.controller('SearchCtrl', function($scope, $location, $timeout, $route, urlPr
 					if (!$route.current.params.query){
 						previousPath = $location.path();
 					}
+					console.log('prevpath1', previousPath);
 					$location.path(urlProvider(
 						semester.year,
 						semester.month,
@@ -97,9 +98,8 @@ app.controller('SearchCtrl', function($scope, $location, $timeout, $route, urlPr
 					));
 					timeout = null;
 				} else if (previousPath){
+					console.log('prevpath2', previousPath);
 					$location.path(previousPath);
-				} else {
-					$location.path(urlProvider(semester.year, semester.month));
 				}
 			}, 250);
 		});
@@ -138,35 +138,40 @@ app.controller('CatalogCtrl', function($q, $scope, $location, $routeParams, $tim
 	$scope.courses = [];
 	var selectionPromise = Selection.current;
 	currentSemesterPromise.then(function(semester){
-		var coursePromise = CourseFetcher({semester_id: semester.id, department_code: $routeParams.dept.toUpperCase()});
+		var coursePromise = CourseFetcher({semester_id: semester.id, department_code: $routeParams.dept});
 		$q.all([selectionPromise, coursePromise]).then(function(values){
 			var selection = values[0];
 			var courses = values[1];
-			window.selection = selection;
 			$scope.courses = courses;
 			selection.apply(courses);
 		});
 	});
 
+	function apply(selection){
+		return function(){
+			selection.apply($scope.courses);
+		};
+	}
+	function saveAndApply(selection){
+		return function(){
+			selection.save();
+			apply(selection)();
+		};
+	}
+
 	$scope.click_course = function(course){
 		selectionPromise.then(function(selection){
-			selection.updateCourse(course).then(function(){
-				selection.save();
-				selection.apply($scope.courses);
-			}, function(err){
-				selection.apply($scope.courses);
-			});
+			selection.updateCourse(course).then(
+				saveAndApply(selection),
+				apply(selection));
 		});
 	};
 
 	$scope.click_section = function(course, section){
 		selectionPromise.then(function(selection){
-			selection.updateSection(course, section).then(function(){
-				selection.save();
-				selection.apply($scope.courses);
-			}, function(err){
-				selection.apply($scope.courses);
-			});
+			selection.updateSection(course, section).then(
+				saveAndApply(selection),
+				apply(selection));
 		});
 	};
 });
@@ -177,7 +182,19 @@ app.controller('IndexCtrl', function($scope, $location, currentSemesterPromise, 
 	});
 });
 
-app.controller('SelectionCtrl', function($scope){
+app.controller('SelectionCtrl', function($scope, $q, Selection, currentSemesterPromise, CourseFetcher){
+	$scope.courses = [];
+	$q.all([currentSemesterPromise, Selection.current]).then(function(values){
+		var semester = values[0];
+		var selection = values[1];
+		var filters = {
+			semester_id: semester.id,
+			id: selection.courseIds()
+		};
+		CourseFetcher(filters).then(function(courses){
+			$scope.courses = courses;
+		});
+	});
 });
 
 })(document, angular, app);

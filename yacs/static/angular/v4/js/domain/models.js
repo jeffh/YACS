@@ -566,8 +566,11 @@ app.factory('Selection', function($q, $cookieStore, currentSemesterPromise, curr
 		copy: function(){
 			return new Selection(angular.copy(this.courseIdsToSectionIds));
 		},
+		courseIds: function(){
+			return _.keys(this.courseIdsToSectionIds);
+		},
 		numberOfCourses: function(){
-			return _.keys(this.courseIdsToSectionIds).length;
+			return this.courseIds().length;
 		},
 		_eachSection: function(courses, iterator){
 			var self = this;
