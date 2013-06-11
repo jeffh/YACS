@@ -21,10 +21,7 @@ describe("Domain", function(){
 			$rootScope = $injector.get('$rootScope');
 		}));
 
-		describe("Course", function(){
-			describe("latest", function(){
-				
-			});
+		describe("Department", function(){
 		});
 	});
 });
