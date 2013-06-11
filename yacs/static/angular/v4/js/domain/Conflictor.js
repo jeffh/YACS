@@ -1,6 +1,6 @@
 'use strict';
 
-(function(document, angular, app, undefined){
+(function(angular, app, undefined){
 
 app.service('conflictor', function(){
 	this.courseConflictNames = function(course){
@@ -36,5 +36,5 @@ app.service('conflictor', function(){
 	};
 });
 
-})(document, angular, app);
+})(angular, app);
 

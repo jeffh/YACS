@@ -1,6 +1,6 @@
 'use strict';
 
-(function(document, angular, app, undefined){
+(function(angular, app, undefined){
 
 app.service('Utils', function(){
 	this.pluralize = function(word, num){
@@ -52,5 +52,5 @@ app.service('Utils', function(){
     };
 });
 
-})(document, angular, app);
+})(angular, app);
 

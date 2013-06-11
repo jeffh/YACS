@@ -1,6 +1,6 @@
 'use strict';
 
-(function(document, angular, app, undefined){
+(function(angular, app, undefined){
 
 app.value('apiClientCacheSize', 20);
 
@@ -35,5 +35,5 @@ app.service('apiClient', function($http, $q, $cacheFactory, Utils, apiClientCach
 	};
 });
 
-})(window, angular, app);
+})(angular, app);
 

@@ -68,6 +68,8 @@ a:hover {
 /** Search **/
 #search {
 	clear: both;
+    text-align: center;
+    margin: auto;
 }
 #q {
 	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;

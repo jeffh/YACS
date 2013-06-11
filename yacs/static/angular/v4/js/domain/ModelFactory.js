@@ -1,6 +1,6 @@
 'use strict';
 
-(function(document, angular, app, undefined){
+(function(angular, app, undefined){
 
 app.factory('ModelFactory', function(apiClient){
 	var callOrReturn = function(fn, args){
@@ -56,5 +56,5 @@ app.factory('ModelFactory', function(apiClient){
 	};
 });
 
-})(document, angular, app);
+})(angular, app);
 

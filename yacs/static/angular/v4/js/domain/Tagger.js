@@ -1,6 +1,6 @@
 'use strict';
 
-(function(window, angular, app, undefined){
+(function(angular, app, undefined){
 
 app.factory('tagger', function(kSectionTimeTags, kCourseTags){
 	return function (section){
@@ -25,5 +25,5 @@ app.factory('tagger', function(kSectionTimeTags, kCourseTags){
 	};
 });
 
-})(window, angular, app);
+})(angular, app);
 

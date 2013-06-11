@@ -17,7 +17,7 @@ app.factory('urlProvider', function(){
 app.config(['$routeProvider', function($routeProvider){
     $routeProvider.when('/:year/:month/', {
         templateUrl: '/static/v4/partials/departments.html',
-        controller: 'DeptCtrl'
+        controller: 'DepartmentCtrl'
     });
     $routeProvider.when('/:year/:month/selected/', {
         templateUrl: '/static/v4/partials/courses.html',
