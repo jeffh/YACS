@@ -182,7 +182,7 @@ def jasmine(port=6856):
     "Runs jasmine tests. Requires phantomjs"
     context = dict(port=port)
     python = local('which python', capture=True)
-    args = shlex.split(repr(python) + ' manage.py runserver ' + str(port))
+    args = shlex.split(repr(python) + ' manage.py run_gunicorn -b "127.0.0.1:' + str(port) + '" -w 4')
     cwd = os.path.abspath(os.path.dirname(__file__))
     print ' '.join(args)
     print 'Running local server on port', port

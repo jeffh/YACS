@@ -8,6 +8,7 @@ django-extensions==0.8
 django-debug-toolbar==0.9.4
 django-pipeline==1.2.6
 docutils==0.9.1
+gunicorn==0.17.2
 icalendar==3.0.1b2
 pyPdf==1.12
 python-memcached==1.48

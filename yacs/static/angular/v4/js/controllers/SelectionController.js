@@ -43,7 +43,6 @@ app.controller('SelectionCtrl', function($scope, $q, Selection, currentSemesterP
 		};
 
 		$scope.clickClearSelection = function(){
-			console.log('hi');
 			selection.clear();
 			selection.save();
 			selection.apply($scope.courses);

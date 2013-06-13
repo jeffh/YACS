@@ -159,6 +159,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'debug_toolbar',
     'pipeline',
+    'gunicorn',
     # local apps
     'courses',
     'scheduler',
