@@ -31,6 +31,10 @@ describe("Controllers", function(){
 			expect(scope.courses).toEqual([]);
 		});
 
+		it("should sets the empty text on the scope", function(){
+			expect(scope.emptyText).toBeTruthy();
+		});
+
 		describe("when the current semester is resolved", function(){
 			beforeEach(inject(function($rootScope, Semester){
 				semesterDeferred.resolve(new Semester({id: 4, year: 2013, month: 1}));
@@ -74,7 +78,7 @@ describe("Controllers", function(){
 					spyOn(selection, 'updateCourse').andReturn(courseUpdatedDeferred.promise);
 					selectionDeferred.resolve(selection);
 					$rootScope.$apply();
-					scope.click_course(clickedCourse);
+					scope.clickCourse(clickedCourse);
 					$rootScope.$apply();
 				}));
 
@@ -123,7 +127,7 @@ describe("Controllers", function(){
 					spyOn(selection, 'updateSection').andReturn(sectionUpdatedDeferred.promise);
 					selectionDeferred.resolve(selection);
 					$rootScope.$apply();
-					scope.click_section(clickedCourse, clickedSection);
+					scope.clickSection(clickedCourse, clickedSection);
 					$rootScope.$apply();
 				}));
 

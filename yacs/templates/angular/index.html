@@ -22,6 +22,7 @@
 <script src="{{ STATIC_URL }}v4/js/Utils.js"></script>
 <script src="{{ STATIC_URL }}v4/js/DelayTrigger.js"></script>
 <script src="{{ STATIC_URL }}v4/js/Constants.js"></script>
+<script src="{{ STATIC_URL }}v4/js/worker/Namespace.js"></script>
 <script src="{{ STATIC_URL }}v4/js/domain/ModelFactory.js"></script>
 <script src="{{ STATIC_URL }}v4/js/domain/Tagger.js"></script>
 <script src="{{ STATIC_URL }}v4/js/domain/CourseFetcher.js"></script>
@@ -46,6 +47,9 @@
 <script src="{{ STATIC_URL }}v4/js/controllers/CatalogController.js"></script>
 <script src="{{ STATIC_URL }}v4/js/controllers/IndexController.js"></script>
 <script src="{{ STATIC_URL }}v4/js/controllers/SelectionController.js"></script>
+<script>
+app.constant('STATIC_URL', "{{ STATIC_URL }}");
+</script>
 {% block js %}{% endblock %}
 </head>
 {% block body %}

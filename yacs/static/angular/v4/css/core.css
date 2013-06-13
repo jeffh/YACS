@@ -65,11 +65,40 @@ a:hover {
 	color: #000;
 }
 
+/** Submenu **/
+.submenu {
+	display: inline-block;
+	margin: auto;
+	float: right;
+	margin-top: -2em;
+	margin-bottom: 1em;
+}
+.submenu li {
+	display: block;
+	float: left;
+	margin: 0.25em 0 0.25em 0.25em;
+	width: 6em;
+}
+.submenu a:link, .submenu a:visited {
+	text-align: center;
+	display: block;
+	border-top: 1px solid #933;
+	padding: 0.25em 0;
+	width: 100%;
+	font-weight: 200;
+	letter-spacing: 1px;
+}
+.submenu a:hover {
+	border-top: 1px solid #c33;
+	color: #c33;
+	text-decoration: none;
+}
+
 /** Search **/
 #search {
 	clear: both;
-    text-align: center;
-    margin: auto;
+	text-align: center;
+	margin: auto;
 }
 #q {
 	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -92,9 +121,9 @@ a:hover {
 
 /** Footer **/
 #ft {
-    font-size: 90%;
-    color: #999;
-    text-align: center;
-    clear: both;
-    padding: 1em;
+	font-size: 90%;
+	color: #999;
+	text-align: center;
+	clear: both;
+	padding: 1em;
 }

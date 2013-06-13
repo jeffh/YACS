@@ -28,7 +28,7 @@ app.controller('SearchCtrl', function($scope, $location, $timeout, $route, urlPr
 				} else if (previousPath){
 					$location.path(previousPath);
 				}
-			}, 250);
+			}, 1000);
 		});
 	});
 });

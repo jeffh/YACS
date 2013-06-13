@@ -6,6 +6,19 @@ describe("Application", function(){
 			expect(angular.module('yacs')).not.toBe(null);
 		});
 	});
+
+	describe("STATIC_URL", function(){
+		var staticURL;
+		beforeEach(function(){
+			inject(function($injector){
+				staticURL = $injector.get('STATIC_URL');
+			})
+		});
+
+		it("should not be null", function(){
+			expect(staticURL).toBeTruthy();
+		});
+	});
 	
 	describe("urlProvider", function(){
 		var getUrl;

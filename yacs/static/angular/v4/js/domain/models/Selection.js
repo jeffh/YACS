@@ -230,6 +230,9 @@ app.factory('Selection', function($q, $cookieStore, currentSemesterPromise, curr
 			return _(course.sections).some(function(section){
 				return section.is_selected;
 			});
+		},
+		clear: function(){
+			this.courseIdsToSectionIds = {};
 		}
 	});
 	Selection.current = Selection.load();

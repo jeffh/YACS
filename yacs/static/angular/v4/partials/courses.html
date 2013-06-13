@@ -1,6 +1,6 @@
-<form id="search" ng-controller="SearchCtrl" ng-hide="hideSearchBar">
-	<input type="text" placeholder="Search {{ semester.name }} Courses" id="q" name="q" ng-model="query" />
-</form>
+<div class="catalog course-list empty" ng-hide="courses.length > 0">
+	{{ emptyText }}
+</div>
 
 <div class="catalog course-list">
 	<div class="course"
@@ -8,7 +8,7 @@
 		ng-repeat="course in courses">
 		<input type="checkbox" class="checkbox" id="course_{{course.id}}" name="course_{{course.id}}"
 			ng-model="course.is_selected"
-			ng-click="click_course(course)"
+			ng-click="clickCourse(course)"
 			ng-disabled="course.conflicts.length > 0"
 			/>
 		<label class="checkbox_content" for="course_{{course.id}}">
@@ -34,7 +34,7 @@
 					<input type="checkbox" class="checkbox" id="section_{{section.id}}" name="section_{{section.id}}"
 						ng-model="section.is_selected"
 						ng-disabled="section.allConflicts.length > 0"
-						ng-click="click_section(course, section)" />
+						ng-click="clickSection(course, section)" />
 					<label class="checkbox_content" for="section_{{section.id}}">
 						<p class="section-details">
 							<span class="number">Section {{section.numberText()}}</span>

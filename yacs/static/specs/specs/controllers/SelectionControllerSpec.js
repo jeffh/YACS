@@ -1,7 +1,5 @@
 'use strict';
 
-(function(document, angular, app, undefined){
-
 describe("Controllers", function(){
 	var scope;
 	beforeEach(inject(function($rootScope){
@@ -28,6 +26,29 @@ describe("Controllers", function(){
 			expect(scope.courses).toEqual([]);
 		});
 
+		it("should sets the empty text on the scope", function(){
+			expect(scope.emptyText).toBeTruthy();
+		});
+
+		describe("when the current semester and selection are resolved with an empty selection", function(){
+			var selection;
+			beforeEach(inject(function($rootScope, Semester, Selection){
+				selection = new Selection({});
+				spyOn(selection, 'apply');
+				semesterDeferred.resolve(new Semester({id: 12}));
+				selectionDeferred.resolve(selection);
+				$rootScope.$apply();
+			}));
+
+			it("should query for its courses in its selection", function(){
+				expect(CourseFetcher).not.toHaveBeenCalled();
+			});
+
+			it("should hide the show clear button", function(){
+				expect(scope.showClearButton()).toBeFalsy();
+			});
+		});
+
 		describe("when the current semester and selection are resolved", function(){
 			var selection;
 			beforeEach(inject(function($rootScope, Semester, Selection){
@@ -43,6 +64,10 @@ describe("Controllers", function(){
 					semester_id: 12,
 					id: ['2', '4']
 				});
+			});
+
+			it("should show the show clear button", function(){
+				expect(scope.showClearButton()).toBeTruthy();
 			});
 
 			describe("when the courses query is resolved", function(){
@@ -65,6 +90,27 @@ describe("Controllers", function(){
 					expect(scope.hideSearchBar).toBeTruthy();
 				});
 
+				describe("when clicking clear selection button", function(){
+					beforeEach(inject(function($rootScope){
+						spyOn(selection, 'clear');
+						spyOn(selection, 'save');
+						scope.clickClearSelection();
+						$rootScope.$apply();
+					}));
+
+					it("should clear the selection", function(){
+						expect(selection.clear).toHaveBeenCalled();
+					});
+
+					it("should apply the selection to the courses on the scope", function(){
+						expect(selection.apply).toHaveBeenCalledWith(scope.courses);
+					});
+
+					it("should save the selection", function(){
+						expect(selection.save).toHaveBeenCalled();
+					});
+				});
+
 				describe("when clicking a course", function(){
 					var clickedCourse, updateCourseDeferred;
 					beforeEach(inject(function($rootScope, $q, Course){
@@ -72,7 +118,7 @@ describe("Controllers", function(){
 						spyOn(selection, 'updateCourse').andReturn(updateCourseDeferred.promise);
 						spyOn(selection, 'save');
 						clickedCourse = new Course();
-						scope.click_course(clickedCourse);
+						scope.clickCourse(clickedCourse);
 					}));
 
 					it("should call updateCourse for the selection", function(){
@@ -114,7 +160,7 @@ describe("Controllers", function(){
 						spyOn(selection, 'save');
 						clickedCourse = new Course();
 						clickedSection = new Section();
-						scope.click_section(clickedCourse, clickedSection);
+						scope.clickSection(clickedCourse, clickedSection);
 					}));
 
 					it("should call updateSection", function(){
@@ -151,5 +197,3 @@ describe("Controllers", function(){
 		});
 	});
 });
-
-})(document, angular, app);

@@ -4,6 +4,9 @@
 
 describe("Controllers", function(){
 	var scope;
+	beforeEach(module(function($provide){
+		$provide.constant('STATIC_URL', 'cakes/');
+	}));
 	beforeEach(inject(function($rootScope){
 		scope = $rootScope.$new();
 	}));
@@ -22,6 +25,10 @@ describe("Controllers", function(){
 				Selection: Selection
 			});
 		}));
+
+		it("should sets the STATIC_URL to the scope", function(){
+			expect(scope.STATIC_URL).toEqual('cakes/');
+		});
 
 		it("should set the current semester promise to the scope", function(){
 			expect(scope.semester).toEqual(currentSemesterPromise);

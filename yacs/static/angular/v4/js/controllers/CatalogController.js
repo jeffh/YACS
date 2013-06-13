@@ -4,6 +4,7 @@
 
 app.controller('CatalogCtrl', function($q, $scope, $location, $routeParams, $timeout, CourseFetcher, Selection, currentSemesterPromise){
 	$scope.courses = [];
+	$scope.emptyText = "Loading courses...";
 	var selectionPromise = Selection.current;
 	currentSemesterPromise.then(function(semester){
 		var coursePromise = CourseFetcher({semester_id: semester.id, department_code: $routeParams.dept});
@@ -27,7 +28,7 @@ app.controller('CatalogCtrl', function($q, $scope, $location, $routeParams, $tim
 		};
 	}
 
-	$scope.click_course = function(course){
+	$scope.clickCourse = function(course){
 		selectionPromise.then(function(selection){
 			selection.updateCourse(course).then(
 				saveAndApply(selection),
@@ -35,7 +36,7 @@ app.controller('CatalogCtrl', function($q, $scope, $location, $routeParams, $tim
 		});
 	};
 
-	$scope.click_section = function(course, section){
+	$scope.clickSection = function(course, section){
 		selectionPromise.then(function(selection){
 			selection.updateSection(course, section).then(
 				saveAndApply(selection),
