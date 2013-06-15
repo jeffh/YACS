@@ -42,7 +42,7 @@ describe("Domain", function(){
 					return function(attrs){ return new klass(attrs); };
 				}
 				function grab(promise){
-					var result;
+					var result = 'PROMISE_NOT_SUCCESSFUL';
 					promise.then(function(v){ result = v; });
 					rootScope.$apply();
 					return result;

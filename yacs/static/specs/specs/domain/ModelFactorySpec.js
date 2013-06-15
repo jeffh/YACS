@@ -36,6 +36,10 @@ describe("Domain", function(){
 					expect(instance.rofl).toEqual('coptor');
 					expect(instance.roller).toEqual('coaster');
 				});
+
+				it("can be converted to a normal object", function(){
+					expect(instance.toObject()).toEqual({rofl: 'coptor', roller: 'coaster'});
+				});
 			});
 
 			describe("with an object argument", function(){
@@ -50,6 +54,10 @@ describe("Domain", function(){
 
 				it("should overwrite default attributes with custom ones", function(){
 					expect(instance.roller).toEqual('blade');
+				});
+
+				it("can be converted to a normal object", function(){
+					expect(instance.toObject()).toEqual({rofl: 'coptor', roller: 'blade', foo: 'bar', id: 1});
 				});
 			});
 		});

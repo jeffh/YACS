@@ -37,7 +37,9 @@ app.factory('ModelFactory', function(apiClient){
 
 		angular.extend(Model.prototype, {
 			initialize: function(attributes){
-				angular.extend(this, angular.copy(options.defaults || {}), attributes);
+				var defaults = options.defaults || {};
+				this.__attributes__ = _.union(_.keys(defaults), _.keys(attributes || {}));
+				angular.extend(this, angular.copy(defaults), attributes);
 			},
 			refresh: function(){
 				var self = this;
@@ -49,6 +51,13 @@ app.factory('ModelFactory', function(apiClient){
 			},
 			equals: function(model){
 				return this.id === model.id;
+			},
+			toObject: function(){
+				var obj = {}, self = this;
+				_.each(this.__attributes__, function(attr){
+					obj[attr] = self[attr];
+				});
+				return obj;
 			}
 		});
 
