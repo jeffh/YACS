@@ -211,3 +211,8 @@ def test():
     verbose()
     local('python manage.py test --failfast ' + ' '.join(APPS))
     pep8()
+
+
+@task
+def server(port=8000):
+    local('python manage.py run_gunicorn -b "127.0.0.1:' + str(port) + '" -w 2')
