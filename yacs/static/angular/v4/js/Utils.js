@@ -3,7 +3,7 @@
 (function(angular, app, undefined){
 
 app.service('Utils', function(){
-	_.extend(this, Worker.Utils);
+	_.extend(this, AppWorker.Utils);
 
 	this.pluralize = function(word, num){
 		return (num === 1) ? word : word + 's';

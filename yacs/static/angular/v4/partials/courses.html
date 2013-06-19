@@ -42,7 +42,7 @@
 							<span class="seats">{{section.seatsLeftText()}}</span>
 						</p>
 						<ul class="section-times" ng-class="{expanded: section.hasMultipleTimesPerDay()}">
-							<li class="section-time" ng-class="{has_times: time.count, has_no_times: !time.count}" ng-repeat="time in section.times">
+							<li class="section-time" ng-class="time.classes" ng-repeat="time in section.times">
 							<span class="dow">{{time.day_of_the_week}}</span>
 							<span class="time" ng-repeat="section_time in time.section_times">
 								{{section_time.text()}}

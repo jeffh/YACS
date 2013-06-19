@@ -120,7 +120,7 @@ app.factory('Selection', function($q, $cookieStore, currentSemesterPromise, curr
 				}, function(err){
 					deferred.reject(err);
 				});
-			}, 200);
+			}, 200, false);
 			return deferred.promise;
 		},
 		containsCourse: function(course){

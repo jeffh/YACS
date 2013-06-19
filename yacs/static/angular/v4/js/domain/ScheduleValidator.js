@@ -2,7 +2,7 @@
 
 (function(angular, app, undefined){
 
-app.service('scheduleValidator', function($q, Conflict, Semester, Section, Time, Utils, currentSemesterPromise){
+app.service('scheduleValidator', function($q, Conflict, Semester, Section, Time, Utils, currentSemesterPromise, BackgroundWorker){
 	var conflictsDeferred = $q.defer();
 	var sectionsDeferred = $q.defer();
 	var idToSection = {};
@@ -21,7 +21,8 @@ app.service('scheduleValidator', function($q, Conflict, Semester, Section, Time,
 
 		function rawObject(obj){ return obj.toObject(); }
 
-		return new Worker.ScheduleValidator(
+		return new AppWorker.ScheduleValidator(
+		//return new BackgroundWorker(
 			_.map(conflicts, rawObject),
 			_.map(sections, rawObject)
 		);

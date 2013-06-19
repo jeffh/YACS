@@ -8,20 +8,20 @@ app.factory('SectionTime', function(Time){
 	}
 	SectionTime.prototype = {};
 	angular.extend(SectionTime.prototype, {
-		text: function(){
+		text: _.memoize(function(){
 			var start = new Time(this.start);
 			var end = new Time(this.end);
 			return [
 				start.text({showAPM: false}),
 				end.text()
 			].join('-');
-		},
-		startTimeInSeconds: function(){
+		}),
+		startTimeInSeconds: _.memoize(function(){
 			return new Time(this.start).totalSeconds;
-		},
-		endTimeInSeconds: function(){
+		}),
+		endTimeInSeconds: _.memoize(function(){
 			return new TIme(this.end).totalSeconds;
-		}
+		})
 	});
 	return SectionTime;
 });

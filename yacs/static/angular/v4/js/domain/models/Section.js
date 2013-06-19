@@ -58,14 +58,14 @@ app.factory('Section', function(ModelFactory, SectionTime, Utils){
 			var n = Math.max(this.seatsLeft(), 0);
 			return n + Utils.pluralize(' seat', n);
 		},
-		instructorsText: function(){
+		instructorsText: _.memoize(function(){
 			var instructors = _(this.section_times).chain().pluck('instructor').uniq().value();
 			return instructors.join(', ');
-		},
-		numberText: function(){
+		}),
+		numberText: _.memoize(function(){
 			var str = parseInt(this.number, 10);
 			return (isNaN(str) ? this.number : str);
-		},
+		}),
 		hasMultipleTimesPerDay: function(){
 			return _.some(this.times, function(time){
 				return time.count > 1;
@@ -87,9 +87,11 @@ app.factory('Section', function(ModelFactory, SectionTime, Utils){
 				});
 			});
 			_(days_of_the_week).each(function(dow){
+				var numberOfTimes = dowToSectionTime[dow].length;
 				times.push({
 					day_of_the_week: dow.substr(0, 3),
-					count: dowToSectionTime[dow].length,
+					count: numberOfTimes,
+					classes: numberOfTimes ? 'has_times' : 'has_no_times',
 					section_times: _.sortBy(dowToSectionTime[dow], function(section_time){
 						return section_time.startTimeInSeconds();
 					})
