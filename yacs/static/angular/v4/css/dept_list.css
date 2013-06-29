@@ -32,3 +32,10 @@
 	font-weight: 200;
 	overflow: hidden;
 }
+
+/*** Responsiveness ***/
+@media screen and (max-width: 1100px) {
+    .dept-list .dept {
+        width: 95%;
+    }
+}

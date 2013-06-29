@@ -12,37 +12,27 @@ app.controller('CatalogCtrl', function($q, $scope, $location, $routeParams, $tim
 			var selection = values[0];
 			var courses = values[1];
 			$scope.courses = courses;
-			selection.apply(courses);
+			selection.apply($scope.courses);
+
+			$scope.clickCourse = function(course){
+				selection.updateCourse(course).then(function(){
+					selection.save();
+					selection.apply($scope.courses);
+				}, function(){
+					selection.apply($scope.courses);
+				});
+			};
+
+			$scope.clickSection = function(course, section){
+				selection.updateSection(course, section).then(function(){
+					selection.save();
+					selection.apply($scope.courses);
+				}, function(){
+					selection.apply($scope.courses);
+				});
+			};
 		});
 	});
-
-	function apply(selection){
-		return function(){
-			selection.apply($scope.courses);
-		};
-	}
-	function saveAndApply(selection){
-		return function(){
-			selection.save();
-			apply(selection)();
-		};
-	}
-
-	$scope.clickCourse = function(course){
-		selectionPromise.then(function(selection){
-			selection.updateCourse(course).then(
-				saveAndApply(selection),
-				apply(selection));
-		});
-	};
-
-	$scope.clickSection = function(course, section){
-		selectionPromise.then(function(selection){
-			selection.updateSection(course, section).then(
-				saveAndApply(selection),
-				apply(selection));
-		});
-	};
 });
 
 })(angular, app);

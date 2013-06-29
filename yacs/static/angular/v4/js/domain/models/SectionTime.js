@@ -5,23 +5,27 @@
 app.factory('SectionTime', function(Time){
 	function SectionTime(attributes){
 		angular.extend(this, attributes);
+		this.start_time = Time.parse(this.start);
+		this.end_time = Time.parse(this.end);
+		this.__text = null;
 	}
 	SectionTime.prototype = {};
 	angular.extend(SectionTime.prototype, {
-		text: _.memoize(function(){
-			var start = new Time(this.start);
-			var end = new Time(this.end);
-			return [
-				start.text({showAPM: false}),
-				end.text()
-			].join('-');
-		}),
-		startTimeInSeconds: _.memoize(function(){
-			return new Time(this.start).totalSeconds;
-		}),
-		endTimeInSeconds: _.memoize(function(){
-			return new TIme(this.end).totalSeconds;
-		})
+		text: function(){
+			if (!this.__text){
+				this.__text = [
+					this.start_time.text({showAPM: false}),
+					this.end_time.text()
+				].join('-');
+			}
+			return this.__text;
+		},
+		startTimeInSeconds: function(){
+			return this.start_time.totalSeconds;
+		},
+		endTimeInSeconds: function(){
+			return this.end_time.totalSeconds;
+		}
 	});
 	return SectionTime;
 });

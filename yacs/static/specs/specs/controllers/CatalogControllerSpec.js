@@ -68,10 +68,10 @@ describe("Controllers", function(){
 				});
 			});
 
-			describe("when clicking on a course and selection is resolved", function(){
+			describe("when clicking on a course and all promises are resolved", function(){
 				var selection, clickedCourse, courseUpdatedDeferred;
 				beforeEach(inject(function($rootScope, $q, Selection, Course){
-					scope.courses = [new Course(), new Course()];
+					coursesDeferred.resolve([new Course(), new Course()]);
 					clickedCourse = new Course();
 					courseUpdatedDeferred = $q.defer();
 					selection = new Selection();
@@ -119,7 +119,7 @@ describe("Controllers", function(){
 			describe("when clicking on a section and selection is resolved", function(){
 				var selection, clickedCourse, clickedSection, sectionUpdatedDeferred;
 				beforeEach(inject(function($rootScope, $q, Selection, Course, Section){
-					scope.courses = [new Course(), new Course()];
+					coursesDeferred.resolve([new Course(), new Course()]);
 					clickedCourse = new Course();
 					clickedSection = new Section();
 					sectionUpdatedDeferred = $q.defer();

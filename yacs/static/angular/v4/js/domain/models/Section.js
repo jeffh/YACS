@@ -38,7 +38,7 @@ app.factory('Section', function(ModelFactory, SectionTime, Utils){
 		defaults: {
 			is_selected: false,
 			allConflicts: [],
-			conflicts: []
+			conflicts: [],
 		},
 		query: url,
 		get: url
@@ -50,26 +50,36 @@ app.factory('Section', function(ModelFactory, SectionTime, Utils){
 			this.section_times = _(this.section_times).map(function(time){
 				return new SectionTime(time);
 			});
+			this.__cache__ = {};
 		},
 		seatsLeft: function(){
 			return this.seats_total - this.seats_taken;
 		},
 		seatsLeftText: function(){
-			var n = Math.max(this.seatsLeft(), 0);
-			return n + Utils.pluralize(' seat', n);
+			if (!this.__cache__.seatsLeftText){
+				var n = Math.max(this.seatsLeft(), 0);
+				this.__cache__.seatsLeftText = n + Utils.pluralize(' seat', n);
+			}
+			return this.__cache__.seatsLeftText;
 		},
-		instructorsText: _.memoize(function(){
-			var instructors = _(this.section_times).chain().pluck('instructor').uniq().value();
-			return instructors.join(', ');
-		}),
-		numberText: _.memoize(function(){
+		instructorsText: function(){
+			if (!this.__cache__.instructorsText){
+				var instructors = _(this.section_times).chain().pluck('instructor').uniq().value();
+				this.__cache__.instructorsText = instructors.join(', ');
+			}
+			return this.__cache__.instructorsText;
+		},
+		numberText: function(){
 			var str = parseInt(this.number, 10);
 			return (isNaN(str) ? this.number : str);
-		}),
+		},
 		hasMultipleTimesPerDay: function(){
-			return _.some(this.times, function(time){
-				return time.count > 1;
-			});
+			if (typeof(this.__cache__.hasMultipleTimesPerDay) === 'undefined'){
+				this.__cache__.hasMultipleTimesPerDay = _.some(this.times, function(time){
+					return time.count > 1;
+				});
+			}
+			return this.__cache__.hasMultipleTimesPerDay;
 		},
 		computeProperties: function(){
 			this.times = this._generateDayTimes();

@@ -34,7 +34,7 @@ AppWorker.Utils = {
 			var tmp = [];
 			_(result).each(function(accum){
 				_(domain).map(function(value){
-					var newAccum = angular.copy(accum);
+					var newAccum = accum.slice();
 					newAccum.push(value);
 					tmp.push(newAccum);
 				});

@@ -10,4 +10,4 @@ docs/_build/
 test_reports/
 .coverage
 .ropeproject/
-yacs/settings/production.json
+yacs/settings/production.jsonyacs.db

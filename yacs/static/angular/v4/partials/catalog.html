@@ -2,5 +2,15 @@
 	<input type="text" placeholder="Search {{ semester.name }} Courses" id="q" name="q" ng-model="query" />
 </form>
 
-<div class="courses" ng-include="STATIC_URL + 'v4/partials/courses.html'">
+<div class="catalog">
+	<div class="courses" ng-include="STATIC_URL + 'v4/partials/courses.html'">
+	</div>
+
+	<div class="selection">
+		<h2>Selection</h2>
+		<div class="courses"
+			ng-include="STATIC_URL + 'v4/partials/courses.html'"
+			ng-controller="SelectionCtrl">
+		</div>
+	</div>
 </div>

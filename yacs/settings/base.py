@@ -311,7 +311,7 @@ PIPELINE_COMPILERS = (
     'pipeline.compilers.sass.SASSCompiler',
 )
 
-#s.PIPELINE_COFFEE_SCRIPT_BINARY = 'coffee'
+PIPELINE_COFFEE_SCRIPT_BINARY = os.environ.get('COFFEE', '/usr/local/bin/coffee')
 
 #s.PIPELINE_SASS_BINARY = 'sass'
 PIPELINE_SASS_ARGUMENTS = '--scss'

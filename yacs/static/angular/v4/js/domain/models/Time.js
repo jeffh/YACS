@@ -3,13 +3,16 @@
 (function(angular, app, undefined){
 
 app.factory('Time', function(){
-	function Time(str){
-		var parts = _(str.split(':')).map(function(i){ return parseInt(i, 10); });
-		this.hour = parts[0];
-		this.minute = parts[1];
-		this.second = parts[2];
-		this.totalSeconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+	function Time(hour, minute, second){
+		this.hour = parseInt(hour || 0, 10);
+		this.minute = parseInt(minute || 0, 10);
+		this.second = parseInt(second || 0, 10);
+		this.totalSeconds = this.hour * 3600 + this.minute * 60 + this.second;
 	}
+	Time.parse = function(str){
+		var parts = str.split(':');
+		return new Time(parts[0], parts[1], parts[2]);
+	};
 	Time.prototype = {};
 	angular.extend(Time.prototype, {
 		isOnTheHour: function(){
@@ -27,6 +30,14 @@ app.factory('Time', function(){
 				return 12;
 			}
 			return (hour > 12 ? hour - 12 : hour);
+		},
+		shortText: function(options){
+			var localHour = this.getLocalHour();
+			if (localHour === 12){
+				return 'Noon';
+			} else {
+				return localHour;
+			}
 		},
 		text: function(options){
 			options = _.extend({

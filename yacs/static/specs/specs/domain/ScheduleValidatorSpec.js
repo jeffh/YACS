@@ -1,6 +1,19 @@
 'use strict';
 
 describe("Domain", function(){
+	// useful for removing all the extra data in schedules
+	function scheduleAsIds(schedule){
+		var newSchedule = {};
+		_.each(schedule, function(section, courseId){
+			newSchedule[courseId] = section.id;
+		});
+		return newSchedule;
+	}
+
+	function schedulesAsIds(schedules){
+		return _.map(schedules, scheduleAsIds);
+	}
+
 	describe("scheduleValidator", function(){
 		var scheduleValidator, Semester, Conflict, Section;
 		var semesterDeferred, conflictDeferred, sectionDeferred;
@@ -48,7 +61,6 @@ describe("Domain", function(){
 					return result;
 				}
 
-
 				beforeEach(inject(function($rootScope, scheduleValidator, Conflict, Section){
 					conflictDeferred.resolve(_([
 						{id: 1, conflicts: [2, 3]},
@@ -85,6 +97,13 @@ describe("Domain", function(){
 				describe("isValid / computeSchedules", function(){
 					var sections;
 					beforeEach(function(){
+						// How the sections are laid out:
+						// 1 - Conflicts with 2, 5, 6
+						// 2 - Conflicts with 1, 6
+						// 3 - Conflicts with nothing
+						// 4 - Conflicts with Nothing
+						// 5 - Conflicts with 1, 6
+						// 6 - Conflicts with 1, 2, 5
 						sections = _([
 							{id: 1, section_times:[
 								{
@@ -162,28 +181,28 @@ describe("Domain", function(){
 					});
 
 					it("can compute all schedules", function(){
-						expect(grab(validator.computeSchedules({1: [1, 3, 4]}))).toEqual([
+						expect(schedulesAsIds(grab(validator.computeSchedules({1: [1, 3, 4]})))).toEqual(schedulesAsIds([
 							{1: sections[0]},
 							{1: sections[2]},
 							{1: sections[3]}
-						]);
+						]));
 					});
 
 					it("can compute a restricted set of schedules", function(){
-						expect(grab(validator.computeSchedules({1: [1, 3, 4]}, 2))).toEqual([
+						expect(schedulesAsIds(grab(validator.computeSchedules({1: [1, 3, 4]}, 2)))).toEqual(schedulesAsIds([
 							{1: sections[0]},
 							{1: sections[2]}
-						]);
+						]));
 					});
 
 
-					it("should return true if at least one section is valid for all courses", function(){
+					it("should return true if at least one section usable for all courses", function(){
 						var schedule = {
 							1: [1, 3],
 							2: [2]
 						};
+						expect(schedulesAsIds(grab(validator.computeSchedules(schedule)))).toEqual(schedulesAsIds([{1: sections[2], 2: sections[1]}]));
 						expect(grab(validator.isValid(schedule))).toBeTruthy();
-						expect(grab(validator.computeSchedules(schedule))).toEqual([{1: sections[2], 2: sections[1]}]);
 					});
 
 					it("should return false for cyclic conflicts", function(){

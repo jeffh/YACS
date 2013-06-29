@@ -1,8 +1,59 @@
 <div class="center" ng-show="showClearButton && showClearButton()">
 	<ul class="submenu">
-		<li><a href="" ng-click="clickClearSelection()">Remove All</a></li>
+		<li><a href="" ng-click="clickClearSelection()">Reset</a></li>
 	</ul>
 </div>
 
-<div class="courses" ng-include="STATIC_URL + 'v4/partials/courses.html'">
+<div class="schedules">
+	<div class="schedule">
+		<h2>
+			Schedule 1 / {{ schedules.length }}
+			<span class="options">
+				<a href="#">calendar</a> or <a href="#">print it</a>.
+			</span>
+		</h2>
+		<p>{{ schedules[scheduleIndex].crns }}</p>
+		<div class="week">
+			<div class="times dow">
+				<div class="header row"> </div>
+				<div class="row"
+					ng-class="{hour: time.minute === 0}"
+					ng-repeat="time in schedules[scheduleIndex].time_range track by $index">
+					{{ time.minute === 0 ? time.shortText() : "" }}
+				</div>
+			</div>
+			<div class="dow" ng-repeat="dow in schedules[scheduleIndex].dows track by $index">
+				<div class="header row">{{ dow }}</div>
+
+				<div class="sections">
+					<div class="section color1"
+						ng-repeat="block in schedules[scheduleIndex].blocks[dow] track by $index"
+						yacs-block-offset="block.offsetInHours"
+						yacs-block-height="block.heightInSeconds">
+						<span class="crn">{{block.section.crn}}</span>
+						<span class="type">{{block.section_time.kind}}</span>
+						<span class="short">
+							{{block.course.department.code}} {{block.course.number}}-{{block.section.number}}
+						</span>
+						<span class="instructor">{{block.section_time.instructor}}</span>
+						<span class="time">
+							{{block.section_time.start_time.text()}}
+							-
+							{{block.section_time.end_time.text()}}
+						</span>
+					</div>
+				</div>
+
+				<a id="row_{{dow}}_{{$index}}"
+					class="row blockable"
+					ng-repeat="time in schedules[scheduleIndex].time_range track by $index"
+					ng-class="{hour: time.minute === 0, noon: time.hour === 12}">
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<div class="courses" ng-include="STATIC_URL + 'v4/partials/courses.html'" autoscroll>
+	</div>
 </div>
+

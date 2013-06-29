@@ -55,6 +55,9 @@ app.factory('Selection', function($q, $cookieStore, currentSemesterPromise, curr
 				});
 			});
 		},
+		schedules: function(){
+			return scheduleValidator.computeSchedules(this.courseIdsToSectionIds);
+		},
 		selectCoursesAndSections: function(courses){
 			var self = this;
 			this._eachSection(courses, function(course, section){
@@ -120,7 +123,7 @@ app.factory('Selection', function($q, $cookieStore, currentSemesterPromise, curr
 				}, function(err){
 					deferred.reject(err);
 				});
-			}, 200, false);
+			}, 100);
 			return deferred.promise;
 		},
 		containsCourse: function(course){

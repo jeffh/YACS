@@ -5,7 +5,7 @@
 <div class="catalog course-list">
 	<div class="course"
 		ng-class="{conflict: course.conflicts.length}"
-		ng-repeat="course in courses">
+		ng-repeat="course in courses track by course.id">
 		<input type="checkbox" class="checkbox" id="course_{{course.id}}" name="course_{{course.id}}"
 			ng-model="course.is_selected"
 			ng-click="clickCourse(course)"
@@ -22,7 +22,7 @@
 			</p>
 			<p class="course_conflict" ng-show="course.conflicts.length > 0">
 			Conflicts with
-			<span ng-repeat="conflict_name in course.conflicts">
+			<span ng-repeat="conflict_name in course.conflicts track by $index">
 			{{ conflict_name }}{{{true: '', false: ', '}[$last]}}
 			</span>
 			</p>
@@ -30,7 +30,7 @@
 
 		<div class="checkbox_content">
 			<ul class="sections">
-				<li class="section" ng-class="{no_seats: section.seatsLeft() <= 0, conflict: section.allConflicts.length}" ng-repeat="section in course.sections">
+				<li class="section" ng-class="{no_seats: section.seatsLeft() <= 0, conflict: section.allConflicts.length}" ng-repeat="section in course.sections track by section.id">
 					<input type="checkbox" class="checkbox" id="section_{{section.id}}" name="section_{{section.id}}"
 						ng-model="section.is_selected"
 						ng-disabled="section.allConflicts.length > 0"
@@ -42,16 +42,16 @@
 							<span class="seats">{{section.seatsLeftText()}}</span>
 						</p>
 						<ul class="section-times" ng-class="{expanded: section.hasMultipleTimesPerDay()}">
-							<li class="section-time" ng-class="time.classes" ng-repeat="time in section.times">
+							<li class="section-time" ng-class="time.classes" ng-repeat="time in section.times track by time.day_of_the_week">
 							<span class="dow">{{time.day_of_the_week}}</span>
-							<span class="time" ng-repeat="section_time in time.section_times">
+							<span class="time" ng-repeat="section_time in time.section_times track by $index">
 								{{section_time.text()}}
 							</span>
 							</li>
 						</ul>
 						<p class="section_conflict" ng-show="section.conflicts.length > 0">
 						Conflicts with
-						<span ng-repeat="conflict_name in section.conflicts">
+						<span ng-repeat="conflict_name in section.conflicts track by $index">
 							{{ conflict_name }}{{{true: '', false: ', '}[$last]}}
 						</span>
 						</p>
@@ -60,7 +60,7 @@
 			</ul>
 
 			<ul class="tags">
-				<li title="{{tag.title}}" class="{{tag.classes}}" ng-repeat="tag in course.tags">{{tag.name}}</li>
+				<li title="{{tag.title}}" class="{{tag.classes}}" ng-repeat="tag in course.tags track by tag.name">{{tag.name}}</li>
 			</ul>
 			<p class="description">
 			{{course.description}}

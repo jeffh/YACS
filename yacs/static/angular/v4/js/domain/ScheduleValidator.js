@@ -22,7 +22,6 @@ app.service('scheduleValidator', function($q, Conflict, Semester, Section, Time,
 		function rawObject(obj){ return obj.toObject(); }
 
 		return new AppWorker.ScheduleValidator(
-		//return new BackgroundWorker(
 			_.map(conflicts, rawObject),
 			_.map(sections, rawObject)
 		);
@@ -30,31 +29,43 @@ app.service('scheduleValidator', function($q, Conflict, Semester, Section, Time,
 
 	// fast to check, but misses cyclic conflicts
 	this.conflictsWith = function(courseIdsToSectionIds, sectionIdString){
-		return this.promise.then(function(validator){
-			var result = validator.conflictsWith(courseIdsToSectionIds, sectionIdString);
-			var err = result[0],
-				conflict = result[1];
-			return conflict;
+		var deferred = $q.defer();
+		this.promise.then(function(validator){
+			validator.conflictsWith(courseIdsToSectionIds, sectionIdString, function(result){
+				var err = result[0],
+					conflict = result[1];
+				deferred.resolve(conflict);
+			});
 		});
+		return deferred.promise;
 	};
 
 	// slower, but checks for cyclic conflicts
 	this.isValid = function(courseIdsToSectionIds){
-		return this.promise.then(function(validator){
-			return validator.isValid(courseIdsToSectionIds);
+		var deferred = $q.defer();
+		this.promise.then(function(validator){
+			validator.isValid(courseIdsToSectionIds, function(isValid){
+				deferred.resolve(isValid);
+			});
 		});
+		return deferred.promise;
 	};
 
 	this.computeSchedules = function(courseIdsToSectionIds, num){
-		return this.promise.then(function(validator){
-			return _.map(validator.computeSchedules(courseIdsToSectionIds, num), function(schedule){
-				var mappedSchedule = {};
-				_.each(schedule, function(section, courseId){
-					mappedSchedule[courseId] = idToSection[section.id];
+		var deferred = $q.defer();
+		this.promise.then(function(validator){
+			validator.computeSchedules(courseIdsToSectionIds, num, function(schedules){
+				var mappedSchedules = _.map(schedules, function(schedule){
+					var mappedSchedule = {};
+					_.each(schedule, function(section, courseId){
+						mappedSchedule[courseId] = idToSection[section.id];
+					});
+					return mappedSchedule;
 				});
-				return mappedSchedule;
+				deferred.resolve(mappedSchedules);
 			});
 		});
+		return deferred.promise;
 	};
 });
 

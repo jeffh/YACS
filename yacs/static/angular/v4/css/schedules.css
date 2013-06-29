@@ -1,0 +1,196 @@
+.schedule {
+	width: 860px;
+	float: left;
+}
+
+/** General Layout **/
+.schedule div {
+	padding: 0;
+	margin: 0;
+}
+
+.schedule h2 {
+	float: left;
+	margin-left: 2em;
+}
+
+.schedule .options {
+	font-size: 90%;
+	color: #555;
+	display: block;
+}
+
+.schedule p {
+	float: right;
+	margin-right: 1em;
+}
+
+.schedule .week {
+	clear: both;
+}
+
+/** Columns **/
+.schedule .dow {
+	float: left;
+	display: block;
+	width: 10em;
+}
+
+.schedule .dow.times {
+	width: 3em;
+	margin-right: 0.25em;
+}
+
+/** Day of the week headers **/
+.schedule .dow.times .header.row {
+	padding: 0;
+	margin-bottom: -3px;
+}
+.schedule .dow.times .row {
+	text-align: right;
+	padding: 0 0.2em 4px 0;
+}
+.schedule .dow.times .row.hour {
+	border-top: 1px solid transparent;
+	border-bottom: 1px solid transparent;
+}
+
+/* Each Cell */
+.schedule .row {
+	display: block;
+	height: 20px;
+	padding: 2px 0;
+	border-top: 1px solid transparent;
+	border-bottom: 1px solid transparent;
+}
+
+.schedule .row.hour {
+	border-top: 1px solid #aaa;
+	border-bottom: 1px solid #ccc;
+}
+
+.schedule .row.hour.noon {
+	border-top: 1px solid #333;
+}
+
+.schedule .header {
+	text-align: center;
+}
+
+.schedule a.row.blockable:hover {
+	background: #aaa;
+}
+
+.schedule a.row.blockable.blocked {
+	background: #ccc;
+}
+
+/** Selected Sections on the schedule **/
+.schedule .sections {
+	position: relative;
+	width: 0;
+	height: 0;
+}
+
+.schedule .section {
+	position: absolute;
+	width: 9em;
+	padding: 0.25em;
+	overflow: hidden;
+	white-space: nowrap;
+	font-size: 90%;
+	opacity: 0.85;
+	line-height: 1.15em;
+	/* Set by color
+	background: #fcc;
+	color: #933;
+	border-left: 2px solid #f55;
+	*/
+}
+
+.schedule .section .type {
+	float: right;
+}
+
+.schedule .section .short {
+	display: block;
+}
+
+.schedule .section .time {
+	display: block;
+}
+
+/** Section Colors **/
+.color1 {
+	background: #edd;
+	border-left: 0.2em solid #b44;
+	color: #722;
+}
+
+/** Catalog Selection + Responsiveness **/
+.schedules .courses {
+	font-size: 95%;
+}
+/* Small */
+@media screen and (max-width: 768px) {
+	.schedules {
+		margin-left: 0;
+	}
+	.schedule {
+		width: 590px;
+		font-size: 95%;
+	}
+	.schedule .dow {
+		width: 7em;
+	}
+	.schedule .dow.times {
+		margin-right: 0.15em;
+		font-size: 90%;
+	}
+	.schedule .section {
+		width: 7em;
+		font-size: 85%;
+	}
+}
+@media screen and (min-width: 768px) {
+	.schedule {
+		width: 768px;
+		font-size: 98%;
+	}
+	.schedule .dow {
+		width: 9em;
+	}
+	.schedule .section {
+		width: 9em;
+		font-size: 90%;
+	}
+}
+/* Medium */
+@media screen and (min-width: 960px) {
+	.schedule {
+		width: 860px;
+	}
+	.schedule .dow {
+		width: 10em;
+	}
+	.schedule .dow.times {
+		margin-right: 0.25em;
+		font-size: 100%
+	}
+	.schedule .section {
+		width: 9em;
+		font-size: 90%;
+	}
+
+	.schedules .courses {
+		position: static;
+		margin-left: inherit;
+	}
+}
+/* Super-wide */
+@media screen and (min-width: 1400px){
+	.schedules .courses {
+		position: absolute;
+		margin-left: 870px;
+	}
+}
