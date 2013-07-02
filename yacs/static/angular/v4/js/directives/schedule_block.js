@@ -1,6 +1,6 @@
 'use strict';
 
-(function(angular, app, undefined){
+(function(angular, app, $, undefined){
 
 app.constant('hourBlockSize', 26.0 * 2);
 app.constant('blockStartingOffset', 1);
@@ -31,5 +31,15 @@ app.directive('yacsBlockHeight', function($parse, hourBlockSize, blockStartingOf
 	};
 });
 
-})(angular, app);
+app.directive('yacsKeydown', function($parse){
+	return function(scope, element, attrs){
+		$(document).on('keydown', function(evt){
+			scope.$apply(function(){
+				$parse(attrs.yacsKeydown)(scope, {$event: evt});
+			});
+		});
+	};
+});
+
+})(angular, app, jQuery);
 

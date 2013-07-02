@@ -37,7 +37,7 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils){
 			});
 		});
 
-		return _(_.range(minTime.hour - 1, maxTime.hour + 1)).chain().map(function(hour){
+		return _(_.range(minTime.hour - 1, maxTime.hour + 2)).chain().map(function(hour){
 			return [new Time(hour), new Time(hour, 30)];
 		}).flatten().value();
 	}
@@ -90,6 +90,10 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils){
 	return function(schedulesPromise){
 		var deferred = $q.defer();
 		schedulesPromise.then(function(schedules){
+			if (!schedules.length) {
+				deferred.resolve([]);
+				return;
+			}
 			var courseIds = _(schedules).chain().map(function(schedule){
 				return _.keys(schedule);
 			}).flatten().uniq().value();

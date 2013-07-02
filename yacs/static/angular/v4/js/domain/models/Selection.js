@@ -31,6 +31,7 @@ app.factory('Selection', function($q, $cookieStore, currentSemesterPromise, curr
 					selection = new Selection();
 					console.log('Failed to load selection, using empty one');
 				}
+				window.selection = selection;
 				deferred.resolve(selection);
 			});
 			return deferred.promise;

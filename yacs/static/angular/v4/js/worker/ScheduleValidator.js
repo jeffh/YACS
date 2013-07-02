@@ -8,18 +8,6 @@ AppWorker.ScheduleValidator = function(conflictsObjects, sectionObjects){
 	var idToSection = AppWorker.Utils.hashById(sectionObjects);
 	var self = this;
 
-	var memoize = function(fn, keyfn){
-		var cache = {};
-		keyfn = JSON.stringify;
-		return function(){
-			var key = keyfn([this, _.toArray(arguments)]);
-			if (typeof cache[key] === 'undefined') {
-				cache[key] = fn.apply(this, arguments);
-			}
-			return cache[key];
-		};
-	};
-
 	// computes a quick conflict check. Faster to check if there are any
 	// conflicts, but is not accurate. If conflicts exist, the slower
 	// check must be used.
@@ -130,11 +118,11 @@ AppWorker.ScheduleValidator = function(conflictsObjects, sectionObjects){
 		);
 	};
 
-	this._totalSecondsForTime = memoize(function(str){
+	this._totalSecondsForTime = function(str){
 		var parts = _(str.split(':')).map(function(i){ return parseInt(i, 10); });
 		var hour = parts[0];
 		var minute = parts[1];
 		var second = parts[2];
 		return parts[0] * 3600 + parts[1] * 60 + parts[2];
-	});
+	};
 };

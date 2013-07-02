@@ -172,7 +172,7 @@ describe("Domain", function(){
 
 					it("should return true for non-overlapping times on the same day", function(){
 						expect(grab(validator.isValid({1: [1], 2: [3]}))).toBeTruthy();
-						expect(grab(validator.computeSchedules({1: [1], 2: [3]}))).toEqual([{1: sections[0], 2: sections[2]}]);
+						expect(schedulesAsIds(grab(validator.computeSchedules({1: [1], 2: [3]})))).toEqual(schedulesAsIds([{1: sections[0], 2: sections[2]}]));
 					});
 
 					it("should return true for overlapping times, but on different days", function(){

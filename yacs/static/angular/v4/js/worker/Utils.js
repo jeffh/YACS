@@ -11,22 +11,14 @@ AppWorker.Utils = {
 		});
 		return result;
 	},
-	altProduct: function(domains){
-		function cartProduct(index){
-			if (index === domains.length) {
-				return [[]];
-			} else {
-				var results = [];
-				_.each(domains[index], function(item){
-					_.each(cartProduct(index + 1), function(result){
-						result.push(item);
-						results.push(result);
-					});
-				});
-				return results;
-			}
+	flatten: function(linkedList){ 
+		var result = [];
+		var tail = linkedList;
+		while (tail.last){
+			result.unshift(tail.last);
+			tail = tail.rest;
 		}
-		return cartProduct(0);
+		return result;
 	},
 	product: function(domains){
 		var result = [[]];
@@ -34,14 +26,13 @@ AppWorker.Utils = {
 			var tmp = [];
 			_(result).each(function(accum){
 				_(domain).map(function(value){
-					var newAccum = accum.slice();
-					newAccum.push(value);
+					var newAccum = {rest: accum, last: value};
 					tmp.push(newAccum);
 				});
 			});
 			result = tmp;
 		});
-		return result;
+		return _.map(result, AppWorker.Utils.flatten);
 	}
 };
 

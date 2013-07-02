@@ -55,6 +55,17 @@ app.controller('SelectionCtrl', function($window, $scope, $q, Selection, current
 			selection.clear();
 			refreshAndSave(true);
 		};
+
+		$scope.keyDown = function(event){
+			var left = 37, right = 39;
+			$scope.schedules.then(function(schedules){
+				if (event.keyCode === left){
+					$scope.scheduleIndex = Math.max($scope.scheduleIndex - 1, 0);
+				} else if (event.keyCode === right){
+					$scope.scheduleIndex = Math.min($scope.scheduleIndex + 1, schedules.length - 1);
+				}
+			});
+		};
 	});
 });
 

@@ -5,9 +5,9 @@
 </div>
 
 <div class="schedules">
-	<div class="schedule">
+	<div class="schedule" yacs-keydown="keyDown($event)">
 		<h2>
-			Schedule 1 / {{ schedules.length }}
+			Schedule {{scheduleIndex + 1}} / {{ schedules.length }}
 			<span class="options">
 				<a href="#">calendar</a> or <a href="#">print it</a>.
 			</span>

@@ -7,18 +7,22 @@ describe("Controllers", function(){
 	}));
 
 	describe("SelectionCtrl", function(){
-		var controller, semesterDeferred, CourseFetcher, selectionDeferred, coursesDeferred;
+		var controller, CourseFetcher, schedulePresenter;
+		var semesterDeferred, selectionDeferred, coursesDeferred, schedulesDeferred;
 		beforeEach(inject(function($controller, $q, Selection){
+			schedulesDeferred = $q.defer();
 			coursesDeferred = $q.defer();
 			semesterDeferred = $q.defer();
 			selectionDeferred = $q.defer();
+			schedulePresenter = jasmine.createSpy('schedulePresenter').andReturn(schedulesDeferred.promise);
 			CourseFetcher = jasmine.createSpy('CourseFetcher').andReturn(coursesDeferred.promise);
 			Selection.current = selectionDeferred.promise;
 			controller = $controller('SelectionCtrl', {
 				$scope: scope,
 				currentSemesterPromise: semesterDeferred.promise,
 				CourseFetcher: CourseFetcher,
-				Selection: Selection
+				Selection: Selection,
+				schedulePresenter: schedulePresenter
 			});
 		}));
 
@@ -190,6 +194,60 @@ describe("Controllers", function(){
 
 						it("should apply the selection to revert the user's change", function(){
 							expect(selection.apply).toHaveBeenCalledWith(scope.courses);
+						});
+					});
+				});
+
+
+				describe("when schedules are resolved", function(){
+					beforeEach(inject(function($rootScope){
+						schedulesDeferred.resolve([{}, {}]);
+						$rootScope.$apply();
+					}));
+
+					describe("when tapping the left arrow key", function(){
+						beforeEach(function(){
+							scope.scheduleIndex = 1;
+							scope.keyDown($.Event('keydown', {keyCode: 37}));
+							scope.$apply();
+						});
+
+						it("should decrement the schedule index", function(){
+							expect(scope.scheduleIndex).toEqual(0);
+						});
+
+						describe("tapping the left arrow when at the beginning", function(){
+							beforeEach(function(){
+								scope.keyDown($.Event('keydown', {keyCode: 37}));
+								scope.$apply();
+							});
+
+							it("should not decrement the schedule index", function(){
+								expect(scope.scheduleIndex).toEqual(0);
+							});
+						});
+					});
+
+					describe("when tapping the right arrow key", function(){
+						beforeEach(function(){
+							scope.scheduleIndex = 0;
+							scope.keyDown($.Event('keydown', {keyCode: 39}));
+							scope.$apply();
+						});
+
+						it("should decrement the schedule index", function(){
+							expect(scope.scheduleIndex).toEqual(1);
+						});
+
+						describe("tapping the right arrow when at the end", function(){
+							beforeEach(function(){
+								scope.keyDown($.Event('keydown', {keyCode: 39}));
+								scope.$apply();
+							});
+
+							it("should not increment the schedule index", function(){
+								expect(scope.scheduleIndex).toEqual(1);
+							});
 						});
 					});
 				});

@@ -1,6 +1,7 @@
 .schedule {
 	width: 860px;
 	float: left;
+	padding-bottom: 1em;
 }
 
 /** General Layout **/
@@ -94,7 +95,7 @@
 
 .schedule .section {
 	position: absolute;
-	width: 9em;
+	width: 8.5em;
 	padding: 0.25em;
 	overflow: hidden;
 	white-space: nowrap;
@@ -148,7 +149,7 @@
 		font-size: 90%;
 	}
 	.schedule .section {
-		width: 7em;
+		width: 6.5em;
 		font-size: 85%;
 	}
 }
@@ -161,7 +162,7 @@
 		width: 9em;
 	}
 	.schedule .section {
-		width: 9em;
+		width: 8.5em;
 		font-size: 90%;
 	}
 }
@@ -178,7 +179,7 @@
 		font-size: 100%
 	}
 	.schedule .section {
-		width: 9em;
+		width: 8.5em;
 		font-size: 90%;
 	}
 
