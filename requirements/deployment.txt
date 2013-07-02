@@ -1,5 +1,5 @@
 BeautifulSoup==3.2.1
-Django==1.4.4
+Django==1.5.1
 Pygments==1.5
 RPICourses==1.0.6
 South==0.7.5

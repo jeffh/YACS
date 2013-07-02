@@ -214,6 +214,7 @@ LOGGING = {
         },
         'mail_admins': {
             'level': 'ERROR',
+            'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
         },
     },
@@ -244,10 +245,10 @@ LOGGING = {
 # === Memory ===
 CACHE_VERSION = 1
 CACHES = {
-    #'default': {
-    #    'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    #    'VERSION': s.CACHE_VERSION,
-    #}
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'VERSION': CACHE_VERSION,
+    }
 }
 
 # ==== API App ====
