@@ -56,8 +56,8 @@ app.factory('Selection', function($q, $cookieStore, currentSemesterPromise, curr
 				});
 			});
 		},
-		schedules: function(){
-			return scheduleValidator.computeSchedules(this.courseIdsToSectionIds);
+		schedules: function(blockedTimes){
+			return scheduleValidator.computeSchedules(this.courseIdsToSectionIds, blockedTimes);
 		},
 		selectCoursesAndSections: function(courses){
 			var self = this;

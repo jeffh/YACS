@@ -54,6 +54,9 @@ app.factory('Time', function(){
 				times.push(this.APM());
 			}
 			return times.join('');
+		},
+		toObject: function(){
+			return [this.hour, this.minute, this.second].join(':');
 		}
 	});
 	return Time;

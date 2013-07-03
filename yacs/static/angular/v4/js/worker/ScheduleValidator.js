@@ -45,13 +45,13 @@ AppWorker.ScheduleValidator = function(conflictsObjects, sectionObjects){
 	// 
 	// returns true/false if the given selection of {courseIds: [sectionIds]}
 	// is a valid schedule
-	this.isValid = function(courseIdsToSectionIds, callback){
-		this.computeSchedules(courseIdsToSectionIds, 1, function(schedules){
+	this.isValid = function(courseIdsToSectionIds, blockedTimes, callback){
+		this.computeSchedules(courseIdsToSectionIds, blockedTimes, 1, function(schedules){
 			callback(schedules.length);
 		});
 	};
 
-	this.computeSchedules = function(courseIdsToSectionIds, num, callback){
+	this.computeSchedules = function(courseIdsToSectionIds, blockedTimes, num, callback){
 		var self = this;
 		var courseIds = _.keys(courseIdsToSectionIds);
 		var sectionIds = _(courseIdsToSectionIds).chain().values().flatten().uniq().value();
@@ -65,8 +65,12 @@ AppWorker.ScheduleValidator = function(conflictsObjects, sectionObjects){
 		var validSchedules = [];
 		for (var i=0; i<possibleSchedules.length; i++){
 			var schedule = possibleSchedules[i];
+			if (blockedTimes && blockedTimes.length){
+				schedule.push({id: 'blocked', section_times: blockedTimes});
+			}
 			if (self._isValidSchedule(schedule)){
-				validSchedules.push(_.object(courseIds, schedule));
+				var validSchedule = _.object(courseIds, schedule);
+				validSchedules.push(validSchedule);
 			}
 			if (num && validSchedules.length >= num){
 				break;

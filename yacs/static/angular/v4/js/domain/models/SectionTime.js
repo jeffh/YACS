@@ -5,8 +5,8 @@
 app.factory('SectionTime', function(Time){
 	function SectionTime(attributes){
 		angular.extend(this, attributes);
-		this.start_time = Time.parse(this.start);
-		this.end_time = Time.parse(this.end);
+		this.start_time = Time.parse(this.start || '0:00:00');
+		this.end_time = Time.parse(this.end || '0:00:00');
 		this.__text = null;
 	}
 	SectionTime.prototype = {};
@@ -25,6 +25,13 @@ app.factory('SectionTime', function(Time){
 		},
 		endTimeInSeconds: function(){
 			return this.end_time.totalSeconds;
+		},
+		toObject: function(){
+			return {
+				days_of_the_week: this.days_of_the_week,
+				start: this.start_time.toObject(),
+				end: this.end_time.toObject()
+			};
 		}
 	});
 	return SectionTime;

@@ -189,7 +189,7 @@ describe("Domain", function(){
 					});
 
 					it("can compute a restricted set of schedules", function(){
-						expect(schedulesAsIds(grab(validator.computeSchedules({1: [1, 3, 4]}, 2)))).toEqual(schedulesAsIds([
+						expect(schedulesAsIds(grab(validator.computeSchedules({1: [1, 3, 4]}, [], 2)))).toEqual(schedulesAsIds([
 							{1: sections[0]},
 							{1: sections[2]}
 						]));

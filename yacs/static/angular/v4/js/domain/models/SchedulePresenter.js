@@ -21,7 +21,7 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils, curren
 		}
 	}
 
-	function computeTimeRange(schedules){
+	function computeTimeRange(schedules, blockedTimes){
 		var minTime, maxTime;
 
 		_.each(schedules, function(schedule){
@@ -38,6 +38,21 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils, curren
 				});
 			});
 		});
+
+		_.each(blockedTimes, function(section_time){
+			var startInSeconds = section_time.startTimeInSeconds();
+			var endInSeconds = section_time.endTimeInSeconds();
+			if (!minTime || minTime.totalSeconds > startInSeconds) {
+				minTime = section_time.start_time;
+			}
+			if (!maxTime || maxTime.totalSeconds < endInSeconds) {
+				maxTime = section_time.end_time;
+			}
+		});
+
+		if (!minTime){
+			return [];
+		}
 
 		return _(_.range(minTime.hour - 1, maxTime.hour + 2)).chain().map(function(hour){
 			return [new Time(hour), new Time(hour, 30)];
@@ -92,15 +107,11 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils, curren
 		return result;
 	}
 
-	return function(schedulesPromise){
+	return function(schedulesPromise, blockedTimes){
 		var deferred = $q.defer();
 		$q.all([schedulesPromise, currentSemesterPromise]).then(function(values){
 			var schedules = values[0];
 			var semester = values[1];
-			if (!schedules.length) {
-				deferred.resolve([]);
-				return;
-			}
 			var courseIds = _(schedules).chain().map(function(schedule){
 				return _.keys(schedule);
 			}).flatten().uniq().value();
@@ -112,7 +123,7 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils, curren
 				var idToCourse = Utils.hashById(courses);
 
 				var dows = weekdaysOrFullWeek(schedules);
-				var timeRange = computeTimeRange(schedules);
+				var timeRange = computeTimeRange(schedules, blockedTimes);
 				var result = _.map(schedules, function(schedule){
 					return {
 						crns: _(schedule).chain().values().pluck('crn').value().join(', '),

@@ -5,7 +5,7 @@
 </div>
 
 <div class="schedules">
-	<div class="schedule" yacs-keydown="keyDown($event)">
+	<div class="schedule" yacs-keydown="keyDown($event)" ng-show="schedules.length && courses.length">
 		<h2>
 			Schedule {{scheduleIndex + 1}} / {{ schedules.length }}
 			<span class="options">
@@ -47,8 +47,9 @@
 
 				<a id="row_{{dow}}_{{$index}}"
 					class="row blockable"
+					ng-click="toggleBlockableTime(time, dow)"
 					ng-repeat="time in schedules[scheduleIndex].time_range track by $index"
-					ng-class="{hour: time.minute === 0, noon: time.hour === 12}">
+					ng-class="{hour: time.minute === 0, noon: time.hour === 12, blocked: isBlocked(time, dow)}">
 				</a>
 			</div>
 		</div>
