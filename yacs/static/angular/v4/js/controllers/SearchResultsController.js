@@ -10,7 +10,7 @@ app.controller('SearchResultsCtrl', function($scope, $routeParams, $location, Co
 			return;
 		}
 		CourseFetcher({semester_id: semester.id}).then(function(allCourses){
-			$scope.courses = CourseSearch(allCourses, $routeParams.query);
+			$scope.courses = CourseSearch(allCourses, query);
 		});
 	});
 });

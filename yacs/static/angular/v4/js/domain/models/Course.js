@@ -36,6 +36,11 @@ app.factory('Course', function(ModelFactory, Section, tagger, Utils, conflictor)
 		get: url
 	});
 	angular.extend(Course.prototype, {
+		instructors: function(){
+			return _(this.sections).chain().map(function(section){
+				return _.pluck(section.section_times, 'instructor');
+			}).uniq().value();
+		},
 		seatsLeft: function(){
 			// it's possible for seatsTaken() > seatsTotal(),
 			// so we need to compute this manually
