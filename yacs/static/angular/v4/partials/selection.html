@@ -26,8 +26,9 @@
 				<div class="header row">{{ dow }}</div>
 
 				<div class="sections">
-					<div class="section color1"
+					<div
 						ng-repeat="block in schedules[scheduleIndex].blocks[dow] track by $index"
+						class="section color{{block.colorIndex}}"
 						yacs-block-offset="block.offsetInHours"
 						yacs-block-height="block.heightInSeconds">
 						<span class="crn">{{block.section.crn}}</span>

@@ -127,6 +127,46 @@
 	border-left: 0.2em solid #b44;
 	color: #722;
 }
+.color2 {
+	background: #ded;
+	border-left: 0.2em solid #4b4;
+	color: #272;
+}
+.color3 {
+	background: #dde;
+	border-left: 0.2em solid #44b;
+	color: #227;
+}
+.color4 {
+	background: #eed;
+	border-left: 0.2em solid #994;
+	color: #661;
+}
+.color5 {
+	background: #dee;
+	border-left: 0.2em solid #499;
+	color: #166;
+}
+.color6 {
+	background: #ede;
+	border-left: 0.2em solid #949;
+	color: #616;
+}
+.color2 {
+	background: #fdc;
+	border-left: 0.2em solid #b62;
+	color: #720;
+}
+.color8 {
+	background: #cfb;
+	border-left: 0.2em solid #5a2;
+	color: #270;
+}
+.color9 {
+	background: #cbf;
+	border-left: 0.2em solid #52a;
+	color: #207;
+}
 
 /** Catalog Selection + Responsiveness **/
 .schedules .courses {

@@ -2,7 +2,9 @@
 
 (function(angular, app, undefined){
 
-app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils){
+app.constant('maxColors', 9);
+
+app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils, currentSemesterPromise, maxColors){
 	var weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 	var weekend = ['Saturday', 'Sunday'];
 
@@ -63,7 +65,7 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils){
 			});
 		}
 
-		function fill(section, section_time){
+		function fill(section, section_time, colorIndex){
 			var startHour = section_time.start_time.hour;
 			var seconds = section_time.end_time.totalSeconds - section_time.start_time.totalSeconds;
 			_.each(section_time.days_of_the_week, function(dow){
@@ -73,15 +75,18 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils){
 					section: section,
 					offsetInHours: startHour - (firstHour || 0),
 					heightInSeconds: seconds,
-					section_time: section_time
+					section_time: section_time,
+					colorIndex: (colorIndex % maxColors) + 1
 				});
 			});
 		}
 
+		var colorIndex = 0;
 		_.each(schedule, function(section){
 			_.each(section.section_times, function(section_time){
-				fill(section, section_time);
+				fill(section, section_time, colorIndex);
 			});
+			colorIndex++;
 		});
 
 		return result;
@@ -89,7 +94,9 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils){
 
 	return function(schedulesPromise){
 		var deferred = $q.defer();
-		schedulesPromise.then(function(schedules){
+		$q.all([schedulesPromise, currentSemesterPromise]).then(function(values){
+			var schedules = values[0];
+			var semester = values[1];
 			if (!schedules.length) {
 				deferred.resolve([]);
 				return;
@@ -97,7 +104,10 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils){
 			var courseIds = _(schedules).chain().map(function(schedule){
 				return _.keys(schedule);
 			}).flatten().uniq().value();
-			var coursesPromise = CourseFetcher({course_id: courseIds});
+			var coursesPromise = CourseFetcher({
+				semester_id: semester.id,
+				id: courseIds
+			});
 			coursesPromise.then(function(courses){
 				var idToCourse = Utils.hashById(courses);
 

@@ -19,7 +19,7 @@ app.factory('CourseFetcher', function($q, Course, Department, Section, Utils){
 
 			var sectionPromise = Section.query({
 				semester_id: filters.semester_id,
-				course_id: _(idToCourse).chain().keys().uniq().value()
+				course_id: _(idToCourse).chain().keys().uniq().sort().value()
 			});
 			sectionPromise.then(function(sections){
 				_(sections).each(function(section){
