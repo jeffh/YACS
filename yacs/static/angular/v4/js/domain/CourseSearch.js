@@ -3,14 +3,17 @@
 (function(angular, app, undefined){
 
 app.factory('CourseSearch', function(){
-	// ranking scores
+	// score bonus for field matching
 	var nameScore = 200,
 		deptScore = 100,
 		numberScore = 75,
-		instructorScore = 50,
-		beginningBonusMultiplier = 10,
-		shortSubstringMaxScore = 1,
-		cutoffScore = 50;
+		instructorScore = 50;
+	// score modifiers
+	var beginningBonusMultiplier = 10,
+		shortSubstringMaxScore = 1;
+	
+	// "not a match" if less than this
+	var cutoffScore = 50;
 
 	var matches = function(string, substring, scoreBonus){
 		var index = string.indexOf(substring);
