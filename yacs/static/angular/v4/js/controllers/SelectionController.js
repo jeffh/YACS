@@ -15,7 +15,7 @@ app.controller('SelectionCtrl', function($window, $scope, $q, Selection, current
 			semester_id: semester.id,
 			id: selection.courseIds()
 		};
-		var blockedTimes = [];
+		var blockedTimes = {};
 
 		function refreshAndSave(shouldSave){
 			if (shouldSave){
@@ -26,7 +26,7 @@ app.controller('SelectionCtrl', function($window, $scope, $q, Selection, current
 				selection.schedules(_.map(blockedTimes, function(sectionTime){
 					return sectionTime.toObject();
 				})),
-				blockedTimes
+				_.values(blockedTimes)
 			).then(function(schedules){
 				$scope.scheduleIndex = Math.min($scope.scheduleIndex, schedules.length - 1);
 				return schedules;
@@ -76,19 +76,22 @@ app.controller('SelectionCtrl', function($window, $scope, $q, Selection, current
 			});
 		};
 
-		$scope.toggleBlockableTime = function(time, dow){
-			blockedTimes.push(new SectionTime({
-				days_of_the_week: [dow],
-				start: time.toObject(),
-				end: _.extend({}, time, {minute: 59}).toObject()
-			}));
-			refreshAndSave(false);
+		$scope.isBlocked = function(time, dow){
+			return blockedTimes[dow + '_' + time.toObject()];
 		};
 
-		$scope.isBlocked = function(time, dow){
-			return _.any(blockedTimes, function(blockedTime){
-				return blockedTime.start === time.toObject() && dow === blockedTime.days_of_the_week[0];
-			});
+		$scope.toggleBlockableTime = function(time, dow){
+			var key = dow + '_' + time.toObject();
+			if ($scope.isBlocked(time, dow)){
+				delete blockedTimes[key];
+			} else {
+				blockedTimes[key] = new SectionTime({
+					days_of_the_week: [dow],
+					start: time.toObject(),
+					end: _.extend({}, time, {minute: time.minute + 29}).toObject()
+				});
+			}
+			refreshAndSave(false);
 		};
 	});
 });

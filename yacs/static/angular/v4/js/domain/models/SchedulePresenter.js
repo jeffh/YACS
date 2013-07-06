@@ -81,7 +81,7 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils, curren
 		}
 
 		function fill(section, section_time, colorIndex){
-			var startHour = section_time.start_time.hour;
+			var startHour = section_time.start_time.hour + section_time.start_time.minute / 60.0;
 			var seconds = section_time.end_time.totalSeconds - section_time.start_time.totalSeconds;
 			_.each(section_time.days_of_the_week, function(dow){
 				result[dow] = result[dow] || [];

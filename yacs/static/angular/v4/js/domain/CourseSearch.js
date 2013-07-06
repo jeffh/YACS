@@ -53,7 +53,6 @@ app.factory('CourseSearch', function(){
 		}).filter(function(course){
 			return course.score >= cutoffScore;
 		}).sortBy(function(course){
-			console.log(course.name, course.score);
 			return -course.score; // DESC
 		}).value();
 	};

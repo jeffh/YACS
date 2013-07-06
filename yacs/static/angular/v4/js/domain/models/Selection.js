@@ -7,8 +7,9 @@ app.factory('Selection', function($q, $cookieStore, currentSemesterPromise, curr
 		return 'selection:' + semester.id;
 	});
 
-	function Selection(courseIdsToSectionIds){
+	function Selection(courseIdsToSectionIds, blockedTimes){
 		this.courseIdsToSectionIds = courseIdsToSectionIds || {};
+		this.blockedTimes = {};
 	}
 	function uniquePush(arr, item){
 		if (!_.contains(arr, item)){

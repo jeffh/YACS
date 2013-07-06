@@ -2,8 +2,8 @@
 
 (function(angular, app, $, undefined){
 
-app.constant('hourBlockSize', 26.0 * 2);
-app.constant('blockStartingOffset', 1);
+app.constant('hourBlockSize', 52.0);
+app.constant('blockStartingOffset', 1.0);
 
 app.directive('yacsBlockOffset', function($parse, hourBlockSize, blockStartingOffset){
 	return function(scope, element, attrs){
