@@ -54,7 +54,7 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils, curren
 			return [];
 		}
 
-		return _(_.range(minTime.hour - 1, maxTime.hour + 2)).chain().map(function(hour){
+		return _(_.range(minTime.hour, maxTime.hour + 1)).chain().map(function(hour){
 			return [new Time(hour), new Time(hour, 30)];
 		}).flatten().value();
 	}
@@ -132,6 +132,15 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils, curren
 						blocks: computeTimeSlots(schedule, timeRange[0].hour, idToCourse)
 					};
 				});
+
+				if (!result.length) {
+					result = [{
+						crns: '',
+						dows: dows,
+						time_range: timeRange,
+						blocks: []
+					}];
+				}
 
 				deferred.resolve(result);
 			});

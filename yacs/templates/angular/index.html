@@ -72,6 +72,10 @@ app.constant('STATIC_URL', "{{ STATIC_URL }}");
 		<a href="mailto:jeff@jeffhui.net?subject=YACS" class="feedback">Feedback</a>
 	</div>
 	<div id="bd">
+		<form id="search" ng-controller="SearchCtrl" ng-show="searchOptions.visible">
+			<input type="text" placeholder="Search {{ semester.name }} Courses" id="q" name="q" ng-model="query" />
+		</form>
+
 		<div ng-view></div>
 	</div>
 	<div id="ft" ng-controller="FooterCtrl">

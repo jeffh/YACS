@@ -1,7 +1,3 @@
-<form id="search" ng-controller="SearchCtrl" ng-hide="hideSearchBar">
-	<input type="text" placeholder="Search {{ semester.name }} Courses" id="q" name="q" ng-model="query" />
-</form>
-
 <div class="catalog">
 	<div class="courses" ng-include="STATIC_URL + 'v4/partials/courses.html'">
 	</div>

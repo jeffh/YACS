@@ -2,11 +2,11 @@
 
 (function(angular, app, undefined){
 
-app.controller('SelectionCtrl', function($window, $scope, $q, Selection, currentSemesterPromise, CourseFetcher, schedulePresenter, SectionTime){
+app.controller('SelectionCtrl', function($window, $scope, $q, Selection, currentSemesterPromise, CourseFetcher, schedulePresenter, SectionTime, searchOptions){
 	$scope.courses = [];
-	$scope.hideSearchBar = true;
 	$scope.emptyText = "You didn't select any courses. They would go here.";
 	$scope.scheduleIndex = 0;
+	searchOptions.visible = false;
 
 	$q.all([currentSemesterPromise, Selection.current]).then(function(values){
 		var semester = values[0];
@@ -22,13 +22,14 @@ app.controller('SelectionCtrl', function($window, $scope, $q, Selection, current
 				selection.save();
 			}
 			selection.apply($scope.courses);
-			$scope.schedules = schedulePresenter(
-				selection.schedules(_.map(blockedTimes, function(sectionTime){
-					return sectionTime.toObject();
-				})),
-				_.values(blockedTimes)
-			).then(function(schedules){
+			var schedulesPromise = selection.schedules(_.map(blockedTimes, function(sectionTime){
+				return sectionTime.toObject();
+			}));
+
+			$scope.schedules = schedulePresenter(schedulesPromise, _.values(blockedTimes));
+			$scope.schedules.then(function(schedules){
 				$scope.scheduleIndex = Math.min($scope.scheduleIndex, schedules.length - 1);
+				$scope.schedule = schedules[$scope.scheduleIndex];
 				return schedules;
 			});
 		}

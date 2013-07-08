@@ -2,9 +2,22 @@
 
 (function(angular, app, undefined){
 
-app.controller('SearchCtrl', function($scope, $location, $timeout, $route, urlProvider){
+app.service('searchOptions', function($rootScope){
+	var defaults = {
+		visible: true
+	};
+	var self = this;
+	_.extend(self, defaults);
+
+	$rootScope.$on('$routeChangeStart', function(){
+		_.extend(self, defaults);
+	});
+});
+
+app.controller('SearchCtrl', function($scope, $location, $timeout, $route, urlProvider, searchOptions){
 	var timeout = null;
 	var previousPath = null;
+	$scope.searchOptions = searchOptions;
 	$scope.semester.then(function(semester){
 		$scope.query = decodeURIComponent($route.current.params.query || '');
 		$scope.$watch('query', function(){
