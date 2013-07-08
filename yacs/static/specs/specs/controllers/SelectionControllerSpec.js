@@ -1,5 +1,6 @@
 'use strict';
 
+
 describe("Controllers", function(){
 	var scope;
 	beforeEach(inject(function($rootScope){
@@ -7,9 +8,10 @@ describe("Controllers", function(){
 	}));
 
 	describe("SelectionCtrl", function(){
-		var controller, CourseFetcher, schedulePresenter;
+		var controller, CourseFetcher, schedulePresenter, searchOptions;
 		var semesterDeferred, selectionDeferred, coursesDeferred, schedulesDeferred;
-		beforeEach(inject(function($controller, $q, Selection){
+		beforeEach(inject(function($injector, $controller, $q, Selection){
+			searchOptions = $injector.get('searchOptions');
 			schedulesDeferred = $q.defer();
 			coursesDeferred = $q.defer();
 			semesterDeferred = $q.defer();
@@ -22,9 +24,14 @@ describe("Controllers", function(){
 				currentSemesterPromise: semesterDeferred.promise,
 				CourseFetcher: CourseFetcher,
 				Selection: Selection,
-				schedulePresenter: schedulePresenter
+				schedulePresenter: schedulePresenter,
+				searchOptions: searchOptions
 			});
 		}));
+
+		it("should disable the search bar", function(){
+			expect(searchOptions.visible).not.toBeTruthy();
+		});
 
 		it("should set the courses on the scope", function(){
 			expect(scope.courses).toEqual([]);
@@ -46,10 +53,6 @@ describe("Controllers", function(){
 
 			it("should query for its courses in its selection", function(){
 				expect(CourseFetcher).not.toHaveBeenCalled();
-			});
-
-			it("should hide the show clear button", function(){
-				expect(scope.showClearButton()).toBeFalsy();
 			});
 		});
 
@@ -88,10 +91,6 @@ describe("Controllers", function(){
 
 				it("should apply the current selection to the courses", function(){
 					expect(selection.apply).toHaveBeenCalledWith(courses);
-				});
-
-				it("should disable the search bar", function(){
-					expect(scope.hideSearchBar).toBeTruthy();
 				});
 
 				describe("when clicking clear selection button", function(){

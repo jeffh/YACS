@@ -2,6 +2,31 @@
 
 (function(document, angular, app, undefined){
 
+describe("Service", function(){
+	describe("searchOptions", function(){
+		var $rootScope, searchOptions;
+		beforeEach(inject(function($injector){
+			$rootScope = $injector.get('$rootScope');
+			searchOptions = $injector.get('searchOptions');
+		}));
+
+		it("should initialize the default options", function(){
+			expect(searchOptions.visible).toBeTruthy();
+		});
+
+		describe("when the route changes", function(){
+			beforeEach(function(){
+				searchOptions.visible = false;
+				$rootScope.$broadcast('$routeChangeStart');
+			});
+
+			it("should reset the default options", function(){
+				expect(searchOptions.visible).toBeTruthy();
+			});
+		});
+	});
+});
+
 describe("Controllers", function(){
 	var scope;
 	beforeEach(inject(function($rootScope){
@@ -9,8 +34,9 @@ describe("Controllers", function(){
 	}));
 
 	describe("SearchCtrl", function(){
-		var $route, $timeout, $location, controller, semesterDeferred, semester;
+		var $route, $timeout, $location, controller, semesterDeferred, semester, searchOptions;
 		beforeEach(inject(function($injector, $q, $controller, Semester, $rootScope){
+			searchOptions = $injector.get('searchOptions');
 			semester = new Semester({year: 2013, month: 1});
 			semesterDeferred = $q.defer();
 			semesterDeferred.resolve(semester);
@@ -21,9 +47,14 @@ describe("Controllers", function(){
 			$location = $injector.get('$location');
 			controller = $controller('SearchCtrl', {
 				$scope: scope,
-				$route: $route
+				$route: $route,
+				searchOptions: searchOptions
 			});
 		}));
+
+		it("should set the search options to the scope", function(){
+			expect(scope.searchOptions).toBe(searchOptions);
+		});
 
 		describe("when the semester promise is resolved with a query", function(){
 			beforeEach(inject(function($rootScope){

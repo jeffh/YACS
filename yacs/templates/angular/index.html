@@ -1,3 +1,4 @@
+{% load compressed %}
 <!DOCTYPE html>
 <html lang="en" ng-app="yacs">
 <head>
@@ -8,57 +9,15 @@
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet" type="text/css" />
 <link href="http://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet" type="text/css">
 
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/reset.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/core.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/course_list.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/selection.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/catalog.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/dept_list.css" />
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}v4/css/schedules.css" />
+{% compressed_css 'angular' %}
+{% compressed_js 'angular' %}
 
-<script src="{{ STATIC_URL }}v4/js/lib/jquery-2.0.2.js"></script>
-<script src="{{ STATIC_URL }}v4/js/lib/angularjs/angular.js"></script>
-<script src="{{ STATIC_URL }}v4/js/lib/angularjs/angular-cookies.js"></script>
-<script src="{{ STATIC_URL }}v4/js/lib/underscore-1.4.4.min.js"></script>
-<script src="{{ STATIC_URL }}v4/js/Application.js"></script>
-<script src="{{ STATIC_URL }}v4/js/Utils.js"></script>
-<script src="{{ STATIC_URL }}v4/js/DelayTrigger.js"></script>
-<script src="{{ STATIC_URL }}v4/js/Constants.js"></script>
-<script src="{{ STATIC_URL }}v4/js/Worker.js"></script>
-<script src="{{ STATIC_URL }}v4/js/worker/Namespace.js"></script>
-<script src="{{ STATIC_URL }}v4/js/worker/Utils.js"></script>
-<script src="{{ STATIC_URL }}v4/js/worker/ScheduleValidator.js"></script>
-<script src="{{ STATIC_URL }}v4/js/directives/schedule_block.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/ModelFactory.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/Tagger.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/CourseFetcher.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/CourseSearch.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/ScheduleValidator.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/Conflictor.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/APIClient.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/models/Semester.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/models/Course.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/models/Department.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/models/Time.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/models/SectionTime.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/models/Section.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/models/Conflict.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/models/Selection.js"></script>
-<script src="{{ STATIC_URL }}v4/js/domain/models/SchedulePresenter.js"></script>
-<script src="{{ STATIC_URL }}v4/js/controllers/RootController.js"></script>
-<script src="{{ STATIC_URL }}v4/js/controllers/FooterController.js"></script>
-<script src="{{ STATIC_URL }}v4/js/controllers/NavigationController.js"></script>
-<script src="{{ STATIC_URL }}v4/js/controllers/SearchController.js"></script>
-<script src="{{ STATIC_URL }}v4/js/controllers/SearchResultsController.js"></script>
-<script src="{{ STATIC_URL }}v4/js/controllers/DepartmentController.js"></script>
-<script src="{{ STATIC_URL }}v4/js/controllers/CatalogController.js"></script>
-<script src="{{ STATIC_URL }}v4/js/controllers/IndexController.js"></script>
-<script src="{{ STATIC_URL }}v4/js/controllers/SelectionController.js"></script>
 <script>
 app.constant('STATIC_URL', "{{ STATIC_URL }}");
 </script>
 {% block js %}{% endblock %}
 </head>
+
 {% block body %}
 <body class="page-index" ng-controller="RootCtrl">
 <div id="wrap">
@@ -83,6 +42,7 @@ app.constant('STATIC_URL', "{{ STATIC_URL }}");
 	</div>
 </div>
 </body>
+{% include 'analytics.html' %}
 {% endblock body %}
 </html>
 
