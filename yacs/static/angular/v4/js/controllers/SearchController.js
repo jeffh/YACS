@@ -14,9 +14,10 @@ app.service('searchOptions', function($rootScope){
 	});
 });
 
-app.controller('SearchCtrl', function($scope, $location, $timeout, $route, urlProvider, searchOptions){
+app.controller('SearchCtrl', function($scope, $location, $timeout, $route, urlProvider, searchOptions, currentSemesterPromise){
 	var timeout = null;
 	var previousPath = null;
+	$scope.semester = currentSemesterPromise;
 	$scope.searchOptions = searchOptions;
 	$scope.semester.then(function(semester){
 		$scope.query = decodeURIComponent($route.current.params.query || '');
