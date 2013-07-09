@@ -23,8 +23,10 @@
 .dept-list .dept .code {
 	display: inline-block;
 	font-size: 130%;
-	width: 4em;
-	font-family: "Helvetica Neue", "Open Sans", Helvetica, Arial, sans-serif;
+	width: 3em;
+	/*font-family: "Helvetica Neue", "Open Sans", Helvetica, Arial, sans-serif;*/
+	font-family: "Andale Mono", "Courier New", monospace;
+	font-weight: 100;
 }
 
 .dept-list .dept .name {
