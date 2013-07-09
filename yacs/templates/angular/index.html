@@ -22,7 +22,7 @@ app.constant('STATIC_URL', "{{ STATIC_URL }}");
 <body class="page-index" ng-controller="RootCtrl">
 <div id="wrap">
 	<div id="hd" ng-controller="NavCtrl">
-		<h1>YACS</h1>
+		<h1>YACS <span class="beta">beta</span></h1>
 		<ul class="menu">
 			<li ng-class="{selected: item==selectedItem}" ng-repeat="item in items">
 			<a href="" ng-click="click(item)">{% templatetag openvariable %}item.name{% templatetag closevariable %}</a>

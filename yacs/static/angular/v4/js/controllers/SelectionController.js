@@ -66,15 +66,27 @@ app.controller('SelectionCtrl', function($window, $scope, $q, Selection, current
 			refreshAndSave(true);
 		};
 
+		$scope.previousSchedule = function(){
+			$scope.schedules.then(function(schedules){
+				$scope.scheduleIndex = Math.max($scope.scheduleIndex - 1, 0);
+				$scope.schedule = schedules[$scope.scheduleIndex];
+			});
+		};
+
+		$scope.nextSchedule = function(){
+			$scope.schedules.then(function(schedules){
+				$scope.scheduleIndex = Math.min($scope.scheduleIndex + 1, schedules.length - 1);
+				$scope.schedule = schedules[$scope.scheduleIndex];
+			});
+		};
+
 		$scope.keyDown = function(event){
 			var left = 37, right = 39;
-			$scope.schedules.then(function(schedules){
-				if (event.keyCode === left){
-					$scope.scheduleIndex = Math.max($scope.scheduleIndex - 1, 0);
-				} else if (event.keyCode === right){
-					$scope.scheduleIndex = Math.min($scope.scheduleIndex + 1, schedules.length - 1);
-				}
-			});
+			if (event.keyCode === left){
+				$scope.previousSchedule();
+			} else if (event.keyCode === right){
+				$scope.nextSchedule();
+			}
 		};
 
 		$scope.isBlocked = function(time, dow){
@@ -98,4 +110,3 @@ app.controller('SelectionCtrl', function($window, $scope, $q, Selection, current
 });
 
 })(angular, app);
-

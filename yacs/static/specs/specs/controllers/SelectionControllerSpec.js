@@ -66,6 +66,17 @@ describe("Controllers", function(){
 				$rootScope.$apply();
 			}));
 
+			describe("tapping on the clear selection button", function(){
+				beforeEach(inject(function($rootScope){
+					scope.clickClearSelection();
+					$rootScope.$apply();
+				}));
+
+				it("should clear the selection", function(){
+					expect(selection.numberOfCourses()).toEqual(0);
+				});
+			});
+
 			it("should query for its courses in its selection", function(){
 				expect(CourseFetcher).toHaveBeenCalledWith({
 					semester_id: 12,
@@ -197,6 +208,18 @@ describe("Controllers", function(){
 					});
 				});
 
+				describe("when blocking a course", function(){
+					var time;
+					beforeEach(inject(function($rootScope, Time){
+						time = new Time(12, 0, 0);
+						scope.toggleBlockableTime(time, 'Monday');
+						$rootScope.$apply();
+					}));
+
+					it("should mark the time as blocked", function(){
+						expect(scope.isBlocked(time, 'Monday')).toBeTruthy();
+					});
+				});
 
 				describe("when schedules are resolved", function(){
 					beforeEach(inject(function($rootScope){

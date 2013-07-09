@@ -8,7 +8,10 @@
 	<div class="schedule" yacs-keydown="keyDown($event)" ng-show="schedules.length && courses.length">
 		<h2>
 			<span ng-show="schedule.crns.length">
-				Schedule {{scheduleIndex + 1}} / {{ schedules.length }}
+				<a href="" ng-click="previousSchedule()">&larr;</a>
+				Schedule
+				{{scheduleIndex + 1}} / {{ schedules.length }}
+				<a href="" ng-click="nextSchedule()">&rarr;</a>
 			</span>
 			<span ng-hide="schedule.crns.length">
 				No Schedules
