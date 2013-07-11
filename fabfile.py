@@ -42,6 +42,7 @@ def remote_vars(*keys):
         sb.append('='.join([key, '"%s"' % value.replace('"', '\\"')]))
     return ' '.join(sb)
 
+
 def upload_monit_conf():
     "Uploads the monit conf for gunicorn."
     if not exists('/etc/monit/conf.d/'):

@@ -22,7 +22,7 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 # it's ok, we don't send emails
-ALLOWED_HOSTS = ( '*',)
+ALLOWED_HOSTS = ['*']
 
 ADMINS = (
     ('Jeff Hui', 'jeff@jeffhui.net'),
