@@ -2,7 +2,8 @@
 
 (function(angular, app, undefined){
 
-app.factory('CourseFetcher', function($q, Course, Department, Section, Utils){
+app.factory('CourseFetcher', ['$q', 'Course', 'Department', 'Section', 'Utils',
+			function($q, Course, Department, Section, Utils){
 	return function(filters){
 		var deferred = $q.defer();
 		var deptPromise = Department.query({semester_id: filters.semester_id});
@@ -39,7 +40,7 @@ app.factory('CourseFetcher', function($q, Course, Department, Section, Utils){
 
 		return deferred.promise;
 	};
-});
+}]);
 
 })(angular, app);
 

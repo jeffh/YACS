@@ -54,7 +54,7 @@ if ('i' !== 'I'.toLowerCase()) {
 
 
 var /** holds major version number for IE or NaN for real browsers */
-    msie              = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
+    msie              = toInt((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1]),
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
     slice             = [].slice,
@@ -260,7 +260,7 @@ function extend(dst) {
   return dst;
 }
 
-function int(str) {
+function toInt(str) {
   return parseInt(str, 10);
 }
 
@@ -5636,7 +5636,7 @@ function matchUrl(url, obj) {
 
   obj.$$protocol = match[1];
   obj.$$host = match[3];
-  obj.$$port = int(match[5]) || DEFAULT_PORTS[match[1]] || null;
+  obj.$$port = toInt(match[5]) || DEFAULT_PORTS[match[1]] || null;
 }
 
 function matchAppUrl(url, obj) {
@@ -9242,7 +9242,7 @@ function $RootScopeProvider(){
 function $SnifferProvider() {
   this.$get = ['$window', '$document', function($window, $document) {
     var eventSupport = {},
-        android = int((/android (\d+)/.exec(lowercase(($window.navigator || {}).userAgent)) || [])[1]),
+        android = toInt((/android (\d+)/.exec(lowercase(($window.navigator || {}).userAgent)) || [])[1]),
         document = $document[0] || {},
         vendorPrefix,
         vendorRegex = /^(Moz|webkit|O|ms)(?=[A-Z])/,
@@ -9381,7 +9381,7 @@ function isSameDomain(requestUrl, locationUrl) {
   var domain1 = {
       protocol: match[2],
       host: match[4],
-      port: int(match[6]) || DEFAULT_PORTS[match[2]] || null,
+      port: toInt(match[6]) || DEFAULT_PORTS[match[2]] || null,
       // IE8 sets unmatched groups to '' instead of undefined.
       relativeProtocol: match[2] === undefined || match[2] === ''
     };
@@ -9390,7 +9390,7 @@ function isSameDomain(requestUrl, locationUrl) {
   var domain2 = {
       protocol: match[1],
       host: match[3],
-      port: int(match[5]) || DEFAULT_PORTS[match[1]] || null
+      port: toInt(match[5]) || DEFAULT_PORTS[match[1]] || null
     };
 
   return (domain1.protocol == domain2.protocol || domain1.relativeProtocol) &&
@@ -10529,7 +10529,7 @@ function $LocaleProvider(){
         SHORTDAY: 'Sun,Mon,Tue,Wed,Thu,Fri,Sat'.split(','),
         AMPMS: ['AM','PM'],
         medium: 'MMM d, y h:mm:ss a',
-        short: 'M/d/yy h:mm a',
+        'short': 'M/d/yy h:mm a',
         fullDate: 'EEEE, MMMM d, y',
         longDate: 'MMMM d, y',
         mediumDate: 'MMM d, y',
@@ -11296,13 +11296,13 @@ function dateFilter($locale) {
           timeSetter = match[8] ? date.setUTCHours : date.setHours;
 
       if (match[9]) {
-        tzHour = int(match[9] + match[10]);
-        tzMin = int(match[9] + match[11]);
+        tzHour = toInt(match[9] + match[10]);
+        tzMin = toInt(match[9] + match[11]);
       }
-      dateSetter.call(date, int(match[1]), int(match[2]) - 1, int(match[3]));
-      var h = int(match[4]||0) - tzHour;
-      var m = int(match[5]||0) - tzMin
-      var s = int(match[6]||0);
+      dateSetter.call(date, toInt(match[1]), toInt(match[2]) - 1, toInt(match[3]));
+      var h = toInt(match[4]||0) - tzHour;
+      var m = toInt(match[5]||0) - tzMin
+      var s = toInt(match[6]||0);
       var ms = Math.round(parseFloat('0.' + (match[7]||0)) * 1000);
       timeSetter.call(date, h, m, s, ms);
       return date;
@@ -11320,7 +11320,7 @@ function dateFilter($locale) {
     format = $locale.DATETIME_FORMATS[format] || format;
     if (isString(date)) {
       if (NUMBER_STRING.test(date)) {
-        date = int(date);
+        date = toInt(date);
       } else {
         date = jsonStringToDate(date);
       }
@@ -11479,7 +11479,7 @@ function limitToFilter(){
   return function(input, limit) {
     if (!isArray(input) && !isString(input)) return input;
     
-    limit = int(limit);
+    limit = toInt(limit);
 
     if (isString(input)) {
       //NaN check on limit
@@ -12879,7 +12879,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   // min length validator
   if (attr.ngMinlength) {
-    var minlength = int(attr.ngMinlength);
+    var minlength = toInt(attr.ngMinlength);
     var minLengthValidator = function(value) {
       if (!isEmpty(value) && value.length < minlength) {
         ctrl.$setValidity('minlength', false);
@@ -12896,7 +12896,7 @@ function textInputType(scope, element, attr, ctrl, $sniffer, $browser) {
 
   // max length validator
   if (attr.ngMaxlength) {
-    var maxlength = int(attr.ngMaxlength);
+    var maxlength = toInt(attr.ngMaxlength);
     var maxLengthValidator = function(value) {
       if (!isEmpty(value) && value.length > maxlength) {
         ctrl.$setValidity('maxlength', false);

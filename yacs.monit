@@ -1,6 +1,6 @@
 check process yacs
   with pidfile %(pid)s
-  start program = "/bin/bash -c 'YACS_ENV=production PYTHONPATH=%(projectpath)s %(gunicorn)s %(settings)s --workers=%(workers)s --access-logfile %(logs)saccess.log --error-logfile %(logs)serror.log --log-level debug --pid %(pid)s'"
+  start program = "/bin/bash -c '%(env)s YACS_ENV=production PYTHONPATH=%(projectpath)s %(gunicorn)s %(settings)s --workers=%(workers)s --access-logfile %(logs)saccess.log --error-logfile %(logs)serror.log --log-level debug --pid %(pid)s'"
     as uid %(user)s and gid %(user)s
   stop program = "/bin/bash -c '/bin/kill -QUIT `cat %(pid)s`'"
     as uid %(user)s and gid %(user)s

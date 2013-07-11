@@ -4,7 +4,8 @@
 
 app.value('apiClientCacheSize', 20);
 
-app.service('apiClient', function($http, $q, $cacheFactory, Utils, apiClientCacheSize){
+app.service('apiClient', ['$http', '$q', '$cacheFactory', 'Utils', 'apiClientCacheSize',
+			function($http, $q, $cacheFactory, Utils, apiClientCacheSize){
 	var cache = $cacheFactory('apiCache', {number: apiClientCacheSize});
 	this.get = function(url, params){
 		params = params || {};
@@ -33,7 +34,7 @@ app.service('apiClient', function($http, $q, $cacheFactory, Utils, apiClientCach
 
 		return deferred.promise;
 	};
-});
+}]);
 
 })(angular, app);
 

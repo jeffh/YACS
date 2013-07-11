@@ -2,7 +2,9 @@
 
 (function(angular, app, undefined){
 
-app.controller('DepartmentCtrl', function($scope, $location, Semester, Department, urlProvider, currentSemesterPromise){
+app.controller('DepartmentCtrl', ['$scope', '$location', 'Semester',
+			   'Department', 'urlProvider', 'currentSemesterPromise',
+			   function($scope, $location, Semester, Department, urlProvider, currentSemesterPromise){
 	$scope.departments = [];
 
 	currentSemesterPromise.then(function(semester){
@@ -15,7 +17,7 @@ app.controller('DepartmentCtrl', function($scope, $location, Semester, Departmen
 			));
 		};
 	});
-});
+}]);
 
 })(angular, app);
 

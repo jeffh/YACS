@@ -2,7 +2,8 @@
 
 (function(angular, app, undefined){
 
-app.controller('NavCtrl', function($scope, $location, urlProvider){
+app.controller('NavCtrl', ['$scope', '$location', 'urlProvider',
+			   function($scope, $location, urlProvider){
 	$scope.semester.then(function(semester){
 		var catalogItem = {
 			name: 'Catalog',
@@ -40,6 +41,7 @@ app.controller('NavCtrl', function($scope, $location, urlProvider){
 			$location.path(item.path);
 		};
 	});
-});
+}]);
+
 })(angular, app);
 

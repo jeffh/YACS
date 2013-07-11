@@ -2,7 +2,7 @@
 
 (function(angular, app, undefined){
 
-app.factory('Semester', function(ModelFactory, Utils){
+app.factory('Semester', ['ModelFactory', 'Utils', function(ModelFactory, Utils){
 	var url = Utils.URL('/api/4/semesters/');
 	/*
 	 * name: "Spring 2013",
@@ -24,9 +24,10 @@ app.factory('Semester', function(ModelFactory, Utils){
 		}
 	});
 	return Semester;
-});
+}]);
 
-app.factory('currentSemesterPromise', function(Semester, $rootScope, $q){
+app.factory('currentSemesterPromise', ['Semester', '$rootScope', '$q',
+			function(Semester, $rootScope, $q){
 	var deferred = $q.defer();
 	$rootScope.$on('$routeChangeSuccess', function(event, current, previous){
 		var year = current.params.year,
@@ -45,7 +46,7 @@ app.factory('currentSemesterPromise', function(Semester, $rootScope, $q){
 		}
 	});
 	return deferred.promise;
-});
+}]);
 
 })(angular, app);
 

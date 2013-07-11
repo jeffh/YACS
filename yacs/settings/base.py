@@ -21,6 +21,9 @@ RUNNING_TESTS = 'test' in sys.argv
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
+# it's ok, we don't send emails
+ALLOWED_HOSTS = ( '*',)
+
 ADMINS = (
     ('Jeff Hui', 'jeff@jeffhui.net'),
 )
@@ -325,33 +328,6 @@ PIPELINE_YUI_CSS_ARGUMENTS = '--type css'
 PIPELINE_YUI_JS_ARGUMENTS = '--type js'
 
 PIPELINE_CSS = {
-    'base+320': {
-        'source_filenames': (
-            'css/style.css',
-            'css/320.css',
-        ),
-        'extra_context': {'media': 'screen'},
-        'output_filename': 'core.css',
-    },
-    '480': {
-        'source_filenames': ('css/480.css',),
-        'extra_context': {'media': 'only screen and (min-width: 480px)'},
-        'output_filename': '480.css',
-    },
-    '768': {
-        'source_filenames': ('css/768.css',),
-        'extra_context': {'media': 'only screen and (min-width: 768px)'},
-        'output_filename': '768.css',
-    },
-    'ie': {
-        'source_filenames': ('css/ie.css',),
-        'output_filename': 'ie.css',
-    },
-    'ie': {
-        'source_filenames': ('css/print.css',),
-        'extra_context': {'media': 'print'},
-        'output_filename': 'print.css',
-    },
     'angular': {
         'source_filenames': (
             'v4/css/reset.css',
@@ -411,43 +387,4 @@ PIPELINE_JS = {
         ),
         'output_filename': 'app.js'
     },
-    'libs': {
-        'source_filenames': (
-            'js/libs/sessionstorage.1.4.js',
-            'js/libs/json2.js',
-            'js/libs/history.js',
-            'js/libs/history.adapter.jquery.js',
-            'js/libs/underscore-1.3.1.js',
-            'js/libs/backbone-0.9.2.js',
-            'js/320nu.js',
-        ),
-        'output_filename': 'l.js',
-    },
-    'application': {
-        'source_filenames': (
-            'js/v3/utilities.coffee',
-            'js/v3/time.coffee',
-            'js/v3/jquery.ext.coffee',
-            'js/v3/api.coffee',
-            'js/v3/summarizer.coffee',
-            'js/v3/liveform.coffee',
-            'js/v3/storage.coffee',
-            'js/v3/templates.coffee',
-            'js/v3/application.coffee',
-        ),
-        'output_filename': 'a.js',
-    },
-    'specs': {
-        'source_filenames': (
-            'specs/utilities_spec.coffee',
-            'specs/time_spec.coffee',
-            'specs/jquery_ext_spec.coffee',
-            'specs/api_spec.coffee',
-            'specs/summarizer_spec.coffee',
-            'specs/liveform_spec.coffee',
-            'specs/storage_spec.coffee',
-            'specs/templates_spec.coffee',
-        ),
-        'output_filename': 's.js',
-    }
 }

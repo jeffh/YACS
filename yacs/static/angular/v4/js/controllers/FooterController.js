@@ -2,7 +2,7 @@
 
 (function(angular, app, undefined){
 
-app.controller('FooterCtrl', function($scope){
+app.controller('FooterCtrl', ['$scope', function($scope){
 	var choices = [
 		'A grass-fed, free-ranged',
 		'The best',
@@ -16,10 +16,10 @@ app.controller('FooterCtrl', function($scope){
 		'A lone computer runs this',
 		"Some guy's",
 		'A (somewhat) tested',
-		'Batteries not included in this',
+		'Batteries not included in this'
 	];
 	var index = Math.floor(Math.random() * choices.length);
 	$scope.flavorText = choices[index];
-});
+}]);
 
 })(angular, app);

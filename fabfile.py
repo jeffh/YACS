@@ -18,7 +18,7 @@ GROUP = 'www-data'
 
 # we're using postgres!
 # change to whatever you need to use
-ADDITIONAL_PACKAGES = 'psycopg2 gunicorn'
+ADDITIONAL_PACKAGES = 'psycopg2'
 
 
 PYTHON = '/www/yacs/virtualenv/bin/python'
@@ -35,6 +35,13 @@ def exists(name):
         return not run('[ -e "%s" ]' % name).failed
 
 
+def remote_vars(*keys):
+    sb = []
+    for key in keys:
+        value = run('echo $' + key).strip()
+        sb.append('='.join([key, '"%s"' % value.replace('"', '\\"')]))
+    return ' '.join(sb)
+
 def upload_monit_conf():
     "Uploads the monit conf for gunicorn."
     if not exists('/etc/monit/conf.d/'):
@@ -49,6 +56,7 @@ def upload_monit_conf():
         logs='/www/yacs/logs/',
         settings='yacs.settings',
         pid='/tmp/yacs.pid',
+        env=remote_vars('YACS_DATABASE_URL', 'YACS_SECRET_KEY'),
     )
     upload_template('yacs.monit', '/etc/monit/conf.d/yacs.conf',
             context=context, use_sudo=True, backup=False)
@@ -93,7 +101,7 @@ def deploy(upgrade=1):
             - webserver config to proxypass to gunicorn (nginx)
         - memcached
     """
-    validate_production_json()
+    #validate_production_json()
     upload_monit_conf()
     clean()
     with cd('/www/yacs/'):
@@ -144,11 +152,11 @@ def fetch():
     "Tells the deployed system to fetch course data."
     with cd('/www/yacs/django'):
         puts('Getting course data from SIS...')
-        run(PYTHON + ' manage.py import_course_data')
+        sudo(PYTHON + ' manage.py import_course_data')
         puts('Fetching catalog data...')
-        run(PYTHON + ' manage.py import_catalog_data')
+        sudo(PYTHON + ' manage.py import_catalog_data')
         puts('Generating conflict cache...')
-        run(PYTHON + ' manage.py create_section_cache')
+        sudo(PYTHON + ' manage.py create_section_cache')
 
 
 @task

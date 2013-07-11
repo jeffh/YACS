@@ -2,7 +2,8 @@
 
 (function(angular, app, undefined){
 
-app.factory('Section', function(ModelFactory, SectionTime, Utils){
+app.factory('Section', ['ModelFactory', 'SectionTime', 'Utils',
+			function(ModelFactory, SectionTime, Utils){
 	var url = Utils.URL('/api/4/sections/');
 	/*
 	 * course_id: 1,
@@ -38,7 +39,7 @@ app.factory('Section', function(ModelFactory, SectionTime, Utils){
 		defaults: {
 			is_selected: false,
 			allConflicts: [],
-			conflicts: [],
+			conflicts: []
 		},
 		query: url,
 		get: url
@@ -111,7 +112,7 @@ app.factory('Section', function(ModelFactory, SectionTime, Utils){
 		}
 	});
 	return Section;
-});
+}]);
 
 })(angular, app);
 

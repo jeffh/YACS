@@ -2,7 +2,9 @@
 
 (function(angular, app, undefined){
 
-app.controller('SearchResultsCtrl', function($scope, $routeParams, $location, CourseFetcher, CourseSearch, urlProvider){
+app.controller('SearchResultsCtrl', ['$scope', '$routeParams', '$location',
+			   'CourseFetcher', 'CourseSearch', 'urlProvider',
+			   function($scope, $routeParams, $location, CourseFetcher, CourseSearch, urlProvider){
 	$scope.courses = [];
 	var query = decodeURIComponent($routeParams.query || '');
 	$scope.semester.then(function(semester){
@@ -13,7 +15,7 @@ app.controller('SearchResultsCtrl', function($scope, $routeParams, $location, Co
 			$scope.courses = CourseSearch(allCourses, query);
 		});
 	});
-});
+}]);
 
 })(angular, app);
 

@@ -5,7 +5,8 @@
 app.constant('hourBlockSize', 52.0);
 app.constant('blockStartingOffset', 1.0);
 
-app.directive('yacsBlockOffset', function($parse, hourBlockSize, blockStartingOffset){
+app.directive('yacsBlockOffset', ['$parse', 'hourBlockSize', 'blockStartingOffset',
+			  function($parse, hourBlockSize, blockStartingOffset){
 	return function(scope, element, attrs){
 		function update(){
 			var startHour = parseFloat($parse(attrs.yacsBlockOffset)(scope));
@@ -16,9 +17,10 @@ app.directive('yacsBlockOffset', function($parse, hourBlockSize, blockStartingOf
 			update();
 		});
 	};
-});
+}]);
 
-app.directive('yacsBlockHeight', function($parse, hourBlockSize, blockStartingOffset){
+app.directive('yacsBlockHeight', ['$parse', 'hourBlockSize', 'blockStartingOffset',
+			  function($parse, hourBlockSize, blockStartingOffset){
 	return function(scope, element, attrs){
 		function update(){
 			var durationInSeconds = parseFloat($parse(attrs.yacsBlockHeight)(scope));
@@ -29,9 +31,9 @@ app.directive('yacsBlockHeight', function($parse, hourBlockSize, blockStartingOf
 			update();
 		});
 	};
-});
+}]);
 
-app.directive('yacsKeydown', function($parse){
+app.directive('yacsKeydown', ['$parse', function($parse){
 	return function(scope, element, attrs){
 		$(document).on('keydown', function(evt){
 			scope.$apply(function(){
@@ -39,7 +41,7 @@ app.directive('yacsKeydown', function($parse){
 			});
 		});
 	};
-});
+}]);
 
 })(angular, app, jQuery);
 

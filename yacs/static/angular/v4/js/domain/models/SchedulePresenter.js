@@ -4,7 +4,9 @@
 
 app.constant('maxColors', 9);
 
-app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils, currentSemesterPromise, maxColors){
+app.factory('schedulePresenter', ['$q', 'Time', 'CourseFetcher',
+			'Utils', 'currentSemesterPromise', 'maxColors',
+			function($q, Time, CourseFetcher, Utils, currentSemesterPromise, maxColors){
 	var weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 	var weekend = ['Saturday', 'Sunday'];
 
@@ -148,7 +150,7 @@ app.factory('schedulePresenter', function($q, Time, CourseFetcher, Utils, curren
 
 		return deferred.promise;
 	};
-});
+}]);
 
 })(angular, app);
 

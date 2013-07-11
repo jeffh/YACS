@@ -2,7 +2,7 @@
 
 (function(angular, app, undefined){
 
-app.factory('tagger', function(kSectionTimeTags, kCourseTags){
+app.factory('tagger', ['kSectionTimeTags', 'kCourseTags', function(kSectionTimeTags, kCourseTags){
 	return function (section){
 		var tags = [];
 		_(section.sectionTypes()).each(function(type){
@@ -23,7 +23,7 @@ app.factory('tagger', function(kSectionTimeTags, kCourseTags){
 		// TODO: prereq & crosslist
 		return _.sortBy(tags, 'sort_order');
 	};
-});
+}]);
 
 })(angular, app);
 

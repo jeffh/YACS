@@ -2,7 +2,11 @@
 
 (function(angular, app, undefined){
 
-app.controller('SelectionCtrl', function($window, $scope, $q, Selection, currentSemesterPromise, CourseFetcher, schedulePresenter, SectionTime, searchOptions){
+app.controller('SelectionCtrl', ['$window', '$scope', '$q', 'Selection', 'currentSemesterPromise',
+			   'CourseFetcher', 'schedulePresenter', 'SectionTime', 'searchOptions',
+			   function($window, $scope, $q, Selection, currentSemesterPromise,
+						CourseFetcher, schedulePresenter,
+						SectionTime, searchOptions){
 	$scope.courses = [];
 	$scope.emptyText = "You didn't select any courses. They would go here.";
 	$scope.scheduleIndex = 0;
@@ -107,6 +111,6 @@ app.controller('SelectionCtrl', function($window, $scope, $q, Selection, current
 			refreshAndSave(false);
 		};
 	});
-});
+}]);
 
 })(angular, app);

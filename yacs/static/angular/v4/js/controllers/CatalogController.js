@@ -2,7 +2,9 @@
 
 (function(angular, app, undefined){
 
-app.controller('CatalogCtrl', function($q, $scope, $location, $routeParams, $timeout, CourseFetcher, Selection, currentSemesterPromise){
+app.controller('CatalogCtrl', ['$q', '$scope', '$location', '$routeParams',
+			   '$timeout', 'CourseFetcher', 'Selection', 'currentSemesterPromise',
+			   function($q, $scope, $location, $routeParams, $timeout, CourseFetcher, Selection, currentSemesterPromise){
 	$scope.courses = [];
 	$scope.emptyText = "Loading courses...";
 	var selectionPromise = Selection.current;
@@ -33,7 +35,7 @@ app.controller('CatalogCtrl', function($q, $scope, $location, $routeParams, $tim
 			};
 		});
 	});
-});
+}]);
 
 })(angular, app);
 

@@ -2,7 +2,7 @@
 
 (function(angular, app, undefined){
 
-app.service('searchOptions', function($rootScope){
+app.service('searchOptions', ['$rootScope', function($rootScope){
 	var defaults = {
 		visible: true
 	};
@@ -12,9 +12,11 @@ app.service('searchOptions', function($rootScope){
 	$rootScope.$on('$routeChangeStart', function(){
 		_.extend(self, defaults);
 	});
-});
+}]);
 
-app.controller('SearchCtrl', function($scope, $location, $timeout, $route, urlProvider, searchOptions, currentSemesterPromise){
+app.controller('SearchCtrl', ['$scope', '$location', '$timeout', '$route', 'urlProvider',
+			   'searchOptions', 'currentSemesterPromise',
+			   function($scope, $location, $timeout, $route, urlProvider, searchOptions, currentSemesterPromise){
 	var timeout = null;
 	var previousPath = null;
 	$scope.searchOptions = searchOptions;
@@ -44,7 +46,7 @@ app.controller('SearchCtrl', function($scope, $location, $timeout, $route, urlPr
 			}, 1000);
 		});
 	});
-});
+}]);
 
 })(angular, app);
 

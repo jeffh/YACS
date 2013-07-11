@@ -2,7 +2,8 @@
 
 (function(angular, app, undefined){
 
-app.factory('Department', function(ModelFactory, Utils){
+app.factory('Department', ['ModelFactory', 'Utils',
+			function(ModelFactory, Utils){
 	var url = Utils.URL('/api/4/departments/');
 	/*
 	 * code: "ADMN",
@@ -14,7 +15,7 @@ app.factory('Department', function(ModelFactory, Utils){
 		get: url
 	});
 	return Department;
-});
+}]);
 
 })(angular, app);
 

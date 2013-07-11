@@ -2,7 +2,8 @@
 
 (function(angular, app, undefined){
 
-app.factory('Course', function(ModelFactory, Section, tagger, Utils, conflictor){
+app.factory('Course', ['ModelFactory', 'Section', 'tagger', 'Utils', 'conflictor',
+			function(ModelFactory, Section, tagger, Utils, conflictor){
 	var url = Utils.URL('/api/4/courses/');
 	/*
 	 * description: "",
@@ -82,9 +83,10 @@ app.factory('Course', function(ModelFactory, Section, tagger, Utils, conflictor)
 		}
 	});
 	return Course;
-});
+}]);
 
-app.factory('currentCourses', function(currentSemesterPromise, Course, $q){
+app.factory('currentCourses', ['currentSemesterPromise', 'Course', '$q',
+			function(currentSemesterPromise, Course, $q){
 	var deferred = $q.defer();
 	currentSemesterPromise.then(function(semester){
 		Course.query({semester_id: semester.id}).then(function(courses){
@@ -92,7 +94,7 @@ app.factory('currentCourses', function(currentSemesterPromise, Course, $q){
 		});
 	});
 	return deferred.promise;
-});
+}]);
 
 })(angular, app);
 

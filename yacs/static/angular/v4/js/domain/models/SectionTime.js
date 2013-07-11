@@ -2,7 +2,7 @@
 
 (function(angular, app, undefined){
 
-app.factory('SectionTime', function(Time){
+app.factory('SectionTime', ['Time', function(Time){
 	function SectionTime(attributes){
 		angular.extend(this, attributes);
 		this.start_time = Time.parse(this.start || '0:00:00');
@@ -35,7 +35,7 @@ app.factory('SectionTime', function(Time){
 		}
 	});
 	return SectionTime;
-});
+}]);
 
 })(angular, app);
 

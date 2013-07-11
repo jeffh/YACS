@@ -2,7 +2,7 @@
 
 (function(angular, app, undefined){
 
-app.factory('ModelFactory', function(apiClient){
+app.factory('ModelFactory', ['apiClient', function(apiClient){
 	var callOrReturn = function(fn, args){
 		if (angular.isFunction(fn)){
 			return fn.apply(window, args);
@@ -63,7 +63,7 @@ app.factory('ModelFactory', function(apiClient){
 
 		return Model;
 	};
-});
+}]);
 
 })(angular, app);
 

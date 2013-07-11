@@ -2,7 +2,7 @@
 
 (function(angular, app, undefined){
 
-app.factory('DelayTrigger', function($timeout){
+app.factory('DelayTrigger', ['$timeout', function($timeout){
 	return function(fn, timeout){
 		var timer = null;
 		return function(){
@@ -16,7 +16,7 @@ app.factory('DelayTrigger', function($timeout){
 			}, timeout);
 		};
 	};
-});
+}]);
 
 })(angular, app);
 

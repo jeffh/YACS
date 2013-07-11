@@ -2,7 +2,10 @@
 
 (function(angular, app, undefined){
 
-app.service('scheduleValidator', function($q, Conflict, Semester, Section, Time, Utils, currentSemesterPromise, BackgroundWorker){
+app.service('scheduleValidator', ['$q', 'Conflict', 'Semester', 'Section', 'Time',
+			'Utils', 'currentSemesterPromise', 'BackgroundWorker',
+			function($q, Conflict, Semester, Section, Time,
+					 Utils, currentSemesterPromise, BackgroundWorker){
 	var conflictsDeferred = $q.defer();
 	var sectionsDeferred = $q.defer();
 	var idToSection = {};
@@ -68,7 +71,7 @@ app.service('scheduleValidator', function($q, Conflict, Semester, Section, Time,
 		});
 		return deferred.promise;
 	};
-});
+}]);
 
 })(angular, app);
 

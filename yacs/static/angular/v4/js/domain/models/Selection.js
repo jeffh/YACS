@@ -2,7 +2,9 @@
 
 (function(angular, app, undefined){
 
-app.factory('Selection', function($q, $cookieStore, currentSemesterPromise, currentCourses, scheduleValidator, Utils, $timeout){
+app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
+			'currentCourses', 'scheduleValidator', 'Utils', '$timeout',
+			function($q, $cookieStore, currentSemesterPromise, currentCourses, scheduleValidator, Utils, $timeout){
 	var storageKeyPromise = currentSemesterPromise.then(function(semester){
 		return 'selection:' + semester.id;
 	});
@@ -242,7 +244,7 @@ app.factory('Selection', function($q, $cookieStore, currentSemesterPromise, curr
 	});
 	Selection.current = Selection.load();
 	return Selection;
-});
+}]);
 
 })(angular, app);
 

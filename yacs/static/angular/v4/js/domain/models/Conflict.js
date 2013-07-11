@@ -2,7 +2,7 @@
 
 (function(angular, app, undefined){
 
-app.factory('Conflict', function(ModelFactory, Utils){
+app.factory('Conflict', ['ModelFactory', 'Utils', function(ModelFactory, Utils){
 	var url = Utils.URL('/api/4/conflicts/');
 	/*
 	 * id: 1
@@ -18,7 +18,7 @@ app.factory('Conflict', function(ModelFactory, Utils){
 		}
 	});
 	return Conflict;
-});
+}]);
 
 })(angular, app);
 

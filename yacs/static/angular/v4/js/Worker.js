@@ -6,9 +6,9 @@ app.factory('BackgroundWorker', function($q, STATIC_URL){
     return function(conflictObjs, sectionObjs){
         var worker = new Worker(STATIC_URL + 'v4/js/worker/Boot.js');
         worker.postMessage({
-            type: 'data',
+            'type': 'data',
             conflicts: conflictObjs,
-            sections: sectionObjs,
+            sections: sectionObjs
         });
         this.postMessage = function(msg){
             var deferred = $q.defer();
