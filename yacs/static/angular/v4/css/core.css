@@ -17,6 +17,13 @@ h1 { font-size: 250% }
 	color: #999;
 }
 
+.spinner {
+	position: absolute;
+	top: 1em;
+	left: 1em;
+	margin: auto;
+}
+
 #wrap {
 	padding: 1em;
 }

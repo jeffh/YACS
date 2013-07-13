@@ -110,6 +110,10 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', 'Selection', 'curren
 			}
 			refreshAndSave(false);
 		};
+
+		$scope.print = function(){
+			$window.print();
+		};
 	});
 }]);
 

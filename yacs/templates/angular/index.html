@@ -32,9 +32,13 @@ app.constant('STATIC_URL', "{{ STATIC_URL }}");
 	</div>
 	<div id="bd">
 		<form id="search" ng-controller="SearchCtrl" ng-show="searchOptions.visible">
-			<input type="text" placeholder="Search {% templatetag openvariable %} semester.name {% templatetag closevariable %} Courses" id="q" name="q" ng-model="query" />
+			<input
+			placeholder="Search {% templatetag openvariable %} semester.name {% templatetag closevariable %} Courses"
+			type="text" id="q" name="q"
+			ng-model="query" yacs-focus="performSearch()" />
 		</form>
 
+		<img class="spinner" src="{{ STATIC_URL }}img/spinner.gif" alt="Loading" ng-show="networkIndicator.isVisible()" />
 		<div ng-view></div>
 	</div>
 	<div id="ft" ng-controller="FooterCtrl">

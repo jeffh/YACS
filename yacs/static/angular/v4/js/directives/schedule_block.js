@@ -5,6 +5,25 @@
 app.constant('hourBlockSize', 52.0);
 app.constant('blockStartingOffset', 1.0);
 
+app.directive('yacsFocus', ['$parse', function($parse){
+	return function(scope, element, attrs){
+		return element.on('focus', function(evt){
+			$parse(attrs.yacsFocus)(scope, {$event: evt});
+		});
+	};
+}]);
+
+app.directive('yacsStopEvent', function(){
+	return {
+		restrict: 'A',
+		link: function(scope, element, attrs){
+			element.on(attrs.yacsStopEvent, function(evt){
+				evt.stopPropagation();
+			})
+		}
+	};
+});
+
 app.directive('yacsBlockOffset', ['$parse', 'hourBlockSize', 'blockStartingOffset',
 			  function($parse, hourBlockSize, blockStartingOffset){
 	return function(scope, element, attrs){

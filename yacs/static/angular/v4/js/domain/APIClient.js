@@ -4,10 +4,38 @@
 
 app.value('apiClientCacheSize', 20);
 
-app.service('apiClient', ['$http', '$q', '$cacheFactory', 'Utils', 'apiClientCacheSize',
-			function($http, $q, $cacheFactory, Utils, apiClientCacheSize){
+app.service('networkIndicator', function($rootScope){
+	var networkCount = 0;
+	this.isVisible = function(){
+		return networkCount > 0;
+	};
+	this.acquire = function(){
+		networkCount++;
+	};
+	this.release = function(){
+		networkCount = Math.max(0, networkCount - 1);
+	};
+	var self = this;
+
+	$rootScope.$watch('$routeChangeStart', function(){
+		networkCount = 0;
+		self.acquire();
+	});
+	$rootScope.$watch('$routeChangeSuccess', function(){
+		self.release();
+	});
+	$rootScope.$watch('$routeChangeError', function(){
+		self.release();
+	});
+});
+
+app.service('apiClient', ['$http', '$q', '$cacheFactory',
+			'Utils', 'apiClientCacheSize', 'networkIndicator',
+			function($http, $q, $cacheFactory, Utils,
+					 apiClientCacheSize, networkIndicator){
 	var cache = $cacheFactory('apiCache', {number: apiClientCacheSize});
 	this.get = function(url, params){
+		networkIndicator.acquire();
 		params = params || {};
 		var fullUrl = url;
 		if (!_.isEmpty(params)){
@@ -32,7 +60,13 @@ app.service('apiClient', ['$http', '$q', '$cacheFactory', 'Utils', 'apiClientCac
 			});
 		}
 
-		return deferred.promise;
+		return deferred.promise.then(function(result){
+			networkIndicator.release();
+			return result;
+		}, function(err){
+			networkIndicator.release();
+			return err;
+		});
 	};
 }]);
 

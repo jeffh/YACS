@@ -1,4 +1,4 @@
-<div class="catalog course-list empty" ng-hide="courses.length > 0">
+<div class="catalog course-list empty" ng-show="!courses.length && !networkIndicator.isVisible()">
 	{{ emptyText }}
 </div>
 

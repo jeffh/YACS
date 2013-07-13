@@ -28,23 +28,27 @@ app.controller('SearchCtrl', ['$scope', '$location', '$timeout', '$route', 'urlP
 				timeout = null;
 			}
 			timeout = $timeout(function(){
-				if ($scope.query && $scope.query !== ''){
-					// restore previous url
-					if (!$route.current.params.query){
-						previousPath = $location.path();
-					}
-					$location.path(urlProvider(
-						semester.year,
-						semester.month,
-						'search',
-						$scope.query
-					));
-					timeout = null;
-				} else if (previousPath){
-					$location.path(previousPath);
-				}
-			}, 1000);
+				$scope.performSearch();
+			}, 300);
 		});
+
+		$scope.performSearch = function(){
+			if ($scope.query && $scope.query !== ''){
+				// restore previous url
+				if (!$route.current.params.query){
+					previousPath = $location.path();
+				}
+				$location.path(urlProvider(
+					semester.year,
+					semester.month,
+					'search',
+					$scope.query
+				));
+				timeout = null;
+			} else if (previousPath){
+				$location.path(previousPath);
+			}
+		};
 	});
 }]);
 
