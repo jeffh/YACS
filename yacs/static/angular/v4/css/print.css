@@ -4,6 +4,8 @@
 .schedule .options,
 .schedule .prev-schedule,
 .schedule .next-schedule,
+.num_seats,
+.seats,
 #ft {
 	display: none;
 }
