@@ -338,9 +338,17 @@ PIPELINE_CSS = {
             'v4/css/dept_list.css',
             'v4/css/schedules.css',
         ),
-        'extra_context': {'media': 'screen'},
+        'extra_context': {'media': 'screen,print'},
         'output_filename': 'ang.css',
-    }
+    },
+    'print': {
+        'source_filenames': (
+            'v4/css/reset.css',
+            'v4/css/print.css',
+        ),
+        'extra_context': {'media': 'print'},
+        'output_filename': 'print.css',
+    },
 }
 
 PIPELINE_JS = {

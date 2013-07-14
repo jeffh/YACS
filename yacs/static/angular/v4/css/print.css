@@ -1,0 +1,28 @@
+#hd,
+.submenu,
+#search,
+.schedule .options,
+.schedule .prev-schedule,
+.schedule .next-schedule,
+#ft {
+	display: none;
+}
+
+body {
+	font-size: 11pt;
+	background: transparent;
+}
+
+.dept-list .dept {
+	margin: 0;
+	padding: 0;
+}
+
+.catalog .checkbox {
+	display: none;
+}
+
+/** Conflict styling is @media queried **/
+.course_conflict, .section_conflict {
+	display: none;
+}
