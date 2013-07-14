@@ -4,7 +4,9 @@
 
 app.value('apiClientCacheSize', 20);
 
+var id = 0;
 app.service('networkIndicator', function($rootScope){
+	this.__ID = ++id;
 	var networkCount = 0;
 	this.isVisible = function(){
 		return networkCount > 0;
@@ -15,18 +17,20 @@ app.service('networkIndicator', function($rootScope){
 	this.release = function(){
 		networkCount = Math.max(0, networkCount - 1);
 	};
-	var self = this;
 
-	$rootScope.$watch('$routeChangeStart', function(){
-		networkCount = 0;
+	var self = this;
+	this.acquireFn = function(value){
 		self.acquire();
-	});
-	$rootScope.$watch('$routeChangeSuccess', function(){
+		return value;
+	};
+	this.releaseFn = function(value){
 		self.release();
-	});
-	$rootScope.$watch('$routeChangeError', function(){
-		self.release();
-	});
+		return value;
+	};
+
+	$rootScope.$on('$routeChangeStart', this.acquireFn);
+	$rootScope.$on('$routeChangeSuccess', this.releaseFn);
+	$rootScope.$on('$routeChangeError', this.releaseFn);
 });
 
 app.service('apiClient', ['$http', '$q', '$cacheFactory',
@@ -45,10 +49,12 @@ app.service('apiClient', ['$http', '$q', '$cacheFactory',
 
 		var response = cache.get(fullUrl);
 		if (response){
+			networkIndicator.release();
 			deferred.resolve(response);
 		} else {
 			var promise = $http.get(fullUrl);
 			promise.success(function(json, status, headers, config){
+				networkIndicator.release();
 				if (!json.success) {
 					deferred.reject(new Error('Invalid server api response: success=false'), json || data);
 					return;
@@ -56,17 +62,12 @@ app.service('apiClient', ['$http', '$q', '$cacheFactory',
 				deferred.resolve(json.result);
 				cache.put(fullUrl, json.result);
 			}).error(function(data, status, headers, config){
+				networkIndicator.release();
 				deferred.reject(new Error('Invalid server response: ' + status + '; '), data);
 			});
 		}
 
-		return deferred.promise.then(function(result){
-			networkIndicator.release();
-			return result;
-		}, function(err){
-			networkIndicator.release();
-			return err;
-		});
+		return deferred.promise;
 	};
 }]);
 
