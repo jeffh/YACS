@@ -22,7 +22,27 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 	Selection.prototype = {};
 	angular.extend(Selection, {
 		deserialize: function(str){
-			return new Selection(angular.fromJson(str));
+			var data = {};
+			var tokens = str.split(',');
+			var decode = function(n){ return parseInt(n, 32); }
+			while(tokens.length){
+				var courseId = decode(tokens.shift());
+				var len = decode(tokens.shift());
+				var sectionIds = [];
+				for (var j=0; j<len; j++){
+					sectionIds.push(decode(tokens.shift()));
+				}
+
+				var inputs = _.flatten([courseId, len, sectionIds]);
+				if (_.any(inputs, isNaN)){
+					console.warn('fail to deserialize', inputs);
+					data = {};
+					break;
+				}
+
+				data[courseId] = sectionIds;
+			}
+			return new Selection(data);
 		},
 		load: function(){
 			var deferred = $q.defer();
@@ -222,7 +242,16 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 					delete self.courseIdsToSectionIds[courseId];
 				}
 			});
-			return angular.toJson(this.courseIdsToSectionIds);
+			var output = [];
+			var encode = function(x){ return new Number(x).toString(32); }
+			_.each(this.courseIdsToSectionIds, function(sectionIds, courseId){
+				output.push(encode(courseId));
+				output.push(encode(sectionIds.length));
+				_.each(sectionIds, function(sectionId){
+					output.push(encode(sectionId));
+				});
+			});
+			return output.join(',');
 		},
 		save: function(){
 			var self = this;

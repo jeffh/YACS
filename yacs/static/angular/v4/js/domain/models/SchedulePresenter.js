@@ -128,7 +128,7 @@ app.factory('schedulePresenter', ['$q', 'Time', 'CourseFetcher',
 				var timeRange = computeTimeRange(schedules, blockedTimes);
 				var result = _.map(schedules, function(schedule){
 					return {
-						crns: _(schedule).chain().values().pluck('crn').value().join(', '),
+						crns: _(schedule).chain().values().pluck('crn').value(),
 						dows: dows,
 						time_range: timeRange,
 						blocks: computeTimeSlots(schedule, timeRange[0].hour, idToCourse)
@@ -137,7 +137,7 @@ app.factory('schedulePresenter', ['$q', 'Time', 'CourseFetcher',
 
 				if (!result.length) {
 					result = [{
-						crns: '',
+						crns: [],
 						dows: dows,
 						time_range: timeRange,
 						blocks: []

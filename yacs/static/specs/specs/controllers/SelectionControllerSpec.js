@@ -2,9 +2,10 @@
 
 
 describe("Controllers", function(){
-	var scope;
-	beforeEach(inject(function($rootScope){
+	var scope, icalUrl;
+	beforeEach(inject(function($rootScope, ICAL_URL){
 		scope = $rootScope.$new();
+		icalUrl = ICAL_URL;
 	}));
 
 	describe("SelectionCtrl", function(){
@@ -221,11 +222,31 @@ describe("Controllers", function(){
 					});
 				});
 
-				describe("when schedules are resolved", function(){
+				/* TODO: iCal link broken
+				describe("when schedules are resolved with no schedules", function(){
 					beforeEach(inject(function($rootScope){
-						schedulesDeferred.resolve([{}, {}]);
+						scope.ical_url = 'foo';
+						schedulesDeferred.resolve([]);
 						$rootScope.$apply();
 					}));
+
+					it("should remove the ical url to the scope", function(){
+						expect(scope.ical_url).toBeFalsy();
+					});
+				});
+				*/
+
+				describe("when schedules are resolved", function(){
+					beforeEach(inject(function($rootScope){
+						schedulesDeferred.resolve([{crns: [2, 4]}, {crns: [2]}]);
+						$rootScope.$apply();
+					}));
+
+					/* TODO: iCal link broken
+					it("should set the ical url to the scope", function(){
+						expect(scope.ical_url).toEqual(icalUrl + '?crn=2&crn=4');
+					});
+					*/
 
 					describe("when tapping the left arrow key", function(){
 						beforeEach(function(){

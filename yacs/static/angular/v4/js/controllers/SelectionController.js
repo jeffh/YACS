@@ -3,10 +3,10 @@
 (function(angular, app, undefined){
 
 app.controller('SelectionCtrl', ['$window', '$scope', '$q', 'Selection', 'currentSemesterPromise',
-			   'CourseFetcher', 'schedulePresenter', 'SectionTime', 'searchOptions',
+			   'CourseFetcher', 'schedulePresenter', 'SectionTime', 'searchOptions', 'ICAL_URL',
 			   function($window, $scope, $q, Selection, currentSemesterPromise,
 						CourseFetcher, schedulePresenter,
-						SectionTime, searchOptions){
+						SectionTime, searchOptions, ICAL_URL){
 	$scope.courses = [];
 	$scope.emptyText = "You didn't select any courses. They would go here.";
 	$scope.scheduleIndex = 0;
@@ -21,6 +21,19 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', 'Selection', 'curren
 		};
 		var blockedTimes = {};
 
+		function updateUI(schedules){
+			$scope.schedule = schedules[$scope.scheduleIndex];
+			window.foo = selection.courseIdsToSectionIds;
+			/* iCal link broken
+			if ($scope.schedule && $scope.schedule.crns.length){
+				$scope.ical_url = ICAL_URL + '?crn=' + $scope.schedule.crns.join('&crn=');
+			} else {
+				$scope.ical_url = null;
+			}
+			*/
+			return schedules;
+		}
+
 		function refreshAndSave(shouldSave){
 			if (shouldSave){
 				selection.save();
@@ -33,8 +46,7 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', 'Selection', 'curren
 			$scope.schedules = schedulePresenter(schedulesPromise, _.values(blockedTimes));
 			$scope.schedules.then(function(schedules){
 				$scope.scheduleIndex = Math.min($scope.scheduleIndex, schedules.length - 1);
-				$scope.schedule = schedules[$scope.scheduleIndex];
-				return schedules;
+				return updateUI(schedules);
 			});
 		}
 
@@ -73,14 +85,14 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', 'Selection', 'curren
 		$scope.previousSchedule = function(){
 			$scope.schedules.then(function(schedules){
 				$scope.scheduleIndex = Math.max($scope.scheduleIndex - 1, 0);
-				$scope.schedule = schedules[$scope.scheduleIndex];
+				updateUI(schedules);
 			});
 		};
 
 		$scope.nextSchedule = function(){
 			$scope.schedules.then(function(schedules){
 				$scope.scheduleIndex = Math.min($scope.scheduleIndex + 1, schedules.length - 1);
-				$scope.schedule = schedules[$scope.scheduleIndex];
+				updateUI(schedules);
 			});
 		};
 

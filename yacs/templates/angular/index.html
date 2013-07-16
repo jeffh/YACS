@@ -15,6 +15,7 @@
 
 <script>
 app.constant('STATIC_URL', "{{ STATIC_URL }}");
+app.constant('ICAL_URL', "{% url 'ics' %}");
 </script>
 {% block js %}{% endblock %}
 </head>

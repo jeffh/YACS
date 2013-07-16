@@ -15,6 +15,12 @@ describe("Domain", function(){
 				expect(anotherSelection.serialize()).not.toEqual(selection.serialize());
 			});
 
+			it("should support serialization", function(){
+				selection.courseIdsToSectionIds[1] = [2, 3];
+				var anotherSelection = Selection.deserialize(selection.serialize());
+				expect(anotherSelection).toEqual(selection);
+			});
+
 			describe("with an empty selection", function(){
 				describe("courseIds", function(){
 					it("should return no course ids", function(){
@@ -41,10 +47,6 @@ describe("Domain", function(){
 
 					it("should have no selected courses", function(){
 						expect(selection.numberOfCourses()).toEqual(0);
-					});
-
-					it("should ", function(){
-						expect(selection.serialize()).toEqual('{}');
 					});
 				});
 			});

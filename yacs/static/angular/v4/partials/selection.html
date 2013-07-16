@@ -17,10 +17,14 @@
 				No Schedules
 			</span>
 			<span class="options">
-				<a href="#">calendar</a> or <a href="" yacs-stop-event="click" ng-click="print()">print it</a>.
+				<span ng-show="ical_url">
+					<a href="{{ ical_url }}">calendar</a>
+					or
+				</span>
+				<a href="" yacs-stop-event="click" ng-click="print()">print</a>
 			</span>
 		</h2>
-		<p>{{ schedule.crns }}</p>
+		<p>{{ schedule.crns.join(", ") }}</p>
 		<div class="week">
 			<div class="times dow">
 				<div class="header row"> </div>
