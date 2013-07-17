@@ -235,12 +235,26 @@ describe("Controllers", function(){
 					});
 				});
 				*/
+				describe("when schedules are not resolved", function(){
+					it("should not explode when tapping on the arrow keys", function(){
+						scope.scheduleIndex = 1;
+						scope.keyDown($.Event('keydown', {keyCode: 37}));
+						scope.keyDown($.Event('keydown', {keyCode: 39}));
+						scope.$apply();
+					});
+				});
 
 				describe("when schedules are resolved", function(){
+					var schedules = [{crns: [2, 4]}, {crns: [2]}];
 					beforeEach(inject(function($rootScope){
-						schedulesDeferred.resolve([{crns: [2, 4]}, {crns: [2]}]);
+						schedulesDeferred.resolve(schedules);
 						$rootScope.$apply();
+						scope.$apply();
 					}));
+
+					it("should set the schedules on the scope", function(){
+						expect(scope.schedules).toEqual(schedules);
+					});
 
 					/* TODO: iCal link broken
 					it("should set the ical url to the scope", function(){

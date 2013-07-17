@@ -38,7 +38,7 @@ app.controller('NavCtrl', ['$scope', '$location', 'urlProvider',
 
 		$scope.click = function(item){
 			$scope.selectedItem = item;
-			$location.path(item.path);
+			$location.path(item.path).search({});
 		};
 	});
 }]);

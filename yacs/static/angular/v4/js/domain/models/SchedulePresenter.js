@@ -131,7 +131,7 @@ app.factory('schedulePresenter', ['$q', 'Time', 'CourseFetcher',
 						crns: _(schedule).chain().values().pluck('crn').value(),
 						dows: dows,
 						time_range: timeRange,
-						blocks: computeTimeSlots(schedule, timeRange[0].hour, idToCourse)
+						blocks: computeTimeSlots(schedule, (timeRange[0] || {}).hour, idToCourse)
 					};
 				});
 

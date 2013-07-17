@@ -23,7 +23,8 @@ app.config(['$routeProvider', 'STATIC_URL', function($routeProvider, STATIC_URL)
 	});
 	$routeProvider.when('/:year/:month/selected/', {
 		templateUrl: STATIC_URL + 'v4/partials/selection.html',
-		controller: 'SelectionCtrl'
+		controller: 'SelectionCtrl',
+		reloadOnSearch: false
 	});
 	$routeProvider.when('/:year/:month/search/:query/', {
 		templateUrl: STATIC_URL + 'v4/partials/catalog.html',

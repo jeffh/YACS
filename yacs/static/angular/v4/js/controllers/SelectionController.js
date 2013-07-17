@@ -2,17 +2,29 @@
 
 (function(angular, app, undefined){
 
-app.controller('SelectionCtrl', ['$window', '$scope', '$q', 'Selection', 'currentSemesterPromise',
-			   'CourseFetcher', 'schedulePresenter', 'SectionTime', 'searchOptions', 'ICAL_URL',
-			   function($window, $scope, $q, Selection, currentSemesterPromise,
-						CourseFetcher, schedulePresenter,
+app.controller('SelectionCtrl', ['$window', '$scope', '$q', '$location', 'Selection',
+			   'currentSemesterPromise', 'CourseFetcher', 'schedulePresenter',
+			   'SectionTime', 'searchOptions', 'ICAL_URL',
+			   function($window, $scope, $q, $location, Selection,
+						currentSemesterPromise, CourseFetcher, schedulePresenter,
 						SectionTime, searchOptions, ICAL_URL){
 	$scope.courses = [];
 	$scope.emptyText = "You didn't select any courses. They would go here.";
 	$scope.scheduleIndex = 0;
 	searchOptions.visible = false;
 
-	$q.all([currentSemesterPromise, Selection.current]).then(function(values){
+	var selectionPromise = Selection.current;
+	var query = $location.search();
+	if (query.id){
+		var deferred = $q.defer();
+		deferred.resolve(Selection.deserialize(query.id));
+		selectionPromise = deferred.promise;
+	}
+	if (query.n && !isNaN(parseInt(query.n, 10))){
+		$scope.scheduleIndex = Math.max(parseInt(query.n, 10), 0);
+	}
+
+	$q.all([currentSemesterPromise, selectionPromise]).then(function(values){
 		var semester = values[0];
 		var selection = values[1];
 		var filters = {
@@ -23,7 +35,10 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', 'Selection', 'curren
 
 		function updateUI(schedules){
 			$scope.schedule = schedules[$scope.scheduleIndex];
-			window.foo = selection.courseIdsToSectionIds;
+			$location.search({
+				id: selection.serialize(),
+				n: $scope.scheduleIndex
+			}).replace();
 			/* iCal link broken
 			if ($scope.schedule && $scope.schedule.crns.length){
 				$scope.ical_url = ICAL_URL + '?crn=' + $scope.schedule.crns.join('&crn=');
@@ -34,6 +49,15 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', 'Selection', 'curren
 			return schedules;
 		}
 
+		function setScheduleIndex(amt){
+			if (!$scope.schedules){
+				return;
+			}
+			var max = $scope.schedules.length - 1;
+			$scope.scheduleIndex = Math.min(Math.max(amt, 0), max);
+			return updateUI($scope.schedules);
+		};
+
 		function refreshAndSave(shouldSave){
 			if (shouldSave){
 				selection.save();
@@ -43,10 +67,10 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', 'Selection', 'curren
 				return sectionTime.toObject();
 			}));
 
-			$scope.schedules = schedulePresenter(schedulesPromise, _.values(blockedTimes));
-			$scope.schedules.then(function(schedules){
-				$scope.scheduleIndex = Math.min($scope.scheduleIndex, schedules.length - 1);
-				return updateUI(schedules);
+			var promise = schedulePresenter(schedulesPromise, _.values(blockedTimes));
+			promise.then(function(schedules){
+				$scope.schedules = schedules;
+				return setScheduleIndex($scope.scheduleIndex);
 			});
 		}
 
@@ -83,17 +107,11 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', 'Selection', 'curren
 		};
 
 		$scope.previousSchedule = function(){
-			$scope.schedules.then(function(schedules){
-				$scope.scheduleIndex = Math.max($scope.scheduleIndex - 1, 0);
-				updateUI(schedules);
-			});
+			setScheduleIndex($scope.scheduleIndex - 1);
 		};
 
 		$scope.nextSchedule = function(){
-			$scope.schedules.then(function(schedules){
-				$scope.scheduleIndex = Math.min($scope.scheduleIndex + 1, schedules.length - 1);
-				updateUI(schedules);
-			});
+			setScheduleIndex($scope.scheduleIndex + 1);
 		};
 
 		$scope.keyDown = function(event){

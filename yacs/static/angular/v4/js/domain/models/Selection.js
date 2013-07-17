@@ -11,7 +11,7 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 
 	function Selection(courseIdsToSectionIds, blockedTimes){
 		this.courseIdsToSectionIds = courseIdsToSectionIds || {};
-		this.blockedTimes = {};
+		this.blockedTimes = blockedTimes || {};
 	}
 	function uniquePush(arr, item){
 		if (!_.contains(arr, item)){
@@ -52,7 +52,7 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 					selection = Selection.deserialize($cookieStore.get(key))
 				} catch(e) {
 					selection = new Selection();
-					console.log('Failed to load selection, using empty one');
+					console.warn('Failed to load selection, using empty one: ');
 				}
 				window.selection = selection;
 				deferred.resolve(selection);
