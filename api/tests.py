@@ -13,6 +13,7 @@ from scheduler.factories import SavedSelectionFactory
 
 ################# API 4 #####################
 
+
 class TestAPI4Docs(ShortcutTestCase):
     urls = 'yacs.urls'
 
@@ -214,9 +215,9 @@ class TestAPI4SavedSelections(ShortcutTestCase):
             }
         }
 
-        self.assertEqual(json, expected_json);
+        self.assertEqual(json, expected_json)
         json = self.json_get('v4:selection', id=selection.id, status_code=200)
-        self.assertEqual(json, expected_json);
+        self.assertEqual(json, expected_json)
 
 
 class TestAPI4Departments(ShortcutTestCase):

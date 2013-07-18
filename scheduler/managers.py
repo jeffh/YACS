@@ -2,6 +2,7 @@ from django.db.models import Manager
 
 from scheduler.utils import slugify, deserialize_numbers, serialize_numbers
 
+
 class SavedSelectionManager(Manager):
     def _update_kwargs(self, kwargs):
         tmp = self.model()

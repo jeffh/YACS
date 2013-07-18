@@ -11,6 +11,7 @@ from scheduler.utils import slugify, deserialize_numbers, serialize_numbers
 
 from shortcuts import commit_all_or_rollback
 
+
 class SavedSelection(models.Model):
     "Represents a unique set of selected sections and blocked times."
     internal_section_ids = models.CommaSeparatedIntegerField(max_length=1024)
@@ -61,6 +62,7 @@ class SavedSelection(models.Model):
             'selection': self.selection_dict,
             'blocked_times': self.blocked_times,
         }
+
 
 class Selection(models.Model):
     """Represents a unique set of selected CRNs. It also offers a unique URL for each set.

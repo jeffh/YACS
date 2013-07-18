@@ -2,6 +2,7 @@ import factory
 
 from scheduler import models
 
+
 class SavedSelectionFactory(factory.Factory):
     FACTORY_FOR = models.SavedSelection
 
