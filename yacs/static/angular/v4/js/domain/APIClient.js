@@ -69,6 +69,27 @@ app.service('apiClient', ['$http', '$q', '$cacheFactory',
 
 		return deferred.promise;
 	};
+
+	this.post = function(url, data){
+		networkIndicator.acquire();
+		data = data || {};
+		var deferred = $q.defer();
+
+		var promise = $http.post(url);
+		promise.success(function(json, status, headers, config){
+			networkIndicator.release();
+			if (!json.success) {
+				deferred.reject(new Error('Invalid server api response: success=false'), json || data);
+				return;
+			}
+			deferred.resolve(json.result);
+		}).error(function(data, status, headers, config){
+			networkIndicator.release();
+			deferred.reject(new Error('Invalid server response: ' + status + '; '), data);
+		});
+
+		return deferred.promise;
+	};
 }]);
 
 })(angular, app);

@@ -52,6 +52,13 @@ app.factory('ModelFactory', ['apiClient', function(apiClient){
 			equals: function(model){
 				return this.id === model.id;
 			},
+			save: function(){
+				var promise = apiClient.post(callOrReturn(options.query), _.pick(this, this.__attributes__));
+				return promise.then(function(result){
+					angular.extend(self, result);
+					return self;
+				});
+			},
 			toObject: function(){
 				var obj = {}, self = this;
 				_.each(this.__attributes__, function(attr){
