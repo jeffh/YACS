@@ -11,6 +11,56 @@ from scheduler.utils import slugify, deserialize_numbers, serialize_numbers
 
 from shortcuts import commit_all_or_rollback
 
+class SavedSelection(models.Model):
+    "Represents a unique set of selected sections and blocked times."
+    internal_section_ids = models.CommaSeparatedIntegerField(max_length=1024)
+    internal_blocked_times = models.CommaSeparatedIntegerField(max_length=1024, blank=True)
+
+    objects = managers.SavedSelectionManager()
+
+    @property
+    def selection_dict(self):
+        mapping = {}
+        for section in courses.Section.objects.filter(id__in=self.section_ids):
+            mapping.setdefault(section.course_id, []).append(section.id)
+        return mapping
+
+    @property
+    def section_ids(self):
+        return deserialize_numbers(self.internal_section_ids)
+
+    @section_ids.setter
+    def section_ids(self, section_ids):
+        section_ids.sort()
+        self.internal_section_ids = serialize_numbers(section_ids)
+
+    @property
+    def blocked_times(self):
+        numbers = list(deserialize_numbers(self.internal_blocked_times))
+        times = []
+        while numbers:
+            start_time, end_time = numbers.pop(0), numbers.pop(0)
+            times.append((start_time, end_time))
+        return times
+
+    @blocked_times.setter
+    def blocked_times(self, blocked_times):
+        blocked_times.sort()
+        numbers = []
+        for start, end in blocked_times:
+            numbers.append(int(start))
+            numbers.append(int(end))
+        self.internal_blocked_times = serialize_numbers(numbers)
+
+    def __unicode__(self):
+        return "%r, %r, %r" % (self.id, self.section_ids, self.blocked_times)
+
+    def toJSON(self):
+        return {
+            'id': self.id,
+            'selection': self.selection_dict,
+            'blocked_times': self.blocked_times,
+        }
 
 class Selection(models.Model):
     """Represents a unique set of selected CRNs. It also offers a unique URL for each set.
@@ -21,7 +71,7 @@ class Selection(models.Model):
     objects = managers.SelectionManager()
 
     def assign_slug_by_id(self):
-        "Automatically assigns slug by id. The model much be saved before using this method."
+        "Automatically assigns slug by id. The model must be saved before using this method."
         self.slug = self.pk
 
     @property

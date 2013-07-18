@@ -2,6 +2,21 @@ from django.db.models import Manager
 
 from scheduler.utils import slugify, deserialize_numbers, serialize_numbers
 
+class SavedSelectionManager(Manager):
+    def _update_kwargs(self, kwargs):
+        tmp = self.model()
+        if 'section_ids' in kwargs:
+            tmp.section_ids = kwargs.pop('section_ids')
+            kwargs['internal_section_ids'] = tmp.internal_section_ids
+        if 'blocked_times' in kwargs:
+            tmp.blocked_times = kwargs.pop('blocked_times')
+            kwargs['internal_blocked_times'] = tmp.internal_blocked_times
+        return kwargs
+
+    def get_or_create_by_data(self, **kwargs):
+        kwargs = self._update_kwargs(kwargs)
+        return super(SavedSelectionManager, self).get_or_create(**kwargs)
+
 
 class SelectionManager(Manager):
     def _update_kwargs(self, kwargs):

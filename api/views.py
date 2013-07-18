@@ -13,7 +13,7 @@ from courses.views import decorators
 from courses import models, views
 from courses import encoder as encoders
 
-from scheduler.models import SectionProxy, Selection, SectionConflict
+from scheduler.models import SectionProxy, Selection, SectionConflict, SavedSelection
 from scheduler.domain import (
     ConflictCache, has_schedule, compute_schedules, period_stats
 )
@@ -103,6 +103,31 @@ def get_if_id_present(queryset, id=None):
 @render()
 def raw_data(request, data, version=None, ext=None):
     return {'context': data}
+
+
+@render()
+def selections(request, id=None, version=None, ext=None):
+    if request.method == 'GET' and id:
+        selection = SavedSelection.objects.get(id=id)
+        return {'context': selection.toJSON()}
+
+    if request.method != 'POST':
+        return HttpResponseBadRequest('{}')
+
+    section_ids = int_list(request.POST.get('section_ids', '').split(','))
+    blocked_times = int_list(request.POST.get('blocked_times', '').split(','))
+
+    blocked_time_tuples = []
+    while blocked_times:
+        start = blocked_times.pop(0)
+        end = blocked_times.pop(0)
+        blocked_time_tuples.append((start, end))
+
+    selection, created = SavedSelection.objects.get_or_create_by_data(
+        section_ids=section_ids,
+        blocked_times=blocked_time_tuples,
+    )
+    return {'context': selection.toJSON()}
 
 
 @render()
@@ -216,19 +241,6 @@ def section_conflicts(request, id=None, version=None, ext=None):
             'conflicts': list(conflicts),
         })
     return {'context': collection}
-
-
-@render()
-def selections(request, id, version=None):
-    selection = Selection.objects.get(id=id)
-    sections = models.Section.objects.filter(id__in=selection.section_ids)
-    data = dict_by_attr(sections, 'course_id', 'id')
-    return {
-        'context': {
-            'id': selection.id,
-            'data': data,
-        }
-    }
 
 
 @render()

@@ -8,9 +8,10 @@ from courses.tests.factories import (
     CourseFactory, OfferedForFactory, SectionPeriodFactory,
     SectionFactory
 )
+from scheduler.models import SavedSelection
+from scheduler.factories import SavedSelectionFactory
 
 ################# API 4 #####################
-
 
 class TestAPI4Docs(ShortcutTestCase):
     urls = 'yacs.urls'
@@ -169,6 +170,53 @@ class TestAPI4Semesters(ShortcutTestCase):
                 self.as_dict(self.s1),
             ],
         })
+
+
+class TestAPI4SavedSelections(ShortcutTestCase):
+    urls = 'api.urls'
+
+    def test_saving_and_loading(self):
+        course1 = CourseFactory.create()
+        course2 = CourseFactory.create()
+        section1 = SectionFactory.create(course=course1)
+        section2 = SectionFactory.create(course=course1)
+        section3 = SectionFactory.create(course=course2)
+
+        json = self.json_post('v4:selections', data={
+            'section_ids': ','.join([
+                str(section1.id),
+                str(section2.id),
+                str(section3.id),
+            ]),
+            'blocked_times': ','.join(['80', '90', '140', '200'])
+        }, status_code=200)
+
+        selection = SavedSelection.objects.all()[0]
+
+        expected_json = {
+            u"version": 4,
+            u"success": True,
+            u"result": {
+                u'id': selection.id,
+                u'selection': {
+                    unicode(course1.id): [
+                        section1.id,
+                        section2.id,
+                    ],
+                    unicode(course2.id): [
+                        section3.id
+                    ]
+                },
+                u'blocked_times': [
+                    [80, 90],
+                    [140, 200],
+                ]
+            }
+        }
+
+        self.assertEqual(json, expected_json);
+        json = self.json_get('v4:selection', id=selection.id, status_code=200)
+        self.assertEqual(json, expected_json);
 
 
 class TestAPI4Departments(ShortcutTestCase):

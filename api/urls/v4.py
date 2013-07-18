@@ -46,10 +46,16 @@ urlpatterns = patterns('',
     url(r'^/conflicts/(?P<id>\d+)/$', views.section_conflicts, api4, name='conflicts'),
     url(r'^/conflicts/(?P<id>\d+)' + ext_re, views.section_conflicts, api4, name='conflicts'),
 
+    # not official API... this is actually deprecated and may
+    # be removed at any point
     url(r'^/schedules/$', views.schedules, api4, name='schedules'),
     url(r'^/schedules' + ext_re, views.schedules, api4, name='schedules'),
     url(r'^/schedules/(?P<id>\d+)/$', views.schedules, api4, name='schedules'),
     url(r'^/schedules/(?P<id>\d+)' + ext_re, views.schedules, api4, name='schedules'),
     url(r'^/schedules/selection/(?P<id>\d+)/$', views.selections, api4, name='selection'),
     url(r'^/schedules/selection/(?P<id>\d+)' + ext_re, views.selections, api4, name='selection'),
+
+    # new pending API
+    url(r'^/selections/$', views.selections, api4, name='selections'),
+    url(r'^/selections/(?P<id>\d+)/$$', views.selections, api4, name='selection'),
 )
