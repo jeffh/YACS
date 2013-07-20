@@ -15,7 +15,7 @@ app.factory('SavedSelection', ['Utils', 'ModelFactory',
 		 get: url
 	 });
 
-	 return Course;
+	 return SavedSelection;
 }]);
 
 })(angular, app);
