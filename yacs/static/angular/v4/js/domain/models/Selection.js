@@ -22,7 +22,8 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 	Selection.prototype = {};
 	angular.extend(Selection, {
 		deserialize: function(str){
-			return new Selection(angular.fromJson(str));
+			var data = angular.fromJson(str);
+			return new Selection(data.selection, data.blockedTimes);
 		},
 		load: function(){
 			var deferred = $q.defer();
