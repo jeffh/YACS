@@ -183,7 +183,7 @@ class TestAPI4SavedSelections(ShortcutTestCase):
         section2 = SectionFactory.create(course=course1)
         section3 = SectionFactory.create(course=course2)
 
-        json = self.json_post('v4:selections', data={
+        json = self.json_post('v4:saved-selections', data={
             'section_ids': ','.join([
                 str(section1.id),
                 str(section2.id),
@@ -216,7 +216,7 @@ class TestAPI4SavedSelections(ShortcutTestCase):
         }
 
         self.assertEqual(json, expected_json)
-        json = self.json_get('v4:selection', id=selection.id, status_code=200)
+        json = self.json_get('v4:saved-selection', id=selection.id, status_code=200)
         self.assertEqual(json, expected_json)
 
 
