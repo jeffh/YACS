@@ -188,25 +188,7 @@ def wait_for_url(url, timeout=30):
 
 @task
 def jasmine(port=6856):
-    "Runs jasmine tests. Requires phantomjs"
-    context = dict(port=port)
-    python = local('which python', capture=True)
-    args = shlex.split(repr(python) + ' manage.py run_gunicorn -b "127.0.0.1:' + str(port) + '" -w 4')
-    cwd = os.path.abspath(os.path.dirname(__file__))
-    print ' '.join(args)
-    print 'Running local server on port', port
-
-    proc = subprocess.Popen(args, cwd=cwd)
-    print 'Waiting for server to start...'
-    wait_for_url('http://localhost:{port}/jasmine/'.format(**context))
-    try:
-        local('phantomjs yacs/static/specs/run-jasmine.js http://localhost:{port}/jasmine/'.format(**context))
-    finally:
-        print 'killing local server...'
-        pids = local("ps | grep '[p]ython.*{port}' | cut -d ' ' -f 1".format(**context), capture=True).splitlines()
-        for pid in pids:
-            local('kill -9 ' + pid)
-
+    local('jasmine-ci')
 
 @task
 def pep8():

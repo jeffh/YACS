@@ -28,6 +28,3 @@ urlpatterns = patterns('',
 
 if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
-    urlpatterns += patterns('',
-        url(r'^jasmine/$', TemplateView.as_view(template_name='jasmine/runner.html'), name='index'),
-    )
