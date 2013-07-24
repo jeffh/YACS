@@ -5,7 +5,7 @@
 app.value('apiClientCacheSize', 20);
 
 var id = 0;
-app.service('networkIndicator', function($rootScope){
+app.service('networkIndicator', ['$rootScope', function($rootScope){
 	this.__ID = ++id;
 	var networkCount = 0;
 	this.isVisible = function(){
@@ -31,12 +31,13 @@ app.service('networkIndicator', function($rootScope){
 	$rootScope.$on('$routeChangeStart', this.acquireFn);
 	$rootScope.$on('$routeChangeSuccess', this.releaseFn);
 	$rootScope.$on('$routeChangeError', this.releaseFn);
-});
+}]);
 
 app.service('apiClient', ['$http', '$q', '$cacheFactory',
 			'Utils', 'apiClientCacheSize', 'networkIndicator',
+			'$rootScope',
 			function($http, $q, $cacheFactory, Utils,
-					 apiClientCacheSize, networkIndicator){
+					 apiClientCacheSize, networkIndicator, $rootScope){
 	var cache = $cacheFactory('apiCache', {number: apiClientCacheSize});
 	this.get = function(url, params){
 		networkIndicator.acquire();
@@ -75,15 +76,21 @@ app.service('apiClient', ['$http', '$q', '$cacheFactory',
 		data = data || {};
 		var deferred = $q.defer();
 
-		var promise = $http.post(url);
+		var promise;
+		$rootScope.$apply(function(){
+			promise = $http.post(url, data);
+		});
 		promise.success(function(json, status, headers, config){
 			networkIndicator.release();
 			if (!json.success) {
+				console.error('bad json');
 				deferred.reject(new Error('Invalid server api response: success=false'), json || data);
 				return;
 			}
+			console.log('ok json');
 			deferred.resolve(json.result);
 		}).error(function(data, status, headers, config){
+			console.log('error');
 			networkIndicator.release();
 			deferred.reject(new Error('Invalid server response: ' + status + '; '), data);
 		});

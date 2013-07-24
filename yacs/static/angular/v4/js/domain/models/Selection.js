@@ -4,12 +4,16 @@
 
 app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 			'currentCourses', 'scheduleValidator', 'Utils', '$timeout',
-			function($q, $cookieStore, currentSemesterPromise, currentCourses, scheduleValidator, Utils, $timeout){
+			'SavedSelection',
+			function($q, $cookieStore, currentSemesterPromise,
+					 currentCourses, scheduleValidator, Utils, $timeout,
+					 SavedSelection){
 	var storageKeyPromise = currentSemesterPromise.then(function(semester){
 		return 'selection:' + semester.id;
 	});
 
-	function Selection(courseIdsToSectionIds, blockedTimes){
+	function Selection(courseIdsToSectionIds, blockedTimes, id){
+		this.id = id || null; // not created unless saved
 		this.courseIdsToSectionIds = courseIdsToSectionIds || {};
 		this.blockedTimes = blockedTimes || {};
 	}
@@ -20,25 +24,36 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 		return arr;
 	}
 	Selection.prototype = {};
+	window.SavedSelection = SavedSelection;
 	angular.extend(Selection, {
 		deserialize: function(str){
-			var data = angular.fromJson(str);
-			return new Selection(data.selection, data.blockedTimes);
+			var data = {};
+			try {
+				data = angular.fromJson(str);
+			} catch(err) {
+				console.error('Failed to load selection: ', err, 'data: ', str);
+			}
+			return new Selection(data.selection, data.blockedTimes, data.id);
 		},
 		load: function(){
-			var deferred = $q.defer();
-			storageKeyPromise.then(function(key){
+			return storageKeyPromise.then(function(key){
 				var selection;
 				try {
 					selection = Selection.deserialize($cookieStore.get(key))
 				} catch(e) {
 					selection = new Selection();
-					console.warn('Failed to load selection, using empty one: ');
+					console.warn('Failed to load selection, using empty one: ', e);
 				}
-				window.selection = selection;
-				deferred.resolve(selection);
+				window.lastSelection = selection;
+				return selection;
 			});
-			return deferred.promise;
+		},
+		loadById: function(id){
+			return SavedSelection.get(id).then(function(savedSelection){
+				return new Selection(savedSelection.selection,
+									 savedSelection.blockedTimes,
+									 savedSelection.id);
+			});
 		}
 	});
 
@@ -224,15 +239,26 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 				}
 			});
 			return angular.toJson({
+				id: this.id,
 				selection: this.courseIdsToSectionIds,
 				blockedTimes: this.blockedTimes,
 			});
 		},
 		save: function(){
 			var self = this;
-			return storageKeyPromise.then(function(key){
+			var deferred = $q.defer();
+			storageKeyPromise.then(function(key){
 				$cookieStore.put(key, self.serialize());
+				var savedSelection = new SavedSelection({
+					selection: self.courseIdsToSectionIds,
+					blockedTimes: self.blockedTimes
+				});
+
+				savedSelection.save().then(function(){
+					deferred.resolve(self);
+				});
 			});
+			return deferred.promise;
 		},
 		_isFull: function(section){
 			return section.seatsLeft() <= 0;
@@ -244,6 +270,7 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 		},
 		clear: function(){
 			this.courseIdsToSectionIds = {};
+			this.blockedTimes = {};
 		}
 	});
 	Selection.current = Selection.load();

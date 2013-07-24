@@ -381,6 +381,7 @@ PIPELINE_JS = {
             'v4/js/domain/models/SectionTime.js',
             'v4/js/domain/models/Section.js',
             'v4/js/domain/models/Conflict.js',
+            'v4/js/domain/models/SavedSelection.js',
             'v4/js/domain/models/Selection.js',
             'v4/js/domain/models/SchedulePresenter.js',
             'v4/js/controllers/RootController.js',

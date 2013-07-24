@@ -52,8 +52,15 @@ app.factory('ModelFactory', ['apiClient', function(apiClient){
 			equals: function(model){
 				return this.id === model.id;
 			},
+			serialize: function(){
+				if (options.serialize){
+					return options.serialize.call(this, this.__attributes__);
+				} else {
+					return _.pick(this, this.__attributes__);
+				}
+			},
 			save: function(){
-				var promise = apiClient.post(callOrReturn(options.query), _.pick(this, this.__attributes__));
+				var promise = apiClient.post(callOrReturn(options.query), this.serialize());
 				return promise.then(function(result){
 					angular.extend(self, result);
 					return self;

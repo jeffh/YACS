@@ -12,7 +12,14 @@ app.factory('SavedSelection', ['Utils', 'ModelFactory',
 	 */
 	 var SavedSelection = ModelFactory('SavedSelection', {
 		 query: url,
-		 get: url
+		 get: url,
+		 save: url,
+		 serialize: function(){
+			 return {
+				 section_ids: _.values(this.selection),
+				 blocked_times: this.blocked_times
+			 };
+		 }
 	 });
 
 	 return SavedSelection;

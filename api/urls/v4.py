@@ -56,6 +56,6 @@ urlpatterns = patterns('',
     url(r'^/schedules/selection/(?P<id>\d+)' + ext_re, views.selections, api4, name='selection'),
 
     # new pending API
-    url(r'^/selections/$', views.selections, api4, name='selections'),
-    url(r'^/selections/(?P<id>\d+)/$', views.selections, api4, name='selection'),
+    url(r'^/selections/$', views.selections, api4, name='saved-selections'),
+    url(r'^/selections/(?P<id>\d+)/$', views.selections, api4, name='saved-selection'),
 )

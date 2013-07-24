@@ -16,9 +16,7 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', '$location', 'Select
 	var selectionPromise = Selection.current;
 	var query = $location.search();
 	if (query.id){
-		var deferred = $q.defer();
-		deferred.resolve(Selection.deserialize(query.id));
-		selectionPromise = deferred.promise;
+		selectionPromise = Selection.loadById(query.id);
 	}
 	if (query.n && !isNaN(parseInt(query.n, 10))){
 		$scope.scheduleIndex = Math.max(parseInt(query.n, 10), 0);
@@ -27,6 +25,7 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', '$location', 'Select
 	$q.all([currentSemesterPromise, selectionPromise]).then(function(values){
 		var semester = values[0];
 		var selection = values[1];
+		console.log(selection)
 		var filters = {
 			semester_id: semester.id,
 			id: selection.courseIds()
