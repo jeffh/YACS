@@ -15,6 +15,11 @@ app.controller('NavCtrl', ['$scope', '$location', 'urlProvider',
 			path: urlProvider(semester.year, semester.month, 'selected'),
 			controllers: ['SelectionCtrl']
 		};
+		var viewedItem = {
+			name: 'Another Schedule',
+			path: urlProvider(semester.year, semester.month, 'selected'),
+			controllers: ['SelectionCtrl']
+		};
 
 		$scope.$watch('selection', function(selection){
 			if (selection){

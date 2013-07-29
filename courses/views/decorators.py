@@ -48,16 +48,16 @@ class Renderer(object):
         def decorator(fn):
             @wraps(fn)
             def decorated(request, *args, **kwargs):
-                true_settings = {}
-                true_settings.update(self.settings)
-                true_settings.update(custom_settings)
+                settings_instance = {}
+                settings_instance.update(self.settings)
+                settings_instance.update(custom_settings)
                 try:
                     result = fn(request, *args, **kwargs)
-                    true_settings.update(result)
-                    if callable(true_settings['posthook']):
-                        true_settings = true_settings['posthook'](true_settings, request, *args, **kwargs)
-                    response = self.create_response(request, true_settings)
-                    return self.assign_headers(response, true_settings['headers'])
+                    settings_instance.update(result)
+                    if callable(settings_instance['posthook']):
+                        settings_instance = settings_instance['posthook'](settings_instance, request, *args, **kwargs)
+                    response = self.create_response(request, settings_instance)
+                    return self.assign_headers(response, settings_instance['headers'])
                 except AlternativeResponse as altresponse:
                     return altresponse.response
             decorated.raw_view = fn

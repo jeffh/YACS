@@ -16,7 +16,7 @@ class SavedSelectionManager(Manager):
 
     def get_or_create_by_data(self, **kwargs):
         kwargs = self._update_kwargs(kwargs)
-        return super(SavedSelectionManager, self).get_or_create(**kwargs)
+        return self.get_or_create(**kwargs)
 
 
 class SelectionManager(Manager):

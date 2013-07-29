@@ -2,6 +2,7 @@ import mimetypes
 import plistlib
 import json
 
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import ListView, DetailView
 from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseServerError
 from django.conf import settings
@@ -105,14 +106,19 @@ def raw_data(request, data, version=None, ext=None):
     return {'context': data}
 
 
+@csrf_exempt
 @render()
 def selections(request, id=None, version=None, ext=None):
+    print request.method, id, request.GET, request.POST
     if request.method == 'GET' and id:
         selection = SavedSelection.objects.get(id=id)
+        print selection
         return {'context': selection.toJSON()}
 
     if request.method != 'POST':
-        return HttpResponseBadRequest('{}')
+        raise decorators.AlternativeResponse(
+            HttpResponseBadRequest('{}')
+        )
 
     section_ids = int_list(request.POST.get('section_ids', '').split(','))
     blocked_times = int_list(request.POST.get('blocked_times', '').split(','))

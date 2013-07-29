@@ -16,6 +16,7 @@
 <script>
 app.constant('STATIC_URL', "{{ STATIC_URL }}");
 app.constant('ICAL_URL', "{% url 'ics' %}");
+app.constant('CSRF_TOKEN', "{{ csrf_token }}");
 </script>
 {% block js %}{% endblock %}
 </head>

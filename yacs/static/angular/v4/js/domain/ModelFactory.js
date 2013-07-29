@@ -10,7 +10,11 @@ app.factory('ModelFactory', ['apiClient', function(apiClient){
 		return fn;
 	};
 	return function(name, options){
-		options = options || {};
+		options = $.extend({
+			serialize: function(attrs){
+				return _.pick(this, attrs);
+			}
+		}, options || {});
 		// yes, we eval to get nice pretty debugging output names
 		var Model = eval('(function ' + name + '(){ this.initialize.apply(this, arguments); })');
 		Model.prototype = {};
@@ -53,11 +57,7 @@ app.factory('ModelFactory', ['apiClient', function(apiClient){
 				return this.id === model.id;
 			},
 			serialize: function(){
-				if (options.serialize){
-					return options.serialize.call(this, this.__attributes__);
-				} else {
-					return _.pick(this, this.__attributes__);
-				}
+				return options.serialize.call(this, this.__attributes__);
 			},
 			save: function(){
 				var promise = apiClient.post(callOrReturn(options.query), this.serialize());

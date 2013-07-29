@@ -24,7 +24,6 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 		return arr;
 	}
 	Selection.prototype = {};
-	window.SavedSelection = SavedSelection;
 	angular.extend(Selection, {
 		deserialize: function(str){
 			var data = {};
@@ -35,7 +34,7 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 			}
 			return new Selection(data.selection, data.blockedTimes, data.id);
 		},
-		load: function(){
+		loadCurrent: function(){
 			return storageKeyPromise.then(function(key){
 				var selection;
 				try {
@@ -44,9 +43,17 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 					selection = new Selection();
 					console.warn('Failed to load selection, using empty one: ', e);
 				}
-				window.lastSelection = selection;
 				return selection;
 			});
+		},
+		loadCurrentWithId: function(){
+			var deferred = $q.defer();
+			Selection.current.then(function(selection){
+				selection.save().then(function(){
+					deferred.resolve(selection);
+				});
+			});
+			return deferred.promise;
 		},
 		loadById: function(id){
 			return SavedSelection.get(id).then(function(savedSelection){
@@ -56,6 +63,7 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 			});
 		}
 	});
+	window.Selection = Selection;
 
 	angular.extend(Selection.prototype, {
 		copy: function(){
@@ -244,17 +252,25 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 				blockedTimes: this.blockedTimes,
 			});
 		},
+		saveToServer: function(){
+			var self = this;
+			var savedSelection = new SavedSelection({
+				selection: self.courseIdsToSectionIds,
+				blockedTimes: self.blockedTimes
+			});
+
+			return savedSelection.save().then(function(savedSelection){
+				self.id = savedSelection.id;
+				return self;
+			});
+		},
 		save: function(){
 			var self = this;
 			var deferred = $q.defer();
 			storageKeyPromise.then(function(key){
 				$cookieStore.put(key, self.serialize());
-				var savedSelection = new SavedSelection({
-					selection: self.courseIdsToSectionIds,
-					blockedTimes: self.blockedTimes
-				});
 
-				savedSelection.save().then(function(){
+				self.saveToServer().then(function(selection){
 					deferred.resolve(self);
 				});
 			});
@@ -273,7 +289,9 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 			this.blockedTimes = {};
 		}
 	});
-	Selection.current = Selection.load();
+
+	Selection.current = Selection.loadCurrent();
+
 	return Selection;
 }]);
 

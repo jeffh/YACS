@@ -13,10 +13,13 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', '$location', 'Select
 	$scope.scheduleIndex = 0;
 	searchOptions.visible = false;
 
-	var selectionPromise = Selection.current;
+	var selectionPromise;
 	var query = $location.search();
-	if (query.id){
+	if (query.id && !isNaN(parseInt(query.id, 10))){
 		selectionPromise = Selection.loadById(query.id);
+	} else {
+		// save the selection first
+		selectionPromise = Selection.loadCurrentWithId();
 	}
 	if (query.n && !isNaN(parseInt(query.n, 10))){
 		$scope.scheduleIndex = Math.max(parseInt(query.n, 10), 0);
@@ -25,17 +28,16 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', '$location', 'Select
 	$q.all([currentSemesterPromise, selectionPromise]).then(function(values){
 		var semester = values[0];
 		var selection = values[1];
-		console.log(selection)
 		var filters = {
 			semester_id: semester.id,
 			id: selection.courseIds()
 		};
-		var blockedTimes = {};
+		var blockedTimes = _.extend({}, selection.blockedTimes);
 
 		function updateUI(schedules){
 			$scope.schedule = schedules[$scope.scheduleIndex];
 			$location.search({
-				id: selection.serialize(),
+				id: selection.id,
 				n: $scope.scheduleIndex
 			}).replace();
 			/* iCal link broken
@@ -58,19 +60,26 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', '$location', 'Select
 		};
 
 		function refreshAndSave(shouldSave){
-			if (shouldSave){
-				selection.save();
-			}
-			selection.apply($scope.courses);
-			var schedulesPromise = selection.schedules(_.map(blockedTimes, function(sectionTime){
-				return sectionTime.toObject();
-			}));
+			function refresh(){
+				selection.apply($scope.courses);
+				var schedulesPromise = selection.schedules(_.map(blockedTimes, function(sectionTime){
+					return sectionTime.toObject();
+				}));
 
-			var promise = schedulePresenter(schedulesPromise, _.values(blockedTimes));
-			promise.then(function(schedules){
-				$scope.schedules = schedules;
-				return setScheduleIndex($scope.scheduleIndex);
-			});
+				var promise = schedulePresenter(schedulesPromise, _.values(blockedTimes));
+				promise.then(function(schedules){
+					$scope.schedules = schedules;
+					return setScheduleIndex($scope.scheduleIndex);
+				});
+			}
+
+			if (shouldSave){
+				$scope.$apply(function(){
+					selection.save().then(refresh);
+				});
+			} else {
+				refresh();
+			}
 		}
 
 		if (selection.numberOfCourses()){

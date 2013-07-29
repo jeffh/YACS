@@ -33,12 +33,12 @@ app.service('networkIndicator', ['$rootScope', function($rootScope){
 	$rootScope.$on('$routeChangeError', this.releaseFn);
 }]);
 
-app.service('apiClient', ['$http', '$q', '$cacheFactory',
+app.service('apiClient', ['$http', '$q', '$cacheFactory', '$rootScope',
 			'Utils', 'apiClientCacheSize', 'networkIndicator',
-			'$rootScope',
-			function($http, $q, $cacheFactory, Utils,
-					 apiClientCacheSize, networkIndicator, $rootScope){
+			function($http, $q, $cacheFactory, $rootScope, Utils,
+					 apiClientCacheSize, networkIndicator){
 	var cache = $cacheFactory('apiCache', {number: apiClientCacheSize});
+
 	this.get = function(url, params){
 		networkIndicator.acquire();
 		params = params || {};
@@ -73,24 +73,22 @@ app.service('apiClient', ['$http', '$q', '$cacheFactory',
 
 	this.post = function(url, data){
 		networkIndicator.acquire();
-		data = data || {};
+		data = $.param(data || {});
 		var deferred = $q.defer();
 
-		var promise;
-		$rootScope.$apply(function(){
-			promise = $http.post(url, data);
+		var promise = $http.post(url, data, {
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded'
+			}
 		});
 		promise.success(function(json, status, headers, config){
 			networkIndicator.release();
 			if (!json.success) {
-				console.error('bad json');
 				deferred.reject(new Error('Invalid server api response: success=false'), json || data);
 				return;
 			}
-			console.log('ok json');
 			deferred.resolve(json.result);
 		}).error(function(data, status, headers, config){
-			console.log('error');
 			networkIndicator.release();
 			deferred.reject(new Error('Invalid server response: ' + status + '; '), data);
 		});
