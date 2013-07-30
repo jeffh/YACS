@@ -189,7 +189,7 @@ class TestAPI4SavedSelections(ShortcutTestCase):
                 str(section2.id),
                 str(section3.id),
             ]),
-            'blocked_times': ','.join(['80', '90', '140', '200'])
+            'blocked_times': ','.join(['Wednesday_12:0:0', 'Thursday_14:0:0'])
         }, status_code=200)
 
         selection = SavedSelection.objects.all()[0]
@@ -209,8 +209,8 @@ class TestAPI4SavedSelections(ShortcutTestCase):
                     ]
                 },
                 u'blocked_times': [
-                    [80, 90],
-                    [140, 200],
+                    u'Thursday_14:0:0',
+                    u'Wednesday_12:0:0',
                 ]
             }
         }

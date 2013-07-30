@@ -109,10 +109,8 @@ def raw_data(request, data, version=None, ext=None):
 @csrf_exempt
 @render()
 def selections(request, id=None, version=None, ext=None):
-    print request.method, id, request.GET, request.POST
     if request.method == 'GET' and id:
         selection = SavedSelection.objects.get(id=id)
-        print selection
         return {'context': selection.toJSON()}
 
     if request.method != 'POST':
