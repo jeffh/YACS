@@ -14,8 +14,8 @@ from shortcuts import commit_all_or_rollback
 
 class SavedSelection(models.Model):
     "Represents a unique set of selected sections and blocked times."
-    internal_section_ids = models.CommaSeparatedIntegerField(max_length=1024)
-    internal_blocked_times = models.CommaSeparatedIntegerField(max_length=1024, blank=True)
+    internal_section_ids = models.CommaSeparatedIntegerField(max_length=1024, db_index=True)
+    internal_blocked_times = models.TextField(db_index=True)
 
     objects = managers.SavedSelectionManager()
 
@@ -37,21 +37,13 @@ class SavedSelection(models.Model):
 
     @property
     def blocked_times(self):
-        numbers = list(deserialize_numbers(self.internal_blocked_times))
-        times = []
-        while numbers:
-            start_time, end_time = numbers.pop(0), numbers.pop(0)
-            times.append((start_time, end_time))
-        return times
+        return [section_time for section_time in self.internal_blocked_times.split(',') if section_time]
 
     @blocked_times.setter
     def blocked_times(self, blocked_times):
         blocked_times.sort()
-        numbers = []
-        for start, end in blocked_times:
-            numbers.append(int(start))
-            numbers.append(int(end))
-        self.internal_blocked_times = serialize_numbers(numbers)
+        blocked_times = [section_time for section_time in blocked_times if section_time]
+        self.internal_blocked_times = ','.join(blocked_times)
 
     def __unicode__(self):
         return "%r, %r, %r" % (self.id, self.section_ids, self.blocked_times)

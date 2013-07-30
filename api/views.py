@@ -121,17 +121,11 @@ def selections(request, id=None, version=None, ext=None):
         )
 
     section_ids = int_list(request.POST.get('section_ids', '').split(','))
-    blocked_times = int_list(request.POST.get('blocked_times', '').split(','))
-
-    blocked_time_tuples = []
-    while blocked_times:
-        start = blocked_times.pop(0)
-        end = blocked_times.pop(0)
-        blocked_time_tuples.append((start, end))
+    blocked_times = request.POST.get('blocked_times', '').split(',')
 
     selection, created = SavedSelection.objects.get_or_create_by_data(
         section_ids=section_ids,
-        blocked_times=blocked_time_tuples,
+        blocked_times=blocked_times,
     )
     return {'context': selection.toJSON()}
 

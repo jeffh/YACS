@@ -19,7 +19,9 @@ describe("Controllers", function(){
 			selectionDeferred = $q.defer();
 			schedulePresenter = jasmine.createSpy('schedulePresenter').andReturn(schedulesDeferred.promise);
 			CourseFetcher = jasmine.createSpy('CourseFetcher').andReturn(coursesDeferred.promise);
-			Selection.current = selectionDeferred.promise;
+			Selection.loadCurrentWithId = function(){
+				return selectionDeferred.promise;
+			};
 			controller = $controller('SelectionCtrl', {
 				$scope: scope,
 				currentSemesterPromise: semesterDeferred.promise,
@@ -44,8 +46,8 @@ describe("Controllers", function(){
 
 		describe("when the current semester and selection are resolved with an empty selection", function(){
 			var selection;
-			beforeEach(inject(function($rootScope, Semester, Selection){
-				selection = new Selection({});
+			beforeEach(inject(function($rootScope, $q, Semester, Selection){
+				selection = new Selection(null, null, 1);
 				spyOn(selection, 'apply');
 				semesterDeferred.resolve(new Semester({id: 12}));
 				selectionDeferred.resolve(selection);
@@ -58,10 +60,12 @@ describe("Controllers", function(){
 		});
 
 		describe("when the current semester and selection are resolved", function(){
-			var selection;
-			beforeEach(inject(function($rootScope, Semester, Selection){
-				selection = new Selection({2: [3], 4: [5]});
+			var selection, saveDeferred;
+			beforeEach(inject(function($rootScope, $q, Semester, Selection){
+				saveDeferred = $q.defer();
+				selection = new Selection({2: [3], 4: [5]}, null, 1);
 				spyOn(selection, 'apply');
+				spyOn(selection, 'save').andReturn(saveDeferred.promise);
 				semesterDeferred.resolve(new Semester({id: 12}));
 				selectionDeferred.resolve(selection);
 				$rootScope.$apply();
@@ -108,7 +112,6 @@ describe("Controllers", function(){
 				describe("when clicking clear selection button", function(){
 					beforeEach(inject(function($rootScope){
 						spyOn(selection, 'clear');
-						spyOn(selection, 'save');
 						scope.clickClearSelection();
 						$rootScope.$apply();
 					}));
@@ -131,7 +134,6 @@ describe("Controllers", function(){
 					beforeEach(inject(function($rootScope, $q, Course){
 						updateCourseDeferred = $q.defer();
 						spyOn(selection, 'updateCourse').andReturn(updateCourseDeferred.promise);
-						spyOn(selection, 'save');
 						clickedCourse = new Course();
 						scope.clickCourse(clickedCourse);
 					}));
@@ -146,12 +148,12 @@ describe("Controllers", function(){
 							$rootScope.$apply();
 						}));
 
-						it("should save the selection", function(){
-							expect(selection.save).toHaveBeenCalled();
-						});
-
 						it("should apply the selection to the scope's courses", function(){
 							expect(selection.apply).toHaveBeenCalledWith(scope.courses);
+						});
+
+						it("should save the selection", function(){
+							expect(selection.save).toHaveBeenCalled();
 						});
 					});
 
@@ -172,7 +174,6 @@ describe("Controllers", function(){
 					beforeEach(inject(function($rootScope, $q, Course, Section){
 						updateSectionDeferred = $q.defer();
 						spyOn(selection, 'updateSection').andReturn(updateSectionDeferred.promise);
-						spyOn(selection, 'save');
 						clickedCourse = new Course();
 						clickedSection = new Section();
 						scope.clickSection(clickedCourse, clickedSection);
@@ -246,7 +247,9 @@ describe("Controllers", function(){
 
 				describe("when schedules are resolved", function(){
 					var schedules = [{crns: [2, 4]}, {crns: [2]}];
-					beforeEach(inject(function($rootScope){
+					var $location;
+					beforeEach(inject(function($injector, $rootScope){
+						$location = $injector.get('$location');
 						schedulesDeferred.resolve(schedules);
 						$rootScope.$apply();
 						scope.$apply();
@@ -254,6 +257,10 @@ describe("Controllers", function(){
 
 					it("should set the schedules on the scope", function(){
 						expect(scope.schedules).toEqual(schedules);
+					});
+
+					it("should update the url to be a permalink", function(){
+						expect($location.search()).toEqual({id: 1, n: 0});
 					});
 
 					/* TODO: iCal link broken
@@ -271,6 +278,10 @@ describe("Controllers", function(){
 
 						it("should decrement the schedule index", function(){
 							expect(scope.scheduleIndex).toEqual(0);
+						});
+
+						it("should update the url to be a permalink", function(){
+							expect($location.search()).toEqual({id: 1, n: 0});
 						});
 
 						describe("tapping the left arrow when at the beginning", function(){
@@ -294,6 +305,10 @@ describe("Controllers", function(){
 
 						it("should decrement the schedule index", function(){
 							expect(scope.scheduleIndex).toEqual(1);
+						});
+
+						it("should update the url to be a permalink", function(){
+							expect($location.search()).toEqual({id: 1, n: 1});
 						});
 
 						describe("tapping the right arrow when at the end", function(){

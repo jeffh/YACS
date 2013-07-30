@@ -15,11 +15,11 @@ describe("Application", function(){
 			})
 		});
 
-		it("should not be null", function(){
+		it("should be defined", function(){
 			expect(staticURL).toBeTruthy();
 		});
 	});
-	
+
 	describe("urlProvider", function(){
 		var getUrl;
 		beforeEach(inject(function(urlProvider){

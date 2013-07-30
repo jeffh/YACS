@@ -4,10 +4,10 @@
 
 app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 			'currentCourses', 'scheduleValidator', 'Utils', '$timeout',
-			'SavedSelection',
+			'SavedSelection', 'SectionTime',
 			function($q, $cookieStore, currentSemesterPromise,
 					 currentCourses, scheduleValidator, Utils, $timeout,
-					 SavedSelection){
+					 SavedSelection, SectionTime){
 	var storageKeyPromise = currentSemesterPromise.then(function(semester){
 		return 'selection:' + semester.id;
 	});
@@ -57,13 +57,14 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 		},
 		loadById: function(id){
 			return SavedSelection.get(id).then(function(savedSelection){
-				return new Selection(savedSelection.selection,
-									 savedSelection.blockedTimes,
-									 savedSelection.id);
+				var sel = new Selection(savedSelection.selection, {}, savedSelection.id);
+				_.each(savedSelection.blocked_times, function(key){
+					sel.setBlockedTime(key);
+				});
+				return sel;
 			});
 		}
 	});
-	window.Selection = Selection;
 
 	angular.extend(Selection.prototype, {
 		copy: function(){
@@ -256,7 +257,8 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 			var self = this;
 			var savedSelection = new SavedSelection({
 				selection: self.courseIdsToSectionIds,
-				blockedTimes: self.blockedTimes
+				blocked_times: {}
+				//blocked_times: self.blockedTimes
 			});
 
 			return savedSelection.save().then(function(savedSelection){
@@ -287,6 +289,35 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 		clear: function(){
 			this.courseIdsToSectionIds = {};
 			this.blockedTimes = {};
+		},
+		setBlockedTime: function(key){ // key = 'DOW_Hour:Minute:Second'
+			var day_time = key.split('_');
+			var times = day_time[1].split(':');
+			var hour = parseInt(times[0], 10),
+				min = parseInt(times[1], 10),
+				sec = parseInt(times[2], 10);
+			this.blockedTimes[key] = {
+				days_of_the_week: [day_time[0]],
+				start: day_time[1],
+				end: [ // we only care about half hour blocks
+					min === 0 ? hour : hour + 1,
+					min === 0 ? min + 29 : min,
+					sec
+				].join(':')
+			};
+		},
+		allBlockedTimes: function(){
+			var obj = {};
+			_.each(this.blockedTimes, function(sectionTimeObj, key){
+				obj[key] = new SectionTime(sectionTimeObj);
+			});
+			return obj;
+		},
+		getBlockedTime: function(key){
+			return new SectionTime(this.blockedTimes[key]);
+		},
+		removeBlockedTime: function(key){
+			delete this.blockedTimes[key];
 		}
 	});
 

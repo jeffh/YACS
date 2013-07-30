@@ -32,7 +32,6 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', '$location', 'Select
 			semester_id: semester.id,
 			id: selection.courseIds()
 		};
-		var blockedTimes = _.extend({}, selection.blockedTimes);
 
 		function updateUI(schedules){
 			$scope.schedule = schedules[$scope.scheduleIndex];
@@ -62,11 +61,8 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', '$location', 'Select
 		function refreshAndSave(shouldSave){
 			function refresh(){
 				selection.apply($scope.courses);
-				var schedulesPromise = selection.schedules(_.map(blockedTimes, function(sectionTime){
-					return sectionTime.toObject();
-				}));
-
-				var promise = schedulePresenter(schedulesPromise, _.values(blockedTimes));
+				var schedulesPromise = selection.schedules(_.values(selection.blockedTimes));
+				var promise = schedulePresenter(schedulesPromise, _.values(selection.allBlockedTimes()));
 				promise.then(function(schedules){
 					$scope.schedules = schedules;
 					return setScheduleIndex($scope.scheduleIndex);
@@ -74,9 +70,7 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', '$location', 'Select
 			}
 
 			if (shouldSave){
-				$scope.$apply(function(){
-					selection.save().then(refresh);
-				});
+				selection.save().then(refresh);
 			} else {
 				refresh();
 			}
@@ -132,21 +126,17 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', '$location', 'Select
 		};
 
 		$scope.isBlocked = function(time, dow){
-			return blockedTimes[dow + '_' + time.toObject()];
+			return selection.blockedTimes[dow + '_' + time.toObject()];
 		};
 
 		$scope.toggleBlockableTime = function(time, dow){
 			var key = dow + '_' + time.toObject();
 			if ($scope.isBlocked(time, dow)){
-				delete blockedTimes[key];
+				selection.removeBlockedTime(key);
 			} else {
-				blockedTimes[key] = new SectionTime({
-					days_of_the_week: [dow],
-					start: time.toObject(),
-					end: _.extend({}, time, {minute: time.minute + 29}).toObject()
-				});
+				selection.setBlockedTime(key);
 			}
-			refreshAndSave(false);
+			refreshAndSave(true);
 		};
 
 		$scope.print = function(){
