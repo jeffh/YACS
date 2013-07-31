@@ -1,7 +1,5 @@
 'use strict';
 
-(function(document, angular, app, undefined){
-
 describe("Controllers", function(){
 	var scope;
 	beforeEach(inject(function($rootScope){
@@ -167,5 +165,3 @@ describe("Controllers", function(){
 		});
 	});
 });
-
-})(document, angular, app);
