@@ -115,7 +115,7 @@ class ROCSRPIImporter(object):
                         year=catalog.year,
                         month=catalog.month,
                         defaults={
-                            'visible': False,
+                            'visible': True,
                             'name': catalog.name,
                             'ref': filename,
                         })
