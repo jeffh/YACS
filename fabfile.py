@@ -53,7 +53,7 @@ def upload_monit_conf():
         projectpath='/www/yacs/django/',
         user=USER,
         gunicorn='/www/yacs/virtualenv/bin/gunicorn_django',
-        workers=16,
+        workers=4,
         logs='/www/yacs/logs/',
         settings='yacs.settings',
         pid='/tmp/yacs.pid',
