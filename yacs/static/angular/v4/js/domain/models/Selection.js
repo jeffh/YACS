@@ -257,8 +257,7 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 			var self = this;
 			var savedSelection = new SavedSelection({
 				selection: self.courseIdsToSectionIds,
-				blocked_times: {}
-				//blocked_times: self.blockedTimes
+				blocked_times: self.blockedTimes
 			});
 
 			return savedSelection.save().then(function(savedSelection){
