@@ -15,7 +15,7 @@ describe("Controllers", function(){
 		describe("when the current semester is resolved on the selected controller", function(){
 			var controller, catalogItem, selectedItem;
 			beforeEach(inject(function($location, $q, $rootScope, $controller, Semester){
-				$location.path('/2013/1/selected/');
+				$location.path('/semesters/2013/1/selected/');
 				var semesterDeferred = $q.defer();
 				semesterDeferred.resolve(new Semester({year: 2013, month: 1}));
 				$rootScope.semester = semesterDeferred.promise;
@@ -75,7 +75,7 @@ describe("Controllers", function(){
 				}));
 
 				it("should update the location", function(){
-					expect($location.path()).toEqual('/2013/1/selected/');
+					expect($location.path()).toEqual('/semesters/2013/1/selected/');
 				});
 
 				it("should update the selected item", function(){
@@ -83,9 +83,9 @@ describe("Controllers", function(){
 				});
 
 				var catalogCtrls = [
-					{name: 'department', klass: 'DepartmentCtrl', url: '/2013/1/'},
-					{name: 'catalog', klass: 'CatalogCtrl', url: '/2013/1/CSCI/'},
-					{name: 'search results', klass: 'SearchResultsCtrl', url: '/2013/1/search/CSCI/'},
+					{name: 'department', klass: 'DepartmentCtrl', url: '/semesters/2013/1/'},
+					{name: 'catalog', klass: 'CatalogCtrl', url: '/semesters/2013/1/CSCI/'},
+					{name: 'search results', klass: 'SearchResultsCtrl', url: '/semesters/2013/1/search/CSCI/'},
 				];
 				_(catalogCtrls).each(function(ctrl){
 					describe("when going back to " + ctrl.name + " controller", function(){
@@ -120,7 +120,7 @@ describe("Controllers", function(){
 					});
 
 					it("should revert back to the department list", function(){
-						expect($location.path()).toEqual('/2013/1/');
+						expect($location.path()).toEqual('/semesters/2013/1/');
 					});
 
 					it("should preserve the selected item", function(){

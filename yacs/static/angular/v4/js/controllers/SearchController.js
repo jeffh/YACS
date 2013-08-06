@@ -38,10 +38,9 @@ app.controller('SearchCtrl', ['$scope', '$location', '$timeout', '$route', 'urlP
 				if (!$route.current.params.query){
 					previousPath = $location.path();
 				}
-				$location.path(urlProvider(
+				$location.path(urlProvider.search(
 					semester.year,
 					semester.month,
-					'search',
 					$scope.query
 				));
 				timeout = null;

@@ -42,7 +42,7 @@ describe("Controllers", function(){
 				}));
 
 				it("should change the location to the course list for that department", function(){
-					expect($location.path()).toEqual('/2013/1/CSCI/');
+					expect($location.path()).toEqual('/semesters/2013/1/CSCI/');
 				});
 			});
 		});

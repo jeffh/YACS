@@ -4,8 +4,8 @@
 
 window.app = angular.module('yacs', ['ngCookies']);
 
-app.factory('urlProvider', function(){
-	return function(){
+app.service('urlProvider', function(){
+	function url(){
 		var args = _(arguments).map(function(arg){
 			return encodeURIComponent(arg);
 		});
@@ -14,23 +14,39 @@ app.factory('urlProvider', function(){
 		}
 		return '/';
 	};
+
+	this.semester = function(year, month){
+		return url('semesters', year, month);
+	};
+
+	this.selected = function(year, month){
+		return url('semesters', year, month, 'selected');
+	};
+
+	this.search = function(year, month, query){
+		return url('semesters', year, month, 'search', query);
+	};
+
+	this.department = function(year, month, deptcode){
+		return url('semesters', year, month, deptcode.toUpperCase());
+	};
 });
 
 app.config(['$routeProvider', 'STATIC_URL', function($routeProvider, STATIC_URL){
-	$routeProvider.when('/:year/:month/', {
+	$routeProvider.when('/semesters/:year/:month/', {
 		templateUrl: STATIC_URL + 'v4/partials/departments.html',
 		controller: 'DepartmentCtrl'
 	});
-	$routeProvider.when('/:year/:month/selected/', {
+	$routeProvider.when('/semesters/:year/:month/selected/', {
 		templateUrl: STATIC_URL + 'v4/partials/selection.html',
 		controller: 'SelectionCtrl',
 		reloadOnSearch: false
 	});
-	$routeProvider.when('/:year/:month/search/:query/', {
+	$routeProvider.when('/semesters/:year/:month/search/:query/', {
 		templateUrl: STATIC_URL + 'v4/partials/catalog.html',
 		controller: 'SearchResultsCtrl'
 	});
-	$routeProvider.when('/:year/:month/:dept/', {
+	$routeProvider.when('/semesters/:year/:month/:dept/', {
 		templateUrl: STATIC_URL + 'v4/partials/catalog.html',
 		controller: 'CatalogCtrl'
 	});

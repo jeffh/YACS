@@ -26,7 +26,7 @@ describe("Controllers", function(){
 			}));
 
 			it("should change the location to the department list", function(){
-				expect($location.path()).toEqual('/2013/1/');
+				expect($location.path()).toEqual('/semesters/2013/1/');
 			});
 		});
 	});

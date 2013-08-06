@@ -5,7 +5,7 @@
 app.controller('IndexCtrl', ['$scope', '$location', 'currentSemesterPromise', 'urlProvider',
 			   function($scope, $location, currentSemesterPromise, urlProvider) {
 	currentSemesterPromise.then(function(semester){
-		$location.path(urlProvider(semester.year, semester.month));
+		$location.path(urlProvider.semester(semester.year, semester.month));
 	});
 }]);
 

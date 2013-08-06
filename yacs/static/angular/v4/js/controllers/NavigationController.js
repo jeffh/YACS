@@ -7,17 +7,12 @@ app.controller('NavCtrl', ['$scope', '$location', 'urlProvider',
 	$scope.semester.then(function(semester){
 		var catalogItem = {
 			name: 'Catalog',
-			path: urlProvider(semester.year, semester.month),
+			path: urlProvider.semester(semester.year, semester.month),
 			controllers: ['CatalogCtrl', 'DeptCtrl', 'SearchResultsCtrl']
 		};
 		var selectedItem = {
 			name: 'Selected',
-			path: urlProvider(semester.year, semester.month, 'selected'),
-			controllers: ['SelectionCtrl']
-		};
-		var viewedItem = {
-			name: 'Another Schedule',
-			path: urlProvider(semester.year, semester.month, 'selected'),
+			path: urlProvider.selected(semester.year, semester.month),
 			controllers: ['SelectionCtrl']
 		};
 

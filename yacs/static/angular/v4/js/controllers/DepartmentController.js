@@ -10,7 +10,7 @@ app.controller('DepartmentCtrl', ['$scope', '$location', 'Semester',
 	currentSemesterPromise.then(function(semester){
 		$scope.departments = Department.query({semester_id: semester.id});
 		$scope.click = function(dept){
-			$location.path(urlProvider(
+			$location.path(urlProvider.department(
 				semester.year,
 				semester.month,
 				dept.code
