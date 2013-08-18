@@ -24,7 +24,8 @@ glob2==0.4.1
 gunicorn==0.17.2
 icalendar==3.0.1b2
 itsdangerous==0.22
-jasmine==1.3.1
+#jasmine==1.3.1
+-e git+https://github.com/jeffh/jasmine-py#egg=jasmine
 jasmine-core==1.3.1
 mock==1.0.1
 mockfs==1.0.1
