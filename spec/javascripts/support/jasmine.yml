@@ -17,9 +17,13 @@ src_files:
     - yacs/static/angular/v4/js/lib/angularjs/angular.js
     - yacs/static/angular/v4/js/lib/angular-mocks.js
     - yacs/static/angular/v4/js/lib/angularjs/angular-cookies.js
-    - yacs/static/angular/v4/js/*.js
+    - yacs/static/angular/v4/js/Application.js
+    - yacs/static/angular/v4/js/Constants.js
+    - yacs/static/angular/v4/js/DelayTrigger.js
+    - yacs/static/angular/v4/js/Utils.js
     - yacs/static/angular/v4/js/controllers/*.js
     - yacs/static/angular/v4/js/directives/*.js
+    - yacs/static/angular/v4/js/Worker.js
     - yacs/static/angular/v4/js/worker/Namespace.js
     - yacs/static/angular/v4/js/worker/Utils.js
     - yacs/static/angular/v4/js/worker/ScheduleValidator.js
