@@ -12,8 +12,10 @@
 #   - dist/**/*.js
 #
 src_files:
-    - yacs/static/angular/v4/js/lib/*.js
+    - yacs/static/angular/v4/js/lib/underscore-1.4.4.min.js
+    - yacs/static/angular/v4/js/lib/jquery-2.0.2.js
     - yacs/static/angular/v4/js/lib/angularjs/angular.js
+    - yacs/static/angular/v4/js/lib/angular-mocks.js
     - yacs/static/angular/v4/js/lib/angularjs/angular-cookies.js
     - yacs/static/angular/v4/js/*.js
     - yacs/static/angular/v4/js/controllers/*.js
