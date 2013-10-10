@@ -7,7 +7,7 @@ Jinja2==2.7
 MarkupSafe==0.18
 PyYAML==3.10
 Pygments==1.5
-RPICourses==1.0.6
+RPICourses==1.0.7
 South==0.7.5
 Werkzeug==0.9.3
 argparse==1.2.1
