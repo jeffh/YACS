@@ -98,14 +98,14 @@ describe("ApiClient", function(){
 			var result;
 			beforeEach(function(){
 				var response = {success: true, result: [1, 2]};
-				$httpBackend.whenPOST('/api/4/', {semester_id: 1}).respond(response);
+				$httpBackend.whenPOST('/api/4/', 'semester_id=1').respond(response);
 				client.get('/api/4/', {semester_id: 1}).then(function(theResult){
 					result = theResult;
 				});
 			});
 
 			it("should perform an ajax post request with csrf_token", function(){
-				$httpBackend.expectPOST('/api/4/', {semester_id: 1} , {'X-CSRFToken': 'csrf-token'});
+				$httpBackend.expectPOST('/api/4/', 'semester_id=1' , {'X-CSRFToken': 'csrf-token'});
 			});
 
 			it("should activate the network indicator", function(){
