@@ -101,6 +101,7 @@ def get_if_id_present(queryset, id=None):
         return queryset
 
 
+@csrf_exempt
 @render()
 def raw_data(request, data, version=None, ext=None):
     return {'context': data}
@@ -128,6 +129,7 @@ def selections(request, id=None, version=None, ext=None):
     return {'context': selection.toJSON()}
 
 
+@csrf_exempt
 @render()
 def semesters(request, id=None, version=None, ext=None):
     queryset = models.Semester.visible_objects.optional_filter(
@@ -140,6 +142,7 @@ def semesters(request, id=None, version=None, ext=None):
     return {'context': get_if_id_present(queryset, id)}
 
 
+@csrf_exempt
 @render()
 def departments(request, id=None, version=None, ext=None):
     queryset = models.Department.objects.optional_filter(
@@ -159,6 +162,7 @@ def try_int(value, default=0):
         return default
 
 
+@csrf_exempt
 @render()
 def courses(request, id=None, version=None, ext=None):
     queryset = models.Course.objects.optional_filter(
@@ -175,6 +179,7 @@ def courses(request, id=None, version=None, ext=None):
     return {'context': get_if_id_present(queryset, id)}
 
 
+@csrf_exempt
 @render()
 def sections(request, id=None, version=None, ext=None):
     queryset = models.SectionPeriod.objects.optional_filter(
@@ -205,6 +210,7 @@ def sections(request, id=None, version=None, ext=None):
     return {'context': sections.values()}
 
 
+@csrf_exempt
 @render()
 def section_conflicts(request, id=None, version=None, ext=None):
     conflicts = SectionConflict.objects.by_unless_none(
@@ -241,6 +247,7 @@ def section_conflicts(request, id=None, version=None, ext=None):
     return {'context': collection}
 
 
+@csrf_exempt
 @render()
 def schedules(request, id=None, version=None):
     selection = None
