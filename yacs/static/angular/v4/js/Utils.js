@@ -24,9 +24,7 @@ app.service('Utils', function(){
 			if (!angular.isArray(value)){
 				value = [value];
 			}
-			angular.forEach(value, function(v){
-				sb.push(key + '=' + v);
-			});
+			sb.push(key + '=' + value.join(','));
 		});
 		return sb.join('&');
     };

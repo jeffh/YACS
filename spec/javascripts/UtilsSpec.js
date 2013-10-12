@@ -13,9 +13,9 @@ describe('Utils', function(){
 		});
 
 		describe("when given a parameter with an array", function(){
-			it("should repeat the parameter name", function(){
+			it("should comma separate the parameter values", function(){
 				var query = Utils.queryString({foo: [1, 2]});
-				expect(query).toEqual('foo=1&foo=2');
+				expect(query).toEqual('foo=1,2');
 			});
 		});
 	});

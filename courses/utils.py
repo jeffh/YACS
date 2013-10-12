@@ -108,7 +108,7 @@ def dict_by_attr(collection, attrname, value_attrname=None):
     return mapping
 
 
-def int_list(str_of_integers):
+def int_list(str_of_integers, nested=True):
     if not str_of_integers:
         return []
     ints = set()
@@ -116,7 +116,8 @@ def int_list(str_of_integers):
         try:
             ints.add(int(num))
         except (ValueError, TypeError):
-            pass
+            if nested:
+                ints.union(int_list(num, nested=False))
     return list(ints)
 
 
