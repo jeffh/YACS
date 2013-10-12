@@ -184,7 +184,7 @@ def courses(request, id=None, version=None, ext=None):
 def sections(request, id=None, version=None, ext=None):
     queryset = models.SectionPeriod.objects.optional_filter(
         semester__id__in=int_list(request.REQUEST.getlist('semester_id')) or None,
-        section__course__id__in=int_list(request.REQUEST.getlist('course_id')) or None,
+        section__course_id__in=int_list(request.REQUEST.getlist('course_id')) or None,
         section__id__in=int_list(request.REQUEST.getlist('id')) or None,
         section__crn__in=int_list(request.REQUEST.getlist('crn')) or None,
         section__id=id,

@@ -117,7 +117,7 @@ def int_list(str_of_integers, nested=True):
             ints.add(int(num))
         except (ValueError, TypeError):
             if nested:
-                ints.union(int_list(num, nested=False))
+                ints = ints.union(int_list(num.split(','), nested=False))
     return list(ints)
 
 
