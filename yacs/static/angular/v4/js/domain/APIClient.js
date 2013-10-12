@@ -34,9 +34,9 @@ app.service('networkIndicator', ['$rootScope', function($rootScope){
 }]);
 
 app.service('apiClient', ['$http', '$q', '$cacheFactory', '$rootScope',
-			'Utils', 'apiClientCacheSize', 'networkIndicator',
+			'Utils', 'apiClientCacheSize', 'networkIndicator', 'CSRF_TOKEN',
 			function($http, $q, $cacheFactory, $rootScope, Utils,
-					 apiClientCacheSize, networkIndicator){
+					 apiClientCacheSize, networkIndicator, csrf_token){
 	var cache = $cacheFactory('apiCache', {number: apiClientCacheSize});
 
 	this.get = function(url, params){
@@ -53,7 +53,13 @@ app.service('apiClient', ['$http', '$q', '$cacheFactory', '$rootScope',
 			networkIndicator.release();
 			deferred.resolve(response);
 		} else {
-			var promise = $http.get(fullUrl);
+			var promise = $http.post(url, params, {
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'X-CSRFToken': csrf_token
+				}
+			});
+			console.log(params, csrf_token);
 			promise.success(function(json, status, headers, config){
 				networkIndicator.release();
 				if (!json.success) {

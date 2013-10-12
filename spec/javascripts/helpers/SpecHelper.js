@@ -13,3 +13,9 @@ beforeEach(function(){
     });
 });
 
+beforeEach(module(function($provide){
+	$provide.value('CSRF_TOKEN', 'csrf-token');
+}));
+
+
+
