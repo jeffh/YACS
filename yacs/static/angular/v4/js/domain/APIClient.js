@@ -53,7 +53,7 @@ app.service('apiClient', ['$http', '$q', '$cacheFactory', '$rootScope',
 			networkIndicator.release();
 			deferred.resolve(response);
 		} else {
-			var promise = $http.post(url, params, {
+			var promise = $http.post(url, Utils.queryString(params), {
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
 					'X-CSRFToken': csrf_token
