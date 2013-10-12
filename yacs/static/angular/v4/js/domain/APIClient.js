@@ -59,7 +59,6 @@ app.service('apiClient', ['$http', '$q', '$cacheFactory', '$rootScope',
 					'X-CSRFToken': csrf_token
 				}
 			});
-			console.log(params, csrf_token);
 			promise.success(function(json, status, headers, config){
 				networkIndicator.release();
 				if (!json.success) {

@@ -131,10 +131,10 @@ def selections(request, id=None, version=None, ext=None):
 @render()
 def semesters(request, id=None, version=None, ext=None):
     queryset = models.Semester.visible_objects.optional_filter(
-        id__in=int_list(request.GET.getlist('id')) or None,
-        courses__id__in=int_list(request.GET.getlist('course_id')) or None,
-        departments__id__in=int_list(request.GET.getlist('department_id')) or None,
-        year=request.GET.get('year'), month=request.GET.get('month'),
+        id__in=int_list(request.REQUEST.getlist('id')) or None,
+        courses__id__in=int_list(request.REQUEST.getlist('course_id')) or None,
+        departments__id__in=int_list(request.REQUEST.getlist('department_id')) or None,
+        year=request.REQUEST.get('year'), month=request.REQUEST.get('month'),
         id=id,
     ).distinct()
     return {'context': get_if_id_present(queryset, id)}
@@ -143,10 +143,10 @@ def semesters(request, id=None, version=None, ext=None):
 @render()
 def departments(request, id=None, version=None, ext=None):
     queryset = models.Department.objects.optional_filter(
-        id__in=int_list(request.GET.getlist('id')) or None,
-        semesters__id__in=int_list(request.GET.getlist('semester_id')) or None,
-        courses__id__in=int_list(request.GET.getlist('course_id')) or None,
-        code__in=request.GET.getlist('code') or None,
+        id__in=int_list(request.REQUEST.getlist('id')) or None,
+        semesters__id__in=int_list(request.REQUEST.getlist('semester_id')) or None,
+        courses__id__in=int_list(request.REQUEST.getlist('course_id')) or None,
+        code__in=request.REQUEST.getlist('code') or None,
         id=id,
     ).distinct()
     return {'context': get_if_id_present(queryset, id)}
@@ -162,15 +162,15 @@ def try_int(value, default=0):
 @render()
 def courses(request, id=None, version=None, ext=None):
     queryset = models.Course.objects.optional_filter(
-        semesters__id__in=int_list(request.GET.getlist('semester_id')) or None,
-        department__code__in=request.GET.getlist('department_code') or None,
-        department__id__in=int_list(request.GET.getlist('department_id')) or None,
-        number__in=int_list(request.GET.getlist('number')) or None,
-        id__in=int_list(request.GET.getlist('id')) or None,
-        is_comm_intense=try_int(request.GET.get('is_comm_intense'), default=None),
+        semesters__id__in=int_list(request.REQUEST.getlist('semester_id')) or None,
+        department__code__in=request.REQUEST.getlist('department_code') or None,
+        department__id__in=int_list(request.REQUEST.getlist('department_id')) or None,
+        number__in=int_list(request.REQUEST.getlist('number')) or None,
+        id__in=int_list(request.REQUEST.getlist('id')) or None,
+        is_comm_intense=try_int(request.REQUEST.get('is_comm_intense'), default=None),
         id=id,
     ).distinct()
-    search_query = request.GET.get('search')
+    search_query = request.REQUEST.get('search')
     queryset = queryset.search(search_query)
     return {'context': get_if_id_present(queryset, id)}
 
@@ -178,10 +178,10 @@ def courses(request, id=None, version=None, ext=None):
 @render()
 def sections(request, id=None, version=None, ext=None):
     queryset = models.SectionPeriod.objects.optional_filter(
-        semester__id__in=int_list(request.GET.getlist('semester_id')) or None,
-        section__course__id__in=int_list(request.GET.getlist('course_id')) or None,
-        section__id__in=int_list(request.GET.getlist('id')) or None,
-        section__crn__in=int_list(request.GET.getlist('crn')) or None,
+        semester__id__in=int_list(request.REQUEST.getlist('semester_id')) or None,
+        section__course__id__in=int_list(request.REQUEST.getlist('course_id')) or None,
+        section__id__in=int_list(request.REQUEST.getlist('id')) or None,
+        section__crn__in=int_list(request.REQUEST.getlist('crn')) or None,
         section__id=id,
     ).select_related('section', 'period')
     section_periods = encoders.default_encoder.encode(queryset)
@@ -209,10 +209,10 @@ def sections(request, id=None, version=None, ext=None):
 def section_conflicts(request, id=None, version=None, ext=None):
     conflicts = SectionConflict.objects.by_unless_none(
         id=id,
-        id__in=int_list(request.GET.getlist('id')) or None,
-        crn__in=int_list(request.GET.getlist('crn')) or None,
+        id__in=int_list(request.REQUEST.getlist('id')) or None,
+        crn__in=int_list(request.REQUEST.getlist('crn')) or None,
     )
-    if request.GET.get('as_crns'):
+    if request.REQUEST.get('as_crns'):
         conflicts = conflicts.values_list('section1__crn', 'section2__crn')
     else:
         conflicts = conflicts.values_list('section1__id', 'section2__id')
@@ -230,7 +230,7 @@ def section_conflicts(request, id=None, version=None, ext=None):
         }
 
     collection = []
-    ids = set(int_list(request.GET.getlist('id')))
+    ids = set(int_list(request.REQUEST.getlist('id')))
     for section_id, conflicts in mapping.items():
         if len(ids) > 0 and section_id not in ids:
             continue
@@ -248,7 +248,7 @@ def schedules(request, id=None, version=None):
         selection = Selection.objects.get(id=id)
         section_ids = selection.section_ids
     else:
-        section_ids = int_list(request.GET.getlist('section_id'))
+        section_ids = int_list(request.REQUEST.getlist('section_id'))
 
     created = False
     if not selection:
@@ -262,7 +262,7 @@ def schedules(request, id=None, version=None):
         SectionConflict.objects.as_dictionary([s.id for s in sections]))
 
     # if check flag given, return only if we have a schedule or not.
-    if request.GET.get('check'):
+    if request.REQUEST.get('check'):
         return {'context': has_schedule(selected_courses, conflict_cache)}
 
     # check the cache
