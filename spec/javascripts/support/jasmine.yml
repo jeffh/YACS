@@ -17,6 +17,8 @@ src_files:
     - yacs/static/angular/v4/js/lib/angularjs/angular.js
     - yacs/static/angular/v4/js/lib/angular-mocks.js
     - yacs/static/angular/v4/js/lib/angularjs/angular-cookies.js
+    - yacs/static/angular/v4/js/lib/angulartics/angulartics.min.js
+    - yacs/static/angular/v4/js/lib/angulartics/angulartics-google-analytics.min.js
     - yacs/static/angular/v4/js/Application.js
     - yacs/static/angular/v4/js/Constants.js
     - yacs/static/angular/v4/js/DelayTrigger.js

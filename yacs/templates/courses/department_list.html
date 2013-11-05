@@ -19,7 +19,9 @@
 		<ul>
 			{% for department in departments %}
 			<li>
-				<a href="{% url 'courses-by-dept' sem_year sem_month department.code %}">
+				<a href="{% url 'courses-by-dept' sem_year sem_month department.code %}"
+                   analytics-on="click" analytics-event="click"
+                   analytics-category="department" analytics-label="{{ department.code }}">
 					<span class="disclosure">&gt;</span>
 					<span class="deptcode">{{ department.code }}</span>
 					<span class="deptname">{{ department.name }}</span>

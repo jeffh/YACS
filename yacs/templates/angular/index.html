@@ -13,6 +13,8 @@
 {% compressed_css 'print' %}
 {% compressed_js 'angular' %}
 
+{% include 'analytics.html' %}
+
 <script>
 app.constant('STATIC_URL', "{{ STATIC_URL }}");
 app.constant('ICAL_URL', "{% url 'ics' %}");
@@ -45,11 +47,11 @@ app.constant('CSRF_TOKEN', "{{ csrf_token }}");
 		<div ng-view></div>
 	</div>
 	<div id="ft" ng-controller="FooterCtrl">
-		&copy; 2013 Jeff Hui &amp; Friends. {% templatetag openvariable %} flavorText {% templatetag closevariable %} RCOS project.
+		&copy; 2013 <a href="http://twitter.com/jeffhui">Jeff Hui</a> &amp; <a href="https://github.com/jeffh/YACS/blob/master/CONTRIBUTORS.txt">Friends</a>.
+		{% templatetag openvariable %} flavorText {% templatetag closevariable %} <a href="http://rcos.rpi.edu">RCOS</a> project.
 	</div>
 </div>
 </body>
-{% include 'analytics.html' %}
 {% endblock body %}
 </html>
 

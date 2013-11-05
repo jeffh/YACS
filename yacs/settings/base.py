@@ -358,6 +358,8 @@ PIPELINE_JS = {
             'v4/js/lib/angularjs/angular.js',
             'v4/js/lib/angularjs/angular-cookies.js',
             'v4/js/lib/underscore-1.4.4.min.js',
+            'v4/js/lib/angulartics/angulartics.min.js',
+            'v4/js/lib/angulartics/angulartics-google-analytics.min.js',
             'v4/js/Application.js',
             'v4/js/Utils.js',
             'v4/js/DelayTrigger.js',
