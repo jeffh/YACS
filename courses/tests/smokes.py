@@ -46,6 +46,11 @@ class ListDepartmentsIntegrationTests(BasicSchema):
         self.assertIn(self.cs_dept, response.context['departments'])
         self.assertIn(self.ecse_dept, response.context['departments'])
 
+class RobotsTests(BasicSchema):
+    def test_robots(self):
+        response = self.get("robots", status_code=200)
+        self.assertIn(self.semester, response.context['semesters'])
+
 
 class SearchTest(BasicSchema):
     def setUp(self):
