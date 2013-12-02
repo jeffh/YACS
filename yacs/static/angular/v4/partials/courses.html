@@ -10,6 +10,10 @@
 			ng-model="course.is_selected"
 			ng-click="clickCourse(course)"
 			ng-disabled="course.conflicts.length > 0"
+			analytics-on="click"
+			analytics-event="toggle-selection"
+			analytics-category="course"
+			analytics-label="{{ course.id }}"
 			/>
 		<label class="checkbox_content" for="course_{{course.id}}">
 			<h2>{{course.name}}</h2>
@@ -30,11 +34,18 @@
 
 		<div class="checkbox_content">
 			<ul class="sections">
-				<li class="section" ng-class="{no_seats: section.seatsLeft() <= 0, conflict: section.allConflicts.length}" ng-repeat="section in course.sections track by section.id">
+				<li class="section"
+					ng-class="{no_seats: section.seatsLeft() <= 0, conflict: section.allConflicts.length}"
+					ng-repeat="section in course.sections track by section.id">
 					<input type="checkbox" class="checkbox" id="section_{{section.id}}" name="section_{{section.id}}"
 						ng-model="section.is_selected"
 						ng-disabled="section.allConflicts.length > 0"
-						ng-click="clickSection(course, section)" />
+						ng-click="clickSection(course, section)"
+						analytics-on="click"
+						analytics-event="toggle-selection"
+						analytics-category="section"
+						analytics-label="{{ section.id }}"
+						/>
 					<label class="checkbox_content" for="section_{{section.id}}">
 						<p class="section-details">
 							<span class="number">Section {{section.numberText()}}</span>

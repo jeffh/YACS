@@ -76,13 +76,13 @@ def dow_short(dow):
     if isinstance(dow, list) or isinstance(dow, tuple):
         return tuple(map(dow_short, dow))
     return {
-        'Monday': 'Mo',
-        'Tuesday': 'Tu',
-        'Wednesday': 'We',
-        'Thursday': 'Th',
-        'Friday': 'Fr',
-        'Saturday': 'Sa',
-        'Sunday': 'Su',
+        'Monday': 'Mon',
+        'Tuesday': 'Tue',
+        'Wednesday': 'Wed',
+        'Thursday': 'Thu',
+        'Friday': 'Fri',
+        'Saturday': 'Sat',
+        'Sunday': 'Sun',
     }.get(dow)
 
 

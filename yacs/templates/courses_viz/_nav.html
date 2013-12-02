@@ -1,9 +1,9 @@
 {% load url from future %}
 
-<div class="nav">
+<div class="menu">
   <ul>
-    <li><a href="/" class="button">Home</a></li>
-    <li><a href="{% url 'courses_viz:bubble' %}" class="button{% if selected == 'bubbles' %} selected{% endif %}">Bubbles</a></li>
-    <li><a href="{% url 'courses_viz:timelines' %}" class="button{% if selected == 'timelines' %} selected{% endif %}">Timelines</a></li>
+    <li><a href="/">Home</a></li>
+    <li class="{% if selected == 'bubbles' %} selected{% endif %}"><a href="{% url 'courses_viz:bubble' %}">Bubbles</a></li>
+    <li class="{% if selected == 'timelines' %} selected{% endif %}"><a href="{% url 'courses_viz:timelines' %}">Timelines</a></li>
   </ul>
 </div>

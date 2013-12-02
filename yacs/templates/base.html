@@ -1,16 +1,5 @@
 <!DOCTYPE html>
 {% load url from future %}
-
-<!-- 320andup: http://stuffandnonsense.co.uk/projects/320andup -->
-{#% with 'manifest.appcache?v=1' as manifest %#}
-{% with '' as manifest %}
-<!--[if IEMobile 7 ]><html class="no-js iem7"{% if manifest %} manifest="{{ manifest }}"{% endif %}><![endif]-->
-<!--[if lt IE 7 ]><html class="no-js ie6" lang="en"><![endif]-->
-<!--[if IE 7 ]><html class="no-js ie7" lang="en"><![endif]-->
-<!--[if IE 8 ]><html class="no-js ie8" lang="en"><![endif]-->
-<!--[if (gte IE 9)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" {% if manifest %}manifest="{{ manifest }}"{% endif %} lang="en"><!--<![endif]-->
-{% endwith %}
-
 <head>
 <meta charset="utf-8">
 {% if semester %}
@@ -23,35 +12,25 @@
 {% block head %}{% endblock %}
 </head>
 
-<body class="clearfix" id="{% block body_id %}{% endblock %}">
-
-<img class="spinner" src="{{ STATIC_URL }}img/spinner.gif" alt="Loading" style="display:none" />
-
-<header role="banner" class="clearfix">
-{% block header %}
-<h1>{% block app-title %}YACS{% endblock %}</h1>
-{% endblock %}
-
-<ul role="navigation" class="navbar">
-  <li><a href="mailto:jeff@jeffhui.net?subject=YACS">Feedback</a></li>
-</ul>
-</header>
-
-<div class="content clearfix">
-
-<div role="main" class="main">
-{% block content %}{% endblock %}
+<body id="{% block body_id %}{% endblock %}">
+{% block body %}
+<div id="wrap">
+	<div id="hd" ng-controller="NavCtrl">
+		{% block header %}
+		<h1>{% block app-title %}YACS{% endblock %}</h1>
+		{% endblock %}
+	</div>
+	<div id="bd">
+		<div ng-view>
+			{% block content %}{% endblock %}
+		</div>
+	</div>
+	<div id="ft" ng-controller="FooterCtrl">
+		&copy; 2013 <a href="http://twitter.com/jeffhui">Jeff Hui</a> &amp; <a href="https://github.com/jeffh/YACS/blob/master/CONTRIBUTORS.txt">Friends</a>.
+		<a href="http://rcos.rpi.edu">RCOS</a> project.
+	</div>
 </div>
-
-</div>
-
-<footer role="contentinfo" class="clearfix">
-  <p>Hey, you want to write programs from course data? Use the <a href="{% url 'api:v4:docs' %}">API</a>!</p>
-  {% block footer %}
-  <p>&copy; 2012 by <a href="http://twitter.com/#!/jeffhui">Jeff Hui</a> <a href="https://github.com/jeffh/YACS/blob/master/CONTRIBUTORS.txt" style="padding: 0 0.2em">et al.</a> - A <a href="http://rcos.rpi.edu">RCOS</a> Project, which means it's <a href="http://github.com/jeffh/YACS">open source</a>.</p>
-  {% endblock %}
-</footer>
-
-{% block javascript %}{% endblock %}
+	{% endblock body %}
+	{% block javascript %}{% endblock %}
 </body>
 </html>

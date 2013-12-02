@@ -57,33 +57,33 @@ class DisplayPeriodTest(TestCase):
 
 class DowShortTest(TestCase):
     def test_monday(self):
-        self.assertEqual(dow_short('Monday'), 'Mo')
+        self.assertEqual(dow_short('Monday'), 'Mon')
 
     def test_tuesday(self):
-        self.assertEqual(dow_short('Tuesday'), 'Tu')
+        self.assertEqual(dow_short('Tuesday'), 'Tue')
 
     def test_wednesday(self):
-        self.assertEqual(dow_short('Wednesday'), 'We')
+        self.assertEqual(dow_short('Wednesday'), 'Wed')
 
     def test_thursday(self):
-        self.assertEqual(dow_short('Thursday'), 'Th')
+        self.assertEqual(dow_short('Thursday'), 'Thu')
 
     def test_friday(self):
-        self.assertEqual(dow_short('Friday'), 'Fr')
+        self.assertEqual(dow_short('Friday'), 'Fri')
 
     def test_saturday(self):
-        self.assertEqual(dow_short('Saturday'), 'Sa')
+        self.assertEqual(dow_short('Saturday'), 'Sat')
 
     def test_sunday(self):
-        self.assertEqual(dow_short('Sunday'), 'Su')
+        self.assertEqual(dow_short('Sunday'), 'Sun')
 
     def test_return_None_otherwise(self):
         self.assertEqual(dow_short('foobar'), None)
 
     def test_convert_list(self):
         collection = ['Monday', 'Wednesday', 'Thursday']
-        self.assertEqual(dow_short(collection), ('Mo', 'We', 'Th'))
+        self.assertEqual(dow_short(collection), ('Mon', 'Wed', 'Thu'))
 
     def test_convert_tuple(self):
         collection = ('Monday', 'Wednesday', 'Thursday')
-        self.assertEqual(dow_short(collection), ('Mo', 'We', 'Th'))
+        self.assertEqual(dow_short(collection), ('Mon', 'Wed', 'Thu'))

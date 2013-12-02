@@ -31,6 +31,9 @@ h1 { font-size: 250% }
 #hd {
 	text-align: center;
 }
+#hd h1 span {
+	color: #733;
+}
 
 #bd {
 	font-family: "Helvetica Neue", "Open Sans", Helvetica, Arial, sans-serif;
@@ -40,7 +43,7 @@ a:link, a:visited {
 	color: #933;
 	text-decoration: none;
 }
-a:hover {
+a:link:hover {
 	color: #c55;
 	text-decoration: underline;
 }
@@ -68,7 +71,7 @@ a:hover {
 	margin: 0;
 	width: 100%;
 }
-.menu a:hover {
+.menu a:link:hover {
 	border-top: 2px solid #c33;
 	color: #c33;
 	text-decoration: none;
@@ -101,7 +104,7 @@ a:hover {
 	font-weight: 200;
 	letter-spacing: 1px;
 }
-.submenu a:hover {
+.submenu a:link:hover {
 	border-top: 1px solid #c33;
 	color: #c33;
 	text-decoration: none;
@@ -139,4 +142,63 @@ a:hover {
 	text-align: left;
 	clear: both;
 	padding: 1em;
+}
+
+/** Docs **/
+.docs {
+	width: 950px;
+	margin: auto;
+	line-height: 1.25em;
+	font-size: 110%;
+	font-weight: 200;
+}
+
+.docs p {
+	margin: 0 0 1em 0;
+}
+
+.docs .section {
+	margin-left: 1em;
+}
+
+.docs strong {
+	font-weight: bold;
+}
+
+.docs ul {
+	list-style-type: square;
+	padding-left: 2em;
+	font-size: 110%;
+}
+
+.docs h2, .docs h3 {
+	font-weight: bold;
+	font-size: 150%;
+	text-align: left;
+	margin: 1em 0 0.5em 0;
+}
+
+.docs h3 {
+	font-size: 125%;
+}
+
+.docs dl {
+	margin: 1em 0 1em 0;
+	padding-left: 1em;
+	border-left: 1px solid #999;
+}
+
+.docs dt {
+	margin-top: 0.5em;
+	font-weight: normal;
+}
+
+.docs dd {
+	margin-left: 1em;
+}
+
+.docs code {
+	font-family: "Lucida Console", Monaco, monospace;
+	background: #ccc;
+	padding: 0.05em;
 }

@@ -7,10 +7,8 @@ from courses import models
 
 
 class SemesterSitemap(Sitemap):
-    changefreq = 'hourly'
-
     def items(self):
-        return models.Semester.objects.all()
+        return models.Semester.objects.all().order_by('-year', '-month')
 
     def lastmod(self, obj):
         return obj.date_updated
@@ -19,6 +17,12 @@ class SemesterSitemap(Sitemap):
         r = reverse('departments', kwargs=dict(year=obj.year, month=obj.month))
         print r
         return r
+
+    def changefreq(self, item):
+        latest = models.Semester.objects.all().order_by('-year', '-month')[0]
+        if latest == item:
+            return 'hourly'
+        return 'monthly'
 
 
 sitemaps = {

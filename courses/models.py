@@ -365,6 +365,68 @@ class Course(models.Model):
         return "%d - %d credits" % (self.min_credits, self.max_credits)
 
     @property
+    def num_sections_display(self):
+        section_count = self.sections.count()
+        return "%d section%s" % (section_count, '' if section_count == 1 else 's')
+
+    @property
+    def seats_left_display(self):
+        seats_left = self.seats_left
+        return "%d seat%s" % (seats_left, '' if seats_left == 1 else 's')
+
+    @property
+    def tags(self):
+        tags = []
+        section_types = {
+            'LEC': {
+                'name': 'Lecture',
+                'title': 'This course has lecture, where the instructor teaches the course.',
+                'sort_order': 0
+            },
+            'TES': {
+                'name': 'Testing',
+                'title': 'This course has a testing period outside normal lecture or recitation.',
+                'sort_order': 5
+            },
+            'REC': {
+                'name': 'Recitation',
+                'title': 'This course has recitation, where problemsets and quizzes generally occur.',
+                'sort_order': 2
+            },
+            'LAB': {
+                'name': 'Lab',
+                'title': 'This course has lab, where hands-on activities occur.',
+                'sort_order': 1
+            },
+            'STU': {
+                'name': 'Studio',
+                'title': 'This course has studio',
+                'sort_order': 4
+            }
+        }
+        assigned_tags = set([])
+        for section_period in self.section_periods:
+            tag = section_types.get(section_period.kind)
+            if tag and tag['name'] not in assigned_tags:
+                tags.append(tag)
+                assigned_tags = assigned_tags.union([tag['name']])
+        if self.is_comm_intense:
+            tags.append({
+                'name': 'Comm Intensive',
+                'title': 'This course counts as a communication intensive course.',
+                'classes': 'satisfies-requirement',
+                'sort_order': 10
+            })
+        if self.grade_type == 'Satisfactory/Unsatisfactory':
+            tags.append({
+                'name': 'Pass/Fail',
+                'title': "This course's final grade is pass or fail instead of a GPA.",
+                'classes': 'pass_or_fail',
+                'sort_order': 11
+            })
+        return tags
+
+    @property
     def available_sections(self):
         return self.sections.by_availability()
 
@@ -408,6 +470,11 @@ class Course(models.Model):
     def full_crns(self):
         notify_if_missing_prefetch(self, 'sections')
         return set(s.crn for s in self.sections.all() if s.seats_taken >= s.seats_total)
+
+    @property
+    def seats_left(self):
+        notify_if_missing_prefetch(self, 'sections')
+        return sum(s.seats_total - s.seats_taken for s in self.sections.all())
 
     @property
     def section_times(self):

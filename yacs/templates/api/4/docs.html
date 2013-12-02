@@ -4,10 +4,6 @@
 
 {% block app-title %}{{ block.super }} <span>API</span>{% endblock %}
 
-{% block javascript %}
-{% include 'analytics.html' %}
-{% endblock %}
-
 {% block header %}
 {{ block.super }}
 {% include 'api/_nav.html' with selected='4' %}
@@ -15,154 +11,184 @@
 
 {% block content %}
 <div class="docs">
-  <h1>API</h1>
-  <p>
-  This describes the API to access YACS data &amp; features,
-  This is the fourth revision of this interface. This saves the effort
-  of having to manually page-scrape various RPI sources for data.
-  </p>
-  <p>
-  Most of this data isn't updated frequently. YACS only updates at an
-  approximately 15-minute interval. Please,
-  <strong>do not constantly perform unnecessary API requests</strong>.
-  This puts extra load on the server for a poor guy that has to pay for it.
-  </p>
-  <ul>
-    <li><a href="#demos">Demos</a></li>
-    <li><a href="#endpoints">API Endpoints</a></li>
-    <li><a href="#schema">Data Types</a></li>
-    <li><a href="#schedules">Schedules</a></li>
-  </ul>
-  <h2><a name="demos">Demos</a></h2>
-  <p>
-  Besides the web front-end, there are two visualization demos available that utilize the API:
-    <a href="{% url 'courses_viz:bubble' %}">bubbles</a> and
-    <a href="{% url 'courses_viz:timelines' %}">timelines</a>.
-  </p>
-  <p>Feel free to view-source in those demos to see moderately complex programs accessing large portions of the API.</p>
-  <h2><a name="endpoints">API Endpoints</a></h2>
-  <p>The API is accessed by a set of URLs they are usually accessed in the form: <code>{% url 'api:v4:metadata' %}&lt;model&gt;/&lt;id&gt;/</code></p>
-  <p>
-  All endpoints optionally accept a file extension as: json, xml, or plist. The default is json.
-  For example, <a href="{% url 'api:v4:semesters' semester.id %}">{% url 'api:v4:semesters' semester.id %}</a>
-  is the same as
-  <a href="{% url 'api:v4:semesters' semester.id 'json' %}">{% url 'api:v4:semesters' semester.id 'json' %}</a>, but you can get the data in plist form by using
-  <a href="{% url 'api:v4:semesters' semester.id 'xml' %}">{% url 'api:v4:semesters' semester.id 'xml' %}</a> or even plist
-  <a href="{% url 'api:v4:semesters' semester.id 'plist' %}">{% url 'api:v4:semesters' semester.id 'plist' %}</a>
-  </p>
-  <p>
-  All data can be accessed in a REST-like url scheme. Please note that
-  <strong>the default behavior to to read all data in YACS, across all semesters</strong>.
-  </p>
-  <ul>
-    <li><a href="{% url 'api:v4:semesters' %}">{% url 'api:v4:semesters' %}</a></li>
-    <li><a href="{% url 'api:v4:departments' %}">{% url 'api:v4:departments' %}</a></li>
-    <li><a href="{% url 'api:v4:courses' %}">{% url 'api:v4:courses' %}</a></li>
-    <li><a href="{% url 'api:v4:sections' %}">{% url 'api:v4:sections' %}</a></li>
-  </ul>
-  <h3>Filtering</h3>
-  <p>It may not be intended to fetch all the data available, so you can pass certain GET parameters to limit the dataset returned.</p>
-  <dl>
-    <dt><a href="{% url 'api:v4:semesters' %}?year={{ semester.year }}">{% url 'api:v4:semesters' %}?year={{ semester.year }}</a></dt>
-    <dd>Returns all semesters for the year {{ semester.year }}.</dd>
-    <dt><a href="{% url 'api:v4:semesters' semester.id %}">{% url 'api:v4:semesters' semester.id %}</a></dt>
-    <dd>Returns a given semester with an id of 8.</dd>
-    <dt><a href="{% url 'api:v4:semesters' %}?id={{ semester.id}}&id=1">{% url 'api:v4:semesters' %}?id={{ semester.id }}&id=1</a></dt>
-    <dd>Returns a given semester with an id of 8 or 1.</dd>
-    <dt><a href="{% url 'api:v4:departments' %}?semester_id={{ semester.id }}">{% url 'api:v4:departments' %}?semester_id={{ semester.id }}</a></dt>
-    <dd>Returns all departments for {{ semester.name }}. This kind of filtering works for all objects.</dd>
-    <dt><a href="{% url 'api:v4:departments' %}?code={{ department.code }}&code=CSCI">{% url 'api:v4:departments' %}?code={{ department.code }}&amp;code=CSCI</a></dt>
-    <dd>Returns the departments with code of {{ department.code }} or CSCI.</dd>
-    <dt><a href="{% url 'api:v4:courses' %}?department_code={{ department.code }}">{% url 'api:v4:courses' %}?department_code={{ department.code }}</a></dt>
-    <dd>Returns the courses with department code of {{ department.code }}.</dd>
-  </dl>
-  <p>Many of these GET parameters can be repeated to filter find specific objects. The schema specifies, in detail, what is filterable.</p>
-  <h2><a name="schema">Data Types</a></h2>
-  <p>YACS currently exposes its data models directly for access. The schema is as follows:</p>
-  <div class="section">
-    <h3>Semesters</h3>
-    <p>
-    These represent a particular time period where all courses are available. Usually there are Fall
-    and Spring semesters for every year. Summer semesters may exist, although it is unlikely that they will be available.
-    </p>
-    <p>
-    Generally, semesters are fetched first to filter other model fetching.
-    </p>
-    <dl>
-      <dt>id</dt> <dd>Unique identifer to refer to this semester. Filterable.</dd>
-      <dt>year</dt> <dd>The year this semester occurs. Filterable.</dd>
-      <dt>month</dt> <dd>The month this semester starts. Filterable.</dd>
-      <dt>date_updated</dt> <dd>The timestamp that this semester was last refreshed by YACS.</dd>
-      <dt class="depr">ref</dt> <dd class="depr">Deprecated. Unique identifer for backend data collector. Usually refers to the primary source URL.</dd>
-    </dl>
-    <h3>Departments</h3>
-    <p>
-    The suborganization that manages a set of courses about a particular subject.
-    Departments can span multiple semesters.
-    </p>
-    <dl>
-      <dt>id</dt> <dd>Unique identifer to refer to this department. Filterable.</dd>
-      <dt>name</dt> <dd>The human-readable name of the department. May not always be available.</dd>
-      <dt>code</dt> <dd>The short-hand 4-letter code that represents this department (eg - 'CSCI' for computer science department). Filterable.</dd>
-    </dl>
-    <h3>Courses</h3>
-    <p>
-    Course is each kind of topic that is taught per semester. A course has sections, which indicate "classes" that can be taken for this topic.
-    A course may span multiple semesters.
-    </p>
-    <dl>
-      <dt>id</dt> <dd>Unique identifer to refer to this course. Filterable.</dd>
-      <dt>name</dt> <dd>The name of the course. This may be in all uppercase or not, depending on the data source YACS managed to use for course names.</dd>
-      <dt>number</dt> <dd>The number the department uses to refer to this course (eg - The 2300 in 'CSCI 2300'). Filterable.</dd>
-      <dt>department_id</dt> <dd>The identifier that refers the department this course belongs to. Filterable by id or code.</dd>
-      <dt>description</dt> <dd>The course description, if available.</dd>
-      <dt>min_credits</dt> <dd>The minimum number of credits this course is offered for.</dd>
-      <dt>max_credits</dt> <dd>The maximum number of credits this course is offered for.</dd>
-      <dt>grade_type</dt> <dd>How the course is graded.</dd>
-      <dt>prereqs</dt> <dd>The prerequisites of courses to take prior to taking this course. This is currently only available as a raw string.</dd>
-      <dt>is_comm_intensive</dt> <dd>A boolean indicating if the course satisfies the communication requirement. Filterable.</dd>
-    </dl>
-    <h3>Sections</h3>
-    <p>
-    Section is an instance of a course being taught. A section has a collection of times it occurs.
-    Unlike courses, sections belong to only one semester.
-    </p>
-    <dl>
-      <dt>id</dt> <dd>Unique identifer to refer to this section. Filterable.</dd>
-      <dt>course_id</dt> <dd>The course that this section belongs to. Filterable.</dd>
-      <dt>semester_id</dt> <dd>The semester that this section belongs to. Filterable.</dd>
-      <dt>crosslisted_id</dt> <dd>null field for a possible future feature.</dd>
-      <dt>notes</dt> <dd>Misc data set by RPI</dd>
-      <dt>crn</dt> <dd>The Course Registration Number used to register for the course by students. Filterable.</dd>
-      <dt>number</dt> <dd>The section number. Section numbers are unique per course and semester. They also may not be actually numbers.</dd>
-      <dt>seats_total</dt> <dd>The total number of seats this section allows.</dd>
-      <dt>seats_left</dt> <dd>The number of remaining seats this section.</dd>
-      <dt>section_times</dt> <dd>An array of section times which indicate location, professor and times.</dd>
-    </dl>
-  </div>
-  <h2><a name="schedules">Schedules</a></h2>
-  <p>
-  Scheduling is an expensive resource of YACS. It is recommended to compute your own schedules from the data provided by YACS.
-  </p>
-  <div class="section">
-    <h3>Conflicts</h3>
-    <p>
-    Conflicts is a cache the server uses to help quickly determine section conflicts.
-    This is only part of the solution to computing a <a href="http://en.wikipedia.org/wiki/Constraint_satisfaction_problem">Constraints Satisfaction Problem</a>.
-    <br />
-    Optionally, <code>as_crns=1</code> GET parameter can be used to return all CRNs instead of section ids.
-    </p>
-    <p>
-    Using this without any filters returns a large dataset. You have been warned!
-    </p>
-    <dl>
-      <dt>id</dt> <dd>The section id that this conflict refers to. Filterable. (Also filterable by section CRN).</dd>
-      <dt>conflicts</dt> <dd>An array of section ids that this section conflicts with.</dd>
-    </dl>
-    <h3>Schedules</h3>
-    <p>
-    Sorry, Documentation for schedules hasn't been done yet :(
-    </p>
-  </div>
+	<p>
+	This describes the API to access YACS data &amp; features,
+	This is the fourth revision of this interface. This saves the effort
+	of having to manually page-scrape various RPI sources for data.
+	</p>
+	<p>
+	Most of this data isn't updated frequently. YACS only updates at an
+	approximately 15-minute interval for the latest semester. Please,
+	<strong>do not constantly perform unnecessary API requests</strong>.
+	This puts extra load on the server for a poor guy that has to pay for it.
+	</p>
+
+	<h2>Overview</h2>
+	<ul>
+		<li><a href="#demos">Demos</a></li>
+		<li><a href="#endpoints">API Endpoints</a></li>
+		<li><a href="#schema">Data Types</a></li>
+		<li><a href="#schedules">Schedules</a></li>
+	</ul>
+
+	<h2><a name="demos">Demos</a></h2>
+	<div class="section">
+		<p>
+		Besides the web front-end, there are two visualization demos available that utilize the API:
+		<a href="{% url 'courses_viz:bubble' %}">bubbles</a> and
+		<a href="{% url 'courses_viz:timelines' %}">timelines</a>.
+		</p>
+		<p>Feel free to view-source in those demos to see moderately complex programs accessing large portions of the API.</p>
+
+	</div>
+	<h2><a name="endpoints">API Endpoints</a></h2>
+	<div class="section">
+		<p>The API is accessed by a set of URLs they are usually accessed in the form: <code>{% url 'api:v4:metadata' %}&lt;model&gt;/&lt;id&gt;/</code></p>
+		<p>
+		All endpoints optionally accept a file extension as: json, xml, or plist. The default is json.
+		For example, <a href="{% url 'api:v4:semesters' semester.id %}">{% url 'api:v4:semesters' semester.id %}</a>
+		is the same as
+		<a href="{% url 'api:v4:semesters' semester.id 'json' %}">{% url 'api:v4:semesters' semester.id 'json' %}</a>, but you can get the data in xml form by using
+		<a href="{% url 'api:v4:semesters' semester.id 'xml' %}">{% url 'api:v4:semesters' semester.id 'xml' %}</a> or even plist
+		<a href="{% url 'api:v4:semesters' semester.id 'plist' %}">{% url 'api:v4:semesters' semester.id 'plist' %}</a>
+		</p>
+		<p>
+		All data can be accessed in a REST-like url scheme. Please note that
+		<strong>the default behavior to to read all data in YACS, across all semesters</strong>.
+		</p>
+		<ul>
+			<li><a href="{% url 'api:v4:semesters' %}">{% url 'api:v4:semesters' %}</a></li>
+			<li><a href="{% url 'api:v4:departments' %}">{% url 'api:v4:departments' %}</a></li>
+			<li><a href="{% url 'api:v4:courses' %}">{% url 'api:v4:courses' %}</a></li>
+			<li><a href="{% url 'api:v4:sections' %}">{% url 'api:v4:sections' %}</a></li>
+		</ul>
+		<h3>Getting By ID</h3>
+		<div class="section">
+			<p>
+			By adding the id to the path url, you can retrieve that specific item.
+			</p>
+			<dl>
+				<dt><a href="{% url 'api:v4:semesters' semester.id %}">{% url 'api:v4:semesters' semester.id %}</a></dt>
+				<dd>Returns a given semester with an id of {{ semester.id }}.</dd>
+			</dl>
+		</div>
+		<h3>Filtering</h3>
+		<div class="section">
+			<p>
+			It may not be efficient to fetch all the data available, so you can pass certain GET parameters to limit the dataset returned.
+			By passing a filterable field in the querystring, you can select only results where that field matches the provided value.
+			</p>
+			<dl>
+				<dt><a href="{% url 'api:v4:semesters' %}?year={{ semester.year }}">{% url 'api:v4:semesters' %}?year={{ semester.year }}</a></dt>
+				<dd>Returns all semesters for the year {{ semester.year }}.</dd>
+				<dt><a href="{% url 'api:v4:semesters' %}?id={{ semester.id}}&id=1">{% url 'api:v4:semesters' %}?id={{ semester.id }}&id=1</a></dt>
+				<dd>Returns a given semester with an id of {{ semester.id }} or 1.</dd>
+				<dt><a href="{% url 'api:v4:departments' %}?semester_id={{ semester.id }}">{% url 'api:v4:departments' %}?semester_id={{ semester.id }}</a></dt>
+				<dd>Returns all departments for {{ semester.name }}. This kind of filtering works for all objects.</dd>
+				<dt><a href="{% url 'api:v4:departments' %}?code={{ department.code }}&code=CSCI">{% url 'api:v4:departments' %}?code={{ department.code }}&amp;code=CSCI</a></dt>
+				<dd>Returns the departments with code of {{ department.code }} or CSCI.</dd>
+				<dt><a href="{% url 'api:v4:courses' %}?department_code={{ department.code }}">{% url 'api:v4:courses' %}?department_code={{ department.code }}</a></dt>
+				<dd>Returns the courses with department code of {{ department.code }}.</dd>
+			</dl>
+			<p>Many of these GET parameters can be repeated to filter find specific objects. The schema specifies, in detail, what is filterable.</p>
+		</div>
+	</div>
+	<h2><a name="schema">Data Types</a></h2>
+	<div class="section">
+		<p>YACS currently exposes its data models directly for access. The schema is as follows:</p>
+		<h3>Semesters</h3>
+		<div class="section">
+			<p>
+			These represent a particular time period where all courses are available. Usually there are Fall
+			and Spring semesters for every year. Summer semesters may exist, although it is unlikely that they will be available.
+			</p>
+			<p>
+			Generally, semesters are fetched first to filter other model fetching.
+			</p>
+			<dl>
+				<dt>id</dt> <dd>Unique identifer to refer to this semester. Filterable.</dd>
+				<dt>year</dt> <dd>The year this semester occurs. Filterable.</dd>
+				<dt>month</dt> <dd>The month this semester starts. Filterable.</dd>
+				<dt>date_updated</dt> <dd>The timestamp that this semester was last refreshed by YACS.</dd>
+				<dt class="depr">ref</dt> <dd class="depr">Deprecated. Unique identifer for backend data collector. Usually refers to the primary source URL.</dd>
+			</dl>
+		</div>
+		<h3>Departments</h3>
+		<div class="section">
+			<p>
+			The suborganization that manages a set of courses about a particular subject.
+			Departments can span multiple semesters.
+			</p>
+			<dl>
+				<dt>id</dt> <dd>Unique identifer to refer to this department. Filterable.</dd>
+				<dt>name</dt> <dd>The human-readable name of the department. May not always be available.</dd>
+				<dt>code</dt> <dd>The short-hand 4-letter code that represents this department (eg - 'CSCI' for computer science department). Filterable.</dd>
+			</dl>
+		</div>
+		<h3>Courses</h3>
+		<div class="section">
+			<p>
+			Course is each kind of topic that is taught per semester. A course has sections, which indicate "classes" that can be taken for this topic.
+			A course may span multiple semesters.
+			</p>
+			<dl>
+				<dt>id</dt> <dd>Unique identifer to refer to this course. Filterable.</dd>
+				<dt>name</dt> <dd>The name of the course. This may be in all uppercase or not, depending on the data source YACS managed to use for course names.</dd>
+				<dt>number</dt> <dd>The number the department uses to refer to this course (eg - The 2300 in 'CSCI 2300'). Filterable.</dd>
+				<dt>department_id</dt> <dd>The identifier that refers the department this course belongs to. Filterable by id or code.</dd>
+				<dt>description</dt> <dd>The course description, if available.</dd>
+				<dt>min_credits</dt> <dd>The minimum number of credits this course is offered for.</dd>
+				<dt>max_credits</dt> <dd>The maximum number of credits this course is offered for.</dd>
+				<dt>grade_type</dt> <dd>How the course is graded.</dd>
+				<dt>prereqs</dt> <dd>The prerequisites of courses to take prior to taking this course. This is currently only available as a raw string.</dd>
+				<dt>is_comm_intensive</dt> <dd>A boolean indicating if the course satisfies the communication requirement. Filterable.</dd>
+			</dl>
+		</div>
+		<h3>Sections</h3>
+		<div class="section">
+			<p>
+			Section is an instance of a course being taught. A section has a collection of times it occurs.
+			Unlike courses, sections belong to only one semester.
+			</p>
+			<dl>
+				<dt>id</dt> <dd>Unique identifer to refer to this section. Filterable.</dd>
+				<dt>course_id</dt> <dd>The course that this section belongs to. Filterable.</dd>
+				<dt>semester_id</dt> <dd>The semester that this section belongs to. Filterable.</dd>
+				<dt>crosslisted_id</dt> <dd>null field for a possible future feature.</dd>
+				<dt>notes</dt> <dd>Misc data set by RPI</dd>
+				<dt>crn</dt> <dd>The Course Registration Number used to register for the course by students. Filterable.</dd>
+				<dt>number</dt> <dd>The section number. Section numbers are unique per course and semester. They also may not be actually numbers.</dd>
+				<dt>seats_total</dt> <dd>The total number of seats this section allows.</dd>
+				<dt>seats_left</dt> <dd>The number of remaining seats this section.</dd>
+				<dt>section_times</dt> <dd>An array of section times which indicate location, professor and times.</dd>
+			</dl>
+		</div>
+	</div>
+	<h2><a name="schedules">Schedules</a></h2>
+	<div class="section">
+		<p>
+		Scheduling is an expensive resource of YACS. It is recommended to compute your own schedules from the data provided by YACS.
+		</p>
+		<div class="section">
+			<h3>Conflicts</h3>
+			<p>
+			Conflicts is a cache the server uses to help quickly determine section conflicts.
+			This is only part of the solution to computing a <a href="http://en.wikipedia.org/wiki/Constraint_satisfaction_problem">Constraints Satisfaction Problem</a>.
+			<br />
+			Optionally, <code>as_crns=1</code> GET parameter can be used to return all CRNs instead of section ids.
+			</p>
+			<p>
+			Using this without any filters returns a large dataset. You have been warned!
+			</p>
+			<dl>
+				<dt>id</dt> <dd>The section id that this conflict refers to. Filterable. (Also filterable by section CRN).</dd>
+				<dt>conflicts</dt> <dd>An array of section ids that this section conflicts with.</dd>
+			</dl>
+			<h3>Schedules</h3>
+			<p>
+			It's currently recommended to compute your own schedules using the conflicts cache.
+			</p>
+		</div>
+	</div>
 </div>
 {% endblock %}

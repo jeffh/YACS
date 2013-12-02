@@ -1,9 +1,12 @@
 {% load url from future %}
 
 {# This template partial is used in course_list and department_list #}
-<form action="{% url 'search-all-courses' sem_year sem_month %}" method="get" class="searchform" id="searchform">
-	<div data-role="fieldcontain">
-		<input type="search" placeholder="Search Courses" id="q" class="searchbox" name="q" value="{{ query }}" />
-		<img id="search-spinner" src="{{ STATIC_URL }}img/tinyspinner.gif" alt="" style="display: none" />
-	</div>
+<form action="{% url 'search-all-courses' sem_year sem_month %}"
+	id="search"
+	ng-controller="SearchCtrl"
+	ng-show="searchOptions.visible">
+	<input placeholder="Search {{ semester.name }} Courses"
+		type="text" id="q" name="q"
+		ng-model="query" yacs-focus="performSearch()" />
 </form>
+

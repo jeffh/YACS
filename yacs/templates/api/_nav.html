@@ -1,10 +1,8 @@
 {% load url from future %}
 
-<div class="nav">
+<div class="menu">
   <ul>
     <li><a href="/" class="button">Home</a></li>
-    <li><a href="{% url 'api:v4:docs' %}" class="button{% if selected == '4' %} selected{% endif %}">Version 4</a></li>
-    <li><a href="#" class="button disabled">Version 3</a></li>
-    <li><a href="#" class="button disabled">Version 2</a></li>
+    <li class="button{% if selected == '4' %} selected{% endif %}"><a href="{% url 'api:v4:docs' %}">Version 4</a></li>
   </ul>
 </div>

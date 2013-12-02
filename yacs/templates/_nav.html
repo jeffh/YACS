@@ -1,25 +1,8 @@
 {% load url from future %}
 
-<div class="nav">
-    <ul>
-        <li><a href="{% url 'departments' sem_year sem_month %}" class="catalog button{% if selected == 'catalog' %} selected{% endif %}">Catalog</a></li>
-        <li><a href="{% if selection %}
-          {% if selection.id %}
-          {% url 'selected-courses' sem_year sem_month selection.id %}
-          {% else %}
-          {% url 'selected-courses' sem_year sem_month %}
-          {% endif %}
-          {% else %}
-          {% url 'selected-courses' sem_year sem_month %}
-          {% endif %}" class="selected_courses button{% if selected == 'selected' %} selected{% endif %}">Selected</a></li>
-        <li><a href="{% if selection %}
-          {% if selection.id %}
-          {% url 'schedules' sem_year sem_month selection.id %}
-          {% else %}
-          {% url 'schedules' sem_year sem_month %}
-          {% endif %}
-          {% else %}
-          {% url 'schedules' sem_year sem_month %}
-          {% endif %}" class="schedules button{% if selected == 'schedules' %} selected{% endif %}">Schedules</a></li>
-    </ul>
-</div>
+<ul class="menu">
+	<li class="{% if selected == 'catalog' %} selected{% endif %}">
+	<a href="{% url 'departments' semester.year semester.month %}">Catalog</a>
+	</li>
+	<li> <a href="#">Selected</a> </li>
+</ul>
