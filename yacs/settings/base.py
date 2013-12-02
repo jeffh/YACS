@@ -333,7 +333,6 @@ PIPELINE_CSS = {
             'v4/css/reset.css',
             'v4/css/core.css',
             'v4/css/course_list.css',
-            'v4/css/selection.css',
             'v4/css/catalog.css',
             'v4/css/dept_list.css',
             'v4/css/schedules.css',
