@@ -3,23 +3,23 @@
 }
 
 .catalog .description {
-	margin-top: 0.5em;
-	margin-left: 0.25em;
-	line-height: 1.1em;
 	color: #555;
+	line-height: 1.1em;
+	margin-left: 0.25em;
+	margin-top: 0.5em;
 }
 
 .catalog .notes {
-	margin-top: 0.5em;
-	margin-left: 0.25em;
 	line-height: 1.1em;
+	margin-left: 0.25em;
+	margin-top: 0.5em;
 }
 
 .catalog .course {
-	position: relative;
 	border-bottom: 1px solid #ddd;
 	margin-bottom: 0.75em;
 	padding-bottom: 0.75em;
+	position: relative;
 }
 
 .catalog .course h2 {
@@ -41,21 +41,21 @@
 }
 
 .catalog .tags {
-	position: absolute;
-	top: -8px;
-	right: 0;
-	margin-top: 0.5em;
 	font-size: 90%;
+	margin-top: 0.5em;
+	position: absolute;
+	right: 0;
+	top: -8px;
 	z-index: 10;
 }
 
 .catalog .tags li {
-	display: inline-block;
 	border-radius: 2px;
 	border-top: 2px solid #ccc;
 	color: #666;
-	padding: 2px 6px;
+	display: inline-block;
 	margin: 0 0.2em 0 0;
+	padding: 2px 6px;
 }
 
 .catalog .tags .prereq {
@@ -77,10 +77,10 @@
 
 /** SECTION DISPLAY **/
 .catalog .section {
+	clear: both;
 	font-size: 90%;
 	margin: 0.25em 0;
 	padding: 4px 0 4px 0;
-	clear: both;
 }
 
 .catalog .section .instructors {
@@ -102,10 +102,10 @@
 }
 
 .catalog .section-time .dow {
-	display: inline-block;
-	padding: 2px;
 	color: #444;
+	display: inline-block;
 	font-weight: bold;
+	padding: 2px;
 }
 
 /*** NO SEATS DISPLAY ***/
@@ -123,13 +123,13 @@
 	.course_conflict {
 		background: white;
 		box-shadow: 0 1px 3px #999;
-		padding: 0.5em;
 		margin: 0.25em;
-		position: absolute;
-		top: -1em;
-		right: 1em;
-		z-index: 100;
 		opacity: 0.8;
+		padding: 0.5em;
+		position: absolute;
+		right: 1em;
+		top: -1em;
+		z-index: 100;
 	}
 
 	.catalog .course.conflict h2 {
@@ -154,23 +154,23 @@
 		color: #aaa;
 	}
 	.catalog .section_conflict {
-		color: #000;
 		background: #fff;
 		box-shadow: 0 1px 3px #999;
+		color: #000;
 		display: inline-block;
+		left: 2.5em;
+		opacity: 0.9;
 		padding: 0.25em;
 		position: absolute;
-		left: 2.5em;
 		z-index: 99;
-		opacity: 0.9;
 	}
 }
 
 /*** COMPACT TIME VIEW - 1 or less hours per day ***/
 .catalog .section-time.has_times {
 	border-top: 1px solid #bbb;
-	width: 9.25em;
 	vertical-align: top;
+	width: 9.25em;
 }
 
 .catalog .section-time.has_no_times {
@@ -192,7 +192,7 @@
 }
 
 .catalog .section-times.expanded .time {
-	margin: 2px 0 0 0.25em;
 	display: block;
 	float: left;
+	margin: 2px 0 0 0.25em;
 }

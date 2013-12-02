@@ -11,8 +11,8 @@
 
 .course-list .checkbox_content {
 	display: block;
-	padding: 0;
 	margin-left: 20px;
+	padding: 0;
 }
 
 .course-list .course {
@@ -20,13 +20,13 @@
 }
 
 .course-list .details {
-	margin-top: 0.2em;
 	font-size: 90%;
+	margin-top: 0.2em;
 }
 
 .course-list .credits, .course-list .num_sections, .course-list .num_seats {
-	font-size: 90%;
 	color: #444;
+	font-size: 90%;
 }
 
 .course-list .num_seats {
@@ -39,7 +39,7 @@
 }
 
 .course-list .description {
-	font-size: 90%;
 	clear: both;
+	font-size: 90%;
 }
 

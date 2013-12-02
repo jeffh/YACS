@@ -54,6 +54,7 @@ app.constant('CSRF_TOKEN', "{{ csrf_token }}");
 	<div id="ft" ng-controller="FooterCtrl">
 		&copy; 2013 <a href="http://twitter.com/jeffhui">Jeff Hui</a> &amp; <a href="https://github.com/jeffh/YACS/blob/master/CONTRIBUTORS.txt">Friends</a>.
 		{% templatetag openvariable %} flavorText {% templatetag closevariable %} <a href="http://rcos.rpi.edu">RCOS</a> project.
+		Bored? Try the <a href="{% url 'api:v4:docs' %}">API</a>.
 	</div>
 </div>
 </body>

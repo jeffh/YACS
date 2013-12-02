@@ -1,7 +1,7 @@
 .schedule {
-	width: 860px;
 	float: left;
 	padding-bottom: 1em;
+	width: 860px;
 }
 
 .schedules .empty {
@@ -10,8 +10,8 @@
 
 /** General Layout **/
 .schedule div {
-	padding: 0;
 	margin: 0;
+	padding: 0;
 }
 
 .schedule h2 {
@@ -20,9 +20,9 @@
 }
 
 .schedule .options {
-	font-size: 90%;
 	color: #555;
 	display: block;
+	font-size: 90%;
 }
 
 .schedule p {
@@ -36,20 +36,20 @@
 
 /** Columns **/
 .schedule .dow {
-	float: left;
 	display: block;
+	float: left;
 	width: 10em;
 }
 
 .schedule .dow.times {
-	width: 3em;
 	margin-right: 0.25em;
+	width: 3em;
 }
 
 /** Day of the week headers **/
 .schedule .dow.times .header.row {
-	padding: 0;
 	margin-bottom: -3px;
+	padding: 0;
 }
 .schedule .dow.times .row {
 	text-align: right;
@@ -62,11 +62,11 @@
 
 /* Each Cell */
 .schedule .row {
+	border-bottom: 1px solid transparent;
+	border-top: 1px solid transparent;
 	display: block;
 	height: 20px;
 	padding: 2px 0;
-	border-top: 1px solid transparent;
-	border-bottom: 1px solid transparent;
 }
 
 .schedule .row.hour {
@@ -98,19 +98,14 @@
 }
 
 .schedule .section {
-	position: absolute;
-	width: 8.5em;
-	padding: 0.25em;
-	overflow: hidden;
-	white-space: nowrap;
 	font-size: 90%;
-	opacity: 0.85;
 	line-height: 1.15em;
-	/* Set by color
-	background: #fcc;
-	color: #933;
-	border-left: 2px solid #f55;
-	*/
+	opacity: 0.85;
+	overflow: hidden;
+	padding: 0.25em;
+	position: absolute;
+	white-space: nowrap;
+	width: 8.5em;
 }
 
 .schedule .section .type {
@@ -219,8 +214,8 @@
 		width: 10em;
 	}
 	.schedule .dow.times {
-		margin-right: 0.25em;
 		font-size: 100%
+		margin-right: 0.25em;
 	}
 	.schedule .section {
 		width: 8.5em;
@@ -228,14 +223,14 @@
 	}
 
 	.schedules .courses {
-		position: static;
 		margin-left: inherit;
+		position: static;
 	}
 }
 /* Super-wide */
 @media screen and (min-width: 1400px){
 	.schedules .courses {
-		position: absolute;
 		margin-left: 870px;
+		position: absolute;
 	}
 }

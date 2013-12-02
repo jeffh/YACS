@@ -4,24 +4,24 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-	padding: 0;
-	margin: 0;
-	font-weight: normal;
 	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-weight: normal;
+	margin: 0;
+	padding: 0;
 }
 h1 { font-size: 250% }
 
 .beta {
+	color: #999;
 	font-size: 60%;
 	margin-left: -0.2em;
-	color: #999;
 }
 
 .spinner {
-	position: absolute;
-	top: 1em;
 	left: 1em;
 	margin: auto;
+	position: absolute;
+	top: 1em;
 }
 
 #wrap {
@@ -66,9 +66,9 @@ a:link:hover {
 }
 .menu a:link, .menu a:visited {
 	display: block;
-	text-decoration: none;
-	padding: 0.5em 0;
 	margin: 0;
+	padding: 0.5em 0;
+	text-decoration: none;
 	width: 100%;
 }
 .menu a:link:hover {
@@ -96,13 +96,13 @@ a:link:hover {
 	width: 6em;
 }
 .submenu a:link, .submenu a:visited {
-	text-align: center;
-	display: block;
 	border-top: 1px solid #933;
-	padding: 0.25em 0;
-	width: 100%;
+	display: block;
 	font-weight: 200;
 	letter-spacing: 1px;
+	padding: 0.25em 0;
+	text-align: center;
+	width: 100%;
 }
 .submenu a:link:hover {
 	border-top: 1px solid #c33;
@@ -113,13 +113,13 @@ a:link:hover {
 /** Search **/
 #search {
 	clear: both;
-	text-align: center;
 	margin: auto;
+	text-align: center;
 }
 #q {
 	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-	font-weight: 100;
 	font-size: 150%;
+	font-weight: 100;
 	padding: 5px 10px;
 	width: 25em;
 }
@@ -131,26 +131,26 @@ a:link:hover {
 
 .feedback {
 	position: absolute;
-	top: 1em;
 	right: 1em;
+	top: 1em;
 }
 
 /** Footer **/
 #ft {
-	font-size: 90%;
-	color: #999;
-	text-align: left;
 	clear: both;
+	color: #999;
+	font-size: 90%;
 	padding: 1em;
+	text-align: left;
 }
 
 /** Docs **/
 .docs {
-	width: 950px;
-	margin: auto;
-	line-height: 1.25em;
 	font-size: 110%;
 	font-weight: 200;
+	line-height: 1.25em;
+	margin: auto;
+	width: 950px;
 }
 
 .docs p {
@@ -166,16 +166,17 @@ a:link:hover {
 }
 
 .docs ul {
-	list-style-type: square;
-	padding-left: 2em;
 	font-size: 110%;
+	list-style-type: square;
+	margin: 1em 0;
+	padding-left: 2em;
 }
 
 .docs h2, .docs h3 {
-	font-weight: bold;
 	font-size: 150%;
-	text-align: left;
+	font-weight: bold;
 	margin: 1em 0 0.5em 0;
+	text-align: left;
 }
 
 .docs h3 {
@@ -183,14 +184,14 @@ a:link:hover {
 }
 
 .docs dl {
+	border-left: 1px solid #999;
 	margin: 1em 0 1em 0;
 	padding-left: 1em;
-	border-left: 1px solid #999;
 }
 
 .docs dt {
-	margin-top: 0.5em;
 	font-weight: normal;
+	margin-top: 0.5em;
 }
 
 .docs dd {
@@ -198,7 +199,7 @@ a:link:hover {
 }
 
 .docs code {
-	font-family: "Lucida Console", Monaco, monospace;
 	background: #ccc;
+	font-family: "Lucida Console", Monaco, monospace;
 	padding: 0.05em;
 }

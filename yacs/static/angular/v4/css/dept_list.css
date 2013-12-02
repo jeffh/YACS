@@ -4,10 +4,10 @@
 
 .dept-list .dept {
 	float: left;
-	width: 32em;
 	margin: 0 0.2em;
 	padding: 0.25em;
 	position: relative;
+	width: 32em;
 }
 
 .dept-list .dept {
@@ -22,11 +22,10 @@
 
 .dept-list .dept .code {
 	display: inline-block;
-	font-size: 130%;
-	width: 3em;
-	/*font-family: "Helvetica Neue", "Open Sans", Helvetica, Arial, sans-serif;*/
 	font-family: "Andale Mono", "Courier New", monospace;
+	font-size: 130%;
 	font-weight: 100;
+	width: 3em;
 }
 
 .dept-list .dept .name {
