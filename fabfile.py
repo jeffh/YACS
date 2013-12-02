@@ -203,6 +203,8 @@ def test():
     verbose()
     local('python manage.py test --failfast ' + ' '.join(APPS))
     pep8()
+    local('python manage.py collectstatic --noinput')
+    clean()
 
 
 @task
