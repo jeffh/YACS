@@ -39,7 +39,7 @@ describe('Utils', function(){
 
 			describe("when an id is given", function(){
 				it("should generate an url with the id appended to it", function(){
-					expect(fn(1)).toEqual('/foo/bar/1');
+					expect(fn(1)).toEqual('/foo/bar/1/');
 				});
 			});
 		});
