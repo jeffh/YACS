@@ -103,7 +103,7 @@ describe("Domain", function(){
 				var tags;
 				beforeEach(inject(function(Course, Section){
 					tags = ['lol', 'tagz'];
-					tagger.andReturn(tags);
+					tagger.and.returnValue(tags);
 					course = new Course({
 						min_credits: 1,
 						max_credits: 4,

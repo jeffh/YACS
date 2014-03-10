@@ -2,7 +2,7 @@
 
 (function(window, angular){
 
-window.app = angular.module('yacs', ['ngCookies', 'angulartics', 'angulartics.google.analytics']);
+window.app = angular.module('yacs', ['ngRoute', 'ngCookies', 'angulartics', 'angulartics.google.analytics']);
 
 app.service('urlProvider', function(){
 	function url(){

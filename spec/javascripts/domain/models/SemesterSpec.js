@@ -21,8 +21,8 @@ describe("Domain", function(){
 				success = failure = false;
 				latestDeferred = $q.defer();
 				queryDeferred = $q.defer();
-				spyOn(Semester, 'query').andReturn(queryDeferred.promise);
-				spyOn(Semester, 'latest').andReturn(latestDeferred.promise);
+				spyOn(Semester, 'query').and.returnValue(queryDeferred.promise);
+				spyOn(Semester, 'latest').and.returnValue(latestDeferred.promise);
 			}));
 
 			describe("when no semester is set as the current", function(){
@@ -73,7 +73,7 @@ describe("Domain", function(){
 						{id: 5},
 						{id: 6}
 					]);
-					apiClient.get.andReturn(deferred.promise);
+					apiClient.get.and.returnValue(deferred.promise);
 				});
 
 				beforeEach(inject(function(Semester){

@@ -21,7 +21,7 @@ describe("Domain", function(){
 			});
 
 			deferred = $q.defer();
-			apiClient.get.andReturn(deferred.promise);
+			apiClient.get.and.returnValue(deferred.promise);
 		}));
 
 		describe("constructor", function(){

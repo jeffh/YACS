@@ -276,26 +276,8 @@ SCHEDULER_SECTION_LIMIT = 60
 INTERNAL_IPS = ('127.0.0.1',)
 
 
-def debug_toolbar_callback(request):
-    return not RUNNING_TESTS and request.user.is_staff
-
-DEBUG_TOOLBAR_PANELS = (
-    'debug_toolbar.panels.version.VersionDebugPanel',
-    'debug_toolbar.panels.timer.TimerDebugPanel',
-    'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-    'debug_toolbar.panels.headers.HeaderDebugPanel',
-    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-    'debug_toolbar.panels.template.TemplateDebugPanel',
-    'debug_toolbar.panels.sql.SQLDebugPanel',
-    'debug_toolbar.panels.signals.SignalDebugPanel',
-    'debug_toolbar.panels.logger.LoggingPanel',
-    #'debug_profiling.ProfilingPanel'
-)
-
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
-    'SHOW_TOOLBAR_CALLBACK': debug_toolbar_callback,
-    'HIDE_DJANGO_SQL': False,
 }
 
 # ==== Django-Robots App ====
@@ -321,11 +303,14 @@ PIPELINE_COFFEE_SCRIPT_BINARY = os.environ.get('COFFEE', '/usr/local/bin/coffee'
 PIPELINE_SASS_ARGUMENTS = '--scss'
 
 PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
-PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
+PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.closure.ClosureCompressor'
 
-PIPELINE_YUI_BINARY = 'java -jar lib/yuicompressor-2.4.7.jar'
+PIPELINE_YUI_BINARY = 'java -jar lib/yuicompressor-2.4.8.jar'
 PIPELINE_YUI_CSS_ARGUMENTS = '--type css'
 PIPELINE_YUI_JS_ARGUMENTS = '--type js'
+
+PIPELINE_CLOSURE_BINARY = 'lib/closure'
+PIPELINE_CLOSURE_ARGUMENTS = '--language_in=ECMASCRIPT5 --warning_level QUIET --third_party'
 
 PIPELINE_CSS = {
     'angular': {
@@ -355,6 +340,7 @@ PIPELINE_JS = {
         'source_filenames': (
             'v4/js/lib/jquery-2.0.2.js',
             'v4/js/lib/angularjs/angular.js',
+            'v4/js/lib/angularjs/angular-route.js',
             'v4/js/lib/angularjs/angular-cookies.js',
             'v4/js/lib/underscore-1.4.4.min.js',
             'v4/js/lib/angulartics/angulartics.min.js',

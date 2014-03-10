@@ -12,7 +12,7 @@ describe("Controllers", function(){
 			semesterDeferred = $q.defer();
 			coursesDeferred = $q.defer();
 			selectionDeferred = $q.defer();
-			CourseFetcher = jasmine.createSpy('CourseFetcher').andReturn(coursesDeferred.promise);
+			CourseFetcher = jasmine.createSpy('CourseFetcher').and.returnValue(coursesDeferred.promise);
 			$location = $injector.get('$location');
 			Selection.current = selectionDeferred.promise;
 			$routeParams = {dept: 'CSCI'};
@@ -50,7 +50,7 @@ describe("Controllers", function(){
 				var courses, selection;
 				beforeEach(inject(function($rootScope, Course, Selection){
 					selection = new Selection();
-					spyOn(selection, 'apply').andCallThrough();
+					spyOn(selection, 'apply').and.callThrough();
 					courses = [new Course()];
 					coursesDeferred.resolve(courses);
 					selectionDeferred.resolve(selection);
@@ -73,7 +73,7 @@ describe("Controllers", function(){
 					clickedCourse = new Course();
 					courseUpdatedDeferred = $q.defer();
 					selection = new Selection();
-					spyOn(selection, 'updateCourse').andReturn(courseUpdatedDeferred.promise);
+					spyOn(selection, 'updateCourse').and.returnValue(courseUpdatedDeferred.promise);
 					selectionDeferred.resolve(selection);
 					$rootScope.$apply();
 					scope.clickCourse(clickedCourse);
@@ -122,7 +122,7 @@ describe("Controllers", function(){
 					clickedSection = new Section();
 					sectionUpdatedDeferred = $q.defer();
 					selection = new Selection();
-					spyOn(selection, 'updateSection').andReturn(sectionUpdatedDeferred.promise);
+					spyOn(selection, 'updateSection').and.returnValue(sectionUpdatedDeferred.promise);
 					selectionDeferred.resolve(selection);
 					$rootScope.$apply();
 					scope.clickSection(clickedCourse, clickedSection);

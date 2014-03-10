@@ -17,7 +17,7 @@ describe("Controllers", function(){
 			selectionDeferred = $q.defer();
 			coursesDeferred = $q.defer();
 			Selection.current = selectionDeferred.promise;
-			CourseFetcher = jasmine.createSpy('CourseFetcher').andReturn(coursesDeferred.promise);
+			CourseFetcher = jasmine.createSpy('CourseFetcher').and.returnValue(coursesDeferred.promise);
 			CourseSearch = jasmine.createSpy('CourseSearch');
 
 			semesterDeferred = $q.defer();
@@ -54,10 +54,10 @@ describe("Controllers", function(){
 			describe("when the course fetcher is resolved", function(){
 				var courses;
 				beforeEach(inject(function($rootScope, Course){
-					spyOn(selection, 'apply').andCallThrough();
+					spyOn(selection, 'apply').and.callThrough();
 					courses = [new Course(), new Course()];
 					coursesDeferred.resolve(courses);
-					CourseSearch.andReturn([courses[0]]);
+					CourseSearch.and.returnValue([courses[0]]);
 					$rootScope.$apply();
 				}));
 
@@ -80,7 +80,7 @@ describe("Controllers", function(){
 					coursesDeferred.resolve([new Course(), new Course()]);
 					clickedCourse = new Course();
 					courseUpdatedDeferred = $q.defer();
-					spyOn(selection, 'updateCourse').andReturn(courseUpdatedDeferred.promise);
+					spyOn(selection, 'updateCourse').and.returnValue(courseUpdatedDeferred.promise);
 					selectionDeferred.resolve(selection);
 					$rootScope.$apply();
 					scope.clickCourse(clickedCourse);
@@ -128,7 +128,7 @@ describe("Controllers", function(){
 					clickedCourse = new Course();
 					clickedSection = new Section();
 					sectionUpdatedDeferred = $q.defer();
-					spyOn(selection, 'updateSection').andReturn(sectionUpdatedDeferred.promise);
+					spyOn(selection, 'updateSection').and.returnValue(sectionUpdatedDeferred.promise);
 					selectionDeferred.resolve(selection);
 					$rootScope.$apply();
 					scope.clickSection(clickedCourse, clickedSection);

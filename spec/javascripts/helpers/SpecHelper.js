@@ -6,11 +6,15 @@ angular.module('yacs')
 
 beforeEach(module('yacs'));
 beforeEach(function(){
-    this.addMatchers({
-        toBeAFunction: function(){
-            return _.isFunction(this.actual);
-        },
-    });
+	jasmine.addMatchers({
+		toBeAFunction: function(){
+			return {
+				compare: function(actual){
+					return { pass: _.isFunction(actual) };
+				}
+			};
+		},
+	});
 });
 
 beforeEach(module(function($provide){

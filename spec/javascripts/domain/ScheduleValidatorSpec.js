@@ -31,8 +31,8 @@ describe("Domain", function(){
 
 			conflictDeferred = $q.defer();
 			sectionDeferred = $q.defer();
-			spyOn(Conflict, 'query').andReturn(conflictDeferred.promise);
-			spyOn(Section, 'query').andReturn(sectionDeferred.promise);
+			spyOn(Conflict, 'query').and.returnValue(conflictDeferred.promise);
+			spyOn(Section, 'query').and.returnValue(sectionDeferred.promise);
 		}));
 
 		describe("when the semester promise is resolved", function(){

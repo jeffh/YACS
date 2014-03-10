@@ -14,7 +14,7 @@ describe("Controllers", function(){
 			$location = $injector.get('$location');
 			semesterDeferred = $q.defer();
 			departmentsPromise = $q.defer().promise;
-			spyOn(Department, 'query').andReturn(departmentsPromise);
+			spyOn(Department, 'query').and.returnValue(departmentsPromise);
 			controller = $controller('DepartmentCtrl', {
 				$scope: scope,
 				currentSemesterPromise: semesterDeferred.promise

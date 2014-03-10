@@ -17,8 +17,8 @@ describe("Controllers", function(){
 			coursesDeferred = $q.defer();
 			semesterDeferred = $q.defer();
 			selectionDeferred = $q.defer();
-			schedulePresenter = jasmine.createSpy('schedulePresenter').andReturn(schedulesDeferred.promise);
-			CourseFetcher = jasmine.createSpy('CourseFetcher').andReturn(coursesDeferred.promise);
+			schedulePresenter = jasmine.createSpy('schedulePresenter').and.returnValue(schedulesDeferred.promise);
+			CourseFetcher = jasmine.createSpy('CourseFetcher').and.returnValue(coursesDeferred.promise);
 			Selection.loadCurrentWithId = function(){
 				return selectionDeferred.promise;
 			};
@@ -65,7 +65,7 @@ describe("Controllers", function(){
 				saveDeferred = $q.defer();
 				selection = new Selection({2: [3], 4: [5]}, null, 1);
 				spyOn(selection, 'apply');
-				spyOn(selection, 'save').andReturn(saveDeferred.promise);
+				spyOn(selection, 'save').and.returnValue(saveDeferred.promise);
 				semesterDeferred.resolve(new Semester({id: 12}));
 				selectionDeferred.resolve(selection);
 				$rootScope.$apply();
@@ -133,7 +133,7 @@ describe("Controllers", function(){
 					var clickedCourse, updateCourseDeferred;
 					beforeEach(inject(function($rootScope, $q, Course){
 						updateCourseDeferred = $q.defer();
-						spyOn(selection, 'updateCourse').andReturn(updateCourseDeferred.promise);
+						spyOn(selection, 'updateCourse').and.returnValue(updateCourseDeferred.promise);
 						clickedCourse = new Course();
 						scope.clickCourse(clickedCourse);
 					}));
@@ -173,7 +173,7 @@ describe("Controllers", function(){
 					var clickedCourse, clickedSection, updateSectionDeferred;
 					beforeEach(inject(function($rootScope, $q, Course, Section){
 						updateSectionDeferred = $q.defer();
-						spyOn(selection, 'updateSection').andReturn(updateSectionDeferred.promise);
+						spyOn(selection, 'updateSection').and.returnValue(updateSectionDeferred.promise);
 						clickedCourse = new Course();
 						clickedSection = new Section();
 						scope.clickSection(clickedCourse, clickedSection);
