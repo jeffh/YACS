@@ -46,6 +46,7 @@ class TestAPI4Semesters(ShortcutTestCase):
             u"ref": sem.ref,
             u"year": sem.year,
             u"date_updated": unicode(sem.date_updated.isoformat())[:-7],
+            u"date_created": unicode(sem.date_created.isoformat()),
             u"id": sem.id,
             u"month": sem.month,
         }
@@ -141,6 +142,7 @@ class TestAPI4Semesters(ShortcutTestCase):
         })
 
     def test_get_semester(self):
+        self.maxDiff = None
         json = self.json_get('v4:semesters', status_code=200)
 
         # for some odd reason, accuracy is lost for datetimes.

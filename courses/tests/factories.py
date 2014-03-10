@@ -13,6 +13,7 @@ class SemesterFactory(factory.Factory):
     name = factory.Sequence(lambda n: u'Semester %03d' % int(n))
     ref = factory.LazyAttribute(lambda s: u'Semester%s-%s.xml' % (s.year, s.month))
     date_updated = factory.LazyAttribute(lambda s: datetime.datetime.now())
+    date_created = factory.LazyAttribute(lambda s: datetime.datetime.now())
     visible = True
 
 
