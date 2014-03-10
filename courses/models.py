@@ -39,6 +39,7 @@ class Semester(models.Model):
     name = models.CharField(max_length=100, help_text="An human-readable display of the semester")
     ref = models.CharField(max_length=150, help_text="Internally used by bridge module to refer to a semester.", unique=True)
     date_updated = models.DateTimeField(auto_now=True)
+    date_created = models.DateTimeField(auto_now_add=True)
     visible = models.BooleanField(default=True, help_text="Should this semester be publicly visible?")
 
     objects = managers.QuerySetManager(managers.SerializableQuerySet)

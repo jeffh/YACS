@@ -25,7 +25,7 @@ class SemesterListFilter(SemestersListFilter):
 
 
 class SemesterAdmin(admin.ModelAdmin):
-    list_display = ('name', 'ref', 'date_updated', 'visible')
+    list_display = ('name', 'ref', 'date_updated', 'date_created', 'visible')
     search_fields = ('name', 'ref', 'year', 'month')
     fieldsets = (
         (None, {'fields': ('name', 'year', 'month')}),
