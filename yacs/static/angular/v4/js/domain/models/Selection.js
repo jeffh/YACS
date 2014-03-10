@@ -57,6 +57,7 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 		},
 		loadById: function(id){
 			return SavedSelection.get(id).then(function(savedSelection){
+				console.log(savedSelection);
 				var sel = new Selection(savedSelection.selection, {}, savedSelection.id);
 				_.each(savedSelection.blocked_times, function(key){
 					sel.setBlockedTime(key);

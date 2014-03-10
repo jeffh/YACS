@@ -218,7 +218,7 @@ class TestAPI4SavedSelections(ShortcutTestCase):
         }
 
         self.assertEqual(json, expected_json)
-        json = self.json_get('v4:saved-selection', id=selection.id, status_code=200)
+        json = self.json_post('v4:saved-selection', id=selection.id, status_code=200)
         self.assertEqual(json, expected_json)
 
 

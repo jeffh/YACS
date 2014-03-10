@@ -12,7 +12,7 @@ app.service('Utils', function(){
 	this.URL = function(baseUrl){
 		return function(id){
 			if (angular.isNumber(id) || !isNaN(parseInt(id, 10))) {
-				return baseUrl + id;
+				return baseUrl + id + '/';
 			}
 			return baseUrl;
 		}
