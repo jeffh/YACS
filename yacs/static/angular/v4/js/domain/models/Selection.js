@@ -190,6 +190,7 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 		},
 		updateCourse: function(course){
 			var self = this;
+			course.is_selected = !course.is_selected;
 			if (course.is_selected) {
 				var hasSelectedASection = false;
 				var sectionIds = _(course.sections).chain().filter(function(section){
@@ -225,6 +226,7 @@ app.factory('Selection', ['$q', '$cookieStore', 'currentSemesterPromise',
 		},
 		updateSection: function(course, section){
 			var self = this;
+			section.is_selected = !section.is_selected;
 			if (section.is_selected){
 				course.is_selected = true;
 				return this._updateAndValidate(function(){

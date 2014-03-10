@@ -12,16 +12,16 @@ describe("Controllers", function(){
 	}));
 
 	describe("RootCtrl", function(){
-		var controller, currentSemesterPromise, Selection, selectionDeferred;
+		var controller, currentSemesterDeferred, Selection, selectionDeferred;
 		beforeEach(inject(function($q, $controller){
 			selectionDeferred = $q.defer();
-			currentSemesterPromise = $q.defer().promise;
+			currentSemesterDeferred = $q.defer();
 			Selection = {
 				current: selectionDeferred.promise
 			};
 			controller = $controller('RootCtrl', {
 				$scope: scope,
-				currentSemesterPromise: currentSemesterPromise,
+				currentSemesterPromise: currentSemesterDeferred.promise,
 				Selection: Selection
 			});
 		}));
@@ -30,8 +30,17 @@ describe("Controllers", function(){
 			expect(scope.STATIC_URL).toEqual('cakes/');
 		});
 
-		it("should set the current semester promise to the scope", function(){
-			expect(scope.semester).toEqual(currentSemesterPromise);
+		describe("when the current semester promise is resolved", function(){
+			var currentSemester;
+			beforeEach(inject(function($rootScope, Semester){
+				currentSemester = new Semester({id: 1});
+				currentSemesterDeferred.resolve(currentSemester);
+				$rootScope.$apply();
+			}));
+
+			it("should set the current semester to the scope", function(){
+				expect(scope.semester).toEqual(currentSemester);
+			});
 		});
 
 

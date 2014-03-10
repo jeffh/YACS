@@ -7,9 +7,8 @@ describe("Controllers", function(){
 	}));
 
 	describe("CatalogCtrl", function(){
-		var controller, $location, $routeParams, CourseFetcher, coursesDeferred, semesterDeferred, selectionDeferred;
+		var controller, $location, $routeParams, CourseFetcher, coursesDeferred, selectionDeferred;
 		beforeEach(inject(function($injector, $q, $controller, Selection){
-			semesterDeferred = $q.defer();
 			coursesDeferred = $q.defer();
 			selectionDeferred = $q.defer();
 			CourseFetcher = jasmine.createSpy('CourseFetcher').and.returnValue(coursesDeferred.promise);
@@ -20,7 +19,6 @@ describe("Controllers", function(){
 				$scope: scope,
 				$routeParams: $routeParams,
 				CourseFetcher: CourseFetcher,
-				currentSemesterPromise: semesterDeferred.promise,
 				Selection: Selection
 			});
 		}));
@@ -35,7 +33,7 @@ describe("Controllers", function(){
 
 		describe("when the current semester is resolved", function(){
 			beforeEach(inject(function($rootScope, Semester){
-				semesterDeferred.resolve(new Semester({id: 4, year: 2013, month: 1}));
+				scope.semester = new Semester({id: 4, year: 2013, month: 1});
 				$rootScope.$apply();
 			}));
 

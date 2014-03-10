@@ -338,11 +338,11 @@ PIPELINE_CSS = {
 PIPELINE_JS = {
     'angular': {
         'source_filenames': (
-            'v4/js/lib/jquery-2.0.2.js',
+            'v4/js/lib/jquery.js',
             'v4/js/lib/angularjs/angular.js',
             'v4/js/lib/angularjs/angular-route.js',
             'v4/js/lib/angularjs/angular-cookies.js',
-            'v4/js/lib/underscore-1.4.4.min.js',
+            'v4/js/lib/underscore.js',
             'v4/js/lib/angulartics/angulartics.min.js',
             'v4/js/lib/angulartics/angulartics-google-analytics.min.js',
             'v4/js/Application.js',

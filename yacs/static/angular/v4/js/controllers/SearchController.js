@@ -20,7 +20,11 @@ app.controller('SearchCtrl', ['$scope', '$location', '$timeout', '$route', 'urlP
 	var timeout = null;
 	var previousPath = null;
 	$scope.searchOptions = searchOptions;
-	$scope.semester.then(function(semester){
+	$scope.$watch('semester', function(semester){
+		if (!semester) {
+			return;
+		}
+
 		$scope.query = decodeURIComponent($route.current.params.query || '');
 		$scope.$watch('query', function(){
 			if (timeout){

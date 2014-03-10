@@ -12,13 +12,11 @@ describe("Controllers", function(){
 		var catalogIndex = 0,
 			selectedIndex = 1;
 
-		describe("when the current semester is resolved on the selected controller", function(){
+		describe("when the current semester is set on the selected controller's scope", function(){
 			var controller, catalogItem, selectedItem;
-			beforeEach(inject(function($location, $q, $rootScope, $controller, Semester){
+			beforeEach(inject(function($location, $rootScope, $controller, Semester){
 				$location.path('/semesters/2013/1/selected/');
-				var semesterDeferred = $q.defer();
-				semesterDeferred.resolve(new Semester({year: 2013, month: 1}));
-				$rootScope.semester = semesterDeferred.promise;
+				$rootScope.semester = new Semester({year: 2013, month: 1});
 				controller = $controller('NavCtrl', {
 					$scope: scope
 				});
@@ -30,12 +28,10 @@ describe("Controllers", function(){
 			});
 		});
 
-		describe("when the current semester is resolved on the departments controller", function(){
+		describe("when the current semester is set on the departments controller's scope", function(){
 			var controller, catalogItem, selectedItem;
-			beforeEach(inject(function($q, $rootScope, $controller, Semester){
-				var semesterDeferred = $q.defer();
-				semesterDeferred.resolve(new Semester({year: 2013, month: 1}));
-				$rootScope.semester = semesterDeferred.promise;
+			beforeEach(inject(function($rootScope, $controller, Semester){
+				$rootScope.semester = new Semester({year: 2013, month: 1});
 				controller = $controller('NavCtrl', {
 					$scope: scope,
 				});

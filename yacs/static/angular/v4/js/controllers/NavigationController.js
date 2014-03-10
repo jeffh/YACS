@@ -4,7 +4,10 @@
 
 app.controller('NavCtrl', ['$scope', '$location', 'urlProvider',
 			   function($scope, $location, urlProvider){
-	$scope.semester.then(function(semester){
+	$scope.$watch('semester', function(semester){
+		if (!semester){
+			return;
+		}
 		var catalogItem = {
 			name: 'Catalog',
 			path: urlProvider.semester(semester.year, semester.month),

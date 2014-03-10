@@ -1,19 +1,6 @@
-
-# src_files
-#
-# Return an array of filepaths relative to src_dir to include before jasmine specs.
-# Default: []
-#
-# EXAMPLE:
-#
-# src_files:
-#   - lib/source1.js
-#   - lib/source2.js
-#   - dist/**/*.js
-#
 src_files:
-    - yacs/static/angular/v4/js/lib/underscore-1.4.4.min.js
-    - yacs/static/angular/v4/js/lib/jquery-2.0.2.js
+    - yacs/static/angular/v4/js/lib/underscore.js
+    - yacs/static/angular/v4/js/lib/jquery.js
     - yacs/static/angular/v4/js/lib/angularjs/angular.js
     - yacs/static/angular/v4/js/lib/angularjs/angular-route.js
     - yacs/static/angular/v4/js/lib/angular-mocks.js
@@ -31,67 +18,16 @@ src_files:
     - yacs/static/angular/v4/js/worker/Utils.js
     - yacs/static/angular/v4/js/worker/ScheduleValidator.js
     - yacs/static/angular/v4/js/domain/**/*.js
-
-# stylesheets
-#
-# Return an array of stylesheet filepaths relative to src_dir to include before jasmine specs.
-# Default: []
-#
-# EXAMPLE:
-#
-# stylesheets:
-#   - css/style.css
-#   - stylesheets/*.css
-#
 stylesheets:
     - yacs/static/angular/**/*.css
 
-# helpers
-#
-# Return an array of filepaths relative to spec_dir to include before jasmine specs.
-# Default: ["helpers/**/*.js"]
-#
-# EXAMPLE:
-#
-# helpers:
-#   - helpers/**/*.js
-#
 helpers:
   - "lib/**/*.js"
   - "helpers/**/*.js"
 
-# spec_files
-#
-# Return an array of filepaths relative to spec_dir to include.
-# Default: ["**/*[sS]pec.js"]
-#
-# EXAMPLE:
-#
-# spec_files:
-#   - **/*[sS]pec.js
-#
 spec_files:
   - "**/*[Ss]pec.js"
 
 
-# src_dir
-#
-# Source directory path. Your src_files must be returned relative to this path. Will use root if left blank.
-# Default: project root
-#
-# EXAMPLE:
-#
-# src_dir: public
-#
 src_dir:
-
-# spec_dir
-#
-# Spec directory path. Your spec_files must be returned relative to this path.
-# Default: spec/javascripts
-#
-# EXAMPLE:
-#
-# spec_dir: spec/javascripts
-#
 spec_dir: spec/javascripts

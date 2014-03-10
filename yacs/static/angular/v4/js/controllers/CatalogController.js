@@ -3,12 +3,16 @@
 (function(angular, app, undefined){
 
 app.controller('CatalogCtrl', ['$q', '$scope', '$location', '$routeParams',
-			   '$timeout', 'CourseFetcher', 'Selection', 'currentSemesterPromise',
-			   function($q, $scope, $location, $routeParams, $timeout, CourseFetcher, Selection, currentSemesterPromise){
+			   '$timeout', 'CourseFetcher', 'Selection',
+			   function($q, $scope, $location, $routeParams, $timeout, CourseFetcher, Selection){
 	$scope.courses = [];
 	$scope.emptyText = "Loading courses...";
 	var selectionPromise = Selection.current;
-	currentSemesterPromise.then(function(semester){
+	$scope.$watch('semester', function(semester){
+		if (!semester) {
+			return;
+		}
+
 		var coursePromise = CourseFetcher({semester_id: semester.id, department_code: $routeParams.dept});
 		$q.all([selectionPromise, coursePromise]).then(function(values){
 			var selection = values[0];

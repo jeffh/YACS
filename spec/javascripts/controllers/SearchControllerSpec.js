@@ -34,13 +34,11 @@ describe("Controllers", function(){
 	}));
 
 	describe("SearchCtrl", function(){
-		var $route, $timeout, $location, controller, semesterDeferred, semester, searchOptions;
-		beforeEach(inject(function($injector, $q, $controller, Semester, $rootScope){
+		var $route, $timeout, $location, controller, semester, searchOptions;
+		beforeEach(inject(function($injector, $controller, Semester, $rootScope){
 			searchOptions = $injector.get('searchOptions');
 			semester = new Semester({year: 2013, month: 1});
-			semesterDeferred = $q.defer();
-			semesterDeferred.resolve(semester);
-			$rootScope.semester = semesterDeferred.promise;
+			$rootScope.semester = semester;
 			$route = {current: {params: {}}};
 
 			$timeout = $injector.get('$timeout');
@@ -56,11 +54,10 @@ describe("Controllers", function(){
 			expect(scope.searchOptions).toBe(searchOptions);
 		});
 
-		describe("when the semester promise is resolved with a query", function(){
+		describe("when the controller is loaded with a query", function(){
 			beforeEach(inject(function($rootScope){
 				$location.path('/2013/1/search/foo/');
 				$route.current.params.query = 'foo';
-				semesterDeferred.resolve(semester);
 				$rootScope.$apply();
 			}));
 
@@ -69,10 +66,9 @@ describe("Controllers", function(){
 			});
 		});
 
-		describe("when the semester promise is resolved with no query", function(){
+		describe("when the controller is loaded with no query", function(){
 			beforeEach(inject(function($rootScope){
 				$location.path('/prev/path/');
-				semesterDeferred.resolve(semester);
 				$rootScope.$apply();
 			}));
 
