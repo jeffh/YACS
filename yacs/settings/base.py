@@ -292,15 +292,6 @@ SESSION_EXCLUDED_URLS = (
 
 # ==== django-pipeline ====
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
-PIPELINE_COMPILERS = (
-    'pipeline.compilers.coffee.CoffeeScriptCompiler',
-    'pipeline.compilers.sass.SASSCompiler',
-)
-
-PIPELINE_COFFEE_SCRIPT_BINARY = os.environ.get('COFFEE', '/usr/local/bin/coffee')
-
-#s.PIPELINE_SASS_BINARY = 'sass'
-PIPELINE_SASS_ARGUMENTS = '--scss'
 
 PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
 PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.closure.ClosureCompressor'
