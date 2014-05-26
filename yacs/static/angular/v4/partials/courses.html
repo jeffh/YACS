@@ -66,6 +66,7 @@
 							{{ conflict_name }}{{{true: '', false: ', '}[$last]}}
 						</span>
 						</p>
+						<p class="note">{{ section.notes }}</p>
 					</label>
 				</li>
 			</ul>
@@ -76,9 +77,6 @@
 			<p class="description">
 			{{course.description}}
 			</p>
-			<ul class="notes">
-				<li class="note" ng-repeat="note in course.notes">{{note}}</li>
-			</ul>
 		</div>
 	</div>
 </div>
