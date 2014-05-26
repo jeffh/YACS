@@ -17,12 +17,12 @@ from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.conf import settings
 from django.db.utils import IntegrityError
+from django.db import transaction
 
 from courses.models import (Semester, Course, Department, Section,
     Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment)
 from courses.signals import sections_modified
 from courses.utils import Synchronizer, DAYS
-from shortcuts import commit_all_or_rollback
 
 # TODO: remove import *
 from catalogparser import *
@@ -392,7 +392,7 @@ def import_latest_semester(force=False):
     logger.debug('Importing latest semester: %s' % datetime.datetime.now().strftime('%A %x %X %f%Z'))
     notifier = SemesterNotifier()
     #ROCSRPIImporter().sync() # slower.. someone manually updates this I think?
-    with commit_all_or_rollback():
+    with transaction.atomic():
         SISRPIImporter(notifier).sync(force=force)
     notifier.notify()
 
@@ -410,7 +410,7 @@ def import_all_semesters(force=False):
             importer = ROCSRPIImporter(notifier)
         else:
             importer = SISRPIImporter(notifier)
-        with commit_all_or_rollback():
+        with transaction.atomic():
             importer.sync(get_files=lambda *a, **k: [url])
     notifier.notify()
 

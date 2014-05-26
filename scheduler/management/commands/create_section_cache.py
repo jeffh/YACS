@@ -17,7 +17,7 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        with transaction.commit_on_success():
+        with transaction.atomic():
             semesters = Semester.objects.all()
             if not options.get('all', False):
                 semesters = semesters[:1]

@@ -9,8 +9,6 @@ from courses.utils import dict_by_attr, Synchronizer
 from scheduler import managers
 from scheduler.utils import slugify, deserialize_numbers, serialize_numbers
 
-from shortcuts import commit_all_or_rollback
-
 
 class SavedSelection(models.Model):
     "Represents a unique set of selected sections and blocked times."
@@ -133,7 +131,7 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
     if not semester:
         semester = courses.Semester.objects.get(year=semester_year, month=semester_month)
 
-    with commit_all_or_rollback():
+    with transaction.atomic():
         # we don't want to increment IDs too quickly (ev 25 minutes)
         #SectionConflict.objects.filter(semester=semester).delete()
         Syncer = Synchronizer(SectionConflict, SectionConflict.objects.values_list('id', flat=True))

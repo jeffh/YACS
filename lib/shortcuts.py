@@ -8,17 +8,6 @@ from django.contrib.auth.models import User
 from json import loads
 
 
-@contextmanager
-def commit_all_or_rollback():
-    transaction.commit_manually()
-    try:
-        yield
-        transaction.commit()
-    except:
-        transaction.rollback()
-        raise
-
-
 class ShortcutTestCase(TestCase):
     def get(self, url_name, *args, **kwargs):
         status = kwargs.pop('status_code', None)

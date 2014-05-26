@@ -20,8 +20,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if options.get('force'):
             print "Forcing update..."
-        #with transaction.commit_on_success():
-        #    import_courses(force=options.get('force', False))
         import_courses(
             force=options.get('force'),
             all=options.get('all')
