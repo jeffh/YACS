@@ -2,7 +2,7 @@
 
 (function(angular, app, undefined){
 
-app.factory('BackgroundWorker', function($q, STATIC_URL){
+app.factory('BackgroundWorker', ['$q', 'STATIC_URL', function($q, STATIC_URL){
     return function(conflictObjs, sectionObjs){
         var worker = new Worker(STATIC_URL + 'v4/js/worker/Boot.js');
         worker.postMessage({
@@ -49,7 +49,7 @@ app.factory('BackgroundWorker', function($q, STATIC_URL){
             });
         };
     };
-});
+}]);
 
 })(angular, app);
 
