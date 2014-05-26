@@ -121,10 +121,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     #'django.contrib.auth.middleware.AuthenticationMiddleware',
     #'django.contrib.messages.middleware.MessageMiddleware',
-    #'debug_toolbar.middleware.DebugToolbarMiddleware',
     'api.middleware.AuthenticationMiddleware',
     'api.middleware.MessageMiddleware',
-    'api.middleware.DebugToolbarMiddleware',
+    #'api.middleware.DebugToolbarMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

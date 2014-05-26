@@ -6,7 +6,7 @@ import time
 import signal
 import urllib2
 
-from fabric.api import run, local, settings, cd, sudo, task, output, puts
+from fabric.api import run, local, settings, cd, sudo, task, output, puts, prefix
 from fabric.contrib.project import upload_project
 from fabric.contrib.files import append, upload_template
 
@@ -75,8 +75,8 @@ def update_crontab():
     sudo('rm -f yacs_cron')
 
 
-def managepy(command):
-    sudo('%s manage.py %s' % (PYTHON, command), user=USER)
+def managepy(command, prefix_cmd=''):
+    sudo('%s %s manage.py %s' % (prefix_cmd, PYTHON, command), user=USER)
 
 
 def validate_production_json():
@@ -128,19 +128,21 @@ def deploy(upgrade=1):
             sudo('find . -name ".*" | xargs rm -r', user=USER)
             sudo('rm yacs.db', user=USER)
         puts('Installing dependencies...')
-        prefix = '--upgrade'
+        pip_prefix = '--upgrade'
         if not int(upgrade):
-            prefix = ''
-        sudo(PIP + ' install %s -r requirements/deployment.txt' % prefix, user=USER)
-        sudo(PIP + ' install %s %s ' % (prefix, ADDITIONAL_PACKAGES), user=USER)
+            pip_prefix = ''
+        sudo(PIP + ' install %s -r requirements/deployment.txt' % pip_prefix, user=USER)
+        sudo(PIP + ' install %s %s ' % (pip_prefix, ADDITIONAL_PACKAGES), user=USER)
+
+        envs = remote_vars('YACS_ENV', 'YACS_SECRET_KEY', 'YACS_DATABASE_URL')
         puts('Running migrations...')
-        managepy('syncdb --noinput')
-        managepy('migrate --noinput')
+        managepy('syncdb --noinput', envs)
+        managepy('migrate --noinput', envs)
         puts('Gathering static files...')
-        managepy('collectstatic --noinput')
+        managepy('collectstatic --noinput', envs)
         puts("Clearing caches...")
         sudo('service memcached restart')
-        managepy('clear_cache')
+        managepy('clear_cache', envs)
         puts('Restarting gunicorn...')
         sudo('service monit restart')
         sudo('monit restart yacs')
@@ -152,12 +154,13 @@ def deploy(upgrade=1):
 def fetch():
     "Tells the deployed system to fetch course data."
     with cd('/www/yacs/django'):
+        envs = remote_vars('YACS_ENV', 'YACS_SECRET_KEY', 'YACS_DATABASE_URL') + ' '
         puts('Getting course data from SIS...')
-        sudo(PYTHON + ' manage.py import_course_data')
+        sudo(envs + PYTHON + ' manage.py import_course_data')
         puts('Fetching catalog data...')
-        sudo(PYTHON + ' manage.py import_catalog_data')
+        sudo(envs + PYTHON + ' manage.py import_catalog_data')
         puts('Generating conflict cache...')
-        sudo(PYTHON + ' manage.py create_section_cache')
+        sudo(envs + PYTHON + ' manage.py create_section_cache')
 
 
 @task
