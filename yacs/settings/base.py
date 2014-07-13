@@ -293,7 +293,8 @@ SESSION_EXCLUDED_URLS = (
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
-PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.closure.ClosureCompressor'
+PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
+#PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.closure.ClosureCompressor'
 
 PIPELINE_YUI_BINARY = 'lib/yuicompressor'
 PIPELINE_YUI_CSS_ARGUMENTS = '--type css'
@@ -329,7 +330,7 @@ PIPELINE_JS = {
     'angular': {
         'source_filenames': (
             'v4/js/lib/jquery.js',
-            'v4/js/lib/angularjs/angular.js',
+            'v4/js/lib/angularjs/angular.min.js',
             'v4/js/lib/angularjs/angular-route.js',
             'v4/js/lib/angularjs/angular-cookies.js',
             'v4/js/lib/underscore.js',
