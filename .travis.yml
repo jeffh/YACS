@@ -15,6 +15,6 @@ deploy:
   run:
   - python manage.py syncdb --noinput
   - python manage.py migrate --noinput
-app:
-  master: yacs-staging
-  production: yacs
+  app:
+    master: yacs-staging
+    production: yacs
