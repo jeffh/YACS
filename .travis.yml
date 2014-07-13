@@ -12,6 +12,9 @@ deploy:
   provider: heroku
   api_key:
     secure: Rvtvh9TjLiDcDVN6SMBwEnwBIpiVZwi3bmsZH3FWy70kfHbhP7EtmHfh2td3qI3EZrilp/T9MuCwhPA3uMfEa+u1HTttMLO5J1H373APtwTG+Dd4Im1kutOFQEawx1w48CQnu0YZ/302npKkJH/nOILCLQzdqV+ISy5aaOwIdg8=
+  run:
+    - 'python manage.py syncdb --noinput'
+    - 'python manage.py migrate --noinput'
 app:
   master: yacs-staging
   production: yacs
