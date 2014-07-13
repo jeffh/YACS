@@ -1,11 +1,17 @@
 language: python
 python:
-  - "2.7"
+- '2.7'
 before_install:
-  - 'export DISPLAY=:99.0'
-  - 'sh -e /etc/init.d/xvfb start'
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
 install:
-  - pip install -r requirements/development.txt --use-mirrors
+- pip install -r requirements/development.txt --use-mirrors
 script:
-  - fab clean test jasmine
-
+- fab clean test jasmine
+deploy:
+  provider: heroku
+  api_key:
+    secure: Rvtvh9TjLiDcDVN6SMBwEnwBIpiVZwi3bmsZH3FWy70kfHbhP7EtmHfh2td3qI3EZrilp/T9MuCwhPA3uMfEa+u1HTttMLO5J1H373APtwTG+Dd4Im1kutOFQEawx1w48CQnu0YZ/302npKkJH/nOILCLQzdqV+ISy5aaOwIdg8=
+app:
+  master: yacs-staging
+  production: yacs
