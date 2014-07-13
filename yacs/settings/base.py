@@ -32,7 +32,8 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': dj_database_url.parse(
         os.environ.get('YACS_DATABASE_URL',
-                       'sqlite:////' + os.path.abspath('yacs.db')))
+                       os.environ.get('DATABASE_URL',
+                                      'sqlite:////' + os.path.abspath('yacs.db'))))
 }
 
 # Local time zone for this installation. Choices can be found here:
