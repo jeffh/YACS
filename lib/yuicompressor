@@ -1,0 +1,2 @@
+#!/bin/bash
+java -jar lib/yuicompressor-2.4.8.jar $@

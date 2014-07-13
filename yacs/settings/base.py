@@ -295,7 +295,7 @@ STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
 PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.closure.ClosureCompressor'
 
-PIPELINE_YUI_BINARY = 'java -jar lib/yuicompressor-2.4.8.jar'
+PIPELINE_YUI_BINARY = 'lib/yuicompressor'
 PIPELINE_YUI_CSS_ARGUMENTS = '--type css'
 PIPELINE_YUI_JS_ARGUMENTS = '--type js'
 
