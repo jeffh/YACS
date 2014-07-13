@@ -62,6 +62,7 @@ if not os.environ.get('YACS_DISABLE_FILE_SYSTEM_LOGGING'):
         },
     })
 
+
 def debug_toolbar_callback(request):
     return False
 
