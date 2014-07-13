@@ -220,36 +220,6 @@ LOGGING = {
     }
 }
 
-if not os.environ.get('YACS_DISABLE_FILE_SYSTEM_LOGGING'):
-    LOGGING['handlers'].update({
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': relative_path('..', 'access.log'),
-            'formatter': 'default',
-            'filters': ['require_debug_false'],
-        },
-        'file-error': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': relative_path('..', 'error.log'),
-            'formatter': 'default',
-            'filters': ['require_debug_false'],
-        },
-    })
-    LOGGING['loggers'].update({
-        'django.request': {
-            'handlers': ['console', 'file-error'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'yacs': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-    })
-
 # === Memory ===
 CACHE_VERSION = 1
 CACHES = {
