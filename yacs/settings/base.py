@@ -200,6 +200,28 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['null'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'yacs': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    }
+}
+
+if not os.environ.get('YACS_DISABLE_FILE_SYSTEM_LOGGING'):
+    LOGGING['handlers'].update({
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
@@ -214,35 +236,19 @@ LOGGING = {
             'formatter': 'default',
             'filters': ['require_debug_false'],
         },
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['null'],
-            'propagate': True,
-            'level': 'INFO',
-        },
+    })
+    LOGGING['loggers'].update({
         'django.request': {
             'handlers': ['console', 'file-error'],
             'level': 'ERROR',
             'propagate': True,
         },
-        #'django.request': {
-        #    'handlers': ['mail_admins'],
-        #    'level': 'ERROR',
-        #    'propagate': True,
-        #},
         'yacs': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': True,
         },
-    }
-}
+    })
 
 # === Memory ===
 CACHE_VERSION = 1
