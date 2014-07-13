@@ -2,6 +2,7 @@
 
 describe("networkIndicator", function(){
 	var $rootScope, networkIndicator;
+
 	beforeEach(inject(function($injector){
 		$rootScope = $injector.get('$rootScope');
 		networkIndicator = $injector.get('networkIndicator');
@@ -81,6 +82,8 @@ describe("networkIndicator", function(){
 
 describe("ApiClient", function(){
 	var client, $httpBackend, $q, networkIndicator;
+
+	beforeEach(allowStaticFetches);
 
 	beforeEach(inject(function($injector){
 		networkIndicator = $injector.get('networkIndicator');

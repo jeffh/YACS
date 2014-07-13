@@ -1,23 +1,14 @@
 'use strict';
 
-(function(document, angular, app, undefined){
+describe("FooterCtrl", function(){
+	var scope, controller;
 
-describe("Controllers", function(){
-	var scope;
-	beforeEach(inject(function($rootScope){
+	beforeEach(inject(function($rootScope, $controller){
 		scope = $rootScope.$new();
+		controller = $controller('FooterCtrl', {$scope: scope});
 	}));
 
-	describe("FooterCtrl", function(){
-		var controller;
-		beforeEach(inject(function($controller){
-			controller = $controller('FooterCtrl', {$scope: scope});
-		}));
-
-		it("should set the flavorText on the scope", function(){
-			expect(scope.flavorText).toBeTruthy();
-		});
+	it("should set the flavorText on the scope", function(){
+		expect(scope.flavorText).toBeTruthy();
 	});
 });
-
-})(document, angular, app);

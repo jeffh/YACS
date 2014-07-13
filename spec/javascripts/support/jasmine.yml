@@ -1,7 +1,7 @@
 src_files:
     - yacs/static/angular/v4/js/lib/underscore.js
     - yacs/static/angular/v4/js/lib/jquery.js
-    - yacs/static/angular/v4/js/lib/angularjs/angular.js
+    - yacs/static/angular/v4/js/lib/angularjs/angular.min.js
     - yacs/static/angular/v4/js/lib/angularjs/angular-route.js
     - yacs/static/angular/v4/js/lib/angular-mocks.js
     - yacs/static/angular/v4/js/lib/angularjs/angular-cookies.js
