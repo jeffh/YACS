@@ -8,13 +8,13 @@ install:
 - pip install -r requirements/development.txt --use-mirrors
 script:
 - fab clean test jasmine
-deploy:
-  provider: heroku
-  api_key:
-    secure: FYl+nmXR2tSZAV4ue/JBEQdSn8R2sK3IHDlKqMjI4RR5zLKT+sQd3lPiSml2KM/Pb0uvy698hQroAHU3wznjteuKPDYajzBztwunZFXgOKzw1kvL8q8VyvjKfkhh6DTPIKwV+O5NVHq0Ssdd+7dhQM/bLofW/+WbuuXqePaDCCk=
-  run:
-  - python manage.py syncdb --noinput
-  - python manage.py migrate --noinput
-  app:
-    master: yacs-staging
-    production: yacs
+#deploy:
+#  provider: heroku
+#  api_key:
+#    secure: FYl+nmXR2tSZAV4ue/JBEQdSn8R2sK3IHDlKqMjI4RR5zLKT+sQd3lPiSml2KM/Pb0uvy698hQroAHU3wznjteuKPDYajzBztwunZFXgOKzw1kvL8q8VyvjKfkhh6DTPIKwV+O5NVHq0Ssdd+7dhQM/bLofW/+WbuuXqePaDCCk=
+#  run:
+#  - python manage.py syncdb --noinput
+#  - python manage.py migrate --noinput
+#  app:
+#    master: yacs-staging
+#    production: yacs
