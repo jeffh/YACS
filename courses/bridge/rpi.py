@@ -13,14 +13,16 @@ from contextlib import closing
 from icalendar import Calendar, Event
 import pytz
 
-from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.conf import settings
 from django.db.utils import IntegrityError
 from django.db import transaction
 
-from courses.models import (Semester, Course, Department, Section,
-    Period, SectionPeriod, OfferedFor, SectionCrosslisting, SemesterDepartment)
+from courses.models import (
+    Semester, Course, Department, Section,
+    Period, SectionPeriod, OfferedFor,
+    SectionCrosslisting, SemesterDepartment
+)
 from courses.signals import sections_modified
 from courses.utils import Synchronizer, DAYS
 
@@ -36,6 +38,7 @@ except AttributeError:
     level = logging.INFO
 
     class NullHandler(object):
+
         def emit(self, record):
             pass
         handle = emit
@@ -46,6 +49,7 @@ logger.addHandler(logging.StreamHandler(sys.stdout))
 
 
 class SemesterNotifier(object):
+
     def __init__(self):
         self.subject = "[YACS] New Semester for Review"
         self.message = """Hey Humans,
@@ -68,7 +72,7 @@ YACS.me
 
 
 class ROCSRPIImporter(object):
-    """Handles the importation of RPI course data into the database."""
+    "Handles the importation of RPI course data into the database."
     FILE_RE = re.compile(r'(\d+)\.xml')
 
     def __init__(self, notifier):
@@ -199,7 +203,7 @@ class ROCSRPIImporter(object):
         print "Found " + str(len(crns)) + " communication intensive sections"
         for i in crns:
             course = catalog.find_course_by_crn(int(i.split()[0]))
-            if (course != None):
+            if course is not None:
                 print course.name
                 list.append(course.name)
         return list
@@ -258,7 +262,6 @@ class ROCSRPIImporter(object):
         for period in section.periods:
             if None in (period.start, period.end):
                 continue  # invalid period for all we care about... ignore.
-            day = 0
             period_obj, pcreated = Period.objects.get_or_create(
                 start=period.start_time,
                 end=period.end_time,
@@ -302,15 +305,14 @@ class ROCSRPIImporter(object):
 
 
 class SISRPIImporter(ROCSRPIImporter):
+
     def get_files(self, latest_semester):
         from rpi_courses import list_sis_files_for_date
-        get_files = list_sis_files_for_date
 
         files = list_sis_files_for_date()
         if latest_semester:
             files.append(latest_semester.ref)
 
-        now = datetime.datetime.now()
         return list(set(files))
 
     def sync(self, get_files=None, get_catalog=None, force=False):
@@ -351,19 +353,19 @@ class SISRPIImporter(ROCSRPIImporter):
                 semester_obj = None
                 try:
                     semester_obj, created = Semester.objects.get_or_create(
-                        ref=filename,
+                        year=catalog.year,
+                        month=catalog.month,
                         defaults={
-                            'year': catalog.year,
-                            'month': catalog.month,
                             'visible': False,
                             'name': catalog.name,
+                            'ref': filename,
                         })
                 except IntegrityError as error:
                     logger.debug(' DUPLICATE SEMESTER ' + repr(semester_obj) + ': ' + repr(error))
                     continue
                 self.create_courses(catalog, semester_obj)
                 # catalog doesn't support this for now.
-                #self.create_crosslistings(semester_obj, set(catalog.crosslistings.values()))
+                # self.create_crosslistings(semester_obj, set(catalog.crosslistings.values()))
                 semester_obj.save()  # => update date_updated property
                 if created:
                     logger.debug(' CREATE SEMESTER ' + repr(semester_obj))
@@ -391,7 +393,7 @@ def import_latest_semester(force=False):
     "Imports RPI data into the database."
     logger.debug('Importing latest semester: %s' % datetime.datetime.now().strftime('%A %x %X %f%Z'))
     notifier = SemesterNotifier()
-    #ROCSRPIImporter().sync() # slower.. someone manually updates this I think?
+    # ROCSRPIImporter().sync() # slower.. someone manually updates this I think?
     with transaction.atomic():
         SISRPIImporter(notifier).sync(force=force)
     notifier.notify()
@@ -435,7 +437,7 @@ def import_catalog(a=False):
             c.prereqs = catalog[key]['prereqs']
             c.save()
     # uses >1GB of ram - currently unacceptable
-    #add_cross_listing()
+    # add_cross_listing()
 
 
 def add_cross_listing():
@@ -465,25 +467,27 @@ def export_schedule(crns):
     found = False
     current = datetime.datetime.utcnow()
     semester_end = semester_start + datetime.timedelta(150)
-    events = list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url_by_range(str(semester_start.date()).replace('-', ''), str(current.date()).replace('-', '')))))
+    start_date = str(semester_start.date()).replace('-', '')
+    end_date = str(current.date()).replace('-', '')
+    events = list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url_by_range(start_date, end_date))))
     events.extend(list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url()))))
     days_off = []
     break_start = None
     break_end = None
     for e in events:
-        if re.search(str(sections[0].semester.name.split(' ')[0]) + ' ' + str(sections[0].semester.year), e.name) != None:
+        if re.search(str(sections[0].semester.name.split(' ')[0]) + ' ' + str(sections[0].semester.year), e.name) is not None:
             semester_start = e.start
             found = True
-        if re.search(".*(no classes).*", e.name.lower()) != None and found:
+        if re.search(".*(no classes).*", e.name.lower()) is not None and found:
             days_off.append([e.start.date()])
-        if re.search(".*(spring break)|(thanksgiving).*", e.name.lower()) != None and found:
+        if re.search(".*(spring break)|(thanksgiving).*", e.name.lower()) is not None and found:
             break_start = e.start
-        if re.search(".*(classes resume).*", e.name.lower()) != None and break_start != None:
+        if re.search(".*(classes resume).*", e.name.lower()) is not None and break_start is not None:
             break_end = e.start
-        if re.search("(.*)study-review days", str(e.name).lower()) != None and found:
+        if re.search("(.*)study-review days", str(e.name).lower()) is not None and found:
             semester_end = e.start
             break
-    if break_start != None and break_end != None:
+    if break_start is not None and break_end is not None:
         length = break_end - break_start
         for i in range(length.days):
             days_off.append([(break_start + datetime.timedelta(i)).date()])
@@ -507,5 +511,5 @@ def export_schedule(crns):
                 until=datetime.datetime(semester_end.year, semester_end.month, semester_end.day, p.end.hour, p.end.minute, tzinfo=pytz.timezone("America/New_York")).astimezone(pytz.utc)))
             event.add('exdate', days_off)
             calendar.add_component(event)
-    output = str(calendar).replace("EXDATE", "EXDATE;VALUE=DATE")
-    return output
+            print event
+    return calendar.to_ical().replace("EXDATE", "EXDATE;VALUE=DATE")

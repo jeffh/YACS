@@ -1,26 +1,23 @@
-from datetime import datetime
 from json import dumps
-import urllib
-import time
 
-from django.db.models import F, Q
-from django.views.generic import ListView, TemplateView, View
-from django.http import HttpResponse, Http404, HttpResponseNotFound, HttpResponseForbidden, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404, redirect
+from django.views.generic import TemplateView
+from django.http import HttpResponse, Http404, HttpResponseNotFound, HttpResponseForbidden
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.conf import settings
-from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from icalendar import Calendar, Event, vText
 
-from courses.views import SemesterBasedMixin, SELECTED_COURSES_SESSION_KEY, AjaxJsonResponseMixin, SelectedCoursesListView
-from courses.models import Semester, SectionPeriod, Course, Section, Department
-from courses.utils import dict_by_attr, ObjectJSONEncoder, sorted_daysofweek, DAYS
+from courses.views import SemesterBasedMixin, AjaxJsonResponseMixin, SelectedCoursesListView
+from courses.models import Semester, Department, Section
+from courses.utils import dict_by_attr, sorted_daysofweek, DAYS
 from scheduler import models
 from scheduler.scheduling import compute_schedules
 
 
-ICAL_PRODID = getattr(settings, 'SCHEDULER_ICAL_PRODUCT_ID', '-//Jeff Hui//YACS Export 1.0//EN')
+ICAL_PRODID = getattr(
+    settings,
+    'SCHEDULER_ICAL_PRODUCT_ID',
+    '-//Jeff Hui//YACS Export 1.0//EN')
 SECTION_LIMIT = getattr(settings, 'SECTION_LIMIT', 60)
 
 
@@ -31,36 +28,61 @@ def compute_selection_dict(sids):
     return selection
 
 
+def take(num, iterable):
+    for i, v in enumerate(iterable):
+        if i < num:
+            yield iterable
+        else:
+            break
+
+
 class SelectionSelectedCoursesListView(SelectedCoursesListView):
+
     def get_context_data(self, **kwargs):
-        context = super(SelectionSelectedCoursesListView, self).get_context_data(**kwargs)
-        selection = context['selection'] = models.Selection.objects.get(id=self.kwargs.get('id'))
-        context['raw_selection'] = dumps(compute_selection_dict(selection.section_ids))
+        context = super(
+            SelectionSelectedCoursesListView,
+            self).get_context_data(
+            **kwargs)
+        selection = context['selection'] = models.Selection.objects.get(
+            id=self.kwargs.get('id'))
+        context['raw_selection'] = dumps(
+            compute_selection_dict(
+                selection.section_ids))
         return context
 
 
 class ResponsePayloadException(Exception):
+
     "This exception is raised if a special form of HttpResponse is wanted to be returned (eg - JSON error response)."
+
     def __init__(self, response):
         self.response = response
         super(ResponsePayloadException, self).__init__('')
 
 
 class ExceptionResponseMixin(object):
+
     """Handles ResponsePayloadExceptions appropriately.
 
     If the view throws a ResponsePayloadException, then the raise Response is used instead of the traditional
     HttpResponse object.
     """
+
     def dispatch(self, *args, **kwargs):
         try:
-            return super(ExceptionResponseMixin, self).dispatch(*args, **kwargs)
+            return super(
+                ExceptionResponseMixin,
+                self).dispatch(
+                *args,
+                **kwargs)
         except ResponsePayloadException as e:
             return e.response
 
 
 class ConflictMixin(SemesterBasedMixin):
+
     "Provides the view with helper methods to acquire the conflicted sections."
+
     def conflict_mapping(self, conflicts):
         """Returns a dictionary of section id to a frozen set of section ids
         that conflict with the given section.
@@ -70,7 +92,10 @@ class ConflictMixin(SemesterBasedMixin):
     def get_sections_by_crns(self, crns):
         "Returns all sections with the provided CRNs."
         year, month = self.get_year_and_month()
-        queryset = models.SectionProxy.objects.by_crns(crns, year=year, month=month)
+        queryset = models.SectionProxy.objects.by_crns(
+            crns,
+            year=year,
+            month=month)
         queryset = queryset.select_related('course', 'course__department')
         return queryset.by_semester(year, month).prefetch_periods()
 
@@ -80,7 +105,8 @@ class ConflictMixin(SemesterBasedMixin):
         the given section.
         """
         section_ids = set(s.id for s in sections)
-        conflict_mapping = models.SectionConflict.objects.as_dictionary(section_ids)
+        conflict_mapping = models.SectionConflict.objects.as_dictionary(
+            section_ids)
         empty_set = frozenset()  # saves memory
         for section in sections:
             section.conflicts = conflict_mapping.get(section.id) or empty_set
@@ -134,7 +160,7 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
 
     def compute_schedules(self, selected_courses):
         # we should probably set some upper bound of computation and restrict number of sections used.
-        #schedules = take(100, compute_schedules(selected_courses, generator=True))
+        # schedules = take(100, compute_schedules(selected_courses, generator=True))
         #
         # ideally, we should write the schedules to the database in bulk after
         # the first time we compute this for a bunch of benefits (short-linkable
@@ -145,7 +171,11 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
             for schedule in compute_schedules(selected_courses, free_sections_only=False, generator=True):
                 raise ResponsePayloadException(HttpResponse('ok'))
             raise ResponsePayloadException(HttpResponseNotFound('conflicts'))
-        schedules = compute_schedules(selected_courses, start=self.get_savepoint(), free_sections_only=False, generator=True)
+        schedules = compute_schedules(
+            selected_courses,
+            start=self.get_savepoint(),
+            free_sections_only=False,
+            generator=True)
 
         try:
             limit = int(self.request.GET.get('limit'))
@@ -203,7 +233,11 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
                         )
         return section_mapping
 
-    def section_mapping_for_thumbnails(self, selected_courses, schedules, periods):
+    def section_mapping_for_thumbnails(
+            self,
+            selected_courses,
+            schedules,
+            periods):
         "Builds the data structure of the data for faster display in the template (less looping)."
         timerange, dows = self.period_stats(periods)
         section_mapping = {}  # [schedule-index][hour][starting-hour]
@@ -226,7 +260,10 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
     def get_section_mapping(self, selected_courses, schedules, periods):
         "Preps the schedule data for display in the context."
         if self.get_is_thumbnail():
-            return self.section_mapping_for_thumbnails(selected_courses, schedules, periods)
+            return self.section_mapping_for_thumbnails(
+                selected_courses,
+                schedules,
+                periods)
         else:
             return self.section_mapping(selected_courses, schedules, periods)
 
@@ -244,7 +281,8 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
         return results
         # above is equivalent to below, but the one below is only for
         # python 2.7+, and not python 2.6
-        #return [{ str(course.id): section.crn for course, section in schedule.items() } for schedule in schedules]
+        # return [{ str(course.id): section.crn for course, section in
+        # schedule.items() } for schedule in schedules]
 
     def prep_courses_and_sections_for_context(self, selected_courses):
         """Returns all the database model objects for JSON-friendly output.
@@ -253,7 +291,10 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
         """
         courses_output, sections_output = {}, {}
         for course, sections in selected_courses.items():
-            courses_output[course.id] = course.toJSON(select_related=((Department._meta.db_table, 'code'),))
+            courses_output[
+                course.id] = course.toJSON(
+                select_related=(
+                    (Department._meta.db_table, 'code'),))
             for section in sections:
                 sections_output[section.crn] = section.toJSON()
         return courses_output, sections_output
@@ -279,7 +320,8 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
         if len(schedules_output):
             periods = set(p for s in sections for p in s.get_periods())
             timerange, dows = self.period_stats(periods)
-            courses_output, sections_output = self.prep_courses_and_sections_for_context(selected_courses)
+            courses_output, sections_output = self.prep_courses_and_sections_for_context(
+                selected_courses)
             context = {
                 'time_range': timerange,
                 'dows': DAYS,
@@ -288,9 +330,12 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
                 'sem_month': month,
                 'courses': courses_output,
                 'sections': sections_output,
-                'section_mapping': self.get_section_mapping(selected_courses, schedules, periods),
+                'section_mapping': self.get_section_mapping(
+                    selected_courses,
+                    schedules,
+                    periods),
                 'selection_slug': selection.id,
-            }
+                }
         else:
             context = {
                 'schedules': [],
@@ -303,6 +348,7 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
 
 
 class JsonComputeSchedules(AjaxJsonResponseMixin, ComputeSchedules):
+
     "Simply provides a JSON output format for the ComputeSchedules view."
     json_content_prefix = ''
 
@@ -311,7 +357,9 @@ class JsonComputeSchedules(AjaxJsonResponseMixin, ComputeSchedules):
 
     def render_to_response(self, context):
         del context['template_base']
-        return self.get_json_response(self.get_json_content_prefix() + self.convert_context_to_json(context))
+        return self.get_json_response(
+            self.get_json_content_prefix() +
+            self.convert_context_to_json(context))
 
 
 def schedules_bootloader(request, year, month, id=None, index=None):
@@ -325,7 +373,14 @@ def schedules_bootloader(request, year, month, id=None, index=None):
         assert index >= 1
     except (ValueError, TypeError, AssertionError):
         if id:
-            return redirect(reverse('schedules', kwargs=dict(year=year, month=month, id=id, index=1)))
+            return redirect(
+                reverse(
+                    'schedules',
+                    kwargs=dict(
+                        year=year,
+                        month=month,
+                        id=id,
+                        index=1)))
 
     semester = Semester.objects.get(year=year, month=month)
     try:
@@ -334,15 +389,14 @@ def schedules_bootloader(request, year, month, id=None, index=None):
     except (models.Selection.DoesNotExist, ValueError):
         selection = None
 
-    return render_to_response('scheduler/placeholder_schedule_list.html', {
-        'selection': selection,
-        'raw_selection': dumps(compute_selection_dict(selection.section_ids)) if selection else None,
-        'semester': semester,
-        'sem_year': semester.year,
-        'sem_month': semester.month,
-        'index': index,
-        'id': id,
-    }, RequestContext(request))
+    return render_to_response(
+        'scheduler/placeholder_schedule_list.html',
+        {'selection': selection, 'raw_selection':
+         dumps
+         (compute_selection_dict(selection.section_ids))
+         if selection else None, 'semester': semester, 'sem_year':
+         semester.year, 'sem_month': semester.month, 'index': index, 'id':
+         id, }, RequestContext(request))
 
 
 def icalendar(request):

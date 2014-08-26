@@ -11,9 +11,9 @@ AppWorker.ScheduleValidator = function(conflictsObjects, sectionObjects){
 	// computes a quick conflict check. Faster to check if there are any
 	// conflicts, but is not accurate. If conflicts exist, the slower
 	// check must be used.
-	// 
+	//
 	// This can also be used to guess what course conflicts with what.
-	// 
+	//
 	// returns err, conflict={selectionSectionObj, sectionObj}
 	// where either the error or conflict is returned as not-null
 	this.conflictsWith = function(courseIdsToSectionIds, sectionIdString, callback){
@@ -42,7 +42,7 @@ AppWorker.ScheduleValidator = function(conflictsObjects, sectionObjects){
 
 	// slower, but accurate (checks for cyclic conflicts). It is unable
 	// to identify which courses conflict with each other.
-	// 
+	//
 	// returns true/false if the given selection of {courseIds: [sectionIds]}
 	// is a valid schedule
 	this.isValid = function(courseIdsToSectionIds, blockedTimes, callback){

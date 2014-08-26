@@ -1,9 +1,6 @@
 from itertools import product
 
-from django.utils.importlib import import_module
 from django.db import models
-from django.db.models import F
-from django.core.exceptions import ValidationError
 from django.conf import settings
 
 from courses import managers
@@ -14,8 +11,10 @@ DEBUG = getattr(settings, 'DEBUG', False)
 WARN_EXTRA_QUERIES = getattr(settings, 'COURSES_WARN_EXTRA_QUERIES', DEBUG)
 
 
-__all__ = ['Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting',
-    'Course', 'OfferedFor', 'SectionPeriod']
+__all__ = [
+    'Department', 'Semester', 'Period', 'Section', 'SectionCrosslisting',
+    'Course', 'OfferedFor', 'SectionPeriod'
+]
 
 
 def has_model(select_related, model):
@@ -36,7 +35,8 @@ class Semester(models.Model):
     """
     year = models.IntegerField(help_text="The year the semester takes place")
     month = models.IntegerField(help_text="The starting month of the semester")
-    name = models.CharField(max_length=100, help_text="An human-readable display of the semester")
+    name = models.CharField(max_length=100,
+        help_text="An human-readable display of the semester")
     ref = models.CharField(max_length=150, help_text="Internally used by bridge module to refer to a semester.", unique=True)
     date_updated = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -146,9 +146,9 @@ class Period(models.Model):
             return True
         days = self.days_of_week_flag & period.days_of_week_flag
         return days and (
-            (self.start <= period.start <= self.end) or \
-            (self.start <= period.end <= self.end) or \
-            (period.start <= self.start <= period.end) or \
+            (self.start <= period.start <= self.end) or
+            (self.start <= period.end <= self.end) or
+            (period.start <= self.start <= period.end) or
             (period.start <= self.end <= period.end)
         )
 

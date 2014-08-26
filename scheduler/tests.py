@@ -9,7 +9,6 @@ from courses import models
 from courses.tests.factories import (SemesterFactory, CourseFactory, PeriodFactory,
         SectionFactory, SectionPeriodFactory, OfferedForFactory)
 from models import cache_conflicts
-from views import SELECTED_COURSES_SESSION_KEY
 
 
 # TODO: convert this (and the tests that use this) to use factories
