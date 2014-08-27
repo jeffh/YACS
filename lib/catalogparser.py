@@ -41,15 +41,17 @@ def get_course_detail(course_page):
     soup = BeautifulSoup(course_page, convertEntities=BeautifulSoup.HTML_ENTITIES)
     title_text = soup.findAll('h1 h2 h3 h4 h5 h6'.split(' '))[0].text
     title = re.search('([\w+\s]+) (\d+\w+) \- (.*)', title_text)
-    course = {
-        'department': title.group(1),
-        'num': title.group(2),
-        'title': title.group(3),
-        'description': get_course_description(soup.findAll('hr')[0].nextSibling),
-        'prereqs': get_course_reqs(soup)
-    }
-    #print course['title']
-    #print course['description']
+    if title:
+        course = {
+            'department': title.group(1),
+            'num': title.group(2),
+            'title': title.group(3),
+            'description': get_course_description(soup.findAll('hr')[0].nextSibling),
+            'prereqs': get_course_reqs(soup)
+        }
+    else:
+        print "Failed to parse course:", title_text
+        course = None
     return course
 
 
@@ -97,7 +99,8 @@ def parse_catalog(a=False):
             for c in range(0, len(course_id)):
                 detail_url = url + "/preview_course.php?catoid=" + ids[i] + "&coid=" + course_id[c]
                 temp = get_course_detail(load_page(detail_url))
-                key = temp['department'] + temp['num']
-                if (key not in courses or temp['description'].strip() != '') and re.search('Topics in', temp['title']) == None:
-                    courses[key] = temp
+                if temp:
+                    key = temp['department'] + temp['num']
+                    if (key not in courses or temp['description'].strip() != '') and re.search('Topics in', temp['title']) == None:
+                        courses[key] = temp
     return courses
