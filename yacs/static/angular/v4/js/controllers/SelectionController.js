@@ -39,13 +39,11 @@ app.controller('SelectionCtrl', ['$window', '$scope', '$q', '$location', 'Select
 				id: selection.id,
 				n: $scope.scheduleIndex
 			}).replace();
-			/* iCal link broken
 			if ($scope.schedule && $scope.schedule.crns.length){
 				$scope.ical_url = ICAL_URL + '?crn=' + $scope.schedule.crns.join('&crn=');
 			} else {
 				$scope.ical_url = null;
 			}
-			*/
 			return schedules;
 		}
 
