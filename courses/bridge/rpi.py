@@ -464,7 +464,6 @@ def export_schedule(crns):
     calendar.add('version', '2.0')
     sections = Section.objects.filter(crn__in=crns).prefetch_related('periods', 'section_times', 'section_times__period', 'course', 'semester')
     semester_start = datetime.datetime(sections[0].semester.year, sections[0].semester.month, 1, 0, tzinfo=pytz.timezone("America/New_York")).astimezone(pytz.utc)
-    found = False
     current = datetime.datetime.utcnow()
     semester_end = semester_start + datetime.timedelta(150)
     start_date = str(semester_start.date()).replace('-', '')
@@ -474,23 +473,33 @@ def export_schedule(crns):
     days_off = []
     break_start = None
     break_end = None
+    logger.debug('== Events ==')
     for e in events:
+        is_after_start = e.start.date() > semester_start.date()
+        logger.debug(' %s %s' % (e.start.date(), e.name))
         if re.search(str(sections[0].semester.name.split(' ')[0]) + ' ' + str(sections[0].semester.year), e.name) is not None:
             semester_start = e.start
-            found = True
-        if re.search(".*(no classes).*", e.name.lower()) is not None and found:
+            logger.debug(' -> Semester Start')
+        if re.search(".*(no classes).*", e.name.lower()) is not None and is_after_start:
             days_off.append([e.start.date()])
-        if re.search(".*(spring break)|(thanksgiving).*", e.name.lower()) is not None and found:
+            logger.debug(' -> Day Off')
+        if re.search(".*(spring break)|(thanksgiving).*", e.name.lower()) is not None and is_after_start:
             break_start = e.start
+            logger.debug(' -> Range of days off')
         if re.search(".*(classes resume).*", e.name.lower()) is not None and break_start is not None:
             break_end = e.start
-        if re.search("(.*)study-review days", str(e.name).lower()) is not None and found:
+            logger.debug(' -> Range of days end')
+        if re.search("(.*)study-review days", str(e.name).lower()) is not None and is_after_start:
             semester_end = e.start
+            logger.debug(' -> Semester End')
             break
     if break_start is not None and break_end is not None:
         length = break_end - break_start
         for i in range(length.days):
             days_off.append([(break_start + datetime.timedelta(i)).date()])
+    logger.debug('Semester start: %s' % semester_start)
+    logger.debug('Semester end: %s' % semester_end)
+    logger.debug('days off: %s' % days_off)
     for s in sections:
         for p in s.periods.all():
             event = Event()
@@ -511,5 +520,4 @@ def export_schedule(crns):
                 until=datetime.datetime(semester_end.year, semester_end.month, semester_end.day, p.end.hour, p.end.minute, tzinfo=pytz.timezone("America/New_York")).astimezone(pytz.utc)))
             event.add('exdate', days_off)
             calendar.add_component(event)
-            print event
     return calendar.to_ical().replace("EXDATE", "EXDATE;VALUE=DATE")
