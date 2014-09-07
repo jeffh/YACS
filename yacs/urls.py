@@ -9,11 +9,11 @@ admin.autodiscover()
 from courses.sitemaps import sitemaps
 from courses.views.newviews import redirect_to_latest_semester
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^robots\.txt$', 'courses.views.newviews.robots_txt', name='robots'),
     url(r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}, name='sitemap'),
 
-    #url(r'^$', redirect_to_latest_semester, name='index'),
     url(r'^$', TemplateView.as_view(template_name='angular/index.html'), name='index'),
 
     url(r'^semesters/', include('courses.urls')),

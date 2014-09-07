@@ -6,8 +6,10 @@ from django.core.urlresolvers import reverse
 from shortcuts import ShortcutTestCase
 
 from courses import models
-from courses.tests.factories import (SemesterFactory, CourseFactory, PeriodFactory,
-        SectionFactory, SectionPeriodFactory, OfferedForFactory)
+from courses.tests.factories import (
+    SemesterFactory, CourseFactory, PeriodFactory,
+    SectionFactory, SectionPeriodFactory, OfferedForFactory
+)
 from scheduler.models import cache_conflicts
 
 
@@ -113,9 +115,6 @@ class ScheduleViewsSmokeTests(ShortcutTestCase):
                 dict(period=self.periods[5], semester=self.semester),
             ]
         )
-        # can't figure out where the other semester objects get created
-        # its do to get(models.Section, ...) but not sure where
-        #models.Semester.objects.filter(id__gt=self.semester.id).delete()
         cache_conflicts(semester=self.semester)
 
     def test_get_schedules(self):

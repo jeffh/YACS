@@ -119,14 +119,11 @@ PASSWORD_HASHERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.contrib.sessions.middleware.SessionMiddleware',
     'api.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    #'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'django.contrib.messages.middleware.MessageMiddleware',
     'api.middleware.AuthenticationMiddleware',
     'api.middleware.MessageMiddleware',
-    #'api.middleware.DebugToolbarMiddleware',
+    # 'api.middleware.DebugToolbarMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -263,9 +260,6 @@ DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
 
-# ==== Django-Robots App ====
-#s.ROBOTS_CACHE_TIMEOUT = 60*60*24 # 24-hour cache of robots file
-
 # ==== api ====
 # which urls require no sessions. This saves us at least one DB query.
 # this is a collection of regular expressions
@@ -278,7 +272,6 @@ STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
 PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
-#PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.closure.ClosureCompressor'
 
 PIPELINE_YUI_BINARY = 'lib/yuicompressor'
 PIPELINE_YUI_CSS_ARGUMENTS = '--type css'

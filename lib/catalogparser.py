@@ -101,6 +101,6 @@ def parse_catalog(a=False):
                 temp = get_course_detail(load_page(detail_url))
                 if temp:
                     key = temp['department'] + temp['num']
-                    if (key not in courses or temp['description'].strip() != '') and re.search('Topics in', temp['title']) == None:
+                    if (key not in courses or temp['description'].strip() != '') and re.search('Topics in', temp['title']) is None:
                         courses[key] = temp
     return courses

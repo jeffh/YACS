@@ -7,8 +7,10 @@ from django.shortcuts import redirect, get_object_or_404
 from django.conf import settings
 
 from courses import models
-from courses.views.mixins import (SemesterBasedMixin, AjaxJsonResponseMixin,
-        PartialResponseMixin, SearchMixin, SELECTED_COURSES_SESSION_KEY)
+from courses.views.mixins import (
+    SemesterBasedMixin, AjaxJsonResponseMixin,
+    PartialResponseMixin, SearchMixin, SELECTED_COURSES_SESSION_KEY
+)
 
 
 class SemesterListView(ListView):
@@ -70,7 +72,7 @@ class SearchCoursesListView(PartialResponseMixin, SearchMixin, SemesterBasedMixi
             self.department = models.Department.objects.get(code=depart)
 
         courses = self.optionally_by_semester(
-                models.Course.objects.all().select_related())
+            models.Course.objects.all().select_related())
         courses = courses.search(query, self.department)
         if not query:
             courses = courses.order_by('department__code', 'number')
@@ -85,7 +87,6 @@ class SearchCoursesListView(PartialResponseMixin, SearchMixin, SemesterBasedMixi
         data['query_department'] = self.request.GET.get('d', 'all')
         data['department'] = self.department
         data['search_results'] = True
-        #data['sections'] = self.get_sections(data['courses'], *self.get_year_and_month())
         return data
 
 
@@ -115,7 +116,6 @@ class CourseByDeptListView(SearchMixin, SemesterBasedMixin, ListView):
         data = super(CourseByDeptListView, self).get_context_data(**kwargs)
         data['department'] = self.department
         data['query'] = self.request.GET.get('q', '')
-        #data['sections'] = self.get_sections(data['courses'], *self.get_year_and_month())
         return data
 
 
@@ -137,13 +137,11 @@ class CourseDetailView(SemesterBasedMixin, DetailView):
         return qs
 
     def get_object(self):
-        # attach additional properties:
-        #self.apply_sections(obj)
         year, month = self.get_year_and_month()
 
         return self.get_queryset() \
-                .select_related('department') \
-                .full_select(year, month, amount=1)[0]
+            .select_related('department') \
+            .full_select(year, month, amount=1)[0]
 
 
 class RedirectToLatestSemesterRedirectView(SemesterBasedMixin, RedirectView):

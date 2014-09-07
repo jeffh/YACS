@@ -48,7 +48,7 @@ def has_deferred_fields(queryset):
 
 
 def requires_manually_related_scan(queryset):
-    return queryset.query.select_related == True
+    return queryset.query.select_related is True
 
 
 def get_select_related_fields(queryset):
@@ -155,7 +155,9 @@ class Encoder(object):
             if len(value) and hasattr(value[0], '_meta'):
                 obj = list(map(self.encode_model, value))
                 return self._result_or_obj(
-                        self._invoke('encoded_list', value, obj), obj)
+                    self._invoke('encoded_list', value, obj),
+                    obj
+                )
         elif isinstance(value, dict):
             for key in value.keys():
                 value[unicode(key)] = self.encode(value[key])

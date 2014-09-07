@@ -80,18 +80,6 @@ class Selection(models.Model):
 
 # Django bug? Using a proxy causes tests to fail (looking for database NAME).
 SectionProxy = courses.Section
-#class SectionProxy(courses.Section):
-#    class Meta:
-#        proxy = True
-#
-#    objects = courses_managers.QuerySetManager(courses_managers.SectionQuerySet)
-#
-#    def __hash__(self):
-#        return hash(self.id)
-#
-#    def conflicts_with(self, section):
-#        # self.conflicts has to be set by the view....
-#        return section.id in self.conflicts
 
 
 class SectionConflict(models.Model):
@@ -133,11 +121,10 @@ def cache_conflicts(semester_year=None, semester_month=None, semester=None, sql=
 
     with transaction.atomic():
         # we don't want to increment IDs too quickly (ev 25 minutes)
-        #SectionConflict.objects.filter(semester=semester).delete()
         Syncer = Synchronizer(SectionConflict, SectionConflict.objects.values_list('id', flat=True))
 
         sections = courses.Section.objects.select_related('course', 'semester') \
-                .by_semester(semester).prefetch_periods()
+            .by_semester(semester).prefetch_periods()
         section_courses = dict_by_attr(sections, 'course')
 
         mapping = {}

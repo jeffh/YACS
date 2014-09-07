@@ -30,7 +30,10 @@ mimetypes.add_type('application/x-binary-plist', '.biplist')
 
 
 class DataFormatter(object):
-    def __init__(self, encoder=None, context_processor=None, default_content_type='application/json'):
+    def __init__(self,
+                 encoder=None,
+                 context_processor=None,
+                 default_content_type='application/json'):
         self.encoder = encoder or encoders.default_encoder
         self.context_processor = context_processor
         self.default_content_type = default_content_type
@@ -289,8 +292,8 @@ def schedules(request, id=None, version=None):
             c.id for c in selected_courses.keys())),
         'section_ids': list(set(
             s.id
-                for sections in selected_courses.values()
-                for s in sections
+            for sections in selected_courses.values()
+            for s in sections
         )),
         'days_of_the_week': list(DAYS),
         'id': selection.id,
@@ -368,7 +371,6 @@ class APIMixin(views.AjaxJsonResponseMixin):
             'application/xml': self.convert_context_to_xml,
             'text/xml': self.convert_context_to_xml,
             'application/x-plist': self.convert_context_to_plist,
-            #'application/x-binary-plist': self.convert_context_to_binary_plist,
         }[content_type](data)
 
     def render_to_response(self, context):

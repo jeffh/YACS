@@ -94,12 +94,10 @@ class SectionConflictManager(Manager):
 
     def among_sections(self, section_ids, select_related=('section1', 'section2')):
         "Finds conflicts among the given sections."
-        #qs = self.filter(section1__id__in=section_ids, section2__id__in=section_ids)
         return self.among(id__in=section_ids).select_related(*select_related)
 
     def among_crns(self, crns, select_related=('section1', 'section2')):
         "Finds conflicts among the given crns."
-        #qs = self.filter(section1__crn__in=crns, section2__crn__in=crns)
         return self.among(crn__in=crns).select_related(*select_related)
 
     def as_dictionary(self, section_ids=None, queryset=None):

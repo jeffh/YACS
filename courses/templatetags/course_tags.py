@@ -108,8 +108,6 @@ def period_type_buckets(periods):
         dows = tuple(period.days_of_week)
         slots[dows[0]] = slots.get(dows[0], {})
         slots[dows[0]][dows] = slots[dows[0]].get(dows, []) + [period]
-        #for dow in period.days_of_week:
-        #   slots[dow] = slots.get(dow, []) + [period]
     for slot in slots.values():
         for periods in slot.values():
             periods.sort(key=lambda p: p.start)

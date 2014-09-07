@@ -60,7 +60,7 @@ def upload_monit_conf():
         env=remote_vars('YACS_DATABASE_URL', 'YACS_SECRET_KEY'),
     )
     upload_template('yacs.monit', '/etc/monit/conf.d/yacs.conf',
-            context=context, use_sudo=True, backup=False)
+                    context=context, use_sudo=True, backup=False)
 
 
 def update_crontab():
@@ -77,11 +77,6 @@ def update_crontab():
 
 def managepy(command, prefix_cmd=''):
     sudo('%s %s manage.py %s' % (prefix_cmd, PYTHON, command), user=USER)
-
-
-def validate_production_json():
-    with open('yacs/settings/production.json', 'r') as handle:
-        json.loads(handle.read())
 
 
 @task
@@ -102,7 +97,6 @@ def deploy(upgrade=1):
             - webserver config to proxypass to gunicorn (nginx)
         - memcached
     """
-    #validate_production_json()
     upload_monit_conf()
     clean()
     with cd('/www/yacs/'):
@@ -190,19 +184,13 @@ def wait_for_url(url, timeout=30):
 
 
 @task
-def docker():
-    path = os.path.abspath('.')
-    local('git archive --format tar | ./buildstep yacs' % path)
-
-
-@task
 def jasmine(port=6856):
     local('jasmine-ci')
 
 
 @task
 def pep8():
-    local('pep8 . --exclude=migrations --exclude=south_migrations --statistics --count --ignore=E501')
+    local('pep8 . --exclude=migrations,south_migrations,.ropeproject --statistics --count --ignore=E501')
 
 
 @task

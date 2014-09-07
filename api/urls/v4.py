@@ -15,7 +15,8 @@ meta = {
 
 ext_re = r'\.(?P<ext>[a-z]+)$'
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^/$', views.raw_data, meta, name='metadata'),
     url(r'^' + ext_re, views.raw_data, meta, name='metadata'),
 

@@ -10,15 +10,23 @@ from mock import Mock, patch
 from django.test import TestCase
 
 from courses import models
-from courses.tests.factories import (SemesterFactory, SemesterDepartmentFactory,
-        OfferedForFactory, CourseFactory, SectionFactory, DepartmentFactory,
-        PeriodFactory, SectionPeriodFactory)
+from courses.tests.factories import (
+    SemesterFactory, SemesterDepartmentFactory,
+    OfferedForFactory, CourseFactory, SectionFactory, DepartmentFactory,
+    PeriodFactory, SectionPeriodFactory
+)
 
 
 class SemesterTest(TestCase):
     def setUp(self):
         self.now = datetime.datetime.now().replace(microsecond=0)
-        self.sem = SemesterFactory.create(id=1, year=2011, month=2, name='foo', date_updated=self.now)
+        self.sem = SemesterFactory.create(
+            id=1,
+            year=2011,
+            month=2,
+            name='foo',
+            date_updated=self.now
+        )
 
     def test_to_json(self):
         expected = {
@@ -228,7 +236,14 @@ class SectionTest(TestCase):
 class CourseTest(TestCase):
     def test_to_json(self):
         course = CourseFactory.create(
-        pk=1, name='foo', number=5050, min_credits=4, max_credits=5, description='foo', prereqs='foo', is_comm_intense=True
+            pk=1,
+            name='foo',
+            number=5050,
+            min_credits=4,
+            max_credits=5,
+            description='foo',
+            prereqs='foo',
+            is_comm_intense=True
         )
         expected = {
             'id': 1,

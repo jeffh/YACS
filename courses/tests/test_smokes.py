@@ -10,9 +10,11 @@ from shortcuts import ShortcutTestCase
 
 from courses import models
 from courses.views import SELECTED_COURSES_SESSION_KEY
-from courses.tests.factories import (SemesterFactory, SemesterDepartmentFactory,
-        OfferedForFactory, CourseFactory, SectionFactory, DepartmentFactory,
-        PeriodFactory, SectionPeriodFactory)
+from courses.tests.factories import (
+    SemesterFactory, SemesterDepartmentFactory,
+    OfferedForFactory, CourseFactory, SectionFactory, DepartmentFactory,
+    PeriodFactory, SectionPeriodFactory
+)
 
 
 class BasicSchema(ShortcutTestCase):

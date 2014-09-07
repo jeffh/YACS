@@ -1,7 +1,4 @@
-from yacs.settings.base import *
-import os
-import json
-import dj_database_url
+from yacs.settings.base import * import os
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -16,12 +13,12 @@ try:
     os.environ['MEMCACHE_USERNAME'] = os.environ.get('MEMCACHIER_USERNAME')
     os.environ['MEMCACHE_PASSWORD'] = os.environ.get('MEMCACHIER_PASSWORD')
     CACHES = {
-      'default': {
-        'BACKEND': 'django_pylibmc.memcached.PyLibMCCache',
-        'TIMEOUT': 500,
-        'BINARY': True,
-        'OPTIONS': {'tcp_nodelay': True}
-      }
+        'default': {
+            'BACKEND': 'django_pylibmc.memcached.PyLibMCCache',
+            'TIMEOUT': 500,
+            'BINARY': True,
+            'OPTIONS': {'tcp_nodelay': True}
+        }
     }
 except:
     CACHES = {
@@ -98,10 +95,10 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.redirects.RedirectsPanel',
 )
 
-#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#FROM_EMAIL = os.environ.get('YACS_EMAIL_FROM', 'robot@yacs.me')
-#EMAIL_USE_TLS = os.environ.get('YACS_EMAIL_USE_TLS', 'yes').lower() in ['y', 'yes', 'true', 't', 'on']
-#EMAIL_HOST = os.environ['YACS_EMAIL_HOST']
-#EMAIL_USER = os.environ['YACS_EMAIL_USER']
-#EMAIL_PASS = os.environ['YACS_EMAIL_PASS']
-#EMAIL_PORT = int(os.environ.get('YACS_EMAIL_PORT', 587))
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# FROM_EMAIL = os.environ.get('YACS_EMAIL_FROM', 'robot@yacs.me')
+# EMAIL_USE_TLS = os.environ.get('YACS_EMAIL_USE_TLS', 'yes').lower() in ['y', 'yes', 'true', 't', 'on']
+# EMAIL_HOST = os.environ['YACS_EMAIL_HOST']
+# EMAIL_USER = os.environ['YACS_EMAIL_USER']
+# EMAIL_PASS = os.environ['YACS_EMAIL_PASS']
+# EMAIL_PORT = int(os.environ.get('YACS_EMAIL_PORT', 587))

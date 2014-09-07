@@ -4,7 +4,8 @@ from courses import views
 from courses.views import newviews as nviews
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^$', nviews.semester_list, name='semesters'),
     url(r'^(?P<year>[1-9]\d*)/$', nviews.semester_list, name='semesters'),
 
@@ -18,8 +19,8 @@ urlpatterns = patterns('',
     # pretty much a static page..
     url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/selected/$', nviews.selected_courses_view, name='selected-courses'),
     # actions
-    #url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/select/$', views.SelectCoursesView.as_view(), name='select-courses'),
-    #url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/deselect/$', views.DeselectCoursesView.as_view(), name='deselect-courses'),
+    # url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/select/$', views.SelectCoursesView.as_view(), name='select-courses'),
+    # url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/deselect/$', views.DeselectCoursesView.as_view(), name='deselect-courses'),
     # other possible urls to have:
     # /semesters/ => view all past semesters
     # /<year>/ => view semesters for a given year

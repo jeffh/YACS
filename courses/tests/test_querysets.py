@@ -1,9 +1,11 @@
 from django.test import TestCase
 
 from courses import models
-from courses.tests.factories import (SemesterFactory, SemesterDepartmentFactory,
-        OfferedForFactory, CourseFactory, SectionFactory, DepartmentFactory,
-        PeriodFactory, SectionPeriodFactory)
+from courses.tests.factories import (
+    SemesterFactory, SemesterDepartmentFactory,
+    OfferedForFactory, CourseFactory, SectionFactory, DepartmentFactory,
+    PeriodFactory, SectionPeriodFactory
+)
 
 
 class SemesterBasedQuerySetTest(TestCase):

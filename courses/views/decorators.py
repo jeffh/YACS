@@ -93,7 +93,8 @@ class Renderer(object):
     def create_response(self, request, settings):
         context = self.process_context(settings['context'], settings['encoder'])
         full_template_path = settings['template_prefix'] + settings['template_name']
-        return render_to_response(full_template_path,
-                context,
-                context_instance=RequestContext(request),
-                content_type=settings['mimetype'])
+        return render_to_response(
+            full_template_path,
+            context,
+            context_instance=RequestContext(request),
+            content_type=settings['mimetype'])

@@ -1,0 +1,32 @@
+# Foundation
+git+https://github.com/nvie/pip-tools.git@future
+django
+BeautifulSoup
+psycopg2
+pylibmc
+
+# Testing
+pytest
+jasmine
+
+# Third-party
+dj-static
+dj-database-url
+django-extensions
+django-debug-toolbar
+django-pipeline
+django-taggit
+django-colorful
+django-pylibmc-sasl
+factory-boy
+gunicorn
+icalendar
+fabric
+pep8
+pytz
+PyPDF2
+pyconstraints
+python-dateutil
+
+# RPI-specific
+RPICourses

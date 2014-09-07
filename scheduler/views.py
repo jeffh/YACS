@@ -335,7 +335,7 @@ class ComputeSchedules(ConflictMixin, ExceptionResponseMixin, TemplateView):
                     schedules,
                     periods),
                 'selection_slug': selection.id,
-                }
+            }
         else:
             context = {
                 'schedules': [],

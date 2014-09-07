@@ -137,8 +137,6 @@ class Period(models.Model):
         (SUNDAY, 'Sunday'),
     )
 
-    #objects = managers.QuerySetManager()
-
     days_of_week_flag = models.IntegerField()
 
     class Meta:
@@ -152,7 +150,6 @@ class Period(models.Model):
             'start_time': self.start,
             'end_time': self.end,
             'days_of_the_week': self.days_of_week,
-            #'is_to_be_announced': self.is_to_be_announced,
         }
 
     @property
@@ -211,8 +208,6 @@ class SectionCrosslisting(models.Model):
     semester = models.ForeignKey(Semester, related_name='section_crosslistings')
     ref = models.CharField(max_length=200, unique=True, help_text='Internal unique identification used by bridge module.')
 
-    #objects = managers.QuerySetManager()
-
     class Meta:
         verbose_name = 'Section Crosslisting'
         verbose_name_plural = 'Section Crosslistings'
@@ -241,9 +236,6 @@ class Section(models.Model):
 
     class Meta:
         ordering = ['number']
-
-    #class Meta:
-    #    unique_together = ('number', 'course')
 
     def __unicode__(self):
         return "%s (%s) Seats: %d / %d" % (self.number, self.crn, self.seats_taken, self.seats_total)
@@ -451,12 +443,6 @@ class Course(models.Model):
     def available_sections(self):
         return self.sections.by_availability()
 
-    #def sections_by_semester(self, semester):
-    #    return self.sections.filter(semesters__contains=semester)
-
-    #def available_sections_by_semester(self, semester):
-    #    return self.available_sections.filter(semesters__contains=semester)
-
     # TODO: These few properties should be moved into a manager for query optimization
     @property
     def section_periods(self):
@@ -464,7 +450,6 @@ class Course(models.Model):
             return SectionPeriod.objects.by_course(course=self)
         return self.all_section_periods
 
-    # TODO: RPI specific... remove
     @property
     def notes(self):
         def _process(notes):
@@ -560,7 +545,6 @@ class SectionPeriod(models.Model):
             'instructor': self.instructor,
             'location': self.location,
             'kind': self.kind,
-            #'semester_id': self.semester.id,
         }
         json.update(self.period.toJSON())
         return json

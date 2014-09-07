@@ -17,8 +17,9 @@ class FExpression(object):
     should use the regular filter methods django provides.
     '''
     def __init__(self, left_expression, lookup_type, right_expression):
-        self.left_expression, self.lookup_type, self.right_expression = \
-                left_expression, lookup_type, right_expression
+        self.left_expression = left_expression
+        self.lookup_type = lookup_type
+        self.right_expression = right_expression
 
     def as_sql(self, qn, connection):
         cast_sql = connection.ops.lookup_cast(self.lookup_type)
@@ -45,11 +46,13 @@ class FNode(tree.Node):
     This allows FNode to work without using complex_filter
     '''
     def __init__(self, left_expression, lookup_type, right_expression):
-        if not lookup_type in ('exact', 'gt', 'gte', 'lt', 'lte'):
-            raise ValueError('Invalid operator, operator %r is not supported.' % lookup_type)
+        if lookup_type not in ('exact', 'gt', 'gte', 'lt', 'lte'):
+            raise ValueError(
+                'Invalid operator, operator %r is not supported.' % lookup_type)
         super(FNode, self).__init__()
-        self.left_expression, self.lookup_type, self.right_expression = \
-                left_expression, lookup_type, right_expression
+        self.left_expression = left_expression
+        self.lookup_type = lookup_type
+        self.right_expression = right_expression
 
     def __deepcopy__(self, memodict):
         obj = super(FNode, self).__deepcopy__(memodict)

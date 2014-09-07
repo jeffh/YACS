@@ -20,8 +20,6 @@ def robots_txt(request):
         'mimetype': 'text/plain',
     }
 
-################ VIEWS loaded by the a normal browser ###########################
-
 
 class AjaxView(TemplateView):
     # template_name needs to be specified

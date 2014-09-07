@@ -30,8 +30,8 @@ class WrapRequestResponse(object):
         if is_excluded(request.path_info):
             return response
         return getattr(super(WrapRequestResponse, self),
-                'process_response',
-                lambda req, rep: response)(request, response)
+                       'process_response',
+                       lambda req, rep: response)(request, response)
 
 
 class SessionMiddleware(WrapRequestResponse, SessionMW):

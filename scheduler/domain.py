@@ -31,10 +31,10 @@ class ConflictCache(object):
 
 def has_schedule(selected_courses, section_constraint=None):
     schedules = _compute_schedules(
-            selected_courses,
-            free_sections_only=False,
-            generator=True,
-            section_constraint=section_constraint)
+        selected_courses,
+        free_sections_only=False,
+        generator=True,
+        section_constraint=section_constraint)
     for schedule in schedules:
         return True
     return False
@@ -45,9 +45,10 @@ def compute_schedules(selected_courses, section_constraint=None):
 
     Returns a list of dictionary of course id to crns.
     """
-    schedules = _compute_schedules(selected_courses,
-            free_sections_only=False,)
-            #section_constraint=section_constraint)
+    schedules = _compute_schedules(
+        selected_courses,
+        free_sections_only=False
+    )
     results = []
     for schedule in schedules:
         s = {}

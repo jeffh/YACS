@@ -3,7 +3,8 @@ from django.conf.urls import patterns, include, url
 import views
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^schedules/ics/$', views.icalendar, name='ics'),
     # selecting courses
     url(r'^(?P<year>[1-9]\d*)/(?P<month>[1-9]\d*)/selected/(?P<id>\d+)/$', views.SelectionSelectedCoursesListView.as_view(), name='selected-courses'),
