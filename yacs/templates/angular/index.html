@@ -18,7 +18,7 @@
 {% compressed_css 'print' %}
 {% compressed_js 'angular' %}
 
-{% include 'analytics.html' %}
+{% include 'analytics.html' with record_pageview=0 %}
 
 <script>
 app.constant('STATIC_URL', "{{ STATIC_URL }}");

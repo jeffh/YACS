@@ -31,7 +31,7 @@ It would be bad if a 500 error page threw a 500 error when trying to render...
 {% compressed_css 'angular' %}
 {% compressed_css 'print' %}
 
-{% include 'analytics.html' %}
+{% include 'analytics.html' with record_pageview=1 %}
 
 <!-- http://t.co/dKP3o1e -->
 <meta name="HandheldFriendly" content="True">
