@@ -36,6 +36,8 @@ DATABASES = {
                                       'sqlite:////' + os.path.abspath('yacs.db'))))
 }
 
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -158,11 +160,12 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     # third-party apps
-    'south',
     'django_extensions',
     'debug_toolbar',
     'pipeline',
     'gunicorn',
+    'taggit',
+    'colorful',
     # local apps
     'courses',
     'scheduler',
@@ -172,6 +175,10 @@ INSTALLED_APPS = (
 
 FROM_EMAIL = "no-reply@yacs.me"
 EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+
+SOUTH_MIGRATION_MODULES = {
+    'taggit': 'taggit.south_migrations',
+}
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

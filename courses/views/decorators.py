@@ -96,4 +96,4 @@ class Renderer(object):
         return render_to_response(full_template_path,
                 context,
                 context_instance=RequestContext(request),
-                mimetype=settings['mimetype'])
+                content_type=settings['mimetype'])

@@ -3,6 +3,10 @@ from itertools import product
 from django.db import models
 from django.conf import settings
 
+from taggit.managers import TaggableManager
+from taggit.models import GenericTaggedItemBase, TagBase
+from colorful.fields import RGBColorField
+
 from courses import managers
 from courses.utils import options, capitalized, sorted_daysofweek
 
@@ -30,13 +34,28 @@ def notify_if_missing_prefetch(model_instance, field):
         print "WARN: DB query for %r. You should probably use prefetch_related." % field
 
 
+class Tag(TagBase):
+    color = RGBColorField(blank=True)
+
+    class Meta:
+        verbose_name = 'Tag'
+        verbose_name_plural = 'Tags'
+
+
+class Tagged(GenericTaggedItemBase):
+    tag = models.ForeignKey(Tag, related_name="%(app_label)s_%(class)s_items")
+
+
+def tagged_manager():
+    return TaggableManager(through=Tagged)
+
+
 class Semester(models.Model):
     """Represents the semester / quarter for a college. Courses may not be offered every semester.
     """
     year = models.IntegerField(help_text="The year the semester takes place")
     month = models.IntegerField(help_text="The starting month of the semester")
-    name = models.CharField(max_length=100,
-        help_text="An human-readable display of the semester")
+    name = models.CharField(max_length=100, help_text="An human-readable display of the semester")
     ref = models.CharField(max_length=150, help_text="Internally used by bridge module to refer to a semester.", unique=True)
     date_updated = models.DateTimeField(auto_now=True)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -216,7 +235,6 @@ class Section(models.Model):
 
     seats_taken = models.IntegerField('Seats Taken')
     seats_total = models.IntegerField('Seats Total')
-    # TODO: RPI Specific; provide alternative
     notes = models.TextField(blank=True)
 
     objects = managers.QuerySetManager(managers.SectionQuerySet)
@@ -311,8 +329,10 @@ class Course(models.Model):
 
     grade_type = models.CharField(max_length=150, blank=True, default='')
     prereqs = models.TextField(default="")
-    is_comm_intense = models.BooleanField('Communication Intensive')
+    is_comm_intense = models.BooleanField('Communication Intensive', default=False)
+
     objects = managers.QuerySetManager(managers.CourseQuerySet)
+    tags = tagged_manager()
 
     class Meta:
         ordering = ['department__code', 'number']

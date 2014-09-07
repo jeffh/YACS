@@ -8,7 +8,7 @@ from shortcuts import ShortcutTestCase
 from courses import models
 from courses.tests.factories import (SemesterFactory, CourseFactory, PeriodFactory,
         SectionFactory, SectionPeriodFactory, OfferedForFactory)
-from models import cache_conflicts
+from scheduler.models import cache_conflicts
 
 
 # TODO: convert this (and the tests that use this) to use factories

@@ -23,7 +23,7 @@ class QuerySetManager(Manager):
         # this is technically a private API, we need to be certain we're overriding.
         assert hasattr(super(QuerySetManager, self), '_copy_to_model'), "Copy manager method no longer exists :("
 
-    def get_query_set(self):
+    def get_queryset(self):
         return self.queryset_class(self.model, using=self.db)
 
     def _copy_to_model(self, model):
@@ -32,7 +32,11 @@ class QuerySetManager(Manager):
         mgr.queryset_class = self.queryset_class
 
     def __getattr__(self, attr):
-        return getattr(self.get_query_set(), attr)
+        if attr == 'queryset_class':
+            raise AttributeError("%r object has no attribute %r", self, attr)
+        if attr.startswith('_'):
+            return super(QuerySetManager, self).__getattr__(attr)
+        return getattr(self.get_queryset(), attr)
 
 
 class OptionalFilterMixin(object):
@@ -55,8 +59,8 @@ class SerializableQuerySet(OptionalFilterMixin, QuerySet):
 
 
 class PublicSemestersQuerySetManager(QuerySetManager):
-    def get_query_set(self):
-        return super(PublicSemestersQuerySetManager, self).get_query_set().filter(visible=True)
+    def get_queryset(self):
+        return super(PublicSemestersQuerySetManager, self).get_queryset().filter(visible=True)
 
 
 class SemesterBasedQuerySet(SerializableQuerySet):

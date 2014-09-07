@@ -190,13 +190,19 @@ def wait_for_url(url, timeout=30):
 
 
 @task
+def docker():
+    path = os.path.abspath('.')
+    local('git archive --format tar | ./buildstep yacs' % path)
+
+
+@task
 def jasmine(port=6856):
     local('jasmine-ci')
 
 
 @task
 def pep8():
-    local('pep8 . --exclude=migrations --statistics --count --ignore=E501')
+    local('pep8 . --exclude=migrations --exclude=south_migrations --statistics --count --ignore=E501')
 
 
 @task

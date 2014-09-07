@@ -459,6 +459,8 @@ def export_schedule(crns):
     weekday_offset = {}
     for i, day in enumerate(DAYS):
         weekday_offset[day] = i
+
+    tzinfo = pytz.timezone("America/New_York")
     calendar = Calendar()
     calendar.add('prodid', '-//YACS Course Schedule//EN')
     calendar.add('version', '2.0')
@@ -481,7 +483,7 @@ def export_schedule(crns):
             semester_start = e.start
             logger.debug(' -> Semester Start')
         if re.search(".*(no classes).*", e.name.lower()) is not None and is_after_start:
-            days_off.append([e.start.date()])
+            days_off.append(e.start.date())
             logger.debug(' -> Day Off')
         if re.search(".*(spring break)|(thanksgiving).*", e.name.lower()) is not None and is_after_start:
             break_start = e.start
@@ -496,7 +498,7 @@ def export_schedule(crns):
     if break_start is not None and break_end is not None:
         length = break_end - break_start
         for i in range(length.days):
-            days_off.append([(break_start + datetime.timedelta(i)).date()])
+            days_off.append((break_start + datetime.timedelta(i)).date())
     logger.debug('Semester start: %s' % semester_start)
     logger.debug('Semester end: %s' % semester_end)
     logger.debug('days off: %s' % days_off)
@@ -508,8 +510,8 @@ def export_schedule(crns):
                 offset = 7 + offset
             begin = semester_start + datetime.timedelta(offset)
             event.add('summary', '%s - %s (%s)' % (s.course.code, s.course.name, s.crn))
-            event.add('dtstart', datetime.datetime(begin.year, begin.month, begin.day, p.start.hour, p.start.minute, tzinfo=pytz.timezone("America/New_York")).astimezone(pytz.utc))
-            event.add('dtend', datetime.datetime(begin.year, begin.month, begin.day, p.end.hour, p.end.minute, tzinfo=pytz.timezone("America/New_York")).astimezone(pytz.utc))
+            event.add('dtstart', datetime.datetime(begin.year, begin.month, begin.day, p.start.hour, p.start.minute, tzinfo=tzinfo))
+            event.add('dtend', datetime.datetime(begin.year, begin.month, begin.day, p.end.hour, p.end.minute, tzinfo=tzinfo))
             days = []
             for d in p.days_of_week:
                 days.append(d[:2])
@@ -517,7 +519,7 @@ def export_schedule(crns):
                 freq='weekly',
                 interval=1,
                 byday=days,
-                until=datetime.datetime(semester_end.year, semester_end.month, semester_end.day, p.end.hour, p.end.minute, tzinfo=pytz.timezone("America/New_York")).astimezone(pytz.utc)))
+                until=datetime.datetime(semester_end.year, semester_end.month, semester_end.day, p.end.hour, p.end.minute, tzinfo=tzinfo)))
             event.add('exdate', days_off)
             calendar.add_component(event)
     return calendar.to_ical().replace("EXDATE", "EXDATE;VALUE=DATE")
