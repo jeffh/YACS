@@ -1,4 +1,5 @@
-from yacs.settings.base import * import os
+from yacs.settings.base import *
+import os
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
