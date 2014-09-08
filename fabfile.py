@@ -16,10 +16,6 @@ APPS = 'api courses courses_viz scheduler'.split(' ')
 USER = 'www-data'
 GROUP = 'www-data'
 
-# we're using postgres!
-# change to whatever you need to use
-ADDITIONAL_PACKAGES = 'psycopg2'
-
 
 PYTHON = '/www/yacs/virtualenv/bin/python'
 PIP = '/www/yacs/virtualenv/bin/pip'
@@ -125,8 +121,7 @@ def deploy(upgrade=1):
         pip_prefix = '--upgrade'
         if not int(upgrade):
             pip_prefix = ''
-        sudo(PIP + ' install %s -r requirements/deployment.txt' % pip_prefix, user=USER)
-        sudo(PIP + ' install %s %s ' % (pip_prefix, ADDITIONAL_PACKAGES), user=USER)
+        sudo(PIP + ' install %s -r requirements.txt' % pip_prefix, user=USER)
 
         envs = remote_vars('YACS_ENV', 'YACS_SECRET_KEY', 'YACS_DATABASE_URL')
         puts('Running migrations...')
