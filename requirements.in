@@ -1,5 +1,5 @@
 # Foundation
-git+https://github.com/nvie/pip-tools.git@future
+#git+git@github.com:pivotal/jasmine-py.git@251bd6b9070a73068c4931ad161f92620d145eb4
 django
 BeautifulSoup
 psycopg2

@@ -124,7 +124,7 @@ describe("Course", function(){
 		});
 
 		it("should compute notes", function(){
-			expect(course.notes)
+			expect(course.notes).toEqual(["Foo", "Bar"]);
 		});
 	});
 });

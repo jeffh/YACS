@@ -222,7 +222,6 @@ describe("SelectionCtrl", function(){
 				});
 			});
 
-			/* TODO: iCal link broken
 			describe("when schedules are resolved with no schedules", function(){
 				beforeEach(inject(function($rootScope){
 					scope.ical_url = 'foo';
@@ -234,7 +233,7 @@ describe("SelectionCtrl", function(){
 					expect(scope.ical_url).toBeFalsy();
 				});
 			});
-			*/
+
 			describe("when schedules are not resolved", function(){
 				it("should not explode when tapping on the arrow keys", function(){
 					scope.scheduleIndex = 1;
