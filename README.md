@@ -27,7 +27,7 @@ Which will download code into a YACS folder where you run this command.
 
 ### Dependencies
 
-YACS is built on top of [Django][] 1.6. Thus, it requires a database driver to run.
+YACS is built on top of [Django][] 1.7. Thus, it requires a database driver to run.
 Install the appropriate driver and its database, or just use the bundled SQLite.
 
 [Django]: https://www.djangoproject.com/ "Django Web Framework"
