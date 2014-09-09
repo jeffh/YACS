@@ -43,7 +43,6 @@ nose==1.3.0
 ordereddict==1.1
 paramiko==1.14.1
 pep8==1.5.7
-pip-tools==1.0
 psycopg2==2.5.4
 py==1.4.24
 pyconstraints==1.0.1
