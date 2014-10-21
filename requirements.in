@@ -6,6 +6,7 @@ pylibmc
 
 # Testing
 pytest
+mock
 jasmine
 
 # Third-party
