@@ -3,6 +3,11 @@ from django.contrib import admin
 from courses.models import *
 
 
+def make_visible(modeladmin, request, queryset):
+    queryset.update(visible=True)
+make_visible.short_description = 'Mark selected %(verbose_name_plural)s to be publicly visible'
+
+
 class SemestersListFilter(admin.SimpleListFilter):
     title = 'Semester'
     parameter_name = 'semesters__id'
@@ -32,6 +37,7 @@ class SemesterAdmin(admin.ModelAdmin):
         ('Advanced options', {'fields': ('ref', 'visible')}),
     )
     ordering = ('-year', '-month')
+    actions = [make_visible]
 
 
 class CourseAdmin(admin.ModelAdmin):
