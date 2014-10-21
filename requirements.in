@@ -8,6 +8,7 @@ pylibmc
 pytest
 mock
 jasmine
+selenium # thank's Jasmine
 
 # Third-party
 dj-static
