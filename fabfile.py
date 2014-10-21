@@ -48,10 +48,10 @@ def upload_monit_conf():
     context = dict(
         projectpath='/www/yacs/django/',
         user=USER,
-        gunicorn='/www/yacs/virtualenv/bin/gunicorn_django',
+        gunicorn='/www/yacs/virtualenv/bin/gunicorn',
         workers=4,
         logs='/www/yacs/logs/',
-        settings='yacs.settings',
+        wsgi='yacs.wsgi:application',
         pid='/tmp/yacs.pid',
         env=remote_vars('YACS_DATABASE_URL', 'YACS_SECRET_KEY'),
     )
