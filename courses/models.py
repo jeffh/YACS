@@ -222,7 +222,7 @@ class Section(models.Model):
     OFF_CAMPUS = -2
     number = models.CharField(max_length=5)
 
-    crn = models.IntegerField(unique=True)
+    crn = models.IntegerField(db_index=True)
     course = models.ForeignKey('Course', related_name='sections')
     semester = models.ForeignKey(Semester, related_name='sections')
     periods = models.ManyToManyField(Period, through='SectionPeriod', related_name='sections')
