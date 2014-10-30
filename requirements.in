@@ -28,6 +28,7 @@ pytz
 PyPDF2
 pyconstraints
 python-dateutil
+python-memcached
 
 # RPI-specific
 RPICourses
