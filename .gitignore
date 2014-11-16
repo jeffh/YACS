@@ -13,3 +13,4 @@ test_reports/
 yacs/settings/production.json
 yacs.db
 yacs.environment
+tags
