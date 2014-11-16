@@ -238,7 +238,9 @@ class Section(models.Model):
         ordering = ['number']
 
     def __unicode__(self):
-        return "%s (%s) Seats: %d / %d" % (self.number, self.crn, self.seats_taken, self.seats_total)
+        return "%d - %s (%s) Seats: %d / %d" % (
+            self.id, self.number, self.crn, self.seats_taken, self.seats_total
+        )
 
     def __hash__(self):
         return hash(self.id)
@@ -330,8 +332,8 @@ class Course(models.Model):
         ordering = ['department__code', 'number']
 
     def __unicode__(self):
-        return '%s (%s %d)' % (
-            self.name, self.department.code, self.number
+        return '%d - %s (%s %d)' % (
+            self.id, self.name, self.department.code, self.number
         )
 
     def __hash__(self):

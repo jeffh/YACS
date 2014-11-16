@@ -41,14 +41,14 @@ class SemesterAdmin(admin.ModelAdmin):
 
 
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('name', 'department', 'number', 'min_credits', 'max_credits', 'is_comm_intense')
+    list_display = ('name', 'id', 'department', 'number', 'min_credits', 'max_credits', 'is_comm_intense')
     list_filter = (SemestersListFilter, 'is_comm_intense', 'min_credits', 'max_credits')
     search_fields = ('name', 'department__name', 'department__code', 'number')
     ordering = ('department', 'number')
 
 
 class SectionAdmin(admin.ModelAdmin):
-    list_display = ('crn', 'course', 'number', 'semester', 'seats_taken', 'seats_total', 'notes')
+    list_display = ('crn', 'id', 'course', 'number', 'semester', 'seats_taken', 'seats_total', 'notes')
     list_filter = (SemesterListFilter, 'course__department__code',)
     search_fields = ('crn', 'course__name', 'number', 'course__number', 'notes')
 
