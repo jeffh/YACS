@@ -7,7 +7,7 @@ Jinja2==2.7.3
 MarkupSafe==0.23
 PyPDF2==1.23
 PyYAML==3.10
-RPICourses==1.0.8
+RPICourses==1.0.9
 Werkzeug==0.9.6
 argparse==1.2.2
 dj-database-url==0.3.0
