@@ -26,7 +26,7 @@ gunicorn==19.1.1
 icalendar==3.8.4
 itsdangerous==0.24
 jasmine==2.1.0
-jasmine-core==2.1.1
+jasmine-core==2.1.2
 mock==1.0.1
 ordereddict==1.1
 paramiko==1.15.1
