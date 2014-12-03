@@ -87,15 +87,15 @@
 				<dt><a href="{% url 'api:v4:semesters' %}?year={{ semester.year }}">{% url 'api:v4:semesters' %}?year={{ semester.year }}</a></dt>
 				<dd>Returns all semesters for the year {{ semester.year }}.</dd>
 				<dt><a href="{% url 'api:v4:semesters' %}?id={{ semester.id}}&id=1">{% url 'api:v4:semesters' %}?id={{ semester.id }}&id=1</a></dt>
-				<dd>Returns a given semester with an id of {{ semester.id }} or 1.</dd>
+				<dd>Returns a given semester with an id of {{ semester.id }} OR 1.</dd>
 				<dt><a href="{% url 'api:v4:departments' %}?semester_id={{ semester.id }}">{% url 'api:v4:departments' %}?semester_id={{ semester.id }}</a></dt>
 				<dd>Returns all departments for {{ semester.name }}. This kind of filtering works for all objects.</dd>
 				<dt><a href="{% url 'api:v4:departments' %}?code={{ department.code }}&code=CSCI">{% url 'api:v4:departments' %}?code={{ department.code }}&amp;code=CSCI</a></dt>
-				<dd>Returns the departments with code of {{ department.code }} or CSCI.</dd>
-				<dt><a href="{% url 'api:v4:courses' %}?department_code={{ department.code }}">{% url 'api:v4:courses' %}?department_code={{ department.code }}</a></dt>
-				<dd>Returns the courses with department code of {{ department.code }}.</dd>
+				<dd>Returns the departments with code of {{ department.code }} OR CSCI.</dd>
+				<dt><a href="{% url 'api:v4:courses' %}?department_code={{ department.code }}&is_comm_intense=1">{% url 'api:v4:courses' %}?department_code={{ department.code }}&is_comm_intense=1</a></dt>
+				<dd>Returns the courses with department code of {{ department.code }} AND are communication intensive.</dd>
 			</dl>
-			<p>Many of these GET parameters can be repeated to filter find specific objects. The schema specifies, in detail, what is filterable.</p>
+			<p>Many of these GET parameters can be repeated to filter find specific objects. The schema specifies, in detail, what is filterable. Same parameters would be OR'd together, while different ones would be AND'd together.</p>
 		</div>
 	</div>
 	<h2><a name="schema">Data Types</a></h2>
