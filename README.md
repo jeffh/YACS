@@ -18,7 +18,7 @@ but that's beyond the scope of this README.
 
 You can download an archive from the top-right of the github page or clone the repo:
 
-    git clone git://github.com/jeffh/YACS.git
+    git clone https://github.com/jeffh/YACS
 
 Which will download code into a YACS folder where you run this command.
 
@@ -36,7 +36,9 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
 
 1. YACS uses a lot of dependencies. It relies on [pip][] to install most of them. Simply do:
     `pip install -r requirements.txt`
-   Which will install all the dependencies YACS needs, plus a PostgreSQL driver.
+   Which will install most of dependencies YACS needs for postgres. Depending on your
+   operating system, you'll probably need to install some system libraries for
+   `libmemcached`, `zlib`, `libsasl`, `psyocopg2`.
 
 
 2. Edit `DATABASES` variable in the `yacs/settings/development.py` file to your
@@ -58,6 +60,8 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
     python manage.py import_catalog_data  # imports from RPI course catalog
     python manage.py create_section_cache # creates cache for generating schedules
     ```
+
+    It is ok for these commands to emit parse errors.
 
 5. Check it out by running the dev server `python manage.py runserver` and pointing your
    browser to [http://localhost:8000/][local] and viola!
@@ -81,14 +85,6 @@ The following environmental variables are used in production:
 - **YACS_DATABASE_URL**: The database url to connect. Parsed using dj_database_url.
                          In the form of dbengine://user:pass@host/dbname
 - **YACS_SECRET_KEY**: The internal django secret key to use. Be unique!
-
-And some optional keys:
-- **YACS_EMAIL_FROM**: The email address the sender comes from
-- **YACS_EMAIL_USE_TLS**: The smtp server requires TLS (yes, no), defaults to yes.
-- **YACS_EMAIL_HOST**: The smtp server to connect to
-- **YACS_EMAIL_USER**: The smtp username
-- **YACS_EMAIL_PASS**: The smtp password
-- **YACS_EMAIL_PORT**: The smtp server port, defaults to 587
 
 When using [seafood][], you'll need to modify the salt configuration files to be
 unique for your installation. YACS uses email for notifying ADMINS in project settings.
