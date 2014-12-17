@@ -15,7 +15,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'yacsdb',
         'USER': 'yacs',
-        'PASSWORD': 'yacs',
+        'PASSWORD': 'NULL', # using trust auth via localhost
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
