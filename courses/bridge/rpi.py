@@ -470,8 +470,9 @@ def export_schedule(crns):
     semester_end = semester_start + datetime.timedelta(150)
     start_date = str(semester_start.date()).replace('-', '')
     end_date = str(current.date()).replace('-', '')
-    events = list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url_by_range(start_date, end_date))))
-    events.extend(list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url()))))
+    # events = list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url_by_range(start_date, end_date))))
+    # events.extend(list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url()))))
+    events = list(rpi_calendars.filter_related_events(rpi_calendars.download_events(rpi_calendars.get_url())))
     days_off = []
     break_start = None
     break_end = None

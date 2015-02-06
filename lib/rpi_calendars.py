@@ -38,12 +38,26 @@ class Event(object):
         )
 
 
-def get_url(num=356):
-    return "http://events.rpi.edu/webcache/v1.0/jsonDays/" + str(num) + "/list-json/%28catuid%3D%2700f18254-27fe1f37-0127-fe1f37da-00000001%27%29/no--object.json"
+def get_url(num=3000):
+    return (
+        "http://events.rpi.edu:7070/feeder/main/eventsFeed.do?f=y&" +
+        "sort=dtstart.utc:asc&" +
+        "fexpr=(((vpath=\"/user/public-user/General%20Calendars\")))%20and%20(entity_type=\"event\"%7Centity_type=\"todo\")&" +
+        "skinName=list-json&" +
+        "count=" + str(num)
+    )
 
 
 def get_url_by_range(start, end):
-    return "http://events.rpi.edu/webcache/v1.0/jsonRange/" + start + "/" + end + "/list-json/%28catuid%3D%2700f18254-27fe1f37-0127-fe1f37da-00000001%27%29/no--object.json"
+    "Broken."
+    return (
+        "http://events.rpi.edu:7070/feeder/main/eventsFeed.do?f=y&" +
+        "sort=dtstart.utc:asc" +
+        "&fexpr=(categories.href!=%22/public/.bedework/categories/Ongoing%22)%20and%20(entity_type=%22event%22%7Centity_type=%22todo%22)&" +
+        "skinName=list-json&" +
+        "start=" + str(start) + "&" +
+        "end=" + str(end)
+    )
 
 
 def get_json(url):
@@ -123,16 +137,3 @@ def filter_related_events(events):
     for event in events:
         if parser.matches(event.name):
             yield event
-
-"""
-if __name__ == '__main__':
-    events = list(filter_related_events(download_events()))
-    from pprint import pprint
-    all_events=download_events()
-    names=lambda x:[e.name for e in x]
-    # "invalid" events
-    pprint(set(names(all_events)) - set(names(events)))
-    # "valid" events
-    pprint(set(names(events)))
-
-"""
