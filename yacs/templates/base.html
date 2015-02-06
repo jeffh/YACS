@@ -16,6 +16,15 @@
 {% block body %}
 <div id="wrap">
 	<div id="hd" ng-controller="NavCtrl">
+		<select
+			class="semester-selector"
+			ng-change="changeToSemester(semester)"
+			ng-model="semester"
+			ng-options="semester.name for semester in semesters track by semester.id">
+			<option value="{% templatetag openvariable %}semester.id{% templatetag closevariable %}">
+				{% templatetag openvariable %}semester.name {% templatetag closevariable %}
+			</option>
+		</select>
 		{% block header %}
 		<h1>{% block app-title %}YACS{% endblock %}</h1>
 		{% endblock %}
