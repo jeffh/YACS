@@ -32,6 +32,15 @@ app.constant('CSRF_TOKEN', "{{ csrf_token }}");
 <body class="page-index" ng-controller="RootCtrl">
 <div id="wrap">
 	<div id="hd" ng-controller="NavCtrl">
+		<select
+			class="semester-selector"
+			ng-change="changeToSemester(semester)"
+			ng-model="semester"
+			ng-options="semester.name for semester in semesters track by semester.id">
+			<option value="{% templatetag openvariable %}semester.id{% templatetag closevariable %}">
+				{% templatetag openvariable %}semester.name {% templatetag closevariable %}
+			</option>
+		</select>
 		<h1>YACS</h1>
 		<ul class="menu">
 			<li ng-class="{selected: item==selectedItem}" ng-repeat="item in items">

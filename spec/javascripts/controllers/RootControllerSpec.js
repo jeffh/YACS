@@ -1,26 +1,73 @@
 'use strict';
 
 describe("RootCtrl", function(){
-	var scope, controller, currentSemesterDeferred, Selection, selectionDeferred;
+	var scope, controller, location, currentSemesterDeferred, Selection,
+		selectionDeferred, semestersDeferred;
 
 	beforeEach(allowStaticFetches);
 
-	beforeEach(inject(function($rootScope, $q, $controller){
+	beforeEach(inject(function($rootScope, $q, $controller, Semester){
 		scope = $rootScope.$new();
 		selectionDeferred = $q.defer();
 		currentSemesterDeferred = $q.defer();
+		semestersDeferred = $q.defer();
 		Selection = {
 			current: selectionDeferred.promise
 		};
+		Semester.query = function(){
+			return semestersDeferred.promise;
+		};
+		location = {
+			path: function(p) {
+				location.received_path = p;
+				return location;
+			},
+			search: function(s) {
+				location.received_search = s;
+				return location;
+			}
+		};
 		controller = $controller('RootCtrl', {
 			$scope: scope,
+			$location: location,
 			currentSemesterPromise: currentSemesterDeferred.promise,
-			Selection: Selection
+			Selection: Selection,
+			Semester: Semester
 		});
 	}));
 
 	it("should set the STATIC_URL to the scope", function(){
 		expect(scope.STATIC_URL).toEqual('/STATIC/');
+	});
+
+	describe("changing the current semester", function(){
+		var newSemester;
+		beforeEach(inject(function($rootScope, Semester){
+			newSemester = new Semester({ id: 2, year: 2014, month: 1 });
+			scope.changeToSemester(newSemester);
+		}));
+
+		it("should update the current semester on the scope", function(){
+			expect(scope.semester).toEqual(newSemester);
+		});
+
+		it("should change the location to the new semester", function(){
+			expect(location.received_path).toEqual('/semesters/2014/1/');
+			expect(location.received_search).toEqual({});
+		});
+	});
+
+	describe("when the all the semesters promise is resolved", function(){
+		var allSemesters;
+		beforeEach(inject(function($rootScope, Semester){
+			allSemesters = [new Semester({ id: 1 })];
+			semestersDeferred.resolve(allSemesters);
+			$rootScope.$apply();
+		}));
+
+		it("should set the semesters on the scope", function(){
+			expect(scope.semesters).toEqual(allSemesters);
+		});
 	});
 
 	describe("when the current semester promise is resolved", function(){
@@ -35,7 +82,6 @@ describe("RootCtrl", function(){
 			expect(scope.semester).toEqual(currentSemester);
 		});
 	});
-
 
 	describe("when then current selection is resolved", function(){
 		var selection;

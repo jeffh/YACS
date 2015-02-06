@@ -18,10 +18,9 @@ h1 { font-size: 250% }
 }
 
 .spinner {
-	left: 1em;
-	margin: auto;
 	position: absolute;
-	top: 1em;
+	left: 14px;
+	top: 42px;
 }
 
 #wrap {
@@ -53,6 +52,12 @@ a:link:hover {
 	border-top: 1px solid #d3d3d3;
 	font-size: 120%;
 	font-weight: 100;
+}
+.semester-selector {
+	position: absolute;
+	left: 14px;
+	top: 14px;
+	font-size: 150%;
 }
 .menu {
 	display: inline-block;
@@ -131,8 +136,8 @@ a:link:hover {
 
 .feedback {
 	position: absolute;
-	right: 1em;
-	top: 1em;
+	right: 14px;
+	top: 14px;
 }
 
 /** Footer **/
