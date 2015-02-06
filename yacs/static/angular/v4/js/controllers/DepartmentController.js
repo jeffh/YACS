@@ -3,11 +3,11 @@
 (function(angular, app, undefined){
 
 app.controller('DepartmentCtrl', ['$scope', '$location', 'Semester',
-			   'Department', 'urlProvider', 'currentSemesterPromise',
-			   function($scope, $location, Semester, Department, urlProvider, currentSemesterPromise){
+			   'Department', 'urlProvider',
+			   function($scope, $location, Semester, Department, urlProvider){
 	$scope.departments = [];
 
-	currentSemesterPromise.then(function(semester){
+	$scope.$watch('semester', function(semester){
 		Department.query({semester_id: semester.id}).then(function(departments){
 			$scope.departments = departments;
 		});

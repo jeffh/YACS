@@ -1,18 +1,16 @@
 'use strict';
 
 describe("DepartmentCtrl", function(){
-	var scope, controller, semesterDeferred, departmentsDeferred, $location;
+	var scope, controller, departmentsDeferred, $location;
 	beforeEach(allowStaticFetches);
 
 	beforeEach(inject(function($rootScope, $injector, $q, $controller, Semester, Department){
 		scope = $rootScope.$new();
 		$location = $injector.get('$location');
-		semesterDeferred = $q.defer();
 		departmentsDeferred = $q.defer();
 		spyOn(Department, 'query').and.returnValue(departmentsDeferred.promise);
 		controller = $controller('DepartmentCtrl', {
 			$scope: scope,
-			currentSemesterPromise: semesterDeferred.promise
 		});
 	}));
 
@@ -20,9 +18,9 @@ describe("DepartmentCtrl", function(){
 		expect(scope.departments).toEqual([]);
 	});
 
-	describe("when the semester is resolved", function(){
+	describe("when the semester changes", function(){
 		beforeEach(inject(function($rootScope, Semester){
-			semesterDeferred.resolve(new Semester({year: 2013, month: 1, id: 13}));
+			scope.semester = new Semester({year: 2013, month: 1, id: 13});
 			$rootScope.$apply();
 		}));
 
