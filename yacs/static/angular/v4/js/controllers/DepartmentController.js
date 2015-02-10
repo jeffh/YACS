@@ -8,6 +8,9 @@ app.controller('DepartmentCtrl', ['$scope', '$location', 'Semester',
 	$scope.departments = [];
 
 	$scope.$watch('semester', function(semester){
+		if (!semester) {
+			return;
+		}
 		Department.query({semester_id: semester.id}).then(function(departments){
 			$scope.departments = departments;
 		});

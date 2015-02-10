@@ -41,10 +41,15 @@ describe("RootCtrl", function(){
 	});
 
 	describe("changing the current semester", function(){
-		var newSemester;
-		beforeEach(inject(function($rootScope, Semester){
+		var newSemester, selection;
+		beforeEach(inject(function($rootScope, Semester, Selection){
+			selection = new Selection({1: [2, 3]}, []);
+			selectionDeferred.resolve(selection);
+
 			newSemester = new Semester({ id: 2, year: 2014, month: 1 });
 			scope.changeToSemester(newSemester);
+
+			$rootScope.$apply();
 		}));
 
 		it("should update the current semester on the scope", function(){
@@ -54,6 +59,10 @@ describe("RootCtrl", function(){
 		it("should change the location to the new semester", function(){
 			expect(location.received_path).toEqual('/semesters/2014/1/');
 			expect(location.received_search).toEqual({});
+		});
+
+		it("should clear the user's selection", function(){
+			expect(selection.numberOfCourses()).toEqual(0);
 		});
 	});
 

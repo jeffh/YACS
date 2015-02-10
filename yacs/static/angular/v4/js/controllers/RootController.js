@@ -18,6 +18,9 @@ app.controller('RootCtrl', ['$scope', '$location', '$window',
 	$scope.changeToSemester = function(semester) {
 		$location.path("/semesters/" + semester.year + "/" + semester.month + "/").search({});
 		$scope.semester = semester;
+		Selection.current.then(function(selection){
+			selection.clear();
+		});
 	};
 
 	currentSemesterPromise.then(function(semester){
