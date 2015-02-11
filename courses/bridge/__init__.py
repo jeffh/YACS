@@ -11,4 +11,3 @@ def import_courses(*args, **kwargs):
         module, funcname = settings.COURSES_COLLEGE_PARSER.rsplit('.', 1)
         mod = import_module(module)
         getattr(mod, funcname)(*args, **kwargs)
-

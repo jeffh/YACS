@@ -25,4 +25,3 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         compute_conflicts(all_semester=options.get('all', False),
                           sql=options.get('sql'))
-

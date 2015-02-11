@@ -394,4 +394,3 @@ CELERYBEAT_SCHEDULE = {
         },
     },
 }
-
