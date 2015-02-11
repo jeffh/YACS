@@ -18,7 +18,7 @@ class SemestersListFilter(admin.SimpleListFilter):
             result.append((sem.id, sem.name))
         return result
 
-    def queryset(self, request, queryset):
+    def get_queryset(self, request, queryset):
         if request.user.is_superuser:
             value = self.value()
             if value:
@@ -52,8 +52,8 @@ class SectionAdmin(admin.ModelAdmin):
     list_filter = (SemesterListFilter, 'course__department__code',)
     search_fields = ('crn', 'course__name', 'number', 'course__number', 'notes')
 
-    def queryset(self, request):
-        qs = super(SectionAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(SectionAdmin, self).get_queryset(request)
         return qs.select_related()
 
 
@@ -76,8 +76,8 @@ class SectionPeriodAdmin(admin.ModelAdmin):
             instance.period.days_of_the_week,
         )
 
-    def queryset(self, request):
-        qs = super(SectionPeriodAdmin, self).queryset(request)
+    def get_queryset(self, request):
+        qs = super(SectionPeriodAdmin, self).get_queryset(request)
         return qs.select_related()
 
 

@@ -417,14 +417,6 @@ def import_all_semesters(force=False):
     notifier.notify()
 
 
-def import_data(force=False, all=False):
-    if all:
-        print 'Importing all semesters'
-        import_all_semesters(force=force)
-    else:
-        import_latest_semester(force=force)
-
-
 def import_catalog(a=False):
     catalog = parse_catalog(a)
     courses = Course.objects.all()
@@ -438,6 +430,16 @@ def import_catalog(a=False):
             c.save()
     # uses >1GB of ram - currently unacceptable
     # add_cross_listing()
+
+
+def import_data(force=False, all=False, catalog=False):
+    if all:
+        print 'Importing all semesters'
+        import_all_semesters(force=force)
+    else:
+        import_latest_semester(force=force)
+    if catalog:
+        import_catalog(all=all)
 
 
 def add_cross_listing():

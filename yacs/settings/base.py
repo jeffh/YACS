@@ -2,6 +2,10 @@ import os
 import sys
 from datetime import timedelta
 import dj_database_url
+from celery.schedules import crontab
+import djcelery
+
+djcelery.setup_loader()
 
 # To work with pypy
 try:
@@ -158,11 +162,13 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     # third-party apps
     'django_extensions',
-    'debug_toolbar',
+    # 'debug_toolbar',
     'pipeline',
     'gunicorn',
     'taggit',
     'colorful',
+    'kombu.transport.django',
+    'djcelery',
     # local apps
     'courses',
     'scheduler',
@@ -352,3 +358,40 @@ PIPELINE_JS = {
         'output_filename': 'app.js'
     },
 }
+
+# === celery ===
+
+BROKER_URL = os.environ.get('YACS_BROKER_URL', 'django://')
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERYBEAT_SCHEDULE = {
+    'import_courses': {
+        'task': 'courses.tasks.import_courses',
+        'schedule': crontab(minute='*/15'),
+        'kwargs': {
+            'force': False,
+            'all': False,
+            'catalog': True,
+        },
+    },
+    'compute_section_cache': {
+        'task': 'scheduler.tasks.compute_conflicts',
+        'schedule': crontab(minute='*/30'),
+        'kwargs': {
+            'all_semesters': False,
+            'sql': True,
+        },
+    },
+    'clean_selection': {
+        'task': 'scheduler.tasks.clear_selection_cache',
+        'schedule': crontab(minute='0'),
+        'kwargs': {
+            'all_semesters': False,
+            'sql': True,
+        },
+    },
+}
+

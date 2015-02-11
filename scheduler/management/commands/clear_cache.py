@@ -13,3 +13,4 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         with transaction.atomic():
             models.Selection.objects.all().update(api_cache='')
+

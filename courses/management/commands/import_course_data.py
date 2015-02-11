@@ -21,6 +21,12 @@ class Command(BaseCommand):
                     default=False,
                     help='Imports all semester course data that YACS can find.'
                     ),
+        make_option('--no-catalog',
+                    dest='no_catalog',
+                    action='store_true',
+                    default=False,
+                    help='skips parsing the catalog'
+                    ),
     )
 
     def handle(self, *args, **options):
@@ -28,5 +34,6 @@ class Command(BaseCommand):
             print "Forcing update..."
         import_courses(
             force=options.get('force'),
-            all=options.get('all')
+            all=options.get('all'),
+            catalog=not options.get('no_catalog'),
         )
