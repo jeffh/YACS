@@ -417,8 +417,8 @@ def import_all_semesters(force=False):
     notifier.notify()
 
 
-def import_catalog(a=False):
-    catalog = parse_catalog(a)
+def import_catalog(all=False):
+    catalog = parse_catalog(all)
     courses = Course.objects.all()
     for c in courses:
         key = str(c.department.code) + str(c.number)
