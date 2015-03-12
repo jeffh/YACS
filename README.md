@@ -75,12 +75,17 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
 
 #### Vagrant
 
-[Vagrant][vagrant] is a tool which builds a development VM. The VM for YACS is based on [terrywant/archlinux][archbase] and is provisioned by `vagrant.sh`. The development environment is contained in a python [virtualenv][virtualenv] by [berdario/pew][pew].
+[Vagrant][vagrant] is a tool which builds a development VM. The VM for
+YACS is based on [terrywant/archlinux][archbase] and is provisioned by
+`vagrant.sh`. The development environment is contained in a python
+[virtualenv][] by [berdario/pew][pew]. The development instance is
+configured to use [PostgreSQL][postgresql].
 
 [vagrant]:https://www.vagrantup.com/
 [archbase]:https://github.com/terrywang/vagrantboxes/blob/master/archlinux-x86_64.md
 [virtualenv]:https://github.com/pypa/virtualenv
 [pew]:https://github.com/berdario/pew
+[postgresql]:http://www.postgresql.org/
 
 After you have vagrant installed, to start developing, just:
 
