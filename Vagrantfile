@@ -58,12 +58,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   # Enable provisioning with shell.
   #
-  # config.vm.provision "shell", path: "vagrant.sh"
+   config.vm.provision "shell", path: "vagrant.sh"
   #
   # Test
-  config.vm.define "test", autostart:false do |test|
-    test.vm.provision "shell", path: "test.sh"
-  end
+  #config.vm.define "test", autostart:false do |test|
+  #  test.vm.provision "shell", path: "vagrant.sh"
+  #end
   # Enable provisioning with CFEngine. CFEngine Community packages are
   # automatically installed. For example, configure the host as a
   # policy server and optionally a policy file to run:
