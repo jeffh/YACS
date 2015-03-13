@@ -404,4 +404,4 @@ CORS_ORIGIN_ALLOW_ALL = True
 # only for api
 CORS_URLS_REGEX = r'^/api/.*$'
 # only for GET
-CORS_ALLOW_METHODS = ('GET')
+CORS_ALLOW_METHODS = ('GET',)
