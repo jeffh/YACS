@@ -122,6 +122,7 @@ PASSWORD_HASHERS = (
 # session middleware
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'api.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -169,6 +170,7 @@ INSTALLED_APPS = (
     'colorful',
     'kombu.transport.django',
     'djcelery',
+    'corsheaders',
     # local apps
     'courses',
     'scheduler',
@@ -394,3 +396,12 @@ CELERYBEAT_SCHEDULE = {
         },
     },
 }
+
+# === corsheaders ===
+
+# Enable public access
+CORS_ORIGIN_ALLOW_ALL = True
+# only for api
+CORS_URLS_REGEX = r'^/api/.*$'
+# only for GET
+CORS_ALLOW_METHODS = ('GET')

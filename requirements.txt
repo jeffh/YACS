@@ -51,3 +51,4 @@ six==1.9.0
 sqlparse==0.1.13
 static3==0.5.1
 wsgiref==0.1.2
+django-cors-headers==1.0.0
