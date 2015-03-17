@@ -73,6 +73,30 @@ Install the appropriate driver and its database, or just use the bundled SQLite.
 [local]: http://localhost:8000/
 [django admin]: http://localhost:8000/admin/
 
+#### Vagrant
+
+[Vagrant][vagrant] is a tool which builds a development VM. The VM for
+YACS is based on [terrywant/archlinux][archbase] and is provisioned by
+`vagrant.sh`. The development environment is contained in a python
+[virtualenv][] by [berdario/pew][pew]. The development instance is
+configured to use [PostgreSQL][postgresql].
+
+[vagrant]:https://www.vagrantup.com/
+[archbase]:https://github.com/terrywang/vagrantboxes/blob/master/archlinux-x86_64.md
+[virtualenv]:https://github.com/pypa/virtualenv
+[pew]:https://github.com/berdario/pew
+[postgresql]:http://www.postgresql.org/
+
+After you have vagrant installed, to start developing, just:
+
+1. `vagrant up` to boot and provision the VM.
+2. `cd /vagrant && pew workon yacs` to get in the working environment.
+3. Do as step 3-6 above.
+
+Notes:
+- `/vagrant` is shared between the host and the VM, so you can use whatever you like in the host to develop.
+- Port 8000 is forwarded so the default preview works the same, but if you want to change the port number you have to forward that in the `Vagrantfile` as well.
+
 ## Setup (Production)
 
 It's probably best to use the associated project: [seafood][]. Which is a [salt][]

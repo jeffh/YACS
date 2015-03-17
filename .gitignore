@@ -15,3 +15,4 @@ yacs.db
 yacs.environment
 tags
 celerybeat-schedule
+.vagrant/
