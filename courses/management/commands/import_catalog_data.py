@@ -12,4 +12,4 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        import_catalog(a=options.get('all', False))
+        import_catalog(all=options.get('all', False))
