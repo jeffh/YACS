@@ -18,7 +18,7 @@ class SemestersListFilter(admin.SimpleListFilter):
             result.append((sem.id, sem.name))
         return result
 
-    def get_queryset(self, request, queryset):
+    def queryset(self, request, queryset):
         if request.user.is_superuser:
             value = self.value()
             if value:
