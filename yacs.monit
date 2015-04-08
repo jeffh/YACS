@@ -4,6 +4,5 @@ check process yacs
     as uid %(user)s and gid %(user)s
   stop program = "/bin/bash -c '/bin/kill -QUIT `cat %(pid)s`'"
     as uid %(user)s and gid %(user)s
-  if failed host 127.0.0.1 port 8000 protocol http then restart
 
   group yacs
