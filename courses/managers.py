@@ -54,8 +54,8 @@ class SerializableQuerySet(OptionalFilterMixin, QuerySet):
 
     def toJSON(self):
         if len(self) == 1 and not self.force_into_json_array:
-            return self[0].toJSON(self.query.related_select_cols)
-        return [m.toJSON(self.query.related_select_cols) for m in self]
+            return self[0].toJSON()
+        return [m.toJSON() for m in self]
 
 
 class PublicSemestersQuerySetManager(QuerySetManager):

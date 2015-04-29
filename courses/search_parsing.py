@@ -3,7 +3,6 @@ import datetime
 
 from django.db.models import Q, F
 
-from courses.operators import FQ
 from courses.utils import force_int
 
 
@@ -100,7 +99,7 @@ class SearchQuery(object):
 
     def _days_filter(self, days_str):
         flag = self._days()[days_str]
-        return ~Q(sections=None) & FQ(F('sections__periods__days_of_week_flag') & flag, 'gt', 0)
+        return ~Q(sections=None) & F('sections__periods__days_of_week_flag').bitand(flag), 'gt', 0
 
     def _seats_filter(self, seats_str):
         full = seats_str in ('taken', 'full', 'filled', 'closed')

@@ -1,4 +1,4 @@
-{% load compressed %}
+{% load pipeline %}
 <!DOCTYPE html>
 <html lang="en" ng-app="yacs">
 <head>
@@ -14,9 +14,9 @@
 <link href="http://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet" type="text/css" />
 <link href="http://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet" type="text/css">
 
-{% compressed_css 'angular' %}
-{% compressed_css 'print' %}
-{% compressed_js 'angular' %}
+{% stylesheet 'angular' %}
+{% stylesheet 'print' %}
+{% javascript 'angular' %}
 
 {% include 'analytics.html' with record_pageview=0 %}
 

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load compressed %}
+{% load pipeline %}
 
 {% comment %}
 Site-specific customizations
@@ -28,8 +28,8 @@ It would be bad if a 500 error page threw a 500 error when trying to render...
 <meta name="storage-version" content="{{ semester.year }}{{ semester.month }}">
 {% endif %}
 
-{% compressed_css 'angular' %}
-{% compressed_css 'print' %}
+{% stylesheet 'angular' %}
+{% stylesheet 'print' %}
 
 {% include 'analytics.html' with record_pageview=1 %}
 

@@ -106,7 +106,7 @@ class PeriodTest(TestCase):
         self.assertEqual(['Monday'], self.period.days_of_week)
 
     def test_does_not_conflicts_with(self):
-        p = PeriodFactory.build(
+        p = PeriodFactory.create(
             start=datetime.time(hour=8),
             end=datetime.time(hour=9),
             days_of_week_flag=1
@@ -114,7 +114,7 @@ class PeriodTest(TestCase):
         self.assertFalse(self.period.conflicts_with(p))
 
     def test_conflicts_with(self):
-        p = PeriodFactory.build(
+        p = PeriodFactory.create(
             start=datetime.time(hour=7),
             end=datetime.time(hour=9),
             days_of_week_flag=1
@@ -162,27 +162,27 @@ class SectionTest(TestCase):
         self.assertEqual(expected, result)
 
     def test_is_not_study_abroad(self):
-        section = SectionFactory.build()
+        section = SectionFactory.create()
         self.assertFalse(section.is_study_abroad)
 
     def test_is_study_abroad(self):
-        section = SectionFactory.build(number=models.Section.STUDY_ABROAD)
+        section = SectionFactory.create(number=models.Section.STUDY_ABROAD)
         self.assertTrue(section.is_study_abroad)
 
     def test_is_not_full(self):
-        section = SectionFactory.build()
+        section = SectionFactory.create()
         self.assertFalse(section.is_full)
 
     def test_is_full(self):
-        section = SectionFactory.build(seats_taken=2, seats_total=2)
+        section = SectionFactory.create(seats_taken=2, seats_total=2)
         self.assertTrue(section.is_full)
 
     def test_seats_left(self):
-        section = SectionFactory.build(seats_taken=4, seats_total=5)
+        section = SectionFactory.create(seats_taken=4, seats_total=5)
         self.assertEqual(section.seats_left, 1)
 
     def test_seats_left_should_never_be_negative(self):
-        section = SectionFactory.build(seats_taken=7, seats_total=5)
+        section = SectionFactory.create(seats_taken=7, seats_total=5)
         self.assertEqual(section.seats_left, 0)
 
     @patch.object(sys, 'stdout', Mock())
@@ -197,7 +197,7 @@ class SectionTest(TestCase):
         self.assertEqual(expected, section.days_of_week)
 
     def test_conflicts_with_self(self):
-        section = SectionFactory.build()
+        section = SectionFactory.create()
         self.assertTrue(section.conflicts_with(section))
 
     def test_does_not_conflict_with_section_with_nonconflicting_periods(self):
@@ -258,25 +258,25 @@ class CourseTest(TestCase):
         self.assertEqual(expected, course.toJSON())
 
     def test_code(self):
-        dept = DepartmentFactory.build(code='CSCI')
-        course = CourseFactory.build(department=dept, number=1100)
+        dept = DepartmentFactory.create(code='CSCI')
+        course = CourseFactory.create(department=dept, number=1100)
         self.assertEqual('CSCI 1100', course.code)
 
     def test_credits_display_for_equivalent_min_and_max_credits(self):
-        course = CourseFactory.build(min_credits=4, max_credits=4)
+        course = CourseFactory.create(min_credits=4, max_credits=4)
         self.assertEqual('4 credits', course.credits_display)
 
     def test_credits_display_for_equivalent_min_and_max_credits_as_one_credit(self):
-        course = CourseFactory.build(min_credits=1, max_credits=1)
+        course = CourseFactory.create(min_credits=1, max_credits=1)
         self.assertEqual('1 credit', course.credits_display)
 
     def test_credits_display_for_range(self):
-        course = CourseFactory.build(min_credits=1, max_credits=8)
+        course = CourseFactory.create(min_credits=1, max_credits=8)
         self.assertEqual('1 - 8 credits', course.credits_display)
 
     @patch.object(models.Course, 'sections', Mock())
     def test_available_sections(self):
-        course = CourseFactory.build()
+        course = CourseFactory.create()
         queryset = models.Course.sections.by_availability = Mock(return_value='foobar')
         self.assertEqual('foobar', course.available_sections)
         queryset.assert_called_with()
@@ -326,10 +326,9 @@ class CourseTest(TestCase):
 
 class SectionPeriodTest(TestCase):
     def test_to_json(self):
-        period = PeriodFactory.build()
+        period = PeriodFactory.create()
         period.toJSON = Mock(return_value={'lol': 1})
-        sp = SectionPeriodFactory.build(
-            id=None,
+        sp = SectionPeriodFactory.create(
             instructor='foo',
             location='bar',
             kind='fizz',
@@ -340,16 +339,16 @@ class SectionPeriodTest(TestCase):
             'location': 'bar',
             'kind': 'fizz',
             'lol': 1,
-            'id': None,
+            'id': sp.id,
         }
         self.assertEqual(expected, sp.toJSON())
 
     def test_conflicts_with_uses_period_conflict(self):
-        period1 = PeriodFactory.build()
+        period1 = PeriodFactory.create()
         period1.conflicts_with = Mock(return_value=False)
-        period2 = PeriodFactory.build()
-        sp1 = SectionPeriodFactory.build(period=period1)
-        sp2 = SectionPeriodFactory.build(period=period2)
+        period2 = PeriodFactory.create()
+        sp1 = SectionPeriodFactory.create(period=period1)
+        sp2 = SectionPeriodFactory.create(period=period2)
 
         self.assertFalse(sp1.conflicts_with(sp2))
         period1.conflicts_with.assert_called_with(period2)

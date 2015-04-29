@@ -132,14 +132,29 @@ def selections(request, id=None, version=None, ext=None):
     return {'context': selection.toJSON()}
 
 
+class RequestParams(object):
+    def __init__(self, request):
+        self.request = request
+
+    def __getitem__(self, key):
+        return self.request.POST.get(key) or self.request.GET[key]
+
+    def get(self, key, default=None):
+        return self.request.POST.get(key) or self.request.GET.get(key) or default
+
+    def getlist(self, key):
+        return self.request.POST.getlist(key) or self.request.GET.getlist(key)
+
+
 @csrf_exempt
 @render()
 def semesters(request, id=None, version=None, ext=None):
+    params = RequestParams(request)
     queryset = models.Semester.visible_objects.optional_filter(
-        id__in=int_list(request.REQUEST.getlist('id')) or None,
-        courses__id__in=int_list(request.REQUEST.getlist('course_id')) or None,
-        departments__id__in=int_list(request.REQUEST.getlist('department_id')) or None,
-        year=request.REQUEST.get('year'), month=request.REQUEST.get('month'),
+        id__in=int_list(params.getlist('id')) or None,
+        courses__id__in=int_list(params.getlist('course_id')) or None,
+        departments__id__in=int_list(params.getlist('department_id')) or None,
+        year=params.get('year'), month=params.get('month'),
         id=id,
     ).distinct()
     return {'context': get_if_id_present(queryset, id)}
@@ -148,11 +163,12 @@ def semesters(request, id=None, version=None, ext=None):
 @csrf_exempt
 @render()
 def departments(request, id=None, version=None, ext=None):
+    params = RequestParams(request)
     queryset = models.Department.objects.optional_filter(
-        id__in=int_list(request.REQUEST.getlist('id')) or None,
-        semesters__id__in=int_list(request.REQUEST.getlist('semester_id')) or None,
-        courses__id__in=int_list(request.REQUEST.getlist('course_id')) or None,
-        code__in=request.REQUEST.getlist('code') or None,
+        id__in=int_list(params.getlist('id')) or None,
+        semesters__id__in=int_list(params.getlist('semester_id')) or None,
+        courses__id__in=int_list(params.getlist('course_id')) or None,
+        code__in=params.getlist('code') or None,
         id=id,
     ).distinct()
     return {'context': get_if_id_present(queryset, id)}
@@ -168,16 +184,17 @@ def try_int(value, default=0):
 @csrf_exempt
 @render()
 def courses(request, id=None, version=None, ext=None):
+    params = RequestParams(request)
     queryset = models.Course.objects.optional_filter(
-        semesters__id__in=int_list(request.REQUEST.getlist('semester_id')) or None,
-        department__code__in=request.REQUEST.getlist('department_code') or None,
-        department__id__in=int_list(request.REQUEST.getlist('department_id')) or None,
-        number__in=int_list(request.REQUEST.getlist('number')) or None,
-        id__in=int_list(request.REQUEST.getlist('id')) or None,
-        is_comm_intense=try_int(request.REQUEST.get('is_comm_intense'), default=None),
+        semesters__id__in=int_list(params.getlist('semester_id')) or None,
+        department__code__in=params.getlist('department_code') or None,
+        department__id__in=int_list(params.getlist('department_id')) or None,
+        number__in=int_list(params.getlist('number')) or None,
+        id__in=int_list(params.getlist('id')) or None,
+        is_comm_intense=try_int(params.get('is_comm_intense'), default=None),
         id=id,
     ).distinct()
-    search_query = request.REQUEST.get('search')
+    search_query = params.get('search')
     queryset = queryset.search(search_query)
     return {'context': get_if_id_present(queryset, id)}
 
@@ -185,11 +202,12 @@ def courses(request, id=None, version=None, ext=None):
 @csrf_exempt
 @render()
 def sections(request, id=None, version=None, ext=None):
+    params = RequestParams(request)
     queryset = models.SectionPeriod.objects.optional_filter(
-        semester__id__in=int_list(request.REQUEST.getlist('semester_id')) or None,
-        section__course_id__in=int_list(request.REQUEST.getlist('course_id')) or None,
-        section__id__in=int_list(request.REQUEST.getlist('id')) or None,
-        section__crn__in=int_list(request.REQUEST.getlist('crn')) or None,
+        semester__id__in=int_list(params.getlist('semester_id')) or None,
+        section__course_id__in=int_list(params.getlist('course_id')) or None,
+        section__id__in=int_list(params.getlist('id')) or None,
+        section__crn__in=int_list(params.getlist('crn')) or None,
         section__id=id,
     ).select_related('section', 'period')
     section_periods = encoders.default_encoder.encode(queryset)
@@ -216,12 +234,13 @@ def sections(request, id=None, version=None, ext=None):
 @csrf_exempt
 @render()
 def section_conflicts(request, id=None, version=None, ext=None):
+    params = RequestParams(request)
     conflicts = SectionConflict.objects.by_unless_none(
         id=id,
-        id__in=int_list(request.REQUEST.getlist('id')) or None,
-        crn__in=int_list(request.REQUEST.getlist('crn')) or None,
+        id__in=int_list(params.getlist('id')) or None,
+        crn__in=int_list(params.getlist('crn')) or None,
     )
-    if request.REQUEST.get('as_crns'):
+    if params.get('as_crns'):
         conflicts = conflicts.values_list('section1__crn', 'section2__crn')
     else:
         conflicts = conflicts.values_list('section1__id', 'section2__id')
@@ -239,7 +258,7 @@ def section_conflicts(request, id=None, version=None, ext=None):
         }
 
     collection = []
-    ids = set(int_list(request.REQUEST.getlist('id')))
+    ids = set(int_list(params.getlist('id')))
     for section_id, conflicts in mapping.items():
         if len(ids) > 0 and section_id not in ids:
             continue
@@ -253,12 +272,13 @@ def section_conflicts(request, id=None, version=None, ext=None):
 @csrf_exempt
 @render()
 def schedules(request, id=None, version=None):
+    params = RequestParams(request)
     selection = None
     if id:
         selection = Selection.objects.get(id=id)
         section_ids = selection.section_ids
     else:
-        section_ids = int_list(request.REQUEST.getlist('section_id'))
+        section_ids = int_list(params.getlist('section_id'))
 
     created = False
     if not selection:
@@ -272,7 +292,7 @@ def schedules(request, id=None, version=None):
         SectionConflict.objects.as_dictionary([s.id for s in sections]))
 
     # if check flag given, return only if we have a schedule or not.
-    if request.REQUEST.get('check'):
+    if params.get('check'):
         return {'context': has_schedule(selected_courses, conflict_cache)}
 
     # check the cache

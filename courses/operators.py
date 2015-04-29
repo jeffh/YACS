@@ -2,7 +2,7 @@
 from copy import deepcopy
 
 from django.db import models
-from django.db.models.sql.expressions import SQLEvaluator
+from django.db.models.sql import SQLEvaluator
 from django.utils import tree
 
 

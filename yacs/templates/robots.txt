@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
-{% load url from future %}
 
 Disallow: {{ STATIC_URL }}
 Disallow: /api/

@@ -6,7 +6,8 @@ from courses import models
 
 
 class SemesterFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = models.Semester
+    class Meta:
+        model = models.Semester
 
     year = factory.Sequence(lambda n: 2009 + int(n))
     month = 1
@@ -20,14 +21,16 @@ class SemesterFactory(factory.DjangoModelFactory):
 
 
 class DepartmentFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = models.Department
+    class Meta:
+        model = models.Department
 
     name = factory.Sequence(lambda n: u'Department %03d' % int(n))
     code = factory.Sequence(lambda n: u'DEPT%03d' % int(n))
 
 
 class PeriodFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = models.Period
+    class Meta:
+        model = models.Period
 
     start = factory.Sequence(lambda n: datetime.time(hour=int(n) % 24))
     end = factory.Sequence(lambda n: datetime.time(hour=int(n) % 24, minute=50))
@@ -35,14 +38,16 @@ class PeriodFactory(factory.DjangoModelFactory):
 
 
 class SectionCrosslistingFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = models.SectionCrosslisting
+    class Meta:
+        model = models.SectionCrosslisting
 
     semester = factory.LazyAttribute(lambda s: SemesterFactory())
     ref = factory.Sequence(lambda n: u'ref-%s' % n)
 
 
 class SectionFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = models.Section
+    class Meta:
+        model = models.Section
 
     number = factory.Sequence(unicode)
     crn = factory.Sequence(int)
@@ -55,7 +60,8 @@ class SectionFactory(factory.DjangoModelFactory):
 
 
 class CourseFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = models.Course
+    class Meta:
+        model = models.Course
 
     name = u'Course'
     number = factory.Sequence(int)
@@ -71,14 +77,16 @@ class CourseFactory(factory.DjangoModelFactory):
 
 
 class OfferedForFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = models.OfferedFor
+    class Meta:
+        model = models.OfferedFor
 
     course = factory.LazyAttribute(lambda s: CourseFactory())
     semester = factory.LazyAttribute(lambda s: SemesterFactory())
 
 
 class SectionPeriodFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = models.SectionPeriod
+    class Meta:
+        model = models.SectionPeriod
 
     period = factory.LazyAttribute(lambda s: PeriodFactory())
     section = factory.LazyAttribute(lambda s: SectionFactory())
@@ -89,7 +97,8 @@ class SectionPeriodFactory(factory.DjangoModelFactory):
 
 
 class SemesterDepartmentFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = models.SemesterDepartment
+    class Meta:
+        model = models.SemesterDepartment
 
     department = factory.LazyAttribute(lambda s: DepartmentFactory())
     semester = factory.LazyAttribute(lambda s: SemesterFactory())
