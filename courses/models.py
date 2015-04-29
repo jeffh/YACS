@@ -95,7 +95,7 @@ class Semester(models.Model):
 class Department(models.Model):
     """Represents a department. Provides UI organization capabilities to drill-down courses by department."""
     name = models.CharField(max_length=200, blank=True, default='')
-    code = models.CharField(max_length=50, unique=True)
+    code = models.CharField(max_length=50, unique=True, db_index=True)
     semesters = models.ManyToManyField(Semester, through='SemesterDepartment', related_name='departments')
 
     objects = managers.QuerySetManager(managers.SemesterBasedQuerySet)
@@ -311,8 +311,8 @@ class Section(models.Model):
 
 class Course(models.Model):
     """A course offered."""
-    name = models.CharField(max_length=200)
-    number = models.IntegerField()
+    name = models.CharField(max_length=200, db_index=True)
+    number = models.IntegerField(db_index=True)
 
     department = models.ForeignKey(Department, related_name='courses')
     semesters = models.ManyToManyField(Semester, through='OfferedFor', related_name='courses')
