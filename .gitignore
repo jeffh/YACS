@@ -16,3 +16,4 @@ yacs.environment
 tags
 celerybeat-schedule
 .vagrant/
+yacs/static/root/
