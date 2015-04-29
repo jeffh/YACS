@@ -182,10 +182,6 @@ INSTALLED_APPS = (
 FROM_EMAIL = "no-reply@yacs.me"
 EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
-SOUTH_MIGRATION_MODULES = {
-    'taggit': 'taggit.south_migrations',
-}
-
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error.
