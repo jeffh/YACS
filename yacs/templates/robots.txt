@@ -1,7 +1,6 @@
 User-agent: *
 Allow: /
 
-Disallow: {{ STATIC_URL }}
 Disallow: /api/
 {% for semester in semesters %}
 Disallow: {% url 'selected-courses' semester.year semester.month %}
