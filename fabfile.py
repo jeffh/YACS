@@ -1,14 +1,9 @@
-import os
-import json
-import subprocess
-import shlex
 import time
-import signal
 import urllib2
 
-from fabric.api import run, local, settings, cd, sudo, task, output, puts, prefix
+from fabric.api import run, local, settings, cd, sudo, task, output, puts
 from fabric.contrib.project import upload_project
-from fabric.contrib.files import append, upload_template
+from fabric.contrib.files import upload_template
 
 
 APPS = 'api courses courses_viz scheduler'.split(' ')
@@ -144,7 +139,8 @@ def deploy(upgrade=1):
 def fetch():
     "Tells the deployed system to fetch course data."
     with cd('/www/yacs/django'):
-        envs = remote_vars('YACS_ENV', 'YACS_SECRET_KEY', 'YACS_DATABASE_URL') + ' '
+        envs = remote_vars('YACS_ENV', 'YACS_SECRET_KEY', 'YACS_DATABASE_URL')
+        envs += ' '
         puts('Getting course data from SIS...')
         sudo(envs + PYTHON + ' manage.py import_course_data')
         puts('Fetching catalog data...')
@@ -160,7 +156,7 @@ def clean():
     with settings(warn_only=True):
         local('find . -name "*.pyc" | xargs rm')
         local('find . -name "*.pyo" | xargs rm')
-        local('find . -name "__pycache__" -type directory | xargs rm -r')
+        local('find . -name "__pycache__" -type d | xargs rm -r')
         local('rm -r yacs/static/root')
 
 
